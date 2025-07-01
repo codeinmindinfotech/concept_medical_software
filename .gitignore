@@ -1,0 +1,10 @@
+/node_modules
+/vendor
+.env
+.env.backup
+#/storage
+
+storage/framework/cache
+#public/storage/images
+package-lock.json
+composer.lock
