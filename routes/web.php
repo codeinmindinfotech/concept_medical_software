@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\PatientController;
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\DoctorController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -19,4 +20,5 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
     Route::resource('patients', PatientController::class);
+    Route::resource('doctors', DoctorController::class);
 });

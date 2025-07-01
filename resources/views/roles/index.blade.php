@@ -12,15 +12,15 @@
             {{ $value }}
         </div>
     @endsession
-
+    <div class="pull-right">
+        <a class="btn btn-success mb-2" href="{{ route('roles.create') }}" title="Create Role"><i class="fa fa-plus"></i></a>
+    </div>
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-table me-1"></i>
+            <i class="fas fa-user-check"></i>
             Role Management
         </div>
-        <div class="pull-right">
-            <a class="btn btn-success mb-2" href="{{ route('roles.create') }}" title="Create Role"><i class="fa fa-plus"></i></a>
-        </div>
+        
         <div class="card-body">
             <table class="table table-bordered data-table">
             <thead>

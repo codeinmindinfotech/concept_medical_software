@@ -2,13 +2,13 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">{{ $pageTitle }}</h1>
+    <h2 class="mt-4">{{ $pageTitle }}</h2>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="/dashbaord">Dashboard</a></li>
-        <li class="breadcrumb-item active">Patients</li>
+        <li class="breadcrumb-item active">doctors</li>
     </ol>
     <div class="pull-right">
-        <a class="btn btn-success mb-2" href="{{ route('patients.create') }}"  title="Create Patient"><i class="fa fa-plus"></i></a>
+        <a class="btn btn-success mb-2" href="{{ route('doctors.create') }}"  title="Create doctor"><i class="fa fa-plus"></i></a>
     </div>
     @session('success')
         <div class="alert alert-success" role="alert"> 
@@ -17,8 +17,8 @@
     @endsession
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            Patients Management
+            <i class="fas fa-user-md"></i>
+            Doctors Management
         </div>
         
         <div class="card-body">
@@ -31,21 +31,21 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($patients as $patient)
+                @forelse ($doctors as $doctor)
                 <tr>
                     <td>{{ ++$i }}</td>
-                    <td>{{ $patient->name }}</td>
+                    <td>{{ $doctor->name }}</td>
                     <td>
-                        <form action="{{ route('patients.destroy',$patient->id) }}" method="POST">
-                            <a class="btn btn-info btn-sm" href="{{ route('patients.show',$patient->id) }}" title="Show"><i class="fa-solid fa-list"></i></a>
-                            @can('patient-edit')
-                            <a class="btn btn-primary btn-sm" href="{{ route('patients.edit',$patient->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <form action="{{ route('doctors.destroy',$doctor->id) }}" method="POST">
+                            <a class="btn btn-info btn-sm" href="{{ route('doctors.show',$doctor->id) }}" title="Show"><i class="fa-solid fa-list"></i></a>
+                            @can('doctor-edit')
+                            <a class="btn btn-primary btn-sm" href="{{ route('doctors.edit',$doctor->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                             @endcan
 
                             @csrf
                             @method('DELETE')
 
-                            @can('patient-delete')
+                            @can('doctor-delete')
                             <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
                             @endcan
                         </form>
@@ -53,7 +53,7 @@
                 </tr>
                 @empty
                     <tr>
-                        <td colspan="3">There are no Patients.</td>
+                        <td colspan="3">There are no doctors.</td>
                     </tr>
                 @endforelse
             </tbody>    

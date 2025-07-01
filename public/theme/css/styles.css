@@ -11241,3 +11241,25 @@ body {
   font-size: 0.75rem;
   border-radius: 0.375rem !important;
 }
+
+/* Error text */
+.text-danger {
+  color: #dc3545; /* Bootstrap’s red */
+  font-size: 0.875rem; /* Slightly smaller text */
+  margin-top: 0.25rem; /* Space above error */
+  display: block;
+}
+
+/* Optional: Red border on invalid inputs */
+input.error, select.error, textarea.error {
+  border-color: #dc3545;
+  box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+/* Optional: On focus, keep red border if invalid */
+input.error:focus, select.error:focus, textarea.error:focus {
+  border-color: #b02a37;
+  outline: none;
+  box-shadow: 0 0 8px rgba(176, 42, 55, 0.7);
+}
+

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->text('medical_history')->nullable();
             $table->string('insurance')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

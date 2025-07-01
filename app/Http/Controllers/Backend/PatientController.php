@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PatientRequest;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -28,9 +29,11 @@ class PatientController extends Controller
      */
     public function index(): View
     {
+        $pageTitle = "Patients List";
+
         $patients = Patient::latest()->paginate(5);
 
-        return view('patients.index',compact('patients'))
+        return view('patients.index',compact('patients','pageTitle'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
     
@@ -41,7 +44,8 @@ class PatientController extends Controller
      */
     public function create(): View
     {
-        return view('patients.create');
+        $pageTitle = "Patients Create";
+        return view('patients.create', compact('pageTitle'));
     }
     
     /**
@@ -50,22 +54,11 @@ class PatientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request): RedirectResponse
+    public function store(PatientRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name'              => 'required|string|max:255',
-            'dob'               => 'required|date',
-            'gender'            => 'required|in:Male,Female,Other',
-            'phone'             => 'required|string|max:20',
-            'email'             => 'nullable|email|max:255',
-            'address'           => 'required|string',
-            'emergency_contact' => 'nullable|string|max:255',
-            'medical_history'   => 'nullable|string',
-            'insurance'         => 'nullable|string|max:255',
-        ]);
-
+        $validated = $request->validated();
     
-        Patient::create($request->all());
+        Patient::create($validated);
     
         return redirect()->route('patients.index')
                         ->with('success','patient created successfully.');
@@ -79,7 +72,8 @@ class PatientController extends Controller
      */
     public function show(Patient $patient): View
     {
-        return view('patients.show',compact('patient'));
+        $pageTitle = "Show Patient";
+        return view('patients.show',compact('patient','pageTitle'));
     }
     
     /**
@@ -90,7 +84,8 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient): View
     {
-        return view('patients.edit',compact('patient'));
+        $pageTitle = "Edit Patient";
+        return view('patients.edit',compact('patient', 'pageTitle'));
     }
     
     /**
@@ -100,21 +95,11 @@ class PatientController extends Controller
      * @param  \App\patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Patient $patient): RedirectResponse
+    public function update(PatientRequest $request, Patient $patient): RedirectResponse
     {
-        $request->validate([
-            'name'              => 'required|string|max:255',
-            'dob'               => 'required|date',
-            'gender'            => 'required|in:Male,Female,Other',
-            'phone'             => 'required|string|max:20',
-            'email'             => 'nullable|email|max:255',
-            'address'           => 'required|string',
-            'emergency_contact' => 'nullable|string|max:255',
-            'medical_history'   => 'nullable|string',
-            'insurance'         => 'nullable|string|max:255',
-        ]);
+        $validated = $request->validated();
     
-        $patient->update($request->all());
+        $patient->update($validated);
     
         return redirect()->route('patients.index')
                         ->with('success','patient updated successfully');

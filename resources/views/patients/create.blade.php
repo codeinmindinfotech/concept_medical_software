@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Add New Patient</h1>
+    <h2 class="mt-4">{{ $pageTitle }}</h2>
     <ol class="breadcrumb mb-4" >
         <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
         <li class="breadcrumb-item active">New Patient</li>
@@ -23,22 +23,25 @@
     </div>
 @endif
 
-<form action="{{ route('patients.store') }}" method="POST">
+<form action="{{ route('patients.store') }}" method="POST" class="validate-form">
     @csrf
 
     <div class="row">
+        <!-- Name -->
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Name:</strong>
-                <input type="text" name="name" class="form-control" placeholder="Name">
+                <input type="text" name="name" class="form-control" placeholder="Name" value="{{ old('name') }}">
+                @error('name') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
-            
+
         <!-- Date of Birth -->
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Date of Birth:</strong>
-                <input type="date" name="dob" class="form-control" required>
+                <input type="date" name="dob" class="form-control" value="{{ old('dob') }}">
+                @error('dob') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -46,12 +49,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Gender:</strong>
-                <select name="gender" class="form-control" required>
+                <select name="gender" class="form-control">
                     <option value="">-- Select Gender --</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                    <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                    <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
                 </select>
+                @error('gender') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -59,7 +63,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Contact Number:</strong>
-                <input type="text" name="phone" class="form-control" placeholder="Enter phone number" required>
+                <input type="text" name="phone" class="form-control" placeholder="Enter phone number" value="{{ old('phone') }}">
+                @error('phone') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -67,7 +72,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Email:</strong>
-                <input type="email" name="email" class="form-control" placeholder="Enter email">
+                <input type="email" name="email" class="form-control" placeholder="Enter email" value="{{ old('email') }}">
+                @error('email') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -75,7 +81,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Address:</strong>
-                <textarea name="address" class="form-control" placeholder="Enter address" required></textarea>
+                <textarea name="address" class="form-control" placeholder="Enter address">{{ old('address') }}</textarea>
+                @error('address') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -83,7 +90,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Emergency Contact:</strong>
-                <input type="text" name="emergency_contact" class="form-control" placeholder="Name & phone number">
+                <input type="text" name="emergency_contact" class="form-control" placeholder="Name & phone number" value="{{ old('emergency_contact') }}">
+                @error('emergency_contact') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -91,7 +99,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Medical History / Notes:</strong>
-                <textarea name="medical_history" class="form-control" placeholder="Enter medical history or notes"></textarea>
+                <textarea name="medical_history" class="form-control" placeholder="Enter medical history or notes">{{ old('medical_history') }}</textarea>
+                @error('medical_history') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
@@ -99,14 +108,22 @@
         <div class="col-md-6">
             <div class="form-group">
                 <strong>Insurance Info:</strong>
-                <input type="text" name="insurance" class="form-control" placeholder="Enter insurance details (optional)">
+                <input type="text" name="insurance" class="form-control" placeholder="Enter insurance details (optional)" value="{{ old('insurance') }}">
+                @error('insurance') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
         </div>
 
+        <!-- Submit Button -->
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                <button type="submit" class="btn btn-primary btn-sm mb-3 mt-2"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
+            <button type="submit" class="btn btn-primary btn-sm mb-3 mt-2">
+                <i class="fa-solid fa-floppy-disk"></i> Submit
+            </button>
         </div>
     </div>
 </form>
+
 </div>
 @endsection
+@push('scripts')
+
+@endpush

@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-lg-12 margin-tb">
         <div class="pull-left">
-            <h2>Edit Patient</h2>
+            <h2 class="mt-4">{{ $pageTitle }}</h2>
         </div>
         <div class="pull-right">
             <a class="btn btn-primary btn-sm mb-2" href="{{ route('patients.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
@@ -37,7 +37,7 @@
 </ul>
 <div class="tab-content border border-top-0 p-3" id="myTabContent">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-        <form action="{{ route('patients.update', $patient->id) }}" method="POST">
+        <form action="{{ route('patients.update', $patient->id) }}" method="POST" class="validate-form">
             @csrf
             @method('PUT')
         
@@ -135,3 +135,6 @@
 
 </div>
 @endsection
+@push('scripts')
+    <script src="{{ asset('theme/form-validation.js') }}"></script>
+@endpush
