@@ -24,3 +24,8 @@ php artisan serve
 
 Email: niru@codeinmindinfotech.com
 Password: 123456
+
+# Note
+php artisan generate:permissions {{doctor}} 
+
+{{doctor}} controller name for create permission

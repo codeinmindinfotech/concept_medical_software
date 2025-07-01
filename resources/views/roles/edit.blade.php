@@ -56,17 +56,19 @@
                         <thead>
                             <tr>
                                 <th>Module</th>
+                                <th><input type="checkbox" id="selectAll"> All</th>
                                 @foreach($actions as $action)
                                     <th>{{ ucfirst($action) }}</th>
                                 @endforeach
-                                <th><input type="checkbox" id="selectAll"> All</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($groupedPermissions as $module => $perms)
                                 <tr>
                                     <td><strong>{{ ucfirst($module) }}</strong></td>
-
+                                    <td>
+                                        <input type="checkbox" class="select-module" data-module="{{ $module }}">
+                                    </td>
                                     @foreach($actions as $action)
                                         @php
                                             $perm = $perms[$action] ?? null;
@@ -81,10 +83,6 @@
                                             @endif
                                         </td>
                                     @endforeach
-
-                                    <td>
-                                        <input type="checkbox" class="select-module" data-module="{{ $module }}">
-                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -96,21 +94,7 @@
         </div>
     </div>
 </form>
-<script>
-    document.getElementById('selectAll').addEventListener('change', function () {
-        const checked = this.checked;
-        document.querySelectorAll('.perm-checkbox').forEach(cb => cb.checked = checked);
-        document.querySelectorAll('.select-module').forEach(cb => cb.checked = checked);
-    });
-    
-    document.querySelectorAll('.select-module').forEach(moduleCheckbox => {
-        moduleCheckbox.addEventListener('change', function () {
-            const module = this.dataset.module;
-            const checked = this.checked;
-            document.querySelectorAll(`.${module}-perm`).forEach(cb => cb.checked = checked);
-        });
-    });
-    </script>
-    
-</div>
 @endsection
+@push('scripts')
+    <script src="{{ asset('theme/custom.js') }}"></script>
+@endpush

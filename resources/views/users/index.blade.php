@@ -7,6 +7,12 @@
         <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
         <li class="breadcrumb-item active">Users</li>
     </ol>
+    <div class="row">
+        <div class="pull-right">
+            <a class="btn btn-success mb-2" href="{{ route('users.create') }}" title="Create New User"><i class="fa fa-plus"></i></a>
+        </div>
+    </div>
+    
     
     @session('success')
         <div class="alert alert-success" role="alert"> 
@@ -18,9 +24,7 @@
             <i class="fas fa-table me-1"></i>
             Users Management
         </div>
-        <div class="pull-right">
-            <a class="btn btn-success mb-2" href="{{ route('users.create') }}"><i class="fa fa-plus"></i> Create New User</a>
-        </div>
+        
         <div class="card-body">
             <table class="table table-bordered data-table">
                 <thead>
@@ -55,13 +59,13 @@
                             @endif
                             </td>
                             <td>
-                                <a class="btn btn-info btn-sm" href="{{ route('users.show',$user->id) }}"><i class="fa-solid fa-list"></i> Show</a>
-                                <a class="btn btn-primary btn-sm" href="{{ route('users.edit',$user->id) }}"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                                <a class="btn btn-info btn-sm" href="{{ route('users.show',$user->id) }}" title="Show"><i class="fa-solid fa-list"></i></a>
+                                <a class="btn btn-primary btn-sm" href="{{ route('users.edit',$user->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                                 <form method="POST" action="{{ route('users.destroy', $user->id) }}" style="display:inline">
                                     @csrf
                                     @method('DELETE')
 
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

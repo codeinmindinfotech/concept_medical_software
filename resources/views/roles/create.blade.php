@@ -33,15 +33,57 @@
                 <input type="text" name="name" placeholder="Name" class="form-control">
             </div>
         </div>
+        @php
+            // Group permissions by module and action
+            $groupedPermissions = [];
+
+            foreach ($permission as $perm) {
+                if (strpos($perm->name, '-') !== false) {
+                    [$module, $action] = explode('-', $perm->name);
+                    $groupedPermissions[$module][$action] = $perm;
+                }
+            }
+
+            $actions = ['list', 'create', 'edit', 'delete']; // Define expected actions
+        @endphp
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Permission:</strong>
-                <br/>
-                @foreach($permission as $value)
-                    <label><input type="checkbox" name="permission[{{$value->id}}]" value="{{$value->id}}" class="name">
-                    {{ $value->name }}</label>
-                <br/>
-                @endforeach
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th><input type="checkbox" id="selectAll"> All</th>
+                                @foreach($actions as $action)
+                                    <th>{{ ucfirst($action) }}</th>
+                                @endforeach
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($groupedPermissions as $module => $perms)
+                                <tr>
+                                    <td><strong>{{ ucfirst($module) }}</strong></td>
+                                    <td>
+                                        <input type="checkbox" class="select-module" data-module="{{ $module }}">
+                                    </td>
+                                    @foreach($actions as $action)
+                                        @php
+                                            $perm = $perms[$action] ?? null;
+                                        @endphp
+                                        <td>
+                                            @if($perm)
+                                                <input type="checkbox"
+                                                    name="permission[{{ $perm->id }}]"
+                                                    value="{{ $perm->id }}"
+                                                    class="perm-checkbox {{ $module }}-perm">
+                                            @endif
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
@@ -52,3 +94,6 @@
 
 </div>
 @endsection
+@push('scripts')
+    <script src="{{ asset('theme/custom.js') }}"></script>
+@endpush
