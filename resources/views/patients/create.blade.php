@@ -110,7 +110,7 @@
                     <option value="">-- Select Contact Method --</option>
                     @foreach($contactMethods as $method)
                         <option value="{{ $method->id }}" {{ old('preferred_contact_id') == $method->id ? 'selected' : '' }}>
-                            {{ $method->name }}
+                            {{ $method->value }}
                         </option>
                     @endforeach
                 </select>
