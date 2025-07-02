@@ -47,6 +47,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-user-check"></i></div>
                             Manage Role
                         </a>
+                        <a class="nav-link" href="{{ route('dropdowns.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-check"></i></div>
+                            Manage DropDown
+                        </a>
                     </div>
                 </div>
             </div>

@@ -3,13 +3,17 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PatientRequest;
+use App\Models\Backend\Insurance;
+use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Traits\DropdownTrait;
     
 class PatientController extends Controller
 { 
+    use DropdownTrait;
     /**
      * Display a listing of the resource.
      *
@@ -45,7 +49,12 @@ class PatientController extends Controller
     public function create(): View
     {
         $pageTitle = "Patients Create";
-        return view('patients.create', compact('pageTitle'));
+        extract($this->getCommonDropdowns());
+        $doctors = Doctor::orderBy('name')->get(); 
+        $insurances = Insurance::orderBy('code')->get(); // 👈 Add this line
+
+
+        return view('patients.create', compact('pageTitle','titles','insurances', 'contactMethods','doctors'));
     }
     
     /**
