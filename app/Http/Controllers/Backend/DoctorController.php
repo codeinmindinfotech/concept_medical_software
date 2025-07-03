@@ -28,13 +28,15 @@ class DoctorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): View
+    public function index(Request $request): View|string
     {
         $pageTitle = "Doctor List";
         $doctors = Doctor::latest()->paginate(5);
+        if ($request->ajax()) {
+            return view('doctors.list', compact('doctors'))->render();
+        } 
 
-        return view('doctors.index',compact('doctors','pageTitle'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        return view('doctors.index',compact('doctors','pageTitle'));
     }
     
     /**

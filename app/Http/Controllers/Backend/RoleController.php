@@ -30,11 +30,13 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|string
     {
         $roles = Role::orderBy('id','DESC')->paginate(5);
-        return view('roles.index',compact('roles'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        if ($request->ajax()) {
+            return view('roles.list', compact('roles'))->render();
+        }
+        return view('roles.index',compact('roles'));
     }
     
     /**

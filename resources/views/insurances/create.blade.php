@@ -5,11 +5,11 @@
     <h2 class="mt-4">{{ $pageTitle }}</h2>
     <ol class="breadcrumb mb-4" >
         <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}">Dashboard</a></li>
-        <li class="breadcrumb-item active">New Patient</li>
+        <li class="breadcrumb-item active">New Insurance</li>
     </ol>
 
     <div class="pull-right mb-3">
-        <a class="btn btn-primary btn-sm" href="{{ route('patients.index') }}">
+        <a class="btn btn-primary btn-sm" href="{{ route('insurances.index') }}">
             <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
@@ -25,15 +25,11 @@
     </div>
     @endif
 
-    <form action="{{ route('patients.store') }}" method="POST" class="validate-form">
+    <form action="{{ route('insurances.store') }}" method="POST" class="validate-form">
         @csrf
-        @include('patients.form', [
-            'insurances' => $insurances,
-            'contactMethods' => $contactMethods,
-            'doctors' => $doctors,
-            'titles' => $titles
-            ])
 
+        @include('insurances.form')
+        
     </form>
 </div>
 @endsection

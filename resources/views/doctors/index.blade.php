@@ -31,7 +31,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($doctors as $doctor)
+                    @forelse ($doctors as $i => $doctor)
                     <tr>
                         <td>{{ ++$i }}</td>
                         <td>{{ $doctor->name }}</td>

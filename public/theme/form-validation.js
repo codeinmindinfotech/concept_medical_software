@@ -1,23 +1,68 @@
 $(document).ready(function () {
-    $("form.validate-form").validate({
-        rules: {
-            name: {
-                required: true,
-                minlength: 3
+    $('body').on('submit', '.validate-form', function (e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let url = form.attr('action');
+        let method = form.attr('method') || 'POST';
+        let formData = new FormData(this);
+
+        // Clear previous errors
+        form.find('.is-invalid').removeClass('is-invalid');
+        form.find('.text-danger').remove();
+
+        $.ajax({
+            url: url,
+            type: method,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved',
+                    text: response.message || 'Form submitted successfully!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            
+                setTimeout(function () {
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    }
+                }, 2000);
             },
-            email: {
-                required: true,
-                email: true
-            },
-            password: {
-                required: true,
-                minlength: 6
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    let firstError = null;
+
+                    $.each(errors, function (key, messages) {
+                        let input = form.find(`[name="${key}"]`);
+                        if (input.length > 0) {
+                            input.addClass('is-invalid');
+                            input.after(`<div class="text-danger">${messages[0]}</div>`);
+                            if (!firstError) firstError = input;
+                        }
+                    });
+
+                    // Scroll to the first error
+                    if (firstError) {
+                        $('html, body').animate({
+                            scrollTop: firstError.offset().top - 100
+                        }, 500);
+                    }
+                } else {
+                    // Other server error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.',
+                    });
+                }
             }
-        },
-        messages: {
-            name: "Please enter at least 3 characters",
-            email: "Please enter a valid email",
-            password: "Password must be at least 6 characters"
-        }
+        });
     });
 });
+
+

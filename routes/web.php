@@ -8,6 +8,7 @@ use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\PatientController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\DoctorController;
+use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
 use App\Models\DropDown;
@@ -24,8 +25,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('users', UserController::class);
     Route::resource('patients', PatientController::class);
     Route::resource('doctors', DoctorController::class);
+    Route::resource('insurances', InsuranceController::class);
+
     // dropdown  parent
     Route::resource('dropdowns', DropDownController::class);
+    
     // dropdown  parent child
     Route::get('/dropdownvalues/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
     Route::get('/dropdownvalues/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');

@@ -18,12 +18,13 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|string
     {
         $data = User::latest()->paginate(5);
-  
-        return view('users.index',compact('data'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        if ($request->ajax()) {
+            return view('users.list', compact('data'))->render();
+        }
+        return view('users.index',compact('data'));
     }
     
     /**

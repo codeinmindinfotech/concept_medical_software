@@ -28,18 +28,20 @@ class DropDownValueController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($dropDownId): View
+    public function index(Request $request, $dropDownId): View|string
     {
         $pageTitle = "DropDownValue List";
+       
+        $values = DropDownValue::with('dropdown')
+            ->where('drop_down_id', $dropDownId)
+            ->latest()
+            ->paginate(5);
 
-        // Get the parent dropdown
-        $dropdown = DropDown::findOrFail($dropDownId);
+        if ($request->ajax()) {
+            return view('dropdownvalues.list', compact('values','dropDownId'))->render();
+        }        
 
-        // Paginate the related values
-        $values = DropDownValue::where('drop_down_id', $dropDownId)->paginate(5);
-
-        return view('dropdownvalues.index', compact('dropdown', 'values', 'pageTitle', 'dropDownId'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        return view('dropdownvalues.index', compact('values', 'pageTitle', 'dropDownId'));
     }
     
     /**

@@ -11243,11 +11243,10 @@ body {
 }
 
 /* Error text */
-.text-danger {
+.text-danger,.txt-error {
   color: #dc3545; /* Bootstrap’s red */
   font-size: 0.875rem; /* Slightly smaller text */
   margin-top: 0.25rem; /* Space above error */
-  display: block;
 }
 
 /* Optional: Red border on invalid inputs */
@@ -11263,3 +11262,11 @@ input.error:focus, select.error:focus, textarea.error:focus {
   box-shadow: 0 0 8px rgba(176, 42, 55, 0.7);
 }
 
+/* ACTIVE state: stronger contrast on dark background */
+.sb-sidenav-dark .sb-sidenav-menu .nav-link.active {
+  background-color: #343a40; /* slightly lighter than sidebar */
+  color: #ffffff !important;
+  font-weight: bold;
+  border-left: 4px solid #0d6efd; /* Optional: visual highlight */
+  border-radius: 0 0.35rem 0.35rem 0; /* Rounded right edge */
+}

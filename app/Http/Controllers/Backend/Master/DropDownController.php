@@ -27,13 +27,14 @@ class DropDownController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): View
+    public function index(Request $request): View|string
     {
         $pageTitle = "DropDown List";
         $dropdowns = DropDown::latest()->paginate(5);
-
-        return view('dropdowns.index',compact('dropdowns','pageTitle'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        if ($request->ajax()) {
+            return view('dropdowns.list', compact('dropdowns'))->render();
+        } 
+        return view('dropdowns.index',compact('dropdowns','pageTitle'));
     }
     
     /**

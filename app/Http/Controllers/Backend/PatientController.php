@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Traits\DropdownTrait;
-    
+use Illuminate\Http\JsonResponse;
+
 class PatientController extends Controller
 { 
     use DropdownTrait;
@@ -31,14 +32,16 @@ class PatientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): View
+    public function index(Request $request): View|string
     {
         $pageTitle = "Patients List";
 
         $patients = Patient::latest()->paginate(5);
+        if ($request->ajax()) {
+            return view('patients.list', compact('patients'))->render();
+        }
 
-        return view('patients.index',compact('patients','pageTitle'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        return view('patients.index',compact('patients','pageTitle'));
     }
     
     /**
@@ -51,9 +54,7 @@ class PatientController extends Controller
         $pageTitle = "Patients Create";
         extract($this->getCommonDropdowns());
         $doctors = Doctor::orderBy('name')->get(); 
-        $insurances = Insurance::orderBy('code')->get(); // 👈 Add this line
-
-
+        $insurances = Insurance::orderBy('code')->get(); 
         return view('patients.create', compact('pageTitle','titles','insurances', 'contactMethods','doctors'));
     }
     
@@ -67,6 +68,10 @@ class PatientController extends Controller
     {
         $validated = $request->validated();
     
+        $validated['rip'] = $request->has('rip');
+        $validated['sms_consent'] = $request->has('sms_consent');
+        $validated['email_consent'] = $request->has('email_consent');
+
         Patient::create($validated);
     
         return redirect()->route('patients.index')
@@ -94,7 +99,10 @@ class PatientController extends Controller
     public function edit(Patient $patient): View
     {
         $pageTitle = "Edit Patient";
-        return view('patients.edit',compact('patient', 'pageTitle'));
+        extract($this->getCommonDropdowns());
+        $doctors = Doctor::orderBy('name')->get(); 
+        $insurances = Insurance::orderBy('code')->get();
+        return view('patients.edit',compact('patient','pageTitle','titles','insurances', 'contactMethods','doctors'));
     }
     
     /**
@@ -104,14 +112,22 @@ class PatientController extends Controller
      * @param  \App\patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function update(PatientRequest $request, Patient $patient): RedirectResponse
+    public function update(PatientRequest $request, Patient $patient): JsonResponse
     {
         $validated = $request->validated();
     
+        // Handle checkbox fields (they won't be present if unchecked)
+        $validated['rip'] = $request->has('rip');
+        $validated['sms_consent'] = $request->has('sms_consent');
+        $validated['email_consent'] = $request->has('email_consent');
+
+        // Update the patient
         $patient->update($validated);
     
-        return redirect()->route('patients.index')
-                        ->with('success','patient updated successfully');
+        return response()->json([
+            'redirect' => route('patients.index'),
+            'message' => 'Patient updated successfully',
+        ]);
     }
     
     /**
