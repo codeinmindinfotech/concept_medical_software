@@ -94,8 +94,9 @@
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
+        <a class="cta-btn d-none d-sm-block" href="#appointment">Make an Appointment</a>
 
-        @guest
+        {{-- @guest
             @if (Route::has('login'))
                 <a class="cta-btn d-none d-sm-block" href="{{ route('login') }}">{{ __('Login') }}</a>
             @endif
@@ -107,7 +108,7 @@
             @if (Route::has('users.index'))
                 <a class="cta-btn d-none d-sm-block" href="{{ route('users.index') }}">View Dashboard</a>
             @endif
-        @endguest
+        @endguest --}}
         </div>
 
     </div>
