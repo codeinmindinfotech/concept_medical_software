@@ -65,4 +65,17 @@ $(document).ready(function () {
     });
 });
 
+document.getElementById('image').addEventListener('change', function(e) {
+    const img = document.getElementById('preview-img');
+    if (!img) {
+      const preview = document.createElement('img');
+      preview.id = 'preview-img';
+      preview.className = 'img-thumbnail mt-2';
+      preview.style.maxHeight = '150px';
+      this.after(preview);
+    }
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById('preview-img').src = e.target.result;
+    reader.readAsDataURL(this.files[0]);
+  });
 

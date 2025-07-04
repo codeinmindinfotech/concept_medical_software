@@ -2,39 +2,40 @@
 
 @section('content')
 <div class="container-fluid px-4">
-<div class="row">
-    <div class="col-lg-12 margin-tb">
-        <div class="pull-left">
-            <h2> Show User</h2>
-        </div>
-        <div class="pull-right">
-            <a class="btn btn-primary" href="{{ route('users.index') }}"> Back</a>
-        </div>
+  {{-- Back Button --}}
+  <div class="row mb-4">
+    <div class="col">
+      <a href="{{ route('users.index') }}" class="btn btn-primary">
+         Back to List
+      </a>
     </div>
-</div>
+  </div>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Name:</strong>
-            {{ $user->name }}
-        </div>
+  {{-- User Information Card --}}
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">User Information</h5>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Email:</strong>
-            {{ $user->email }}
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Name</label>
+          <input type="text" readonly class="form-control-plaintext" value="{{ $user->name }}">
         </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Roles:</strong>
-            @if(!empty($user->getRoleNames()))
-                @foreach($user->getRoleNames() as $v => $val)
-                    <label class="badge bg-success">{{ $val }}</label>
-                @endforeach
-            @endif
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input type="email" readonly class="form-control-plaintext" value="{{ $user->email }}">
         </div>
+        <div class="col-md-12">
+          <label class="form-label">Roles</label>
+          <div>
+            @foreach($user->getRoleNames() as $role)
+              <span class="badge bg-success">{{ $role }}</span>
+            @endforeach
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 @endsection

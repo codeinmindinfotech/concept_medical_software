@@ -2,16 +2,20 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <div class="row">
-        <div class="col-lg-12 margin-tb">
-            <div class="pull-left">
-                <h2 class="mt-4">{{ $pageTitle }}</h2>
-            </div>
-            <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('patients.index') }}"> Back</a>
-            </div>
-        </div>
-    </div>
+    @php
+        $breadcrumbs = [
+            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+            ['label' => 'Patients', 'url' => route('patients.index')],
+            ['label' => 'Show Patient'],
+        ];
+    @endphp
+
+    @include('backend.theme.breadcrumb', [
+        'pageTitle' => 'Show Patient',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' => route('patients.index'),
+        'isListPage' => false
+    ])
 
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">

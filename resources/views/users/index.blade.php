@@ -2,16 +2,20 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Users Management</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-        <li class="breadcrumb-item active">Users</li>
-    </ol>
-    <div class="row">
-        <div class="pull-right">
-            <a class="btn btn-success mb-2" href="{{ route('users.create') }}" title="Create New User"><i class="fa fa-plus"></i></a>
-        </div>
-    </div>
+    @php
+        $breadcrumbs = [
+            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+            ['label' => 'Users', 'url' => route('users.index')],
+            ['label' => 'Users List'],
+        ];
+    @endphp
+
+    @include('backend.theme.breadcrumb', [
+        'pageTitle' => 'Users List',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' => route('users.create'),
+        'isListPage' => true
+    ])
     
     
     @session('success')

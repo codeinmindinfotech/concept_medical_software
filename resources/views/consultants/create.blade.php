@@ -2,21 +2,23 @@
 
 @section('content')
 <div class="container-fluid px-4">
+    
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Insurances', 'url' => route('insurances.index')],
-            ['label' => 'Create Insurance'],
+            ['label' => 'Consultants', 'url' => route('consultants.index')],
+            ['label' => 'Create consultant'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Create Insurance',
+        'pageTitle' => 'Create consultant',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('insurances.index'),
+        'backUrl' => route('consultants.index'),
         'isListPage' => false
     ])
-
+  
+  
     @if ($errors->any())
     <div class="alert alert-danger">
         <strong>Whoops!</strong> Please fix the following errors:<br><br>
@@ -28,10 +30,10 @@
     </div>
     @endif
 
-    <form action="{{ route('insurances.store') }}" method="POST" class="validate-form">
+    <form action="{{ route('consultants.store') }}" method="POST" class="validate-form">
         @csrf
 
-        @include('insurances.form')
+        @include('consultants.form')
         
     </form>
 </div>

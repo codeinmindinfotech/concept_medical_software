@@ -64,7 +64,7 @@ class PatientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(PatientRequest $request): RedirectResponse
+    public function store(PatientRequest $request): JsonResponse
     {
         $validated = $request->validated();
     
@@ -74,8 +74,10 @@ class PatientController extends Controller
 
         Patient::create($validated);
     
-        return redirect()->route('patients.index')
-                        ->with('success','patient created successfully.');
+        return response()->json([
+            'redirect' => route('patients.index'),
+            'message' => 'Patient created successfully',
+        ]);
     }
     
     /**

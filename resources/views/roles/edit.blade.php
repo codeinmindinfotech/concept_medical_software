@@ -2,16 +2,20 @@
 
 @section('content')
 <div class="container-fluid px-4">
-<div class="row">
-    <div class="col-lg-12 margin-tb">
-        <div class="pull-left">
-            <h2>Edit Role</h2>
-        </div>
-        <div class="pull-right">
-            <a class="btn btn-primary btn-sm mb-2" href="{{ route('roles.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
-        </div>
-    </div>
-</div>
+@php
+    $breadcrumbs = [
+        ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+        ['label' => 'Roles', 'url' => route('roles.index')],
+        ['label' => 'Edit Role'],
+    ];
+@endphp
+
+@include('backend.theme.breadcrumb', [
+    'pageTitle' => 'Edit Role',
+    'breadcrumbs' => $breadcrumbs,
+    'backUrl' => route('roles.index'),
+    'isListPage' => false
+])
 
 @if (count($errors) > 0)
     <div class="alert alert-danger">

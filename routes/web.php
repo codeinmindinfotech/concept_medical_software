@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Backend\ConsultantController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Backend\RoleController;
@@ -26,6 +27,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('patients', PatientController::class);
     Route::resource('doctors', DoctorController::class);
     Route::resource('insurances', InsuranceController::class);
+    Route::resource('consultants', ConsultantController::class);
 
     // dropdown  parent
     Route::resource('dropdowns', DropDownController::class);

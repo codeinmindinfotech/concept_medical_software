@@ -5,15 +5,15 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.index')],
-            ['label' => 'Edit Patient'],
+            ['label' => 'Consultants', 'url' => route('consultants.index')],
+            ['label' => 'Edit consultant'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Edit Patient',
+        'pageTitle' => 'Edit consultant',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.index'),
+        'backUrl' => route('consultants.index'),
         'isListPage' => false
     ])
 
@@ -28,16 +28,12 @@
     </div>
 @endif
 
-    <form action="{{ route('patients.update', $patient->id) }}" method="POST" class="validate-form">
+    <form action="{{ route('consultants.update', $consultant->id) }}" method="POST" class="validate-form">
         @csrf
         @method('PUT')
     
-        @include('patients.form', [
-            'patient' => $patient,
-            'insurances' => $insurances,
-            'contactMethods' => $contactMethods,
-            'doctors' => $doctors,
-            'titles' => $titles
+        @include('consultants.form', [
+            'consultant' => $consultant
             ])
 
     </form>

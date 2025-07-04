@@ -1,35 +1,33 @@
 <?php
 
-namespace App\Models\Backend;
+namespace App\Models;
 
-use App\Models\consultant;
+use App\Models\Backend\Insurance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Insurance extends Model
+class consultant extends Model
 {
     use HasFactory;
-  
-    /**
+     /**
      * The attributes that are mass assignable.
      *	
      * @var array
      */
     protected $fillable = [
         'code',
+        'name',
         'address',
-        'contact_name',
-        'contact',
-        'email',
-        'postcode',
+        'phone',
         'fax',
+        'email',
+        'imc_no',
+        'image',
     ];
 
-    public function consultants()
+    public function insurances()
     {
-        return $this->belongsToMany(consultant::class)
+        return $this->belongsToMany(Insurance::class)
                     ->withTimestamps();
     }
-    
 }
-

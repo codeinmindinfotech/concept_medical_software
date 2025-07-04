@@ -5,15 +5,15 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.index')],
-            ['label' => 'Patients List'],
+            ['label' => 'Consultants', 'url' => route('consultants.index')],
+            ['label' => 'Consultants List'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Patients List',
+        'pageTitle' => 'Consultants List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.create'),
+        'backUrl' => route('consultants.create'),
         'isListPage' => true
     ])
 
@@ -25,11 +25,11 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            Patients Management
+            Consultants Management
         </div>
         <div class="card-body">
-            <div id="patients-list" data-pagination-container>
-                @include('patients.list', ['patients' => $patients])
+            <div id="consultants-list" data-pagination-container>
+                @include('consultants.list', ['consultants' => $consultants])
             </div>
         </div> 
     </div>

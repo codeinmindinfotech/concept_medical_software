@@ -21,6 +21,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
                     Manage Doctor
                 </a>
+                <a class="nav-link {{ Request::is('consultants*') ? 'active' : '' }}" href="{{ route('consultants.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
+                    Manage Consultant
+                </a>
                 <a class="nav-link {{ Request::is('insurances*') ? 'active' : '' }}" href="{{ route('insurances.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
                     Manage Insurance

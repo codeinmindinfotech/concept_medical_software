@@ -2,15 +2,20 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h2 class="mt-4">{{ $pageTitle }}</h2>
-    <ol class="breadcrumb mb-4" >
-        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-        <li class="breadcrumb-item active">New Doctor</li>
-    </ol>
-    
-    <div class="pull-right">
-        <a class="btn btn-primary btn-sm" href="{{ route('doctors.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
-    </div>
+    @php
+        $breadcrumbs = [
+            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+            ['label' => 'Doctors', 'url' => route('doctors.index')],
+            ['label' => 'Create Doctor'],
+        ];
+    @endphp
+
+    @include('backend.theme.breadcrumb', [
+        'pageTitle' => 'Create Doctor',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' => route('doctors.index'),
+        'isListPage' => false
+    ])
 
 @if ($errors->any())
     <div class="alert alert-danger">

@@ -2,16 +2,20 @@
 
 @section('content')
 <div class="container-fluid px-4">
-<div class="row">
-    <div class="col-lg-12 margin-tb">
-        <div class="pull-left">
-            <h2 class="mt-4">{{ $pageTitle }}</h2>
-        </div>
-        <div class="pull-right">
-            <a class="btn btn-primary btn-sm mb-2" href="{{ route('dropdownvalues.index', $dropdown->id) }}"><i class="fa fa-arrow-left"></i> Back</a>
-        </div>
-    </div>
-</div>
+    @php
+        $breadcrumbs = [
+            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+            ['label' => 'DropDownValues', 'url' => route('dropdownvalues.index',$dropdown->id)],
+            ['label' => 'Edit DropDownValue'],
+        ];
+    @endphp
+
+    @include('backend.theme.breadcrumb', [
+        'pageTitle' => 'Edit DropDownValue',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' => route('dropdownvalues.index',$dropdown->id),
+        'isListPage' => false
+    ])
 
 @if ($errors->any())
     <div class="alert alert-danger">
