@@ -6,7 +6,7 @@ use App\Models\Backend\Insurance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class consultant extends Model
+class Consultant extends Model
 {
     use HasFactory;
      /**
