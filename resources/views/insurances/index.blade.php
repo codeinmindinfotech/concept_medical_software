@@ -15,6 +15,7 @@
         'backUrl' => route('insurances.create'),
         'isListPage' => true
     ])
+    
     @session('success')
         <div class="alert alert-success" role="alert"> 
             {{ $value }}
