@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Backend;
     
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Patient;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use DB;
@@ -20,7 +21,14 @@ class UserController extends Controller
      */
     public function index(Request $request): View|string
     {
-        $data = User::latest()->paginate(5);
+        $user = auth()->user();
+
+        if ($user->hasRole('patient')) {
+            $data = User::where('id', $user->id)->latest()->paginate(5);
+        } else {
+            $data = User::latest()->paginate(5);
+        }
+
         if ($request->ajax()) {
             return view('users.list', compact('data'))->render();
         }

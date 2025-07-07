@@ -24,7 +24,8 @@ trait DropdownTrait
         return [
             'titles' => $this->getDropdownValues(1),           // Titles
             'contactMethods' => $this->getDropdownValues(2),   // Preferred Contact Methods
-            // Add more as needed
+            'contactTypes' => $this->getDropdownValues(3),           // Titles
+            'paymentMethods' => $this->getDropdownValues(4), 
         ];
     }
 }

@@ -1,8 +1,14 @@
 @extends('backend.theme.default')
 
 @section('content')
+
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Dashboard</h1>
+    @if ($patient)
+        <h2>Welcome, {{ $patient->first_name }}</h2>
+        <p>This is your personal patient dashboard.</p>
+    @else
+        <h1>Admin Dashboard</h1>
+    @endif
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item active">Dashboard</li>
     </ol>

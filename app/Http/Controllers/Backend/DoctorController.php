@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\DoctorRequest;
+use App\Traits\DropdownTrait;
+use Illuminate\Http\JsonResponse;
 
-    
 class DoctorController extends Controller
 { 
+    use DropdownTrait;
     /**
      * Display a listing of the resource.
      *
@@ -46,8 +48,8 @@ class DoctorController extends Controller
      */
     public function create(): View
     {
-        $pageTitle = "Create Doctor";
-        return view('doctors.create',compact('pageTitle'));
+        extract($this->getCommonDropdowns());
+        return view('doctors.create',compact('contactTypes','paymentMethods'));
     }
     
     /**
@@ -56,13 +58,15 @@ class DoctorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(DoctorRequest $request): RedirectResponse
+    public function store(DoctorRequest $request): JsonResponse
     {
         $validated = $request->validated();
         Doctor::create($validated);
     
-        return redirect()->route('doctors.index')
-                        ->with('success','Doctor created successfully.');
+        return response()->json([
+            'redirect' => route('doctors.index'),
+            'message' => 'Doctor created successfully',
+        ]);
     }
     
     /**
@@ -73,8 +77,7 @@ class DoctorController extends Controller
      */
     public function show(Doctor $doctor): View
     {
-        $pageTitle = "Show Doctor";
-        return view('doctors.show',compact('doctor','pageTitle'));
+        return view('doctors.show',compact('doctor'));
     }
     
     /**
@@ -85,8 +88,8 @@ class DoctorController extends Controller
      */
     public function edit(Doctor $doctor): View
     {
-        $pageTitle = "Edit Doctor";
-        return view('doctors.edit',compact('doctor','pageTitle'));
+        extract($this->getCommonDropdowns());
+        return view('doctors.edit',compact('doctor','contactTypes','paymentMethods'));
     }
     
     /**
@@ -96,13 +99,13 @@ class DoctorController extends Controller
      * @param  \App\doctor  $doctor
      * @return \Illuminate\Http\Response
      */
-    public function update(DoctorRequest $request, Doctor $doctor): RedirectResponse
-    {
+    public function update(DoctorRequest $request, Doctor $doctor): JsonResponse    {
         $validated = $request->validated();
         $doctor->update($validated);
-    
-        return redirect()->route('doctors.index')
-                        ->with('success','doctor updated successfully');
+        return response()->json([
+            'redirect' => route('doctors.index'),
+            'message' => 'Doctor updated successfully',
+        ]);
     }
     
     /**

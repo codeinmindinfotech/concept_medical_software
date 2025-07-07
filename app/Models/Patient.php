@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Backend\Insurance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Patient extends Model
 {
@@ -44,19 +45,31 @@ class Patient extends Model
 
     public function title()
     {
-        return $this->belongsTo(DropDownValue::class);
+        return $this->belongsTo(DropDownValue::class, 'title_id');
     }
+    
     public function preferredContact()
     {
         return $this->belongsTo(DropDownValue::class, 'preferred_contact_id');
     }
+    
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
     }
+    
     public function insurance()
     {
         return $this->belongsTo(Insurance::class);
     }
 
+    public function user()
+    {
+        return $this->morphOne(User::class, 'userable');
+    }
+
+    public function notes():HasMany
+    {
+        return $this->hasMany(PatientNote::class);
+    }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Doctor extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
   
     /**
      * The attributes that are mass assignable.
@@ -17,11 +17,27 @@ class Doctor extends Model
      */
     protected $fillable = [
         'name',
-        'phone',
-        'email',
+        'company',
+        'salutation',
         'address',
         'postcode',
-        'gender',
-        'note',
-    ];
+        'mobile',
+        'phone',
+        'fax',
+        'email',
+        'contact',
+        'contact_type_id',
+        'payment_method_id',
+        'note'
+    ];  
+    
+    public function contactType()
+    {
+        return $this->belongsTo(DropDownValue::class,'contact_type_id');
+    }
+    
+    public function paymentMethod()
+    {
+        return $this->belongsTo(DropDownValue::class, 'payment_method_id');
+    }
 }

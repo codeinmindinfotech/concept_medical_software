@@ -15,6 +15,9 @@ class DashboardController extends Controller
      */
     public function index(): View
     {
-        return view('dashboard.index');
+        $user = auth()->user();
+        $patient = $user->hasRole('patient') ? $user->userable : null;
+
+        return view('dashboard.index', compact('patient'));
     }
 }

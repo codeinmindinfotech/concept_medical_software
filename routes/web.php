@@ -12,7 +12,7 @@ use App\Http\Controllers\Backend\DoctorController;
 use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
-use App\Models\DropDown;
+use App\Http\Controllers\Backend\PatientNoteController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -39,4 +39,12 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/dropdownvalues/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
     Route::put('/dropdownvalues/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
 
+    Route::prefix('patients/{patient}/notes')->group(function () {
+        Route::get('/', [PatientNoteController::class, 'index'])->name('patients.notes.index');
+        Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
+        Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
+        Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
+        Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
+    });
+    
 });
