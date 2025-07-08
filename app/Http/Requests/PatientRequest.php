@@ -39,6 +39,9 @@ class PatientRequest extends FormRequest
             'rip_date'              => 'nullable|date',
             'sms_consent'           => 'nullable|boolean',
             'email_consent'         => 'nullable|boolean',
+            'covid_19_vaccination_date' => 'nullable|date',
+            'covid_19_vaccination_note' => 'nullable|string',
+            'fully_covid_19_vaccinated' => 'nullable|boolean'
         ];
     }
 }

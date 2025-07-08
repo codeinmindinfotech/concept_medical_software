@@ -5,29 +5,29 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.notes.index', $patient->id)],
-            ['label' => 'Edit Note'],
+            ['label' => 'Patients', 'url' => route('patients.physical.index', $patient->id)],
+            ['label' => 'Create Patient Physical Exam'],
         ];
     @endphp
+
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Edit Note',
+        'pageTitle' => 'Create Patient Physical Exam',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.notes.index', $patient->id),
+        'backUrl' => route('patients.physical.index', $patient->id),
         'isListPage' => false
     ])
 
-    <form action="{{ route('patients.notes.update',[$patient->id, $note->id]) }}" method="POST" class="validate-form">
+   <form action="{{ route('patients.physical.store', $patient->id) }}" method="POST" class="validate-form">
         @csrf
-        @method('PUT')
-    
-        @include('patients.notes.form', [
+        @include('patients.physical.form', [
                     'patient' => $patient,
-                    'note'=> $note
+                    'physical'=> $physical
                     ])
 
     </form>
 </div>
 @endsection
+
 @push('scripts')
     <script src="{{ asset('theme/form-validation.js') }}"></script>
 @endpush

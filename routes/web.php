@@ -13,6 +13,7 @@ use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
 use App\Http\Controllers\Backend\PatientNoteController;
+use App\Http\Controllers\Backend\PatientPhysicalController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -45,6 +46,18 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
         Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
         Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
+        Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
+        Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
     });
+
+    Route::prefix('patients/{patient}/physical')->group(function () {
+        Route::get('/', [PatientPhysicalController::class, 'index'])->name('patients.physical.index');
+        Route::get('/create', [PatientPhysicalController::class, 'create'])->name('patients.physical.create');
+        Route::post('/', [PatientPhysicalController::class, 'store'])->name('patients.physical.store');
+        Route::get('/{physical}/edit', [PatientPhysicalController::class, 'edit'])->name('patients.physical.edit');
+        Route::put('/{physical}', [PatientPhysicalController::class, 'update'])->name('patients.physical.update');
+        Route::delete('/{physical}', [PatientPhysicalController::class, 'destroy'])->name('patients.physical.destroy');
+    });
+    
     
 });

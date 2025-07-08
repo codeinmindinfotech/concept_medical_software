@@ -31,52 +31,131 @@
                 role="tab">Insurance</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#note" type="button"
+            <button class="nav-link" id="note-tab" data-bs-toggle="tab" data-bs-target="#note" type="button"
                 role="tab">Notes</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="physical-notes-tab" data-bs-toggle="tab" data-bs-target="#physical-notes" type="button"
+                role="tab">Physical Exams</button>
+        </li>
+        
     </ul>
 
     <div class="tab-content border border-top-0 p-3" id="myTabContent">
 
         {{-- Patient Information --}}
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <h4>Personal Information</h4>
-            <p><strong>Title:</strong> {{ $patient->title->value ?? 'N/A' }}</p>
-            <p><strong>Name:</strong> {{ $patient->first_name }} {{ $patient->surname }}</p>
-            <p><strong>Date of Birth:</strong> {{ $patient->dob }}</p>
-            <p><strong>Gender:</strong> {{ $patient->gender }}</p>
+            <div class="row g-4">
 
-            <h4>Contact Information</h4>
-            <p><strong>Phone:</strong> {{ $patient->phone }}</p>
-            <p><strong>Email:</strong> {{ $patient->email }}</p>
-            <p><strong>Preferred Contact Method:</strong> {{ $patient->preferredContact->value ?? 'N/A' }}</p>
-            <p><strong>Address:</strong> {{ $patient->address }}</p>
+                {{-- ▶ Personal Information --}}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><strong>Personal Information</strong></h5>
+                        </div>
+                        <div class="card-body row g-3">
+                            <x-show-field label="Title" :value="$patient->title->value ?? '-'" />
+                            <x-show-field label="Surname" :value="$patient->surname" />
+                            <x-show-field label="First Name" :value="$patient->first_name" />
+                            <x-show-field label="Date of Birth" :value="optional($patient->dob)->format('Y-m-d')" />
+                            <x-show-field label="Gender" :value="$patient->gender" />
+                            <x-show-field label="Doctor" :value="$patient->doctor->name ?? '-'" />
+                        </div>
+                    </div>
+                </div>
 
-            <h4>Emergency Contact</h4>
-            <p>{{ $patient->emergency_contact }}</p>
+                {{-- ▶ Contact Information --}}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><strong>Contact Information</strong></h5>
+                        </div>
+                        <div class="card-body row g-3">
+                            <x-show-field label="Phone" :value="$patient->phone" />
+                            <x-show-field label="Email" :value="$patient->email" />
+                            <x-show-field label="Preferred Contact"
+                                :value="$patient->preferredContactMethod->value ?? '-'" />
+                            <div class="col-12">
+                                <label class="form-label"><strong>Address</strong></label>
+                                <p>{{ $patient->address }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <h4>Medical Information</h4>
-            <p><strong>Medical History:</strong> {{ $patient->medical_history }}</p>
-            <p><strong>Referral Reason:</strong> {{ $patient->referral_reason }}</p>
-            <p><strong>Symptoms:</strong> {{ $patient->symptoms }}</p>
-            <p><strong>Patient Needs:</strong> {{ $patient->patient_needs }}</p>
-            <p><strong>Allergies:</strong> {{ $patient->allergies }}</p>
-            <p><strong>Diagnosis:</strong> {{ $patient->diagnosis }}</p>
+                {{-- ▶ Emergency & Medical Info --}}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><strong>Emergency & Medical Info</strong></h5>
+                        </div>
+                        <div class="card-body">
+                            @foreach ([
+                            'Emergency Contact' => $patient->emergency_contact,
+                            'Medical History / Notes' => $patient->medical_history,
+                            'Referral Reason' => $patient->referral_reason,
+                            'Symptoms' => $patient->symptoms,
+                            'Patient Needs' => $patient->patient_needs,
+                            'Allergies' => $patient->allergies,
+                            'Diagnosis' => $patient->diagnosis
+                            ] as $label => $value)
+                            <div class="mb-3">
+                                <label class="form-label"><strong>{{ $label }}</strong></label>
+                                <p>{{ $value ?? '-' }}</p>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
 
-            <h4>Insurance Information</h4>
-            <p><strong>Provider:</strong> {{ $patient->insurance->name ?? 'N/A' }}</p>
-            <p><strong>Plan:</strong> {{ $patient->insurance_plan }}</p>
-            <p><strong>Policy No:</strong> {{ $patient->policy_no }}</p>
+                {{-- ▶ Insurance Information --}}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><strong>Insurance Information</strong></h5>
+                        </div>
+                        <div class="card-body row g-3">
+                            <x-show-field label="Insurance Provider" :value="$patient->insurance->code ?? '-'" />
+                            <x-show-field label="Insurance Plan" :value="$patient->insurance_plan" />
+                            <x-show-field label="Policy Number" :value="$patient->policy_no" />
+                        </div>
+                    </div>
+                </div>
 
-            <h4>Status</h4>
-            <p><strong>RIP:</strong> {{ $patient->rip ? 'Yes' : 'No' }}</p>
-            @if($patient->rip)
-            <p><strong>RIP Date:</strong> {{ $patient->rip_date }}</p>
-            @endif
+                {{-- ▶ Patient Status & Consent --}}
+                <div class="col-6 mt-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><strong>Patient Status & Consent</strong></h5>
+                        </div>
+                        <div class="card-body">
+                            <x-show-field label="RIP" :value="$patient->rip ? 'Yes' : 'No'" />
+                            <x-show-field label="Date of RIP" :value="optional($patient->rip_date)->format('Y-m-d')" />
+                            <x-show-field label="SMS Consent" :value="$patient->sms_consent ? 'Yes' : 'No'" />
+                            <x-show-field label="Email Consent" :value="$patient->email_consent ? 'Yes' : 'No'" />
+                        </div>
+                    </div>
+                </div>
 
-            <h4>Consent</h4>
-            <p><strong>SMS Consent:</strong> {{ $patient->sms_consent ? 'Yes' : 'No' }}</p>
-            <p><strong>Email Consent:</strong> {{ $patient->email_consent ? 'Yes' : 'No' }}</p>
+                {{-- ▶ COVID-19 Vaccination Info --}}
+                <div class="col-6 mt-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><strong>COVID-19 Vaccination Info</strong></h5>
+                        </div>
+                        <div class="card-body">
+                            <x-show-field label="Vaccination Date" :value="optional($patient->covid_19_vaccination_date)->format('Y-m-d')" />
+                            <x-show-field label="Fully Vaccinated"
+                                :value="$patient->fully_covid_19_vaccinated ? 'Yes' : 'No'" />
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Vaccination Note</strong></label>
+                                <p>{{ $patient->covid_19_vaccination_note ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         {{-- Doctor Information --}}
@@ -105,37 +184,68 @@
         </div>
 
         {{-- Notes --}}
-<div class="tab-pane fade" id="note" role="tabpanel" aria-labelledby="note-tab">
-    <h4>Patient Notes</h4>
-    @if($patient->notes->isNotEmpty())
-        <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Method</th>
-                        <th>Note</th>
-                        <th>Completed</th>
-                        <th>Created At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($patient->notes as $index => $note)
+        <div class="tab-pane fade" id="note" role="tabpanel" aria-labelledby="note-tab">
+            <h4>Patient Notes</h4>
+            @if($patient->notes->isNotEmpty())
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Method</th>
+                            <th>Note</th>
+                            <th>Completed</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($patient->notes as $index => $note)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ ucfirst($note->method) }}</td>
                             <td>{{ $note->notes }}</td>
                             <td>{{ $note->completed ? 'Yes' : 'No' }}</td>
-                            <td>{{ $note->created_at->format('d M Y H:i') }}</td>
+                            <td>{{ optional($note->created_at)->format('d M Y H:i') }}</td>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p>No notes available for this patient.</p>
+            @endif
         </div>
-    @else
-        <p>No notes available for this patient.</p>
-    @endif
-</div>
+
+        {{-- Notes --}}
+        <div class="tab-pane fade" id="physical-notes" role="tabpanel" aria-labelledby="physical-notes-tab">
+            <h4>Physical Exams</h4>
+            @if($patient->physicalNotes->isNotEmpty())
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Note</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($patient->physicalNotes as $index => $note)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $note->physical_notes }}</td>
+                            <td>{{ optional($note->created_at)->format('d M Y H:i') }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p>No physical Exams available for this patient.</p>
+            @endif
+        </div>
+
+
 
 
     </div>

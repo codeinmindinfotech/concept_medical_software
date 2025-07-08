@@ -41,6 +41,15 @@ class Patient extends Model
         'rip_date',
         'sms_consent',
         'email_consent',
+        'covid_19_vaccination_date',
+        'covid_19_vaccination_note',
+        'fully_covid_19_vaccinated'
+    ];
+
+    protected $casts = [
+        'covid_19_vaccination_date' => 'date',
+        'rip_date' => 'date',
+        'dob' => 'date'
     ];
 
     public function title()
@@ -71,5 +80,10 @@ class Patient extends Model
     public function notes():HasMany
     {
         return $this->hasMany(PatientNote::class);
+    }
+
+    public function physicalNotes()
+    {
+        return $this->hasMany(PatientPhysical::class)->latest();
     }
 }

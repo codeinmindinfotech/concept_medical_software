@@ -22,10 +22,11 @@
             {{ $value }}
         </div>
     @endsession
+    
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            Patients Notes Management
+            <i class="fas fa-notes-medical me-1"></i>
+            Patient Notes Management
         </div>
         <div class="card-body">
             <div id="patient-notes-list" data-pagination-container>
@@ -38,3 +39,33 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('.data-table').on('click', '.toggle-completed', function() {
+            var badge = $(this);
+            var toggleUrl = badge.data('url');
+
+            $.ajax({
+                url: toggleUrl,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        badge
+                            .removeClass('bg-success bg-warning')
+                            .addClass('bg-' + response.badge_class)
+                            .text(response.text);
+                    }
+                },
+                error: function() {
+                    alert('Failed to toggle completed status.');
+                }
+            });
+        });
+    });
+</script>
+@endpush
+

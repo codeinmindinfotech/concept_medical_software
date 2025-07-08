@@ -71,4 +71,27 @@ class PatientNoteController extends Controller
             'message' => 'Note updated successfully',
         ]);
     }
+
+    public function destroy($patientId, $noteId): RedirectResponse
+    {
+        PatientNote::destroy($noteId);
+    
+        return redirect()->route('patients.notes.index', $patientId)
+                        ->with('success','Note deleted successfully');
+    }
+
+    public function toggleCompleted($patientId, $noteId)
+    {
+        $note = PatientNote::findOrFail($noteId);
+        $note->completed = !$note->completed;
+        $note->save();
+
+        return response()->json([
+            'success' => true,
+            'completed' => $note->completed,
+            'badge_class' => $note->completed ? 'success' : 'warning',
+            'text' => $note->completed ? 'Yes' : 'No',
+        ]);
+    }
+
 }

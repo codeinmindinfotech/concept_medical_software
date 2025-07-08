@@ -5,7 +5,7 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.index')],
+            ['label' => 'Patients', 'url' => route('patients.notes.index', $patient->id)],
             ['label' => 'Create Patient Note'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Create Patient Note',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.index'),
+        'backUrl' => route('patients.notes.index', $patient->id),
         'isListPage' => false
     ])
 
