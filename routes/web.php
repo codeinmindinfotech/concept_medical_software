@@ -12,6 +12,7 @@ use App\Http\Controllers\Backend\DoctorController;
 use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
+use App\Http\Controllers\Backend\PatientHistoryController;
 use App\Http\Controllers\Backend\PatientNoteController;
 use App\Http\Controllers\Backend\PatientPhysicalController;
 
@@ -57,6 +58,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/{physical}/edit', [PatientPhysicalController::class, 'edit'])->name('patients.physical.edit');
         Route::put('/{physical}', [PatientPhysicalController::class, 'update'])->name('patients.physical.update');
         Route::delete('/{physical}', [PatientPhysicalController::class, 'destroy'])->name('patients.physical.destroy');
+    });
+
+    Route::prefix('patients/{patient}/history')->group(function () {
+        Route::get('/', [PatientHistoryController::class, 'index'])->name('patients.history.index');
+        Route::get('/create', [PatientHistoryController::class, 'create'])->name('patients.history.create');
+        Route::post('/', [PatientHistoryController::class, 'store'])->name('patients.history.store');
+        Route::get('/{history}/edit', [PatientHistoryController::class, 'edit'])->name('patients.history.edit');
+        Route::put('/{history}', [PatientHistoryController::class, 'update'])->name('patients.history.update');
+        Route::delete('/{history}', [PatientHistoryController::class, 'destroy'])->name('patients.history.destroy');
     });
     
     

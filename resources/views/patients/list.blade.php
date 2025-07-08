@@ -2,10 +2,11 @@
     <thead>
         <tr>
             <th style="width: 50px;">No</th>
-            <th>Name</th>
+            <th >Name</th>
             <th style="width: 100px;">Notes</th>
+            <th style="width: 100px;">History</th>
             <th style="width: 150px;">Physical Exam</th>
-            <th >Action</th>
+            <th style="width: 150px;">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -23,6 +24,13 @@
             </td>
             <td>
                 @can('view', $patient)
+                <a class="btn btn-warning btn-sm" href="{{ route('patients.history.index', $patient->id) }}" title="History">
+                    <i class="fas fa-history text-white"></i>
+                </a>
+                @endcan
+            </td>
+            <td>
+                @can('view', $patient)
                 <a class="btn btn-secondary btn-sm" href="{{ route('patients.physical.index', $patient->id) }}" title="Physical Exams">
                     <i class="fas fa-book-open"></i>
                 </a>
@@ -31,7 +39,7 @@
             <td>
                 <form action="{{ route('patients.destroy',$patient->id) }}" method="POST">
 
-                <a class="btn btn-info btn-sm" href="{{ route('patients.show',$patient->id) }}" title="Show"><i class="fa-solid fa-list"></i></a>
+                <a class="btn btn-info btn-sm" href="{{ route('patients.show',$patient->id) }}" title="Show"><i class="fa-solid fa-list text-white"></i></a>
                 @can('update', $patient)
                 <a class="btn btn-primary btn-sm" href="{{ route('patients.edit',$patient->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                 @endcan

@@ -86,4 +86,9 @@ class Patient extends Model
     {
         return $this->hasMany(PatientPhysical::class)->latest();
     }
+
+    public function histories()
+    {
+        return $this->hasMany(PatientHistory::class);
+    }
 }

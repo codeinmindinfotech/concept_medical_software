@@ -13,16 +13,19 @@
             <td>{{ $consultant->code }} </td>
             <td>
                 <form action="{{ route('consultants.destroy',$consultant->id) }}" method="POST">
-                    <a class="btn btn-info btn-sm" href="{{ route('consultants.show',$consultant->id) }}" title="Show"><i class="fa-solid fa-list"></i></a>
-                    @can('consultant-edit')
-                    <a class="btn btn-primary btn-sm" href="{{ route('consultants.edit',$consultant->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                    @can('view', $consultant)
+                        <a class="btn btn-info btn-sm" href="{{ route('consultants.show',$consultant->id) }}" title="Show"><i class="fa-solid fa-list text-white"></i></a>
+                    @endcan
+
+                    @can('update', $consultant)
+                        <a class="btn btn-primary btn-sm" href="{{ route('consultants.edit',$consultant->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                     @endcan
 
                     @csrf
                     @method('DELETE')
 
-                    @can('consultant-delete')
-                    <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    @can('delete', $consultant)
+                        <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
                     @endcan
                 </form>
             </td>

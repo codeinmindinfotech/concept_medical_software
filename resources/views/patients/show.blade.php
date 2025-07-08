@@ -38,6 +38,10 @@
             <button class="nav-link" id="physical-notes-tab" data-bs-toggle="tab" data-bs-target="#physical-notes" type="button"
                 role="tab">Physical Exams</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-notes-tab" data-bs-toggle="tab" data-bs-target="#history-notes" type="button"
+                role="tab">History Notes</button>
+        </li>
         
     </ul>
 
@@ -46,12 +50,14 @@
         {{-- Patient Information --}}
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
             <div class="row g-4">
-
+        
                 {{-- ▶ Personal Information --}}
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0"><strong>Personal Information</strong></h5>
+                <div class="col-md-6">
+                    <div class="card border-start border-primary shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-user me-2 text-primary"></i>Personal Information
+                            </h5>
                         </div>
                         <div class="card-body row g-3">
                             <x-show-field label="Title" :value="$patient->title->value ?? '-'" />
@@ -63,56 +69,61 @@
                         </div>
                     </div>
                 </div>
-
+        
                 {{-- ▶ Contact Information --}}
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0"><strong>Contact Information</strong></h5>
+                <div class="col-md-6">
+                    <div class="card border-start border-info shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-phone-alt me-2 text-info"></i>Contact Information
+                            </h5>
                         </div>
                         <div class="card-body row g-3">
                             <x-show-field label="Phone" :value="$patient->phone" />
                             <x-show-field label="Email" :value="$patient->email" />
-                            <x-show-field label="Preferred Contact"
-                                :value="$patient->preferredContactMethod->value ?? '-'" />
+                            <x-show-field label="Preferred Contact" :value="$patient->preferredContactMethod->value ?? '-'" />
                             <div class="col-12">
                                 <label class="form-label"><strong>Address</strong></label>
-                                <p>{{ $patient->address }}</p>
+                                <p class="mb-0 text-muted">{{ $patient->address }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
+        
                 {{-- ▶ Emergency & Medical Info --}}
                 <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0"><strong>Emergency & Medical Info</strong></h5>
+                    <div class="card border-start border-danger shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-briefcase-medical me-2 text-danger"></i>Emergency & Medical Info
+                            </h5>
                         </div>
                         <div class="card-body">
                             @foreach ([
-                            'Emergency Contact' => $patient->emergency_contact,
-                            'Medical History / Notes' => $patient->medical_history,
-                            'Referral Reason' => $patient->referral_reason,
-                            'Symptoms' => $patient->symptoms,
-                            'Patient Needs' => $patient->patient_needs,
-                            'Allergies' => $patient->allergies,
-                            'Diagnosis' => $patient->diagnosis
+                                'Emergency Contact' => $patient->emergency_contact,
+                                'Medical History / Notes' => $patient->medical_history,
+                                'Referral Reason' => $patient->referral_reason,
+                                'Symptoms' => $patient->symptoms,
+                                'Patient Needs' => $patient->patient_needs,
+                                'Allergies' => $patient->allergies,
+                                'Diagnosis' => $patient->diagnosis
                             ] as $label => $value)
                             <div class="mb-3">
                                 <label class="form-label"><strong>{{ $label }}</strong></label>
-                                <p>{{ $value ?? '-' }}</p>
+                                <p class="mb-0 text-muted">{{ $value ?? '-' }}</p>
                             </div>
                             @endforeach
                         </div>
                     </div>
                 </div>
-
+        
                 {{-- ▶ Insurance Information --}}
                 <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0"><strong>Insurance Information</strong></h5>
+                    <div class="card border-start border-warning shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-file-invoice-dollar me-2 text-warning"></i>Insurance Information
+                            </h5>
                         </div>
                         <div class="card-body row g-3">
                             <x-show-field label="Insurance Provider" :value="$patient->insurance->code ?? '-'" />
@@ -121,12 +132,14 @@
                         </div>
                     </div>
                 </div>
-
+        
                 {{-- ▶ Patient Status & Consent --}}
-                <div class="col-6 mt-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0"><strong>Patient Status & Consent</strong></h5>
+                <div class="col-md-6 mt-4">
+                    <div class="card border-start border-success shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-check-circle me-2 text-success"></i>Patient Status & Consent
+                            </h5>
                         </div>
                         <div class="card-body">
                             <x-show-field label="RIP" :value="$patient->rip ? 'Yes' : 'No'" />
@@ -136,119 +149,174 @@
                         </div>
                     </div>
                 </div>
-
+        
                 {{-- ▶ COVID-19 Vaccination Info --}}
-                <div class="col-6 mt-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0"><strong>COVID-19 Vaccination Info</strong></h5>
+                <div class="col-md-6 mt-4">
+                    <div class="card border-start border-dark shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-syringe me-2 text-dark"></i>COVID-19 Vaccination Info
+                            </h5>
                         </div>
                         <div class="card-body">
                             <x-show-field label="Vaccination Date" :value="optional($patient->covid_19_vaccination_date)->format('Y-m-d')" />
-                            <x-show-field label="Fully Vaccinated"
-                                :value="$patient->fully_covid_19_vaccinated ? 'Yes' : 'No'" />
+                            <x-show-field label="Fully Vaccinated" :value="$patient->fully_covid_19_vaccinated ? 'Yes' : 'No'" />
                             <div class="mb-3">
                                 <label class="form-label"><strong>Vaccination Note</strong></label>
-                                <p>{{ $patient->covid_19_vaccination_note ?? '-' }}</p>
+                                <p class="mb-0 text-muted">{{ $patient->covid_19_vaccination_note ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
+        
             </div>
         </div>
+        
 
         {{-- Doctor Information --}}
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="card border-start border-primary shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-user-md text-primary me-2"></i>Doctor Information
+            </h5>
+        </div>
+        <div class="card-body">
             @if($patient->doctor)
-            <h4>Doctor Details</h4>
-            <p><strong>Name:</strong> Dr. {{ $patient->doctor->name }}</p>
-            <p><strong>Email:</strong> {{ $patient->doctor->email }}</p>
-            <p><strong>Phone:</strong> {{ $patient->doctor->phone }}</p>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Name:</label>
+                    <p class="text-muted mb-0">Dr. {{ $patient->doctor->name }}</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Email:</label>
+                    <p class="text-muted mb-0">{{ $patient->doctor->email }}</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Phone:</label>
+                    <p class="text-muted mb-0">{{ $patient->doctor->phone }}</p>
+                </div>
+            </div>
             @else
-            <p>No doctor assigned.</p>
+            <p class="text-muted">No doctor assigned.</p>
             @endif
         </div>
+    </div>
+</div>
 
-        {{-- Invoice or Contact --}}
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            <h4>Invoice / Additional Information</h4>
+{{-- Invoice or Contact --}}
+<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+    <div class="card border-start border-info shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-file-invoice-dollar text-info me-2"></i>Insurance / Invoice Information
+            </h5>
+        </div>
+        <div class="card-body">
             @if($patient->insurance)
-            <h4>Insurance Details</h4>
-            <p><strong>Code:</strong> {{ $patient->insurance->code }} </p>
-            <p><strong>Email:</strong> {{ $patient->insurance->email }}</p>
-            <p><strong>Phone:</strong> {{ $patient->insurance->contact }}</p>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Code:</label>
+                    <p class="text-muted mb-0">{{ $patient->insurance->code }}</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Email:</label>
+                    <p class="text-muted mb-0">{{ $patient->insurance->email }}</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Phone:</label>
+                    <p class="text-muted mb-0">{{ $patient->insurance->contact }}</p>
+                </div>
+            </div>
             @else
-            <p>No doctor assigned.</p>
+            <p class="text-muted">No insurance information available.</p>
             @endif
         </div>
+    </div>
+</div>
+
 
         {{-- Notes --}}
-        <div class="tab-pane fade" id="note" role="tabpanel" aria-labelledby="note-tab">
-            <h4>Patient Notes</h4>
+        <div class="tab-pane fade show p-3" id="note" role="tabpanel" aria-labelledby="note-tab">
+            <h5 class="mb-3"><i class="fas fa-notes-medical text-primary me-2"></i>Patient Notes</h5>
+
             @if($patient->notes->isNotEmpty())
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Method</th>
-                            <th>Note</th>
-                            <th>Completed</th>
-                            <th>Created At</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($patient->notes as $index => $note)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ ucfirst($note->method) }}</td>
-                            <td>{{ $note->notes }}</td>
-                            <td>{{ $note->completed ? 'Yes' : 'No' }}</td>
-                            <td>{{ optional($note->created_at)->format('d M Y H:i') }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="timeline">
+                @foreach($patient->notes as $index => $note)
+                <div class="timeline-item mb-4 position-relative ps-4 border-start border-3 border-primary">
+                    <div class="mb-1 small text-muted">
+                        <i class="far fa-clock me-1"></i>{{ optional($note->created_at)->format('d M Y, h:i A') }}
+                    </div>
+                    <h6 class="mb-1">
+                        <span class="badge bg-secondary me-2">{{ ucfirst($note->method) }}</span>
+                        {{ $note->completed ? '✅ Completed' : '⏳ Pending' }}
+                    </h6>
+                    <p class="mb-0">{{ $note->notes }}</p>
+                </div>
+                @endforeach
             </div>
             @else
-            <p>No notes available for this patient.</p>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-1"></i> No notes available for this patient.
+            </div>
             @endif
         </div>
 
-        {{-- Notes --}}
-        <div class="tab-pane fade" id="physical-notes" role="tabpanel" aria-labelledby="physical-notes-tab">
-            <h4>Physical Exams</h4>
+
+        {{-- Physical Exams Notes --}}
+        <div class="tab-pane fade show p-3" id="physical-notes" role="tabpanel" aria-labelledby="physical-notes-tab">
+            <h5 class="mb-3"><i class="fas fa-stethoscope me-2 text-primary"></i>Physical Exam Records</h5>
+
             @if($patient->physicalNotes->isNotEmpty())
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Note</th>
-                            <th>Created At</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($patient->physicalNotes as $index => $note)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $note->physical_notes }}</td>
-                            <td>{{ optional($note->created_at)->format('d M Y H:i') }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    @foreach($patient->physicalNotes as $index => $note)
+                        <div class="col">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-secondary">
+                                        <i class="fas fa-file-medical-alt me-1"></i> Entry #{{ $index + 1 }}
+                                    </h6>
+                                    <p class="card-text">{{ $note->physical_notes }}</p>
+                                </div>
+                                <div class="card-footer bg-light text-muted small">
+                                    <i class="far fa-clock me-1"></i>
+                                    {{ optional($note->created_at)->format('d M Y, h:i A') }}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             @else
-            <p>No physical Exams available for this patient.</p>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-1"></i> No physical exams available for this patient.
+                </div>
             @endif
         </div>
 
+        {{-- History Notes --}}
+        <div class="tab-pane fade" id="history-notes" role="tabpanel" aria-labelledby="history-notes-tab">
+            <div class="mt-3">
+                @forelse($patient->histories as $note)
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">
+                                <i class="fas fa-history text-primary me-1"></i>
+                                History Entry #{{ $loop->iteration }}
+                            </h6>
+                            <p class="card-text">{{ $note->history_notes }}</p>
+                            <small class="text-muted">Created on: {{ $note->created_at->format('d M Y, H:i') }}</small>
+                        </div>
+                    </div>
+                @empty
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-1"></i> No history notes available.
+                    </div>
+                @endforelse
+            </div>
+        </div>
 
 
 
     </div>
-
 </div>
 @endsection

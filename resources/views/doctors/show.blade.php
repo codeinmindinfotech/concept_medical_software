@@ -3,97 +3,46 @@
 @section('content')
 <div class="container-fluid px-4">
     @php
-    $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-    ['label' => 'Doctors', 'url' => route('doctors.index')],
-    ['label' => 'Show Doctor'],
-    ];
+        $breadcrumbs = [
+            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+            ['label' => 'Doctors', 'url' => route('doctors.index')],
+            ['label' => 'Show Doctor'],
+        ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Show Doctor',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('doctors.index'),
-    'isListPage' => false
+        'pageTitle' => 'Show Doctor',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' => route('doctors.index'),
+        'isListPage' => false
     ])
 
     <div class="row g-4">
         {{-- ▶ Doctor Information --}}
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="card-title mb-0"><strong>Doctor Information</strong></h5>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0"><i class="fas fa-user-md me-2"></i><strong>Doctor Information</strong></h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
 
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Name</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->name }}</div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Company</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->company }}</div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Salutation</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->salutation }}</div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label"><strong>Address</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->address }}</div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label"><strong>Postcode</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->postcode }}</div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label"><strong>Mobile</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->mobile }}</div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label"><strong>Phone</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->phone }}</div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label"><strong>Fax</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->fax }}</div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Email</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->email }}</div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Contact</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->contact }}</div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Contact Type</strong></label>
-                            <div class="form-control-plaintext">
-                                {{ $doctor->contactType->value ?? '-' }}
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label"><strong>Payment Method</strong></label>
-                            <div class="form-control-plaintext">
-                                {{ $doctor->paymentMethod->value ?? '-' }}
-                            </div>
-                        </div>
-
+                        <x-show-field label="Name" :value="$doctor->name" />
+                        <x-show-field label="Company" :value="$doctor->company" />
+                        <x-show-field label="Salutation" :value="$doctor->salutation" />
+                        <x-show-field label="Address" :value="$doctor->address" col="6" />
+                        <x-show-field label="Postcode" :value="$doctor->postcode" col="2" />
+                        <x-show-field label="Mobile" :value="$doctor->mobile" col="2" />
+                        <x-show-field label="Phone" :value="$doctor->phone" col="2" />
+                        <x-show-field label="Fax" :value="$doctor->fax" col="2" />
+                        <x-show-field label="Email" :value="$doctor->email" />
+                        <x-show-field label="Contact" :value="$doctor->contact" />
+                        <x-show-field label="Contact Type" :value="$doctor->contactType->value ?? '-'" />
+                        <x-show-field label="Payment Method" :value="$doctor->paymentMethod->value ?? '-'" />
+                        
                         <div class="col-12">
-                            <label class="form-label"><strong>Notes</strong></label>
-                            <div class="form-control-plaintext">{{ $doctor->note }}</div>
+                            <label class="form-label fw-bold">Notes</label>
+                            <div class="form-control-plaintext">{{ $doctor->note ?? '-' }}</div>
                         </div>
 
                     </div>

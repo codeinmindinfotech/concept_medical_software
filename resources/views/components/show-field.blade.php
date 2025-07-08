@@ -1,4 +1,10 @@
-<div class="col-md-4">
-    <label class="form-label"><strong>{{ $label }}</strong></label>
+@props([
+    'label',
+    'value' => '-',
+    'col' => 6
+])
+
+<div class="col-md-{{ $col }}">
+    <label class="form-label fw-bold">{{ $label }}</label>
     <p class="form-control-plaintext">{{ $value ?? '-' }}</p>
-  </div>
+</div>

@@ -20,10 +20,6 @@ class DoctorController extends Controller
      */
     function __construct()
     {
-         $this->middleware('permission:doctor-list|doctor-create|doctor-edit|doctor-delete', ['only' => ['index','show']]);
-         $this->middleware('permission:doctor-create', ['only' => ['create','store']]);
-         $this->middleware('permission:doctor-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:doctor-delete', ['only' => ['destroy']]);
     }
     /**
      * Display a listing of the resource.
@@ -32,13 +28,13 @@ class DoctorController extends Controller
      */
     public function index(Request $request): View|string
     {
-        $pageTitle = "Doctor List";
-        $doctors = Doctor::latest()->paginate(5);
+        $this->authorize('viewAny', Doctor::class);
+        $doctors = Doctor::latest()->paginate(10);
         if ($request->ajax()) {
             return view('doctors.list', compact('doctors'))->render();
         } 
 
-        return view('doctors.index',compact('doctors','pageTitle'));
+        return view('doctors.index',compact('doctors'));
     }
     
     /**
@@ -48,6 +44,7 @@ class DoctorController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', Doctor::class);
         extract($this->getCommonDropdowns());
         return view('doctors.create',compact('contactTypes','paymentMethods'));
     }
@@ -60,6 +57,7 @@ class DoctorController extends Controller
      */
     public function store(DoctorRequest $request): JsonResponse
     {
+        $this->authorize('create', Doctor::class);
         $validated = $request->validated();
         Doctor::create($validated);
     
@@ -77,6 +75,7 @@ class DoctorController extends Controller
      */
     public function show(Doctor $doctor): View
     {
+        $this->authorize('view', $doctor);
         return view('doctors.show',compact('doctor'));
     }
     
@@ -88,6 +87,7 @@ class DoctorController extends Controller
      */
     public function edit(Doctor $doctor): View
     {
+        $this->authorize('update', $doctor);
         extract($this->getCommonDropdowns());
         return view('doctors.edit',compact('doctor','contactTypes','paymentMethods'));
     }
@@ -99,7 +99,9 @@ class DoctorController extends Controller
      * @param  \App\doctor  $doctor
      * @return \Illuminate\Http\Response
      */
-    public function update(DoctorRequest $request, Doctor $doctor): JsonResponse    {
+    public function update(DoctorRequest $request, Doctor $doctor): JsonResponse 
+    {
+        $this->authorize('update', $doctor);
         $validated = $request->validated();
         $doctor->update($validated);
         return response()->json([
@@ -116,6 +118,7 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor): RedirectResponse
     {
+        $this->authorize('delete', $doctor);
         $doctor->delete();
     
         return redirect()->route('doctors.index')

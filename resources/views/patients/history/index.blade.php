@@ -5,14 +5,15 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Doctor List'],
+            ['label' => 'Patients', 'url' => route('patients.index')],
+            ['label' => 'Patient History List'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Doctor List',
+        'pageTitle' => 'Patient History List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('doctors.create'),
+        'backUrl' => route('patients.history.create', $patient->id),
         'isListPage' => true
     ])
 
@@ -21,17 +22,23 @@
             {{ $value }}
         </div>
     @endsession
+    
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-user-md"></i>
-            Doctors Management
+            <i class="fas fa-history"></i>
+            Patient History Management
         </div>
-        
         <div class="card-body">
-            <div id="doctor-list" data-pagination-container>
-                @include('doctors.list', ['doctors' => $doctors])
+            <div id="patient-history-list" data-pagination-container>
+                @include('patients.history.list', [
+                    'patient' => $patient,
+                    'historys'=> $historys
+                    ])
             </div>
-        </div>    
+        </div> 
     </div>
 </div>
 @endsection
+@push('scripts')
+@endpush
+
