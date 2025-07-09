@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Backend\ClinicController;
 use App\Http\Controllers\Backend\ConsultantController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('doctors', DoctorController::class);
     Route::resource('insurances', InsuranceController::class);
     Route::resource('consultants', ConsultantController::class);
+    Route::resource('clinics', ClinicController::class);
 
     // dropdown  parent
     Route::resource('dropdowns', DropDownController::class);
