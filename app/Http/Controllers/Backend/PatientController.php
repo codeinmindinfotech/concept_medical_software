@@ -38,18 +38,47 @@ class PatientController extends Controller
         $user = auth()->user();
 
         if ($user->hasRole('patient')) {
+            // Restrict to logged-in patient only
             $patients = Patient::where('id', $user->userable_id)->paginate(1);
         } else {
-            // For admin, superadmin, etc.
-            $patients = Patient::latest()->paginate(5);
+            // Admins can search all patients
+            $query = Patient::latest();
+
+            if ($request->filled('first_name')) {
+                $query->where('first_name', 'like', '%' . $request->first_name . '%');
+            }
+
+            if ($request->filled('surname')) {
+                $query->where('surname', 'like', '%' . $request->surname . '%');
+            }
+
+            // if ($request->filled('title')) {
+            //     $query->whereHas('title', function ($q) use ($request) {
+            //         $q->where('value', $request->title);
+            //     });
+            // }
+            if ($request->filled('phone')) {
+                $query->where('phone', 'like', '%' . $request->phone . '%');
+            }
+    
+            // if ($request->filled('pin')) {
+            //     $query->where('pin', 'like', '%' . $request->pin . '%');
+            // }
+    
+            if ($request->filled('dob')) {
+                $query->whereDate('dob', $request->dob);
+            }
+
+            $patients = $query->paginate(10)->withQueryString();
         }
+
         if ($request->ajax()) {
             return view('patients.list', compact('patients'))->render();
         }
 
-        return view('patients.index',compact('patients'));
+        return view('patients.index', compact('patients'));
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *

@@ -1,62 +1,66 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-hover align-middle text-nowrap">
+    <thead class="table-light">
         <tr>
-            <th style="width: 50px;">No</th>
-            <th >Name</th>
-            <th style="width: 100px;">Notes</th>
-            <th style="width: 100px;">History</th>
-            <th style="width: 150px;">Physical Exam</th>
-            <th style="width: 150px;">Action</th>
+            <th style="width: 40px;">#</th>
+            <th>Patient Name</th>
+            <th>Address</th>
+            <th style="width: 120px;">Date of Birth</th>
+            <th>Insurance</th>
+            <th style="width: 170px;">Actions</th>
         </tr>
     </thead>
     <tbody>
         @forelse ($patients as $index => $patient)
         <tr>
-            <td>{{ $index + 1 }}</td>
-            <td>{{ optional($patient->title)->value ? $patient->title->value . ' ' : '' }}
-                {{ $patient->first_name }} {{ $patient->surname }}</td>
+            <td>{{ $patients->firstItem() + $index }}</td>
             <td>
-                @can('view', $patient)
-                <a class="btn btn-success btn-sm" href="{{ route('patients.notes.index', $patient->id) }}" title="View Notes">
-                    <i class="fa-solid fa-notes-medical"></i>
-                </a>
-                @endcan
+                {{ optional($patient->title)->value ? $patient->title->value . ' ' : '' }}
+                {{ $patient->first_name }} {{ $patient->surname }}
             </td>
+            <td>{{ $patient->address ?? '-' }}</td>
+            <td>{{ format_date($patient->dob) }}</td>
+            <td>{{ optional($patient->insurance)->code ?? '-' }}</td>
             <td>
-                @can('view', $patient)
-                <a class="btn btn-warning btn-sm" href="{{ route('patients.history.index', $patient->id) }}" title="History">
-                    <i class="fas fa-history text-white"></i>
-                </a>
-                @endcan
-            </td>
-            <td>
-                @can('view', $patient)
-                <a class="btn btn-secondary btn-sm" href="{{ route('patients.physical.index', $patient->id) }}" title="Physical Exams">
-                    <i class="fas fa-book-open"></i>
-                </a>
-                @endcan
-            </td>
-            <td>
-                <form action="{{ route('patients.destroy',$patient->id) }}" method="POST">
-
-                <a class="btn btn-info btn-sm" href="{{ route('patients.show',$patient->id) }}" title="Show"><i class="fa-solid fa-list text-white"></i></a>
-                @can('update', $patient)
-                <a class="btn btn-primary btn-sm" href="{{ route('patients.edit',$patient->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                @endcan
-
-                    @csrf
-                    @method('DELETE')
-                    @can('delete', $patient)
-                    <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                <div class="d-flex gap-1 justify-content-center">
+                    @can('view', $patient)
+                    <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-info" title="View Details">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a href="{{ route('patients.notes.index', $patient->id) }}" class="btn btn-sm btn-success" title="Notes">
+                        <i class="fa-solid fa-notes-medical"></i>
+                    </a>
+                    <a href="{{ route('patients.history.index', $patient->id) }}" class="btn btn-sm btn-warning" title="History">
+                        <i class="fas fa-history"></i>
+                    </a>
+                    <a href="{{ route('patients.physical.index', $patient->id) }}" class="btn btn-sm btn-secondary" title="Physical Exams">
+                        <i class="fas fa-book-open"></i>
+                    </a>
                     @endcan
-                </form>
+
+                    @can('update', $patient)
+                    <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-primary" title="Edit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    @endcan
+
+                    @can('delete', $patient)
+                    <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" class="m-0" onsubmit="return confirm('Are you sure to delete this patient?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                    @endcan
+                </div>
             </td>
         </tr>
         @empty
         <tr>
-            <td colspan="3">There are no Patients.</td>
+            <td colspan="6" class="text-center">No patients found.</td>
         </tr>
         @endforelse
     </tbody>
 </table>
-{!! $patients->links('pagination::bootstrap-5') !!}
+
+{!! $patients->appends(request()->query())->links('pagination::bootstrap-5') !!}
