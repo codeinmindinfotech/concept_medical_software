@@ -12,7 +12,7 @@
             <td>{{ ++$key }}</td>
             <td>{{ $role->name }}</td>
             <td>
-                <a class="btn btn-info btn-sm" href="{{ route('roles.show',$role->id) }}" title="Show"><i class="fa-solid fa-list"></i></a>
+                <a class="btn btn-info btn-sm" href="{{ route('roles.show',$role->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
                 @can('role-edit')
                     <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$role->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                 @endcan

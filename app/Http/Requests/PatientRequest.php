@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PatientRequest extends FormRequest
 {
@@ -20,7 +21,7 @@ class PatientRequest extends FormRequest
             'dob'                   => ['required', 'date', 'before:today'],
             'doctor_id'             => 'required|exists:doctors,id',
             'gender'                => 'required|in:Male,Female,Other',
-            'email'                 => ['required', 'email:rfc,dns', 'max:255'],
+            'email'                 => ['required', 'email:rfc,dns', 'max:255',Rule::unique('patients', 'email')],
             'phone'                 => ['required', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'address'               => 'required|string|max:255',
             'emergency_contact'     => 'nullable|string|max:255',

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('mrn')->nullable();
             $table->string('planner_seq')->nullable();
-            $table->string('clinic_type')->nullable(); // e.g. Clinic, Hospital
+            $table->enum('clinic_type', ['clinic', 'hospital'])->default('clinic');
 
             // Weekly schedule and day toggles
             $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
@@ -38,6 +38,7 @@ return new class extends Migration
             }
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

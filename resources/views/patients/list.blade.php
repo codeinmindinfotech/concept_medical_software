@@ -24,7 +24,7 @@
                 <div class="d-flex gap-1 justify-content-center">
                     @can('view', $patient)
                     <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-info" title="View Details">
-                        <i class="fa-solid fa-eye"></i>
+                        <i class="fa-solid fa-eye text-white"></i>
                     </a>
                     <a href="{{ route('patients.notes.index', $patient->id) }}" class="btn btn-sm btn-success" title="Notes">
                         <i class="fa-solid fa-notes-medical"></i>

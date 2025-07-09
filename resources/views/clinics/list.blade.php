@@ -1,5 +1,5 @@
-<table class="table table-striped table-hover align-middle">
-    <thead class="table-primary">
+<table class="table table-hover align-middle text-nowrap">
+    <thead class="table-light">
         <tr>
             <th style="width: 50px;">#</th>
             <th>Code</th>
@@ -15,12 +15,23 @@
                 <td>{{ $clinics->firstItem() + $index }}</td>
                 <td>{{ $clinic->code }}</td>
                 <td>{{ $clinic->name }}</td>
-                <td>{{ ucfirst($clinic->clinic_type) ?? '-' }}</td>
+                <td>
+                    @switch($clinic->clinic_type)
+                        @case('clinic')
+                            Clinic
+                            @break
+                        @case('hospital')
+                            Hospital
+                            @break
+                        @default
+                            Unknown
+                    @endswitch
+                </td>
                 <td>{{ $clinic->phone ?? '-' }}</td>
                 <td>
                     <div class="btn-group" role="group" aria-label="Clinic Actions">
                         <a href="{{ route('clinics.show', $clinic->id) }}" class="btn btn-info btn-sm" title="View">
-                            <i class="fa-solid fa-eye"></i>
+                            <i class="fa-solid fa-eye text-white"></i>
                         </a>
 
                         @can('clinic-edit')

@@ -29,3 +29,28 @@ if (!function_exists('format_date')) {
         }
     }
 }
+
+if (! function_exists('format_time')) {
+    /**
+     * Format a time string or Carbon instance.
+     *
+     * @param  \DateTimeInterface|string|null  $time
+     * @param  string  $format
+     * @param  string  $default
+     * @return string
+     */
+    function format_time($time, $format = 'H:i', $default = '-')
+    {
+        if (!$time) return $default;
+
+        try {
+            $dt = $time instanceof \DateTimeInterface
+                ? Carbon::instance($time)
+                : Carbon::parse($time);
+
+            return $dt->format($format);
+        } catch (\Exception $e) {
+            return $default;
+        }
+    }
+}

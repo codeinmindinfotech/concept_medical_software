@@ -35,6 +35,12 @@
                     <span>Insurance</span>
                 </a>
         
+                {{-- Clinic --}}
+                <a class="nav-link {{ Request::is('clinics*') ? 'active' : '' }}" href="{{ route('clinics.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
+                    <span>Clinic</span>
+                </a>
+        
                 {{-- Utilities Collapsible Section --}}
                 @php
                     $isUtilitiesOpen = Request::is('users*') || Request::is('roles*') || Request::is('dropdowns*');
@@ -73,6 +79,7 @@
         
             </div>
         </div>
+        
         
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>

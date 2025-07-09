@@ -1,62 +1,103 @@
 @extends('backend.theme.default')
 
 @section('content')
+@php
+$days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'];
+@endphp
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Insurances', 'url' => route('insurances.index')],
-            ['label' => 'Show Insurance'],
+            ['label' => 'Clinics', 'url' => route('clinics.index')],
+            ['label' => 'Show Clinic'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Show Insurance',
+        'pageTitle' => 'Show Clinic',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('insurances.index'),
+        'backUrl' => route('clinics.index'),
         'isListPage' => false
     ])
 
-       
-    <div class="tab-content border border-top-0 p-3">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label"><strong>Code:</strong></label>
-                <div class="form-control-plaintext">{{ $insurance->code ?? '-' }}</div>
-            </div>
-        
-            <div class="col-md-4">
-                <label class="form-label"><strong>Address:</strong></label>
-                <div class="form-control-plaintext">{{ $insurance->address ?? '-' }}</div>
-            </div>
-        
-            <div class="col-md-4">
-                <label class="form-label"><strong>Contact Name:</strong></label>
-                <div class="form-control-plaintext">{{ $insurance->contact_name ?? '-' }}</div>
-            </div>
-        
-            <div class="col-md-4">
-                <label class="form-label"><strong>Contact:</strong></label>
-                <div class="form-control-plaintext">{{ $insurance->contact ?? '-' }}</div>
-            </div>
-        
-            <div class="col-md-4">
-                <label class="form-label"><strong>Email:</strong></label>
-                <div class="form-control-plaintext">{{ $insurance->email ?? '-' }}</div>
-            </div>
-        
-            <div class="col-md-4">
-                <label class="form-label"><strong>Postcode:</strong></label>
-                <div class="form-control-plaintext">{{ $insurance->postcode ?? '-' }}</div>
-            </div>
-        
-            <div class="col-md-4">
-                <label class="form-label"><strong>Fax:</strong></label>
-                <div class="form-control-plaintext">{{ $insurance->fax ?? '-' }}</div>
+    <div class="row g-4">
+        <!-- Clinic Information Card -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-start border-primary">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clinic-medical me-2 text-primary"></i>Clinic Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <x-show-field label="Code" :value="$clinic->code" />
+                    <x-show-field label="Name" :value="$clinic->name" />
+                    <x-show-field label="Type" :value="ucfirst($clinic->clinic_type)" />
+                    <x-show-field label="MRN" :value="$clinic->mrn ?? '-'" />
+                    <x-show-field label="Planner Seq" :value="$clinic->planner_seq ?? '-'" />
+                </div>
             </div>
         </div>
-        
+
+        <!-- Contact & Address Card -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-start border-info">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-map-marker-alt me-2 text-info"></i>Contact & Address
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <x-show-field label="Email" :value="$clinic->email" />
+                    <x-show-field label="Phone" :value="$clinic->phone ?? '-'" />
+                    <x-show-field label="Fax" :value="$clinic->fax ?? '-'" />
+                    <x-show-field label="Address" :value="$clinic->address ?? '-'" />
+                </div>
+            </div>
+        </div>
     </div>
-    
+
+    <hr>
+
+    <!-- Weekly Schedule Table -->
+    <h5 class="mb-3">Weekly Schedule</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Day</th>
+                    <th>Open?</th>
+                    <th>AM Hours</th>
+                    <th>PM Hours</th>
+                    <th>Interval (mins)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($days as $key => $label)
+                <tr>
+                    <td>{{ $label }}</td>
+                    <td>{{ $clinic->$key ? '✅' : '❌' }}</td>
+                    <td>
+                        @if($clinic->{$key.'_start_am'})
+                            {{ format_time($clinic->{$key.'_start_am'}) }} –
+                            {{ format_time($clinic->{$key.'_finish_am'}) }}
+                        @else
+                            &mdash;
+                        @endif
+                    </td>
+                    <td>
+                        @if($clinic->{$key.'_start_pm'})
+                            {{ format_time($clinic->{$key.'_start_pm'}) }} –
+                            {{ format_time($clinic->{$key.'_finish_pm'}) }}
+                        @else
+                            &mdash;
+                        @endif
+                    </td>
+                    <td>{{ $clinic->{$key.'_interval'} ?? '-' }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection

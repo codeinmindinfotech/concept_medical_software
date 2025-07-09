@@ -14,7 +14,9 @@
             <td>
                 <form action="{{ route('doctors.destroy',$doctor->id) }}" method="POST">
                     @can('view', $doctor)
-                        <a class="btn btn-info btn-sm" href="{{ route('doctors.show',$doctor->id) }}" title="Show"><i class="fa-solid fa-list text-white"></i></a>
+                        <a class="btn btn-info btn-sm" href="{{ route('doctors.show',$doctor->id) }}" title="Show">
+                            <i class="fa-solid fa-eye text-white"></i>
+                        </a>
                     @endcan
                     @can('update', $doctor)
                         <a class="btn btn-primary btn-sm" href="{{ route('doctors.edit',$doctor->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>

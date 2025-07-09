@@ -60,14 +60,15 @@ class InsuranceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(InsuranceRequest $request): RedirectResponse
+    public function store(InsuranceRequest $request): JsonResponse
     {
         $validated = $request->validated();
     
         Insurance::create($validated);
-    
-        return redirect()->route('insurances.index')
-                        ->with('success','insurance created successfully.');
+        return response()->json([
+            'redirect' => route('insurances.index'),
+            'message' => 'insurance created successfully',
+        ]);
     }
     
     /**

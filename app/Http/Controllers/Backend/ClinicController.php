@@ -38,12 +38,14 @@ class ClinicController extends Controller
         return view('clinics.create', compact('pageTitle'));
     }
 
-    public function store(ClinicRequest $request): RedirectResponse
+    public function store(ClinicRequest $request): JsonResponse
     {
         $data = $this->extractDayFields($request);
         Clinic::create($data);
-
-        return redirect()->route('clinics.index')->with('success', 'Clinic created successfully.');
+        return response()->json([
+            'redirect' => route('clinics.index'),
+            'message' => 'Clinic created successfully',
+        ]);
     }
 
     public function edit(Clinic $clinic): View

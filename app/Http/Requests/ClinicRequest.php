@@ -3,9 +3,24 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ClinicRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        foreach (['mon','tue','wed','thu','fri','sat','sun'] as $day) {
+            foreach (['start_am','finish_am','start_pm','finish_pm'] as $suffix) {
+                $field = "{$day}_{$suffix}";
+                if ($this->filled($field)) {
+                    $this->merge([
+                        $field => date('H:i:s', strtotime($this->{$field})),
+                    ]);
+                }
+            }
+        }
+    }
+
     public function rules(): array
     {
         $clinicId = $this->route('clinic')?->id;
@@ -14,20 +29,21 @@ class ClinicRequest extends FormRequest
             'code'         => 'required|string|unique:clinics,code,' . $clinicId,
             'name'         => 'required|string|max:255',
             'address'      => 'nullable|string',
-            'phone'        => 'nullable|string|max:20',
+            'phone'        => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'fax'          => 'nullable|string|max:20',
-            'email'        => 'nullable|email|max:255',
+            'email'        => ['required','email:rfc,dns','max:255',
+                                Rule::unique('clinics','email')->ignore($clinicId)],
             'mrn'          => 'nullable|string|max:50',
             'planner_seq'  => 'nullable|string|max:50',
-            'clinic_type'  => 'nullable|string|max:100',
+            'clinic_type'  => 'required|in:clinic,hospital',
         ];
 
         foreach (['mon','tue','wed','thu','fri','sat','sun'] as $day) {
             $rules[$day] = 'nullable|boolean';
-            $rules["{$day}_start_am"] = 'nullable|date_format:H:i';
-            $rules["{$day}_finish_am"] = 'nullable|date_format:H:i';
-            $rules["{$day}_start_pm"] = 'nullable|date_format:H:i';
-            $rules["{$day}_finish_pm"] = 'nullable|date_format:H:i';
+            $rules["{$day}_start_am"] = 'nullable|date_format:H:i:s';
+            $rules["{$day}_finish_am"] = 'nullable|date_format:H:i:s|after:'.$day.'_start_am';
+            $rules["{$day}_start_pm"] = 'nullable|date_format:H:i:s';
+            $rules["{$day}_finish_pm"] = 'nullable|date_format:H:i:s|after:'.$day.'_start_pm';
             $rules["{$day}_interval"] = 'nullable|integer|min:1|max:240';
         }
 
