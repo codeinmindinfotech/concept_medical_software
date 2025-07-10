@@ -26,6 +26,7 @@ trait DropdownTrait
             'contactMethods' => $this->getDropdownValues(2),   // Preferred Contact Methods
             'contactTypes' => $this->getDropdownValues(3),           // Titles
             'paymentMethods' => $this->getDropdownValues(4), 
+            'categories' => $this->getDropdownValues(5), 
         ];
     }
 }

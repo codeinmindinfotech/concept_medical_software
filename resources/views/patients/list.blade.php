@@ -23,6 +23,9 @@
             <td>
                 <div class="d-flex gap-1 justify-content-center">
                     @can('view', $patient)
+                    <a href="{{ route('patients.patient_dashboard', $patient->id) }}" class="btn btn-sm btn-dark" title="Dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </a>
                     <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-info" title="View Details">
                         <i class="fa-solid fa-eye text-white"></i>
                     </a>

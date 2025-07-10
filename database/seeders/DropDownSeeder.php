@@ -16,6 +16,7 @@ class DropDownSeeder extends Seeder
         $preferred = DropDown::firstOrCreate(['name' => 'Preferred Contact']);
         $contactType = DropDown::firstOrCreate(['name' => 'Contact Type']);
         $paymentMethod = DropDown::firstOrCreate(['name' => 'Payment Method']);
+        $visitCategory = DropDown::firstOrCreate(['name' => 'Visit Category']);
 
         $titles = ['Dr.', 'Mr', 'Mrs', 'Fr', 'Prof.', 'Sr', 'Ms'];
         foreach ($titles as $val) {
@@ -45,6 +46,14 @@ class DropDownSeeder extends Seeder
         foreach ($paymentMethods as $val) {
             DropDownValue::firstOrCreate([
                 'drop_down_id' => $paymentMethod->id,
+                'value' => $val
+            ]);
+        }
+
+        $visitCategories = ['General', 'Follow-up', 'Specialist'];
+        foreach ($visitCategories as $val) {
+            DropDownValue::firstOrCreate([
+                'drop_down_id' => $visitCategory->id,
                 'value' => $val
             ]);
         }

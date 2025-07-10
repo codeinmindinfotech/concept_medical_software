@@ -109,4 +109,10 @@ class Patient extends Model
     {
         return $this->hasMany(PatientHistory::class);
     }
+
+    public function WaitingLists()
+    {
+        return $this->hasMany(WaitingList::class);
+    }
+
 }

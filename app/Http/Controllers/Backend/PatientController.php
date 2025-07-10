@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PatientRequest;
 use App\Models\Backend\Insurance;
+use App\Models\Clinic;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Services\UserService;
@@ -216,5 +217,13 @@ class PatientController extends Controller
     
         return redirect()->route('patients.index')
                         ->with('success','Patient deleted successfully');
+    }
+
+    public function patient_dashboard(Patient $patient)
+    {
+        extract($this->getCommonDropdowns());
+        $waitingLists = $patient->WaitingLists()->latest()->paginate(10);
+        $clinics = Clinic::orderBy('name')->get(); 
+        return view('patients.dashboard', compact('patient','categories','clinics','waitingLists'));
     }
 }

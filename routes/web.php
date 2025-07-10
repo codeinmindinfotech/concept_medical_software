@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Backend\ClinicController;
+use App\Http\Controllers\Backend\WaitingListController;
 use App\Http\Controllers\Backend\ConsultantController;
 use Illuminate\Support\Facades\Route;
 
@@ -71,5 +72,21 @@ Route::group(['middleware' => ['auth']], function() {
         Route::delete('/{history}', [PatientHistoryController::class, 'destroy'])->name('patients.history.destroy');
     });
     
-    
+    Route::get('/patients/dashboard/{patient}', [PatientController::class, 'patient_dashboard'])->name('patients.patient_dashboard');
+
+    Route::prefix('patients/{patient}')->name('waiting-lists.')->group(function () {
+        Route::post('waiting-lists', [WaitingListController::class, 'store'])->name('store');
+        Route::get('waiting-lists', [WaitingListController::class, 'index'])->name('index');
+        Route::get('waiting-lists/{waitingList}', [WaitingListController::class, 'show'])->name('show');
+        Route::put('waiting-lists/{waitingList}', [WaitingListController::class, 'update'])->name('update');
+        Route::delete('waiting-lists/{waitingList}', [WaitingListController::class, 'destroy'])->name('destroy');
+    });
+    // Route::prefix('patients/{patient}')->name('waiting-lists.')->group(function () {
+    //     Route::post('waiting-lists', [WaitingListController::class, 'store'])->name('store');
+    //     Route::get('waiting-lists', [WaitingListController::class, 'index'])->name('index');
+    //     Route::get('waiting-lists/{waitingList}', [WaitingListController::class, 'show'])->name('show');
+    //     Route::put('waiting-lists/{waitingList}', [WaitingListController::class, 'update'])->name('update');
+    //     Route::delete('waiting-lists/{waitingList}', [WaitingListController::class, 'destroy'])->name('destroy');
+    // });
+   
 });

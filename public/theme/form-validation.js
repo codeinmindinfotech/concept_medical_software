@@ -65,17 +65,22 @@ $(document).ready(function () {
     });
 });
 
-document.getElementById('image').addEventListener('change', function(e) {
-    const img = document.getElementById('preview-img');
+const imageInput = document.getElementById('image');
+if (imageInput) {
+  imageInput.addEventListener('change', function (e) {
+    let img = document.getElementById('preview-img');
     if (!img) {
-      const preview = document.createElement('img');
-      preview.id = 'preview-img';
-      preview.className = 'img-thumbnail mt-2';
-      preview.style.maxHeight = '150px';
-      this.after(preview);
+      img = document.createElement('img');
+      img.id = 'preview-img';
+      img.className = 'img-thumbnail mt-2';
+      img.style.maxHeight = '150px';
+      this.after(img);
     }
+
     const reader = new FileReader();
-    reader.onload = e => document.getElementById('preview-img').src = e.target.result;
+    reader.onload = e => img.src = e.target.result;
     reader.readAsDataURL(this.files[0]);
   });
+}
+
 
