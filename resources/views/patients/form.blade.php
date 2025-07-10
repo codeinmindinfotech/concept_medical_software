@@ -64,7 +64,7 @@
             @error('gender') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
-          <!-- Doctor -->
+          {{-- <!-- Doctor -->
           <div class="col-md-4">
             <label for="doctor_id" class="form-label"><strong>Doctor<span class="txt-error">*</span></strong></label>
             <select id="doctor_id" name="doctor_id" class="form-select @error('doctor_id') is-invalid @enderror">
@@ -77,11 +77,81 @@
               @endforeach
             </select>
             @error('doctor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          </div>
+          </div> --}}
         </div>
       </div>
     </div>
   </div>
+
+  {{-- ▶ Doctor Information --}}
+<div class="col-12">
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h5 class="card-title mb-0"><strong>Doctor Information</strong></h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+
+        <!-- Primary Doctor -->
+        <div class="col-md-6">
+          <label for="doctor_id" class="form-label"><strong>Primary Doctor<span class="txt-error">*</span></strong></label>
+          <select id="doctor_id" name="doctor_id" class="form-select @error('doctor_id') is-invalid @enderror">
+            <option value="">-- Select Doctor --</option>
+            @foreach($doctors as $doctor)
+              <option value="{{ $doctor->id }}" {{ old('doctor_id', $patient->doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
+                Dr. {{ $doctor->name }}
+              </option>
+            @endforeach
+          </select>
+          @error('doctor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <!-- Referral Doctor -->
+        <div class="col-md-6">
+          <label for="referral_doctor_id" class="form-label"><strong>Referral Doctor</strong></label>
+          <select id="referral_doctor_id" name="referral_doctor_id" class="form-select @error('referral_doctor_id') is-invalid @enderror">
+            <option value="">-- Select Doctor --</option>
+            @foreach($doctors as $doctor)
+              <option value="{{ $doctor->id }}" {{ old('referral_doctor_id', $patient->referral_doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
+                Dr. {{ $doctor->name }}
+              </option>
+            @endforeach
+          </select>
+          @error('referral_doctor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <!-- Other Doctor -->
+        <div class="col-md-6">
+          <label for="other_doctor_id" class="form-label"><strong>Other Doctor</strong></label>
+          <select id="other_doctor_id" name="other_doctor_id" class="form-select @error('other_doctor_id') is-invalid @enderror">
+            <option value="">-- Select Doctor --</option>
+            @foreach($doctors as $doctor)
+              <option value="{{ $doctor->id }}" {{ old('other_doctor_id', $patient->other_doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
+                Dr. {{ $doctor->name }}
+              </option>
+            @endforeach
+          </select>
+          @error('other_doctor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <!-- Solicitor Doctor -->
+        <div class="col-md-6">
+          <label for="solicitor_doctor_id" class="form-label"><strong>Solicitor Doctor</strong></label>
+          <select id="solicitor_doctor_id" name="solicitor_doctor_id" class="form-select @error('solicitor_doctor_id') is-invalid @enderror">
+            <option value="">-- Select Doctor --</option>
+            @foreach($doctors as $doctor)
+              <option value="{{ $doctor->id }}" {{ old('solicitor_doctor_id', $patient->solicitor_doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
+                Dr. {{ $doctor->name }}
+              </option>
+            @endforeach
+          </select>
+          @error('solicitor_doctor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 
   {{-- ▶ Contact Information --}}
   <div class="col-12">
@@ -277,17 +347,19 @@
             <div class="col-md-6">
               <label for="covid_19_vaccination_date" class="form-label"><strong>Vaccination Date</strong></label>
               <div class="input-group">
-                <input type="date" name="covid_19_vaccination_date" id="covid_19_vaccination_date"
-                  class="form-control flatpickr @error('covid_19_vaccination_date') is-invalid @enderror"
-                  value="{{ old('covid_19_vaccination_date', optional($patient->covid_19_vaccination_date)->format('Y-m-d')) }}">
-                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                <input type="date"
+       name="covid_19_vaccination_date"
+       id="covid_19_vaccination_date"
+       class="form-control flatpickr @error('covid_19_vaccination_date') is-invalid @enderror"
+       value="{{ old('covid_19_vaccination_date', optional(optional($patient ?? null)->covid_19_vaccination_date)->format('Y-m-d')) }}">
+<span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
                 @error('covid_19_vaccination_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
               </div>
             </div>
             
             <div class="col-md-6 form-check mt-4 pt-2">
               <input id="fully_covid_19_vaccinated" name="fully_covid_19_vaccinated" type="checkbox"
-                class="form-check-input" value="1" {{ old('fully_covid_19_vaccinated', $patient->fully_covid_19_vaccinated
+                class="form-check-input" value="1" {{ old('fully_covid_19_vaccinated', optional(optional($patient ?? null)->fully_covid_19_vaccinated)
               ?? false) ? 'checked' : '' }}>
               <label for="fully_covid_19_vaccinated" class="form-check-label"><strong>Fully Vaccinated</strong></label>
             </div>
@@ -296,8 +368,10 @@
               <label for="covid_19_vaccination_note" class="form-label"><strong>Vaccination Note</strong></label>
               <textarea name="covid_19_vaccination_note" id="covid_19_vaccination_note"
                 class="form-control @error('covid_19_vaccination_note') is-invalid @enderror" rows="2"
-                placeholder="Any additional information...">{{ old('covid_19_vaccination_note', $patient->covid_19_vaccination_note) }}</textarea>
-              @error('covid_19_vaccination_note') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                placeholder="Any additional information...">
+                {{ old('covid_19_vaccination_note', $patient->covid_19_vaccination_note ?? '') }}
+              </textarea>
+                @error('covid_19_vaccination_note') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
 
             

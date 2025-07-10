@@ -174,35 +174,52 @@
         
 
         {{-- Doctor Information --}}
-<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-    <div class="card border-start border-primary shadow-sm mb-4">
-        <div class="card-header bg-light">
-            <h5 class="card-title mb-0">
-                <i class="fas fa-user-md text-primary me-2"></i>Doctor Information
-            </h5>
-        </div>
-        <div class="card-body">
-            @if($patient->doctor)
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Name:</label>
-                    <p class="text-muted mb-0">Dr. {{ $patient->doctor->name }}</p>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="card border-start border-primary shadow-sm mb-4">
+              <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-user-md text-primary me-2"></i><strong>Doctor Information</strong>
+                </h5>
+              </div>
+          
+              <div class="card-body">
+                @php
+                  $doctorTypes = [
+                    'Primary Doctor' => $patient->doctor,
+                    'Referral Doctor' => $patient->referralDoctor ?? null,
+                    'Other Doctor' => $patient->otherDoctor ?? null,
+                    'Solicitor Doctor' => $patient->solicitorDoctor ?? null,
+                  ];
+                @endphp
+          
+                @foreach($doctorTypes as $label => $doc)
+                <div class="border rounded p-3 mb-4 position-relative bg-light-subtle">
+                  <span class="badge bg-primary position-absolute top-0 start-0 rounded-0 rounded-end px-3 py-2">{{ $label }}</span>
+          
+                  @if($doc)
+                  <div class="row g-3 mt-3">
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold mb-0"><i class="fas fa-user me-1 text-secondary"></i>Name</label>
+                      <p class="text-dark">{{ 'Dr. ' . $doc->name }}</p>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold mb-0"><i class="fas fa-envelope me-1 text-secondary"></i>Email</label>
+                      <p class="text-dark">{{ $doc->email ?? '—' }}</p>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold mb-0"><i class="fas fa-phone me-1 text-secondary"></i>Phone</label>
+                      <p class="text-dark">{{ $doc->phone ?? '—' }}</p>
+                    </div>
+                  </div>
+                  @else
+                  <div class="text-muted fst-italic mt-3">No {{ strtolower($label) }} assigned.</div>
+                  @endif
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Email:</label>
-                    <p class="text-muted mb-0">{{ $patient->doctor->email }}</p>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Phone:</label>
-                    <p class="text-muted mb-0">{{ $patient->doctor->phone }}</p>
-                </div>
+                @endforeach
+              </div>
             </div>
-            @else
-            <p class="text-muted">No doctor assigned.</p>
-            @endif
-        </div>
-    </div>
-</div>
+          </div>
+          
 
 {{-- Invoice or Contact --}}
 <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">

@@ -14,14 +14,19 @@ class PatientRequest extends FormRequest
      */
     public function rules(): array
     {
+        $patientId = $this->route('patient')?->id;
         return [
             'title_id'              => 'required|exists:drop_down_values,id',
             'first_name'            => 'required|string|max:255',
             'surname'               => 'required|string|max:255',
             'dob'                   => ['required', 'date', 'before:today'],
             'doctor_id'             => 'required|exists:doctors,id',
+            'referral_doctor_id'    => 'nullable|exists:doctors,id',
+            'other_doctor_id'       => 'nullable|exists:doctors,id',
+            'solicitor_doctor_id'   => 'nullable|exists:doctors,id',
             'gender'                => 'required|in:Male,Female,Other',
-            'email'                 => ['required', 'email:rfc,dns', 'max:255',Rule::unique('patients', 'email')],
+            'email'                 => ['required','email:rfc,dns','max:255',
+                                         Rule::unique('patients','email')->ignore($patientId)],
             'phone'                 => ['required', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'address'               => 'required|string|max:255',
             'emergency_contact'     => 'nullable|string|max:255',

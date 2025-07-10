@@ -23,6 +23,9 @@ class Patient extends Model
         'dob',
         'gender',
         'doctor_id',
+        'referral_doctor_id',
+        'other_doctor_id',
+        'solicitor_doctor_id',
         'phone',
         'email',
         'address',
@@ -65,6 +68,21 @@ class Patient extends Model
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
+    }
+
+    public function referralDoctor()
+    { 
+        return $this->belongsTo(Doctor::class, 'referral_doctor_id'); 
+    }
+
+    public function otherDoctor()
+    {
+        return $this->belongsTo(Doctor::class, 'other_doctor_id'); 
+    }
+    
+    public function solicitorDoctor()
+    {
+        return $this->belongsTo(Doctor::class, 'solicitor_doctor_id'); 
     }
     
     public function insurance()
