@@ -10,7 +10,7 @@ trait DropdownTrait
     /**
      * Get dropdown values by ID
      */
-    public function getDropdownValues(string $code)
+    public function getDropdownValuesByCode(string $code)
     {
         $dropdown = DropDown::where('code', $code)->first();
 
