@@ -17,38 +17,44 @@
         'isListPage' => false
     ])
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
         <form action="{{ route('dropdowns.update', $dropdown->id) }}" method="POST">
             @csrf
             @method('PUT')
         
-            <div class="row">
+            <div class="row mb-3">
+                <!-- Code (non-editable) -->
+                <div class="col-md-6">
+                    <label for="code" class="form-label"><strong>Code</strong></label>
+                    <input type="text"
+                           id="code"
+                           name="code"
+                           class="form-control"
+                           value="{{ old('code', $dropdown->code) }}"
+                           placeholder="CODE_TYPE"
+                           disabled>
+                </div>
+            
                 <!-- Name -->
                 <div class="col-md-6">
-                    <div class="form-group">
-                        <strong>Name:</strong>
-                        <input type="text" name="name" value="{{ old('name', $dropdown->name) }}" class="form-control" placeholder="Name">
-                    </div>
-                </div>
-        
-                <!-- Submit Button -->
-                <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                    <button type="submit" class="btn btn-primary btn-sm mb-2 mt-2">
-                        <i class="fa-solid fa-floppy-disk"></i> Submit
-                    </button>
+                    <label for="name" class="form-label"><strong>Name</strong></label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name', $dropdown->name) }}"
+                           placeholder="Name">
+                    @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
             </div>
+            
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-sm mb-2 mt-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Submit
+                </button>
+            </div>
+            
         </form>
 </div>
   

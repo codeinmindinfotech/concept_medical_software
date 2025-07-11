@@ -2,6 +2,8 @@
 
 namespace App\Models\Backend;
 
+use App\Models\ChargeCode;
+use App\Models\ChargeCodePrice;
 use App\Models\consultant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +32,16 @@ class Insurance extends Model
         return $this->belongsToMany(consultant::class)
                     ->withTimestamps();
     }
+
+    public function chargePrices()
+    {
+        return $this->hasMany(ChargeCodePrice::class);
+    }
     
+    // In ChargeCodePrice model
+    public function chargeCode() {
+        return $this->belongsTo(ChargeCode::class, 'charge_code_id');
+    }
+
 }
 

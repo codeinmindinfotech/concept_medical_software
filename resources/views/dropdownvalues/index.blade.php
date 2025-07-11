@@ -4,7 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index',$dropDownId)],
+            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+            ['label' => 'DropDowns', 'url' => route('dropdowns.index')],
             ['label' => 'Dropdownvalue List'],
         ];
     @endphp

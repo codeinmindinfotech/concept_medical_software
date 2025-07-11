@@ -23,7 +23,7 @@
             <input type="date" class="form-control" id="editVisitDate" name="visit_date" required>
           </div>
           <div class="mb-3">
-            <label for="editNote" class="form-label">Consult Note</label>
+            <label for="editNote" class="form-label">Type Of appointment</label>
             <textarea class="form-control" id="editNote" name="consult_note" required></textarea>
           </div>
           <div class="mb-3">

@@ -56,9 +56,15 @@ class DropDownController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate(['name' => 'required|string']);
-        DropDown::create($request->only('name'));
-    
+        $request->validate([
+            'code' => [
+                'required',
+                'unique:drop_downs,code',
+                'regex:/^[A-Z0-9_]+$/',
+                'max:255'
+            ],
+            'name' => 'required|string']);
+        Dropdown::create($request->all());
         return redirect()->route('dropdowns.index')
                         ->with('success','DropDown created successfully.');
     }
@@ -96,7 +102,9 @@ class DropDownController extends Controller
      */
     public function update(Request $request, DropDown $dropdown): RedirectResponse
     {
-        $request->validate(['name' => 'required|string']);
+        $request->validate([
+            'name' => 'required|string'
+        ]);
         $dropdown->update($request->only('name'));
     
         return redirect()->route('dropdowns.index')

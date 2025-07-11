@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\DropDown;
 use App\Models\DropDownValue;
 
 trait DropdownTrait
@@ -9,12 +10,33 @@ trait DropdownTrait
     /**
      * Get dropdown values by ID
      */
-    public function getDropdownValues(int $dropdownId)
+    public function getDropdownValues(string $code)
     {
-        return DropDownValue::where('drop_down_id', $dropdownId)
+        $dropdown = DropDown::where('code', $code)->first();
+
+        if (! $dropdown) {
+            return collect(); // or throw exception/log error
+        }
+
+        $values = DropDownValue::where('drop_down_id', $dropdown->id)
             ->orderBy('value')
             ->get();
     }
+
+    public function getDropdownOptions(string $code)
+    {
+        $dropdown = DropDown::where('code', $code)->first();
+
+        if (! $dropdown) {
+            return [];
+        }
+
+        return  DropDownValue::where('drop_down_id', $dropdown->id)
+            ->orderBy('value')
+            ->pluck('value', 'id')
+            ->toArray();
+    }
+
 
     /**
      * Get all commonly used dropdowns in one call
@@ -22,11 +44,11 @@ trait DropdownTrait
     public function getCommonDropdowns()
     {
         return [
-            'titles' => $this->getDropdownValues(1),           // Titles
-            'contactMethods' => $this->getDropdownValues(2),   // Preferred Contact Methods
-            'contactTypes' => $this->getDropdownValues(3),           // Titles
-            'paymentMethods' => $this->getDropdownValues(4), 
-            'categories' => $this->getDropdownValues(5), 
+            'titles'            => $this->getDropdownValuesByCode('TITLES'),
+            'contactMethods'    => $this->getDropdownValuesByCode('CONTACT_METHODS'),
+            'contactTypes'      => $this->getDropdownValuesByCode('CONTACT_TYPES'),
+            'paymentMethods'    => $this->getDropdownValuesByCode('PAYMENT_METHODS'),
+            'categories'        => $this->getDropdownValuesByCode('CATEGORIES'),
         ];
     }
 }

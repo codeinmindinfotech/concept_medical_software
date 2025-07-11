@@ -17,32 +17,40 @@
         'isListPage' => false
     ])
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <form action="{{ route('dropdowns.store') }}" method="POST">
     @csrf
 
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-md-6">
-            <div class="form-group">
-                <strong>Name:</strong>
-                <input type="text" name="name" class="form-control"  value="{{ old('name') }}" placeholder="Name">
-            </div>
+            <label for="code" class="form-label"><strong>Code</strong></label>
+            <input type="text"
+                   id="code"
+                   name="code"
+                   class="form-control @error('code') is-invalid @enderror"
+                   value="{{ old('code') }}"
+                   placeholder="CODE_TYPE"
+                   oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9_]/g, '')">
+            @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
-            
-        <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                <button type="submit" class="btn btn-primary btn-sm mb-3 mt-2"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
+
+        <div class="col-md-6">
+            <label for="name" class="form-label"><strong>Name</strong></label>
+            <input type="text"
+                   id="name"
+                   name="name"
+                   class="form-control @error('name') is-invalid @enderror"
+                   value="{{ old('name') }}"
+                   placeholder="Name">
+            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
     </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary btn-sm mb-3 mt-2">
+            <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+    </div>
+
 </form>
 </div>
 @endsection

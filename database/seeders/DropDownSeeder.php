@@ -12,11 +12,13 @@ class DropDownSeeder extends Seeder
      */
     public function run(): void
     {
-        $title = DropDown::firstOrCreate(['name' => 'Title']);
-        $preferred = DropDown::firstOrCreate(['name' => 'Preferred Contact']);
-        $contactType = DropDown::firstOrCreate(['name' => 'Contact Type']);
-        $paymentMethod = DropDown::firstOrCreate(['name' => 'Payment Method']);
-        $visitCategory = DropDown::firstOrCreate(['name' => 'Visit Category']);
+        $title = DropDown::firstOrCreate(['code' => 'Title','name' => 'Title']);
+        $preferred = DropDown::firstOrCreate(['code' => 'Preferred_Contact','name' => 'Preferred Contact']);
+        $contactType = DropDown::firstOrCreate(['code' => 'Contact_Type','name' => 'Contact Type']);
+        $paymentMethod = DropDown::firstOrCreate(['code' => 'Payment_Method','name' => 'Payment Method']);
+        $visitCategory = DropDown::firstOrCreate(['code' => 'Visit_Category','name' => 'Visit Category']);
+        $narrative = DropDown::firstOrCreate(['code' => 'Narrative','name' => 'Narrative']);
+        $chargeGroupType = DropDown::firstOrCreate(['code' => 'Charge_Group_Type','name' => 'Charge Group Type']);
 
         $titles = ['Dr.', 'Mr', 'Mrs', 'Fr', 'Prof.', 'Sr', 'Ms'];
         foreach ($titles as $val) {
@@ -57,5 +59,22 @@ class DropDownSeeder extends Seeder
                 'value' => $val
             ]);
         }
+
+        $narratives = ['Narrative'];
+        foreach ($narratives as $val) {
+            DropDownValue::firstOrCreate([
+                'drop_down_id' => $narrative->id,
+                'value' => $val
+            ]);
+        }
+
+        $chargeGroupTypes = ['Consultation', 'Procedure'];
+        foreach ($chargeGroupTypes as $val) {
+            DropDownValue::firstOrCreate([
+                'drop_down_id' => $chargeGroupType->id,
+                'value' => $val
+            ]);
+        }
+
     }
 }

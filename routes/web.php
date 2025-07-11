@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Backend\ChargeCodeController;
+use App\Http\Controllers\Backend\ChargeCodePriceController;
 use App\Http\Controllers\Backend\ClinicController;
 use App\Http\Controllers\Backend\WaitingListController;
 use App\Http\Controllers\Backend\ConsultantController;
@@ -33,6 +35,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('insurances', InsuranceController::class);
     Route::resource('consultants', ConsultantController::class);
     Route::resource('clinics', ClinicController::class);
+    Route::resource('chargecodes', ChargeCodeController::class);
+    Route::resource('chargecodeprices', ChargeCodePriceController::class);
+    Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
+    Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
 
     // dropdown  parent
     Route::resource('dropdowns', DropDownController::class);
@@ -81,12 +87,5 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('waiting-lists/{waitingList}', [WaitingListController::class, 'update'])->name('update');
         Route::delete('waiting-lists/{waitingList}', [WaitingListController::class, 'destroy'])->name('destroy');
     });
-    // Route::prefix('patients/{patient}')->name('waiting-lists.')->group(function () {
-    //     Route::post('waiting-lists', [WaitingListController::class, 'store'])->name('store');
-    //     Route::get('waiting-lists', [WaitingListController::class, 'index'])->name('index');
-    //     Route::get('waiting-lists/{waitingList}', [WaitingListController::class, 'show'])->name('show');
-    //     Route::put('waiting-lists/{waitingList}', [WaitingListController::class, 'update'])->name('update');
-    //     Route::delete('waiting-lists/{waitingList}', [WaitingListController::class, 'destroy'])->name('destroy');
-    // });
    
 });

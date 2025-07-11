@@ -35,6 +35,12 @@
                     <span>Insurance</span>
                 </a>
         
+                {{-- Charge Codes --}}
+                <a class="nav-link {{ Request::is('chargecodes*') ? 'active' : '' }}" href="{{ route('chargecodes.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <span>Charge Codes</span>
+                </a>
+
                 {{-- Clinic --}}
                 <a class="nav-link {{ Request::is('clinics*') ? 'active' : '' }}" href="{{ route('clinics.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>

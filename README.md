@@ -29,3 +29,6 @@ Password: 123456
 php artisan generate:permissions {{doctor}} 
 
 {{doctor}} controller name for create permission
+
+# use Trait to get value from dropdown
+$methods = $this->getDropdownOptions('CONTACT_METHODS');

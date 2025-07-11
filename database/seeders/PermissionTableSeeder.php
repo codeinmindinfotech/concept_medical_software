@@ -13,50 +13,24 @@ class PermissionTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = [
-            'role-list',
-            'role-create',
-            'role-edit',
-            'role-delete',
-            
-            'dropdown-list',
-            'dropdown-create',
-            'dropdown-edit',
-            'dropdown-delete',
-            
-            'dropdownvalue-list',
-            'dropdownvalue-create',
-            'dropdownvalue-edit',
-            'dropdownvalue-delete',
-            
-            'doctor-list',
-            'doctor-create',
-            'doctor-edit',
-            'doctor-delete',
+        $entities = [
+            'role',
+            'dropdown',
+            'dropdownvalue',
+            'doctor',
+            'patient',
+            'consultant',
+            'insurance',
+            'clinic',
+            'chargecode'
+        ];
 
-            'patient-list',
-            'patient-create',
-            'patient-edit',
-            'patient-delete',
+        $actions = ['list', 'create', 'edit', 'delete'];
 
-            'consultant-list',
-            'consultant-create',
-            'consultant-edit',
-            'consultant-delete',
-
-            'insurance-list',
-            'insurance-create',
-            'insurance-edit',
-            'insurance-delete',
-
-            'clinic-list',
-            'clinic-create',
-            'clinic-edit',
-            'clinic-delete'
-         ];
-         
-         foreach ($permissions as $permission) {
-              Permission::firstOrCreate(['name' => $permission]);
-         }
+        foreach ($entities as $entity) {
+            foreach ($actions as $action) {
+                Permission::firstOrCreate(['name' => "{$entity}-{$action}"]);
+            }
+        }
     }
 }
