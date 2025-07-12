@@ -44,11 +44,11 @@ trait DropdownTrait
     public function getCommonDropdowns()
     {
         return [
-            'titles'            => $this->getDropdownValuesByCode('TITLES'),
-            'contactMethods'    => $this->getDropdownValuesByCode('CONTACT_METHODS'),
-            'contactTypes'      => $this->getDropdownValuesByCode('CONTACT_TYPES'),
-            'paymentMethods'    => $this->getDropdownValuesByCode('PAYMENT_METHODS'),
-            'categories'        => $this->getDropdownValuesByCode('CATEGORIES'),
+            'titles'            => $this->getDropdownValuesByCode('TITLE'),
+            'contactMethods'    => $this->getDropdownValuesByCode('CONTACT_METHOD'),
+            'contactTypes'      => $this->getDropdownValuesByCode('CONTACT_TYPE'),
+            'paymentMethods'    => $this->getDropdownValuesByCode('PAYMENT_METHOD'),
+            'categories'        => $this->getDropdownValuesByCode('VISIT_CATEGORY'),
         ];
     }
 }
