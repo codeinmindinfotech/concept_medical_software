@@ -32,3 +32,6 @@ php artisan generate:permissions {{doctor}}
 
 # use Trait to get value from dropdown
 $methods = $this->getDropdownOptions('CONTACT_METHODS');
+
+# run when first time
+composer dump-autoload
