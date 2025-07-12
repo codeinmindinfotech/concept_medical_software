@@ -35,7 +35,7 @@
         @include('patients.form', [
             'patient' => $patient,
             'insurances' => $insurances,
-            'contactMethods' => $contactMethods,
+            'preferredContact' => $preferredContact,
             'doctors' => $doctors,
             'titles' => $titles
             ])

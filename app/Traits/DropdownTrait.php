@@ -47,6 +47,7 @@ trait DropdownTrait
     {
         return [
             'titles'            => $this->getDropdownValuesByCode('TITLE'),
+            'preferredContact'    => $this->getDropdownValuesByCode('PREFERRED_CONTACT'),
             'contactMethods'    => $this->getDropdownValuesByCode('CONTACT_METHOD'),
             'contactTypes'      => $this->getDropdownValuesByCode('CONTACT_TYPE'),
             'paymentMethods'    => $this->getDropdownValuesByCode('PAYMENT_METHOD'),

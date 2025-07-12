@@ -178,7 +178,7 @@
             <select id="preferred_contact_id" name="preferred_contact_id"
               class="form-select @error('preferred_contact_id') is-invalid @enderror">
               <option value="">-- Select --</option>
-              @foreach($contactMethods as $method)
+              @foreach($preferredContact as $method)
               <option value="{{ $method->id }}" {{ old('preferred_contact_id', $patient->preferred_contact_id ?? '') ==
                 $method->id ? 'selected' : '' }}>
                 {{ $method->value }}

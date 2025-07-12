@@ -91,7 +91,7 @@ class PatientController extends Controller
         extract($this->getCommonDropdowns());
         $doctors = Doctor::orderBy('name')->get(); 
         $insurances = Insurance::orderBy('code')->get(); 
-        return view('patients.create', compact('pageTitle','titles','insurances', 'contactMethods','doctors'));
+        return view('patients.create', compact('pageTitle','titles','insurances', 'preferredContact','doctors'));
     }
     
     /**
@@ -151,7 +151,7 @@ class PatientController extends Controller
         extract($this->getCommonDropdowns());
         $doctors = Doctor::orderBy('name')->get(); 
         $insurances = Insurance::orderBy('code')->get();
-        return view('patients.edit',compact('patient','pageTitle','titles','insurances', 'contactMethods','doctors'));
+        return view('patients.edit',compact('patient','pageTitle','titles','insurances', 'preferredContact','doctors'));
     }
     
     /**
