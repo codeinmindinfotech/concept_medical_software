@@ -37,7 +37,7 @@
           <div class="card-body d-flex align-items-center">
             <img src="https://via.placeholder.com/70" alt="Avatar" class="rounded-circle me-3">
             <div>
-              <h4 class="mb-1">
+              <h4 class="mb-1"> (Working)
                 {{ optional($patient->title)->value ? $patient->title->value . ' ' : '' }}
                 {{ $patient->first_name }} {{ $patient->surname }}
               </h4>
@@ -58,7 +58,7 @@
             <div class="col-md-3">
               <div class="nav flex-column nav-pills me-3" id="v-patient-tabs" role="tablist" aria-orientation="vertical">
                     <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#waiting-lists" type="button"> 
-                      <i class="fas fa-notes-medical me-2"></i>Clinic Visits
+                      <i class="fas fa-notes-medical me-2"></i>Waiting Lists
                     </button>
                     <button class="nav-link" data-bs-toggle="pill" data-bs-target="#recalls" type="button">
                       <i class="fas fa-bell me-2"></i>Recalls
