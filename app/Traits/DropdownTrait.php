@@ -20,7 +20,9 @@ trait DropdownTrait
 
         $values = DropDownValue::where('drop_down_id', $dropdown->id)
             ->orderBy('value')
-            ->get();
+            ->get(['id', 'value']);
+
+            return $values;
     }
 
     public function getDropdownOptions(string $code)
