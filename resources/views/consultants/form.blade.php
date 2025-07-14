@@ -1,5 +1,4 @@
 <div class="row g-4">
-
     {{-- Consultant Details --}}
     <div class="col-12">
         <div class="card shadow-sm">
@@ -97,26 +96,28 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="insurance_id" class="form-label"><strong>Insurance Provider<span class="txt-error">*</span></strong></label>
-                            <select id="insurance_id" name="insurance_id[]" multiple
-                                    class="form-select @error('insurance_id') is-invalid @enderror">
-                              @php
+                            <select id="insurance_id" name="insurance_id[]" multiple class="select2 @error('insurance_id') is-invalid @enderror" style="width:100%" data-placeholder="-- Select --">
+
+                                {{-- <select id="insurance_id" name="insurance_id[]" multiple
+                                    class="select2 @error('insurance_id') is-invalid @enderror"> --}}
+                                @php
                                 $selectedIds = old('insurance_id',
-                                                   isset($consultant) 
-                                                     ? $consultant->insurances->pluck('id')->toArray() 
-                                                     : []);
-                              @endphp
-                          
-                              @foreach($insurances as $i)
-                                <option value="{{ $i->id }}"{{ in_array($i->id, $selectedIds) ? ' selected' : '' }}>
-                                  {{ $i->code }}
+                                isset($consultant)
+                                ? $consultant->insurances->pluck('id')->toArray()
+                                : []);
+                                @endphp
+
+                                @foreach($insurances as $i)
+                                <option value="{{ $i->id }}" {{ in_array($i->id, $selectedIds) ? ' selected' : '' }}>
+                                    {{ $i->code }}
                                 </option>
-                              @endforeach
+                                @endforeach
                             </select>
                             @error('insurance_id')
-                              <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                          </div>
-                          
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -131,3 +132,4 @@
         </button>
     </div>
 </div>
+

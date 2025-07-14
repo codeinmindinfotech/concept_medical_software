@@ -20,7 +20,7 @@
           {{-- Method --}}
           <div class="col-md-6">
             <label for="method" class="form-label"><strong>Contact Method <span class="txt-error">*</span></strong></label>
-            <select id="method" name="method" class="form-select @error('method') is-invalid @enderror">
+            <select id="method" name="method" class="select2 @error('method') is-invalid @enderror">
               <option value="">-- Select Method --</option>
               <option value="phone message" {{ old('method', $note->method ?? '') === 'phone message' ? 'selected' : '' }}>Phone Message</option>
               <option value="note" {{ old('method', $note->method ?? '') === 'note' ? 'selected' : '' }}>Note</option>

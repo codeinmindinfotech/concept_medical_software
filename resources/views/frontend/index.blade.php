@@ -279,7 +279,7 @@
               <input type="datetime-local" name="date" class="form-control datepicker" id="date" placeholder="Appointment Date" required="">
             </div>
             <div class="col-md-4 form-group mt-3">
-              <select name="department" id="department" class="form-select" required="">
+              <select name="department" id="department" class="select2" required="">
                 <option value="">Select Department</option>
                 <option value="Department 1">Department 1</option>
                 <option value="Department 2">Department 2</option>
@@ -287,7 +287,7 @@
               </select>
             </div>
             <div class="col-md-4 form-group mt-3">
-              <select name="doctor" id="doctor" class="form-select" required="">
+              <select name="doctor" id="doctor" class="select2" required="">
                 <option value="">Select Doctor</option>
                 <option value="Doctor 1">Doctor 1</option>
                 <option value="Doctor 2">Doctor 2</option>

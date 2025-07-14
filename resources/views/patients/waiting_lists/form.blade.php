@@ -11,7 +11,7 @@
           @csrf
           <div class="mb-3">
             <label for="note" class="form-label">Clinic</label>
-            <select class="form-select" id="editClinic" name="clinic_id">
+            <select class="select2 select2" id="editClinic" name="clinic_id">
                 <option value="">-- Select Clinic --</option>
                 @foreach($clinics as $clinic)
                   <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
@@ -28,7 +28,7 @@
           </div>
           <div class="mb-3">
             <label for="editCategory" class="form-label">Category</label>
-            <select class="form-select" id="editCategory" name="category_id" required>
+            <select class="select2" id="editCategory" name="category_id" required>
               @foreach($categories as $category)
                 <option value="{{ $category->id }}">{{ $category->value }}</option>
               @endforeach
@@ -59,7 +59,7 @@
         </div>
         <div class="mb-3">
           <label for="note" class="form-label">Clinic</label>
-          <select class="form-select" id="clinic_id" name="clinic_id">
+          <select class="select2 select2" id="clinic_id" name="clinic_id">
               <option value="">-- Select Clinic --</option>
               @foreach($clinics as $clinic)
                 <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
@@ -73,7 +73,7 @@
         <div class="mb-3">
           <div class="col-md-4">
             <label for="category_id" class="form-label"><strong>Category<span class="txt-error">*</span></strong></label>
-            <select id="category_id" name="category_id" class="form-select @error('category_id') is-invalid @enderror">
+            <select id="category_id" name="category_id" class="select2 select2 @error('category_id') is-invalid @enderror">
               <option value="">-- Select Title --</option>
               @foreach($categories as $title)
                 <option value="{{ $title->id }}" {{ old('category_id', $patient->category_id ?? '') == $title->id ? 'selected' :

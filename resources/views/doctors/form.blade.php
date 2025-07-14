@@ -93,7 +93,7 @@
           <div class="col-md-3">
             <label for="contact_type_id" class="form-label"><strong>Contact Type</strong></label>
             <select name="contact_type_id" id="contact_type_id"
-              class="form-select @error('contact_type_id') is-invalid @enderror">
+              class="select2 @error('contact_type_id') is-invalid @enderror">
               <option value="">-- Select Type --</option>
               @foreach($contactTypes as $type)
               <option value="{{ $type->id }}" {{ old('contact_type_id', $doctor->contact_type_id ?? '') == $type->id ?
@@ -109,7 +109,7 @@
           <div class="col-md-3">
             <label for="payment_method_id" class="form-label"><strong>Payment Method</strong></label>
             <select name="payment_method_id" id="payment_method_id"
-              class="form-select @error('payment_method_id') is-invalid @enderror">
+              class="select2 @error('payment_method_id') is-invalid @enderror">
               <option value="">-- Select Method --</option>
               @foreach($paymentMethods as $method)
               <option value="{{ $method->id }}" {{ old('payment_method_id', $doctor->payment_method_id ?? '') ==

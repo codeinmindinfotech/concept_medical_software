@@ -57,7 +57,7 @@
                                     </div>
                                     {{-- <div class="col-md-4">
                                         <label for="title" class="form-label">Title</label>
-                                        <select name="title" id="title" class="form-select">
+                                        <select name="title" id="title" class="select2">
                                             <option value="">-- Select Title --</option>
                                             @foreach ($titles as $title)
                                                 <option value="{{ $title->value }}" {{ request('title') == $title->value ? 'selected' : '' }}>
