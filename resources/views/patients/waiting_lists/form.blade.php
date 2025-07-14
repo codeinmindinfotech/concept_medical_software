@@ -46,7 +46,7 @@
 <!-- Add Visit Modal -->
 <div class="modal fade" id="addVisitModal" tabindex="-1" aria-labelledby="addVisitModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form class="modal-content" method="post">
+    <form class="modal-content" method="post" action="{{ route('waiting-lists.store', $patient->id) }}">
       <div class="modal-header">
         <h5 class="modal-title" id="addVisitModalLabel">Add Waiting List</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

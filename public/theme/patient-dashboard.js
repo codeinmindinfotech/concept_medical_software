@@ -35,8 +35,9 @@ $(document).ready(function () {
   $(document).on('submit', '#addVisitModal form', function (e) {
     e.preventDefault();
     const form = $(this);
+    const url = form.attr('action'); 
     $.ajax({
-      url: `/patients/${patientId}/waiting-lists`,
+      url: url,
       type: 'POST',
       data: new FormData(this),
       contentType: false,
