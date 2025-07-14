@@ -11,6 +11,25 @@ $(document).ready(function () {
       $('#WaitingListsList').html(data);
     });
   }
+  $('#editVisitModal, #addVisitModal').on('shown.bs.modal', function () {
+    $(this).find('.select2').each(function () {
+      $(this).select2({
+        dropdownParent: $(this).closest('.modal'),
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: '-- Select --',
+        allowClear: true
+      });
+    });
+
+    flatpickr("#editVisitDate", {
+      dateFormat: "Y-m-d"
+    });
+  
+    flatpickr("#visit_date", {
+      dateFormat: "Y-m-d"
+    });
+  });
 
   // Add new visit
   $(document).on('submit', '#addVisitModal form', function (e) {
