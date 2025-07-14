@@ -97,7 +97,13 @@
     </form>
   </div>
 </div>
-
-
+<script>
+  window.routes = {
+    index: @json(route('waiting-lists.index', ['patient' => $patient->id])),
+    show: @json(route('waiting-lists.show', ['patient' => $patient->id, 'waitingList' => '__ID__'])),
+    update: @json(route('waiting-lists.update', ['patient' => $patient->id, 'waitingList' => '__ID__'])),
+    destroy: @json(route('waiting-lists.destroy', ['patient' => $patient->id, 'waitingList' => '__ID__']))
+  };
+</script>
 
 

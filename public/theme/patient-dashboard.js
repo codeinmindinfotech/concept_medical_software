@@ -4,13 +4,18 @@ $(document).ready(function () {
   });
 
   const patientId = $('#patientId').val();
+  function routeUrl(template, id) {
+    return template.replace('__ID__', id);
+  }
+    // Load waiting lists
 
-  // Load waiting lists
   function loadWaitingLists() {
-    $.get(`/patients/${patientId}/waiting-lists`, function (data) {
+    const listUrl = window.routes.index; // ✅ no ID needed
+    $.get(listUrl, function (data) {
       $('#WaitingListsList').html(data);
     });
   }
+
   $('#editVisitModal, #addVisitModal').on('shown.bs.modal', function () {
     $(this).find('.select2').each(function () {
       $(this).select2({
@@ -67,24 +72,30 @@ $(document).ready(function () {
 
   $(document).on('click', '.edit-btn', function () {
     const id = $(this).data('id');
-    $.get(`/patients/${patientId}/waiting-lists/${id}`, function (data) {
+    const fetchUrl = routeUrl(window.routes.show, id);
+    const updateUrl = routeUrl(window.routes.update, id);
+
+    $.get(fetchUrl, function (data) {
       $('#editVisitDate').val(data.visit_date);
       $('#editNote').val(data.consult_note);
       $('#editCategory').val(data.category_id);
       $('#editClinic').val(data.clinic_id);
-      $('#editVisitModal').data('id', id);
+
+      $('#editVisitForm').attr('action', updateUrl); // ✅ Dynamically set form action
       const modal = new bootstrap.Modal(document.getElementById('editVisitModal'));
-      modal.show(); // Proper Bootstrap 5 way
+      modal.show();
     });
   });
 
   $('#editVisitForm').on('submit', function (e) {
     e.preventDefault();
-    const id = $('#editVisitModal').data('id');
+    const form = $(this);
+    const url = form.attr('action'); // ✅ Get dynamic action
     const formData = new FormData(this);
     formData.append('_method', 'PUT');
+  
     $.ajax({
-      url: `/patients/${patientId}/waiting-lists/${id}`,
+      url: url,
       type: 'POST',
       data: formData,
       contentType: false,
@@ -94,26 +105,66 @@ $(document).ready(function () {
         loadWaitingLists();
       },
       error: function (xhr) {
-        alert('Error updating: ' + xhr.responseJSON.message);
+        alert('Error updating: ' + (xhr.responseJSON?.message || 'Unknown error'));
       }
     });
   });
+  
+
+  // $('#editVisitForm').on('submit', function (e) {
+  //   e.preventDefault();
+  //   const id = $('#editVisitModal').data('id');
+  //   const formData = new FormData(this);
+  //   formData.append('_method', 'PUT');
+  //   $.ajax({
+  //     url: `/patients/${patientId}/waiting-lists/${id}`,
+  //     type: 'POST',
+  //     data: formData,
+  //     contentType: false,
+  //     processData: false,
+  //     success: function () {
+  //       $('#editVisitModal').modal('hide');
+  //       loadWaitingLists();
+  //     },
+  //     error: function (xhr) {
+  //       alert('Error updating: ' + xhr.responseJSON.message);
+  //     }
+  //   });
+  // });
 
   // Delete visit
   $(document).on('click', '.delete-btn', function () {
     const id = $(this).data('id');
+    const url = routeUrl(window.routes.destroy, id); // ✅ Dynamic route from Blade
+  
     if (!confirm('Are you sure you want to delete this visit?')) return;
+  
     $.ajax({
-      url: `/patients/${patientId}/waiting-lists/${id}`,
+      url: url,
       method: 'DELETE',
       success: function () {
-        $(`tr[data-id="${id}"]`).remove();
+        $(`tr[data-id="${id}"]`).remove(); // Remove row from table
       },
       error: function (xhr) {
         alert('Error deleting: ' + (xhr.responseJSON?.message || 'Unknown error'));
       }
     });
   });
+  
+  // $(document).on('click', '.delete-btn', function () {
+  //   const id = $(this).data('id');
+  //   if (!confirm('Are you sure you want to delete this visit?')) return;
+  //   $.ajax({
+  //     url: `/patients/${patientId}/waiting-lists/${id}`,
+  //     method: 'DELETE',
+  //     success: function () {
+  //       $(`tr[data-id="${id}"]`).remove();
+  //     },
+  //     error: function (xhr) {
+  //       alert('Error deleting: ' + (xhr.responseJSON?.message || 'Unknown error'));
+  //     }
+  //   });
+  // });
 
   // Handle validation errors
   function handleErrors(xhr, form) {
