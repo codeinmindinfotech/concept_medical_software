@@ -38,28 +38,6 @@
         </div>
 
         <div class="card-body ">
-            <form method="GET" action="{{ route('chargecodes.index') }}">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <input type="text" name="search" id="search" class="form-control" placeholder="Search here.." value="{{ request('search') }}">
-                    </div>
-                
-
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-1"></i> Search
-                        </button>
-                    </div>
-
-                    <div class="col-auto">
-                        <a href="{{ route('chargecodes.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-sync-alt me-1"></i> Reset
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="card-body ">
             <div id="chargecode-list" data-pagination-container>
                 @include('chargecodes.list', ['chargecodes' => $chargecodes])
             </div>
@@ -67,3 +45,21 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    $('#ChargeCodeTable').DataTable({
+     paging: true,
+     searching: true,
+     ordering: true,
+     info: true,
+     lengthChange: true,
+     pageLength: 10,
+     columnDefs: [
+       {
+         targets: 6, // column index for "Start Date" (0-based)
+         orderable: false   // Disable sorting
+       }
+     ]
+   });
+</script>
+@endpush

@@ -14,7 +14,7 @@ class PatientPhysicalController extends Controller
 {
     public function index(Request $request, Patient $patient): View|string
     {
-        $physicals = $patient->physicalNotes()->latest()->paginate(10);
+        $physicals = $patient->physicalNotes()->latest()->get();
         if ($request->ajax()) {
             return view('patients.physical.list', compact('patient', 'physicals'))->render();
         }

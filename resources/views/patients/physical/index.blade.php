@@ -40,5 +40,21 @@
 </div>
 @endsection
 @push('scripts')
+<script>
+    $('#PatientPhysical').DataTable({
+     paging: true,
+     searching: true,
+     ordering: true,
+     info: true,
+     lengthChange: true,
+     pageLength: 10,
+     columnDefs: [
+       {
+         targets: 3, // column index for "Start Date" (0-based)
+         orderable: false   // Disable sorting
+       }
+     ]
+   });
+</script>   
 @endpush
 

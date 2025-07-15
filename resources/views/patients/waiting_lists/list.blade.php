@@ -7,8 +7,8 @@
     </button>
   </div>
   <div class="card-body" data-pagination-container>
-    <table class="table table-hover table-bordered data-table align-middle mb-0"  >
-      <thead class="table-light" >
+    <table class="table table-hover table-bordered data-table align-middle mb-0" id="WaitingTable" >
+      <thead class="table-dark" >
         <tr>
           <th>Date</th>
           <th>Clinic</th>
@@ -46,7 +46,7 @@
         @endforelse
       </tbody>
     </table>
-    {!! $waitingLists->appends(request()->query())->links('pagination::bootstrap-5') !!}
+    {{-- {!! $waitingLists->appends(request()->query())->links('pagination::bootstrap-5') !!} --}}
 
 
   </div>

@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-bordered data-table" id="DropdownValueTable">
+    <thead class="table-dark">
         <tr>
             <th>No</th>
             <th>Title</th>
@@ -28,4 +28,4 @@
         @endforelse
     </tbody>    
 </table>
-{{ $values->appends(['dropDownId' => $dropDownId])->links('pagination::bootstrap-5') }}
+{{-- {{ $values->appends(['dropDownId' => $dropDownId])->links('pagination::bootstrap-5') }} --}}

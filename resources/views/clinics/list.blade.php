@@ -1,5 +1,5 @@
-<table class="table table-hover align-middle text-nowrap">
-    <thead class="table-light">
+<table class="table table-hover align-middle text-nowrap" id="ClinicTable">
+    <thead class="table-dark">
         <tr>
             <th style="width: 50px;">#</th>
             <th>Code</th>
@@ -12,7 +12,7 @@
     <tbody>
         @forelse ($clinics as $index => $clinic)
             <tr>
-                <td>{{ $clinics->firstItem() + $index }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $clinic->code }}</td>
                 <td>{{ $clinic->name }}</td>
                 <td>

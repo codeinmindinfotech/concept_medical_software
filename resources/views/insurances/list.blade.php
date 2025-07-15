@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-bordered data-table" id="InsuranceTable">
+    <thead class="table-dark">
         <tr>
             <th>No</th>
             <th>Code</th>
@@ -34,4 +34,4 @@
         @endforelse
     </tbody>    
 </table>
-{!! $insurances->links('pagination::bootstrap-5') !!}
+{{-- {!! $insurances->links('pagination::bootstrap-5') !!} --}}

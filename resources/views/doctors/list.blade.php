@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-striped table-bordered" id="doctorTable">
+    <thead class="table-dark">
         <tr>
             <th>No</th>
             <th>Name</th>
@@ -39,4 +39,4 @@
         @endforelse
     </tbody>    
 </table>
-{!! $doctors->links('pagination::bootstrap-5') !!}
+{{-- {!! $doctors->links('pagination::bootstrap-5') !!} --}}

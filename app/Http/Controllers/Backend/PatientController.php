@@ -222,7 +222,7 @@ class PatientController extends Controller
     public function patient_dashboard(Patient $patient)
     {
         extract($this->getCommonDropdowns());
-        $waitingLists = $patient->WaitingLists()->latest()->paginate(10);
+        $waitingLists = $patient->WaitingLists()->latest()->get();
         $clinics = Clinic::orderBy('name')->get(); 
         return view('patients.dashboard', compact('patient','categories','clinics','waitingLists'));
     }

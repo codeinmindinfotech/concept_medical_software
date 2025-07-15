@@ -35,7 +35,7 @@ class DropDownValueController extends Controller
         $values = DropDownValue::with('dropdown')
             ->where('drop_down_id', $dropDownId)
             ->latest()
-            ->paginate(5);
+            ->get();
 
         if ($request->ajax()) {
             return view('dropdownvalues.list', compact('values','dropDownId'))->render();

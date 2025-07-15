@@ -29,7 +29,7 @@ class DoctorController extends Controller
     public function index(Request $request): View|string
     {
         $this->authorize('viewAny', Doctor::class);
-        $doctors = Doctor::latest()->paginate(10);
+        $doctors = Doctor::latest()->get();
         if ($request->ajax()) {
             return view('doctors.list', compact('doctors'))->render();
         } 

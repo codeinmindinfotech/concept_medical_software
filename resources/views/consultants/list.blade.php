@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-bordered data-table" id="ConsultantTable">
+    <thead class="table-dark">
         <tr>
             <th>No</th>
             <th>Code</th>
@@ -37,4 +37,4 @@
         @endforelse
     </tbody>    
 </table>
-{!! $consultants->links('pagination::bootstrap-5') !!}
+{{-- {!! $consultants->links('pagination::bootstrap-5') !!} --}}

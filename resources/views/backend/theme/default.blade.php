@@ -11,6 +11,9 @@
     <title>{{ $pageTitle ?? 'Concept Medical Software' }}</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
 
     <!-- Select2 Core + Bootstrap 5 Theme -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -22,7 +25,7 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
- </head>
+</head>
 <body class="sb-nav-fixed">
 
     @include('backend.theme.header')
@@ -45,17 +48,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <!-- alert box -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('theme/main/js/scripts.js') }}"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    {{-- <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="{{ asset('theme/main/js/datatables-simple-demo.js') }}"></script> --}}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('theme/assets/demo/chart-area-demo.js') }}"></script>
+    <script src="{{ asset('theme/assets/demo/chart-bar-demo.js') }}"></script>
+    @stack('scripts')
     <!-- Initialize Select2 -->
     <script>
-      $(document).ready(function() {
-        $('#insurance_id').select2({
-          theme: 'bootstrap-5',
-          placeholder: $('#insurance_id').data('placeholder'),
-          allowClear: true,
-          width: '100%',
-          closeOnSelect: false  // important for multiple select UX
+        $(document).ready(function() {
+            $('#insurance_id').select2({
+                theme: 'bootstrap-5'
+                , placeholder: $('#insurance_id').data('placeholder')
+                , allowClear: true
+                , width: '100%'
+                , closeOnSelect: false // important for multiple select UX
+            });
         });
-      });
         $(document).ready(function() {
             $('.select2').select2({
                 theme: 'bootstrap-5'
@@ -85,24 +104,6 @@
                 }
             }
         });
-
-    </script>
-
-
-
-
-    <!-- alert box -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('theme/main/js/scripts.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('theme/main/js/datatables-simple-demo.js') }}"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-
-    <script src="{{ asset('theme/assets/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('theme/assets/demo/chart-bar-demo.js') }}"></script>
-    @stack('scripts')
-    <script>
         document.addEventListener('DOMContentLoaded', function() {
             // flatpickr("#datepicker", {
             //     dateFormat: "Y-m-d",
@@ -152,3 +153,4 @@
     </script>
 </body>
 </html>
+

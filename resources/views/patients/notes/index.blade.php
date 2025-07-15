@@ -41,6 +41,20 @@
 @endsection
 @push('scripts')
 <script>
+    $('#PatientNote').DataTable({
+     paging: true,
+     searching: true,
+     ordering: true,
+     info: true,
+     lengthChange: true,
+     pageLength: 10,
+     columnDefs: [
+       {
+         targets: 5, // column index for "Start Date" (0-based)
+         orderable: false   // Disable sorting
+       }
+     ]
+   });
     $(document).ready(function() {
         $('.data-table').on('click', '.toggle-completed', function() {
             var badge = $(this);

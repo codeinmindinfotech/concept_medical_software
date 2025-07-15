@@ -7,12 +7,32 @@ $(document).ready(function () {
   function routeUrl(template, id) {
     return template.replace('__ID__', id);
   }
-    // Load waiting lists
+  // Load waiting lists
+
+  let dataTableInstance;
+
+  function initDataTable() {
+    if ($.fn.DataTable.isDataTable('#WaitingTable')) {
+      $('#WaitingTable').DataTable().destroy();
+    }
+    dataTableInstance = $('#WaitingTable').DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      info: true,
+      lengthChange: true,
+      pageLength: 10,
+      columnDefs: [
+        { targets: 4, orderable: false } // disable sorting on Actions column
+      ]
+    });
+  }
+  initDataTable();
 
   function loadWaitingLists() {
-    const listUrl = window.routes.index; // ✅ no ID needed
-    $.get(listUrl, function (data) {
-      $('#WaitingListsList').html(data);
+    $.get(window.routes.index, function (data) {
+      $('[data-pagination-container]').html($(data).find('[data-pagination-container]').html());
+      initDataTable();
     });
   }
 
@@ -30,7 +50,7 @@ $(document).ready(function () {
     flatpickr("#editVisitDate", {
       dateFormat: "Y-m-d"
     });
-  
+
     flatpickr("#visit_date", {
       dateFormat: "Y-m-d"
     });
@@ -40,7 +60,7 @@ $(document).ready(function () {
   $(document).on('submit', '#addVisitModal form', function (e) {
     e.preventDefault();
     const form = $(this);
-    const url = form.attr('action'); 
+    const url = form.attr('action');
     $.ajax({
       url: url,
       type: 'POST',
@@ -93,7 +113,7 @@ $(document).ready(function () {
     const url = form.attr('action'); // ✅ Get dynamic action
     const formData = new FormData(this);
     formData.append('_method', 'PUT');
-  
+
     $.ajax({
       url: url,
       type: 'POST',
@@ -109,36 +129,14 @@ $(document).ready(function () {
       }
     });
   });
-  
-
-  // $('#editVisitForm').on('submit', function (e) {
-  //   e.preventDefault();
-  //   const id = $('#editVisitModal').data('id');
-  //   const formData = new FormData(this);
-  //   formData.append('_method', 'PUT');
-  //   $.ajax({
-  //     url: `/patients/${patientId}/waiting-lists/${id}`,
-  //     type: 'POST',
-  //     data: formData,
-  //     contentType: false,
-  //     processData: false,
-  //     success: function () {
-  //       $('#editVisitModal').modal('hide');
-  //       loadWaitingLists();
-  //     },
-  //     error: function (xhr) {
-  //       alert('Error updating: ' + xhr.responseJSON.message);
-  //     }
-  //   });
-  // });
 
   // Delete visit
   $(document).on('click', '.delete-btn', function () {
     const id = $(this).data('id');
     const url = routeUrl(window.routes.destroy, id); // ✅ Dynamic route from Blade
-  
+
     if (!confirm('Are you sure you want to delete this visit?')) return;
-  
+
     $.ajax({
       url: url,
       method: 'DELETE',
@@ -150,21 +148,6 @@ $(document).ready(function () {
       }
     });
   });
-  
-  // $(document).on('click', '.delete-btn', function () {
-  //   const id = $(this).data('id');
-  //   if (!confirm('Are you sure you want to delete this visit?')) return;
-  //   $.ajax({
-  //     url: `/patients/${patientId}/waiting-lists/${id}`,
-  //     method: 'DELETE',
-  //     success: function () {
-  //       $(`tr[data-id="${id}"]`).remove();
-  //     },
-  //     error: function (xhr) {
-  //       alert('Error deleting: ' + (xhr.responseJSON?.message || 'Unknown error'));
-  //     }
-  //   });
-  // });
 
   // Handle validation errors
   function handleErrors(xhr, form) {

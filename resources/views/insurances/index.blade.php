@@ -21,20 +21,6 @@
             {{ $value }}
         </div>
     @endsession
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
@@ -48,3 +34,21 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    $('#InsuranceTable').DataTable({
+     paging: true,
+     searching: true,
+     ordering: true,
+     info: true,
+     lengthChange: true,
+     pageLength: 10,
+     columnDefs: [
+       {
+         targets: 2, // column index for "Start Date" (0-based)
+         orderable: false   // Disable sorting
+       }
+     ]
+   });
+   </script>
+   @endpush

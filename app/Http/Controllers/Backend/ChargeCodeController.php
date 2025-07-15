@@ -18,18 +18,7 @@ class ChargeCodeController extends Controller
     public function index(Request $request): View|string
     {
         $this->authorize('viewAny', ChargeCode::class);
-        // Admins can search all patients
-        $query = ChargeCode::latest();
-
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('code', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        $chargecodes = $query->paginate(10)->withQueryString();
-
+        $chargecodes = ChargeCode::latest()->get();
 
         if ($request->ajax()) {
             return view('chargecodes.list', compact('chargecodes'))->render();

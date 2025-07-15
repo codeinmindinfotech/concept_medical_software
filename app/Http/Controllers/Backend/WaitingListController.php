@@ -17,7 +17,7 @@ class WaitingListController extends Controller
     {
         $clinics = Clinic::orderBy('name')->get();
         extract($this->getCommonDropdowns());
-        $waitingLists = $patient->WaitingLists()->latest()->paginate(10);
+        $waitingLists = $patient->WaitingLists()->latest()->get();
 
         if (request()->ajax()) {
             return view('patients.waiting_lists.list', compact('patient', 'clinics', 'categories','waitingLists'));

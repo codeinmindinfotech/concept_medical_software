@@ -1,10 +1,10 @@
-<table class="table table-bordered data-table">
+<table class="table table-bordered table-hover align-middle text-nowrap" id="PatientHistoryTable">
     <thead>
         <tr>
             <th>#</th>
             <th>Notes</th>
             <th>Created At</th>
-            <th width="120px">Action</th>
+            <th width="120px" data-sortable="false">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -33,4 +33,4 @@
         @endforelse
     </tbody>
 </table>
-{!! $historys->links('pagination::bootstrap-5') !!}
+{{-- {!! $historys->links('pagination::bootstrap-5') !!} --}}

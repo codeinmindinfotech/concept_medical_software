@@ -21,15 +21,7 @@ class ChargeCodePriceController extends Controller
         // Admins can search all patients
         $query = Insurance::latest();
 
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('code', 'like', '%' . $request->search . '%')
-                  ->orWhere('address', 'like', '%' . $request->search . '%')
-                  ->orWhere('contact_name', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        $insurances = $query->paginate(10)->withQueryString();
+        $insurances = $query->get();
 
 
         if ($request->ajax()) {

@@ -39,6 +39,24 @@
     </div>
 </div>
 @endsection
+<script>
+    $('#PatientHistoryTable').DataTable({
+  paging: true,
+  searching: true,
+  ordering: true,
+  info: true,
+  lengthChange: true,
+  pageLength: 5
+});
+
+  // Or initialize all tables with class .data-table
+    // initDataTable('#PatientHistoryTable', {
+    //     perPage: 15,
+    //     fixedHeight: true,
+    // });
+
+</script>
+
 @push('scripts')
 @endpush
 

@@ -24,3 +24,26 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
 });
+
+function initDataTable(selector, options = {}) {
+    document.addEventListener('DOMContentLoaded', () => {
+      const tables = typeof selector === 'string' ? document.querySelectorAll(selector) : selector;
+  
+      if (!tables) return;
+  
+      const nodes = tables instanceof NodeList ? tables : [tables];
+  
+      nodes.forEach(table => {
+        if (!table.simpleDatatablesInitialized) {
+          new simpleDatatables.DataTable(table, {
+            searchable: true, // ✅ Enables the search box
+            fixedHeight: false,
+            perPage: 10,
+            sortable: true,
+            ...options
+          });
+          table.simpleDatatablesInitialized = true; // flag to prevent double init
+        }
+      });
+    });
+  }

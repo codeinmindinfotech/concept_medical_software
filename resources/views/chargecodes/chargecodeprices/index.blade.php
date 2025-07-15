@@ -10,10 +10,10 @@
     @endphp
 
     @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Maintain Prices',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('chargecodes.create'),
-    'isListPage' => true
+        'pageTitle' => 'Maintain Prices',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' => route('chargecodes.create'),
+        'isListPage' => true
     ])
 
     @session('success')
@@ -31,29 +31,6 @@
                 <i class="fas fa-table me-1"></i> Maintain Prices
             </div>
         </div>
-
-        <div class="card-body ">
-            <form method="GET" action="{{ route('chargecodeprices.index') }}">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <input type="text" name="search" id="search" class="form-control" placeholder="Search here.." value="{{ request('search') }}">
-                    </div>
-                
-
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-1"></i> Search
-                        </button>
-                    </div>
-
-                    <div class="col-auto">
-                        <a href="{{ route('chargecodeprices.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-sync-alt me-1"></i> Reset
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
         <div class="card-body ">
             <div id="chargecodeprices-list" data-pagination-container>
                 @include('chargecodes.chargecodeprices.list', ['insurances' => $insurances])
@@ -62,3 +39,21 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    $('#ChargeCodePriceTable').DataTable({
+     paging: true,
+     searching: true,
+     ordering: true,
+     info: true,
+     lengthChange: true,
+     pageLength: 10,
+    //  columnDefs: [
+    //    {
+    //      targets: 6, // column index for "Start Date" (0-based)
+    //      orderable: false   // Disable sorting
+    //    }
+    //  ]
+   });
+</script>
+@endpush

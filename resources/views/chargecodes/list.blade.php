@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-bordered data-table" id="ChargeCodeTable">
+    <thead class="table-dark">
         <tr>
             <th>No</th>
             <th>Code</th>
@@ -47,4 +47,4 @@
         @endforelse
     </tbody>    
 </table>
-{!! $chargecodes->appends(request()->query())->links('pagination::bootstrap-5') !!}
+{{-- {!! $chargecodes->appends(request()->query())->links('pagination::bootstrap-5') !!} --}}

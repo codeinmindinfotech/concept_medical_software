@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-bordered data-table" id="RoleTable">
+    <thead class="table-dark">
         <tr>
             <th width="100px">No</th>
             <th>Name</th>

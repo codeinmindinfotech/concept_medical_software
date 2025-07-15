@@ -23,7 +23,7 @@ class ClinicController extends Controller
     public function index(Request $request): View|string
     {
         $pageTitle = "Clinics List";
-        $clinics = Clinic::latest()->paginate(10);
+        $clinics = Clinic::latest()->get();
 
         if ($request->ajax()) {
             return view('clinics.list', compact('clinics'))->render();

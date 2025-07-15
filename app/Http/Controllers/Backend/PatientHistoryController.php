@@ -14,7 +14,7 @@ class PatientHistoryController extends Controller
 {
     public function index(Request $request, Patient $patient): View|string
     {
-        $historys = $patient->histories()->latest()->paginate(10);
+        $historys = $patient->histories()->latest()->get();//->get();
         if ($request->ajax()) {
             return view('patients.history.list', compact('patient', 'historys'))->render();
         }

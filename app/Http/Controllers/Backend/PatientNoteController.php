@@ -14,7 +14,7 @@ class PatientNoteController extends Controller
 {
     public function index(Request $request, Patient $patient): View|string
     {
-        $notes = $patient->notes()->latest()->paginate(10);
+        $notes = $patient->notes()->latest()->get();
         if ($request->ajax()) {
             return view('patients.notes.list', compact('patient', 'notes'))->render();
         }

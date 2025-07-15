@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-bordered data-table" id="DropdownTable">
+    <thead class="table-dark">
         <tr>
             <th>No</th>
             <th>Name</th>
@@ -41,4 +41,4 @@
         @endforelse
     </tbody>    
 </table>
-{!! $dropdowns->links('pagination::bootstrap-5') !!}
+{{-- {!! $dropdowns->links('pagination::bootstrap-5') !!} --}}

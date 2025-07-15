@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-bordered data-table" id="UserTable">
+    <thead class="table-dark">
         <tr>
             <th>ID</th>
             <th>Name</th>

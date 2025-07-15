@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table">
-    <thead>
+<table class="table table-hover align-middle text-nowrap" id="PatientPhysical">
+    <thead class="table-dark">
         <tr>
             <th>#</th>
             <th>Notes</th>
@@ -33,4 +33,4 @@
         @endforelse
     </tbody>
 </table>
-{!! $physicals->links('pagination::bootstrap-5') !!}
+{{-- {!! $physicals->links('pagination::bootstrap-5') !!} --}}

@@ -30,7 +30,7 @@ class DropDownController extends Controller
     public function index(Request $request): View|string
     {
         $pageTitle = "DropDown List";
-        $dropdowns = DropDown::latest()->paginate(5);
+        $dropdowns = DropDown::latest()->get();
         if ($request->ajax()) {
             return view('dropdowns.list', compact('dropdowns'))->render();
         } 

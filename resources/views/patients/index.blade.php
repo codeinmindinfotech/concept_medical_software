@@ -107,3 +107,21 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    $('#PatientTable').DataTable({
+     paging: true,
+     searching: false,
+     ordering: true,
+     info: true,
+     lengthChange: true,
+     pageLength: 10,
+     columnDefs: [
+       {
+         targets: 5, // column index for "Start Date" (0-based)
+         orderable: false   // Disable sorting
+       }
+     ]
+   });
+</script>
+@endpush
