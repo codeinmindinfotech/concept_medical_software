@@ -26,7 +26,7 @@ return new class extends Migration
             
             $table->date('admission_date')->nullable();
             $table->date('discharge_date')->nullable();
-            $table->date('visit_date')->default(DB::raw('CURRENT_DATE'));
+            $table->date('visit_date')->nullable();
 
             $table->integer('qty')->default(1);
 
