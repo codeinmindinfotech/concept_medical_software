@@ -18,7 +18,7 @@ return new class extends Migration
 
             // Foreign key to chargecode
             $table->unsignedBigInteger('charge_code_id');
-            $table->foreign('charge_code_id')->references('id')->on('chargecodes')->onDelete('cascade');
+            $table->foreign('charge_code_id')->references('id')->on('charge_codes')->onDelete('cascade');
 
             // Foreign key to insurances
             $table->unsignedBigInteger('insurance_id');
