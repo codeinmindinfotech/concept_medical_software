@@ -21,7 +21,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="3">There are no chargecodes.</td>
+            <td colspan="5">There are no chargecodes.</td>
         </tr>
         @endforelse
     </tbody>
