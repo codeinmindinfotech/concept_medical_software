@@ -78,7 +78,7 @@
 
                         @if(isset($consultant->image))
                         <div class="mt-2">
-                            <img src="{{ asset('storage/' . $consultant->image) }}" alt="Current Image" class="img-thumbnail" style="max-height: 150px;">
+                            <img src="{{ asset_url($consultant->image) }}" alt="Current Image" class="img-thumbnail" style="max-height: 150px;">
                         </div>
                         @endif
                     </div>

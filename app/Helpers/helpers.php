@@ -54,3 +54,13 @@ if (! function_exists('format_time')) {
         }
     }
 }
+
+if (!function_exists('asset_url')) {
+    function asset_url($path) {
+        if (app()->environment('local')) {
+            return asset('storage/' . $path);
+        } else {
+            return asset('concept_medical_software/public/storage/' . $path);
+        }
+    }
+}

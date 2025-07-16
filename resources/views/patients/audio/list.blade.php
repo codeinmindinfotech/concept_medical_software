@@ -13,7 +13,7 @@
             <td>{{ $index + 1 }}</td>
             <td>
                 <audio controls>
-                    <source src="{{ Storage::url($audio->file_path) }}" type="audio/webm">
+                    <source src="{{ asset_url($audio->file_path) }}" type="audio/webm">
                     Your browser does not support the audio element.
                 </audio>
             </td>
