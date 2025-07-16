@@ -39,6 +39,9 @@
                         <a href="{{ route('patients.physical.index', $patient->id) }}" class="btn btn-sm btn-secondary" title="Physical Exams">
                             <i class="fas fa-book-open"></i>
                         </a>
+                        <a href="{{ route('patients.audio.create', $patient->id) }}" class="btn btn-sm btn-secondary" title="Physical Exams">
+                            <i class="fas fa-microphone"></i>	
+                        </a>
                         @endcan
 
                         @can('update', $patient)

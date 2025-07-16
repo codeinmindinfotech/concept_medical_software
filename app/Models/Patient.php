@@ -115,4 +115,14 @@ class Patient extends Model
         return $this->hasMany(WaitingList::class);
     }
 
+    public function FeeNoteList()
+    {
+        return $this->hasMany(FeeNote::class);
+    }
+
+    public function audio():HasMany
+    {
+        return $this->hasMany(PatientAudioFile::class);
+    }
+
 }

@@ -1,6 +1,8 @@
 /node_modules
 /vendor
 .env
+/public/storage/audio/
+/public/storage/consultants/
 #/storage
 
 storage/framework/cache

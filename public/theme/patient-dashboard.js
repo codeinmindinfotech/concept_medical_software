@@ -176,3 +176,88 @@ $(document).ready(function () {
     }
   }
 });
+
+$(document).ready(function () {
+    // Open modal for new fee note
+    $(document).on('click', '#addFeeNoteBtn', function () {
+        clearFeeNoteForm();
+        $('#feeNoteModalLabel').text('Add Fee Note');
+        const modal = new bootstrap.Modal(document.getElementById('feeNoteModal'));
+        alert("show");
+        modal.show();
+        alert("show1");
+    });
+
+    // Open modal for editing fee note
+    $(document).on('click', '.editFeeNoteBtn', function () {
+        const feeNote = $(this).data('note');
+        fillFeeNoteForm(feeNote);
+        $('#feeNoteModalLabel').text('Edit Fee Note');
+        const modal = new bootstrap.Modal(document.getElementById('feeNoteModal'));
+        modal.show();
+    });
+
+    // Auto calculate line total when related fields change
+    $('#qty, #charge_gross, #reduction_percent, #charge_net, #vat_rate_percent').on('input', function () {
+        calculateLineTotal();
+    });
+
+    // Submit form (AJAX)
+    $('#feeForm').on('submit', function (e) {
+        e.preventDefault();
+        const form = $(this);
+        const id = $('#fee_note_id').val();
+        const url = id ? `/fee-notes/${id}` : '/fee-notes';
+        const method = id ? 'PUT' : 'POST';
+
+        $.ajax({
+            url: url,
+            type: method,
+            data: form.serialize(),
+            success: function (response) {
+                $('#feeNoteModal').modal('hide');
+                alert('Fee Note saved successfully!');
+                location.reload(); // or update DOM dynamically
+            },
+            error: function (xhr) {
+                alert('An error occurred. Please check the form and try again.');
+                console.error(xhr.responseText);
+            }
+        });
+    });
+
+    function clearFeeNoteForm() {
+        $('#feeForm')[0].reset();
+        $('#fee_note_id').val('');
+    }
+
+    function fillFeeNoteForm(note) {
+        $('#fee_note_id').val(note.id);
+        $('#visit_date').val(note.visit_date);
+        $('#clinic_id').val(note.clinic_id);
+        $('#consultant_id').val(note.consultant_id);
+        $('#chargecode_id').val(note.chargecode_id);
+        $('#qty').val(note.qty);
+        $('#charge_gross').val(note.charge_gross);
+        $('#reduction_percent').val(note.reduction_percent);
+        $('#charge_net').val(note.charge_net);
+        $('#vat_rate_percent').val(note.vat_rate_percent);
+        $('#line_total').val(note.line_total);
+        $('#comment').val(note.comment);
+    }
+
+    function calculateLineTotal() {
+        const qty = parseFloat($('#qty').val()) || 0;
+        const gross = parseFloat($('#charge_gross').val()) || 0;
+        const reduction = parseFloat($('#reduction_percent').val()) || 0;
+        const vat = parseFloat($('#vat_rate_percent').val()) || 0;
+
+        const reducedGross = gross - (gross * (reduction / 100));
+        const net = reducedGross;
+        const totalBeforeVat = qty * net;
+        const total = totalBeforeVat + (totalBeforeVat * (vat / 100));
+
+        $('#charge_net').val(net.toFixed(2));
+        $('#line_total').val(total.toFixed(2));
+    }
+});

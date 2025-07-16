@@ -41,8 +41,6 @@
     </div>
   </div>
 </div>
-
-
 <!-- Add Visit Modal -->
 <div class="modal fade" id="addVisitModal" tabindex="-1" aria-labelledby="addVisitModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -97,6 +95,7 @@
     </form>
   </div>
 </div>
+
 @push('scripts')
 <script>
   window.routes = {

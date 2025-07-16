@@ -13,9 +13,11 @@ use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\PatientController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\DoctorController;
+use App\Http\Controllers\Backend\FeeNoteController;
 use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
+use App\Http\Controllers\Backend\PatientAudioController;
 use App\Http\Controllers\Backend\PatientHistoryController;
 use App\Http\Controllers\Backend\PatientNoteController;
 use App\Http\Controllers\Backend\PatientPhysicalController;
@@ -39,6 +41,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('chargecodeprices', ChargeCodePriceController::class);
     Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
     Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
+
 
     // dropdown  parent
     Route::resource('dropdowns', DropDownController::class);
@@ -87,5 +90,21 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('waiting-lists/{waitingList}', [WaitingListController::class, 'update'])->name('update');
         Route::delete('waiting-lists/{waitingList}', [WaitingListController::class, 'destroy'])->name('destroy');
     });
+
+    Route::prefix('patients/{patient}')->name('patients.feenotes.')->group(function () {
+        Route::post('feenotes', [FeeNoteController::class, 'store'])->name('store');
+        Route::get('feenotes', [FeeNoteController::class, 'index'])->name('index');
+        Route::get('feenotes/{feenote}', [FeeNoteController::class, 'show'])->name('show');
+        Route::put('feenotes/{feenote}', [FeeNoteController::class, 'update'])->name('update');
+        Route::delete('feenotes/{feenote}', [FeeNoteController::class, 'destroy'])->name('destroy');
+    });
+    
+    Route::prefix('patients/{patient}/audio')->group(function () {
+        Route::get('/', [PatientAudioController::class, 'index'])->name('patients.audio.index');
+        Route::get('/create', [PatientAudioController::class, 'create'])->name('patients.audio.create');
+        Route::post('/', [PatientAudioController::class, 'store'])->name('patients.audio.store');
+        Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
+    });
+
    
 });

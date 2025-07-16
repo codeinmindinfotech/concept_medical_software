@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PatientRequest;
 use App\Models\Backend\Insurance;
+use App\Models\ChargeCode;
 use App\Models\Clinic;
+use App\Models\Consultant;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Services\UserService;
@@ -223,7 +225,13 @@ class PatientController extends Controller
     {
         extract($this->getCommonDropdowns());
         $waitingLists = $patient->WaitingLists()->latest()->get();
+
+        $clinics = Clinic::all();
+        $consultants = Consultant::all(); // 👈 Add this line
+        $chargecodes = ChargeCode::all();
+        $feeNotes = $patient->FeeNoteList()->latest()->get();
+        $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::orderBy('name')->get(); 
-        return view('patients.dashboard', compact('patient','categories','clinics','waitingLists'));
+        return view('patients.dashboard', compact('patient','categories','clinics','waitingLists','feeNotes','clinics','consultants','chargecodes','narrative'));
     }
 }
