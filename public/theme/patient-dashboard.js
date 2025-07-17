@@ -225,13 +225,54 @@ $(document).ready(function () {
 
   $('#qty, #charge_gross, #reduction_percent, #charge_net, #vat_rate_percent').on('input', calculateLineTotal);
 
+    // Delete fee note
+    $(document).on('click', '.deleteFeeNote', function () {
+      const noteId = $(this).data('id');
+      const url = window.routes.note_destroy.replace('__ID__', noteId);
+  
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'This fee note will be permanently deleted.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: url,
+            method: 'DELETE',
+            success: function () {
+              $(`tr[data-id="${noteId}"]`).remove();
+              Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'The fee note has been deleted.',
+                timer: 1500,
+                showConfirmButton: false
+              });
+            },
+            error: function (xhr) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: xhr.responseJSON?.message || 'Something went wrong!'
+              });
+            }
+          });
+        }
+      });
+    });
+
   $('#feeForm').on('submit', function (e) {
     e.preventDefault();
     const form = $(this);
     const id = $('#fee_note_id').val();
     const url = id
-      ? `/patients/${patientId}/feenotes/${id}`
-      : `/patients/${patientId}/feenotes`;
+      ? window.routes.note_update.replace('__ID__', id)
+      : window.routes.note_create.replace('__ID__');
     const method = id ? 'PUT' : 'POST';
 
     $.ajax({
@@ -336,4 +377,7 @@ $(document).ready(function () {
     $('#charge_net').val(net.toFixed(2));
     $('#line_total').val(total.toFixed(2));
   }
+
+
+ 
 });
