@@ -1,6 +1,6 @@
 <div id="FeeNoteList">
   <div class="card shadow-sm mb-4">
-    <div class="card-body">
+    <div class="card-body" id="FeeNoteListContainer">
       <table class="table table-bordered" id="FeeNoteTable">
         <thead class="table-dark">
           <tr>
@@ -16,7 +16,7 @@
         <tbody>
           @forelse($feeNotes as $note)
           <tr data-id="{{ $note->id }}">
-            <td>{{ format_date($note->visit_date) }}</td>
+            <td>{{ format_date($note->procedure_date) }}</td>
             <td>{{ $note->chargecode->code ?? '' }}</td>
             <td>{{ $note->charge_gross }}</td>
             <td>{{ $note->charge_net }}</td>

@@ -99,7 +99,22 @@
                     </div>
                     <div class="tab-pane fade" id="recalls" role="tabpanel">
                         <div class="card mb-4">
-                            Recalls Content
+                          
+
+                            <!-- Trigger Button -->
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feeNoteModal">
+                                Add Fee Note
+                            </button>
+
+                            <!-- Trigger Button for Edit -->
+                            <button class="btn btn-warning" onclick="editFeeNote(1, '2025-07-15', 2, 3, 101, 2, 100, 10, 90, 5, 'Follow-up visit')"
+                                    data-bs-toggle="modal" data-bs-target="#feeNoteModal">
+                                Edit Fee Note
+                            </button>
+
+  
+
+
                         </div>
                     </div>
                     <div class="tab-pane fade" id="docs" role="tabpanel">
@@ -112,6 +127,11 @@
         </div>
     </div>
 </div>
+@include('patients.dashboard.fee_notes.form', [
+'clinics' => $clinics,
+'patient' => $patient,
+'consultants' => $consultants,
+'chargecodes' => $chargecodes])
 
 @include('patients.waiting_lists.form', [
 'patient' => $patient,
@@ -119,11 +139,7 @@
 'categories' => $categories
 ])
 
-@include('patients.dashboard.fee_notes.form', [
-'clinics' => $clinics,
-'patient' => $patient,
-'consultants' => $consultants,
-'chargecodes' => $chargecodes])
+
 
 @endsection
 
@@ -131,22 +147,5 @@
 
 <script src="{{ asset('theme/patient-dashboard.js') }}"></script>
 <script src="{{ asset('theme/form-validation.js') }}"></script>
-
-<script>
-    $('#FeeNoteTable').DataTable({
-        paging: true
-        , searching: true
-        , ordering: true
-        , info: true
-        , lengthChange: true
-        , pageLength: 10
-        , columnDefs: [{
-            targets: 5, // column index for "Start Date" (0-based)
-            orderable: false // Disable sorting
-        }]
-    });
-
-</script>
-
 @endpush
 

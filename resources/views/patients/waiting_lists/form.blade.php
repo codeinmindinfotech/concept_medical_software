@@ -3,7 +3,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editVisitModalLabel">Edit Visit</h5>
+        <h5 class="modal-title" id="editVisitModalLabel">Edit Waiting</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -11,7 +11,10 @@
           @csrf
           <div class="mb-3">
             <label for="editVisitDate" class="form-label">Visit Date</label>
-            <input type="date" class="form-control" id="editVisitDate" name="visit_date" required>
+            <div class="input-group">
+              <input id="editVisitDate" name="visit_date" type="text" class="form-control flatpickr" placeholder="YYYY-MM-DD" required >
+              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+            </div>
           </div>
           <div class="mb-3">
             <label for="note" class="form-label">Clinic</label>
@@ -46,7 +49,7 @@
   <div class="modal-dialog">
     <form class="modal-content" method="post" action="{{ route('waiting-lists.store', $patient->id) }}">
       <div class="modal-header">
-        <h5 class="modal-title" id="addVisitModalLabel">Add Waiting List</h5>
+        <h5 class="modal-title" id="addVisitModalLabel">Add Waiting</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -102,7 +105,9 @@
     index: @json(route('waiting-lists.index', ['patient' => $patient->id])),
     show: @json(route('waiting-lists.show', ['patient' => $patient->id, 'waitingList' => '__ID__'])),
     update: @json(route('waiting-lists.update', ['patient' => $patient->id, 'waitingList' => '__ID__'])),
-    destroy: @json(route('waiting-lists.destroy', ['patient' => $patient->id, 'waitingList' => '__ID__']))
-  };
+    destroy: @json(route('waiting-lists.destroy', ['patient' => $patient->id, 'waitingList' => '__ID__'])),
+    note_index: @json(route('feenotes.index', ['patient' => $patient->id])),
+    note_destroy: @json(route('feenotes.destroy', ['patient' => $patient->id, 'feenote' => '__ID__']))
+ };
 </script>   
 @endpush

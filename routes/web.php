@@ -91,7 +91,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::delete('waiting-lists/{waitingList}', [WaitingListController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('patients/{patient}')->name('patients.feenotes.')->group(function () {
+    Route::prefix('patients/{patient}')->name('feenotes.')->group(function () {
         Route::post('feenotes', [FeeNoteController::class, 'store'])->name('store');
         Route::get('feenotes', [FeeNoteController::class, 'index'])->name('index');
         Route::get('feenotes/{feenote}', [FeeNoteController::class, 'show'])->name('show');

@@ -15,7 +15,7 @@ class FeeNote extends Model
         'narrative',
         'admission_date',
         'discharge_date',
-        'visit_date',
+        'procedure_date',
         'qty',
         'charge_gross',
         'reduction_percent',

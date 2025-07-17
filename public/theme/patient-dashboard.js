@@ -1,43 +1,44 @@
+function handleErrors(xhr, form) {
+  if (xhr.status === 422) {
+    const errors = xhr.responseJSON.errors;
+    let firstError = null;
+
+    $.each(errors, function (key, messages) {
+      const input = form.find(`[name="${key}"]`);
+      if (input.length) {
+        input.addClass('is-invalid');
+        input.after(`<div class="text-danger">${messages[0]}</div>`);
+        if (!firstError) firstError = input;
+      }
+    });
+
+    if (firstError) {
+      $('html, body').animate({
+        scrollTop: firstError.offset().top - 100
+      }, 500);
+    }
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Something went wrong. Please try again.'
+    });
+  }
+}
+
 $(document).ready(function () {
   $.ajaxSetup({
     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
   });
 
   const patientId = $('#patientId').val();
+
   function routeUrl(template, id) {
     return template.replace('__ID__', id);
   }
-  // Load waiting lists
 
-  let dataTableInstance;
-
-  function initDataTable() {
-    if ($.fn.DataTable.isDataTable('#WaitingTable')) {
-      $('#WaitingTable').DataTable().destroy();
-    }
-    dataTableInstance = $('#WaitingTable').DataTable({
-      paging: true,
-      searching: true,
-      ordering: true,
-      info: true,
-      lengthChange: true,
-      pageLength: 10,
-      columnDefs: [
-        { targets: 4, orderable: false } // disable sorting on Actions column
-      ]
-    });
-  }
-  initDataTable();
-
-  function loadWaitingLists() {
-    $.get(window.routes.index, function (data) {
-      $('[data-pagination-container]').html($(data).find('[data-pagination-container]').html());
-      initDataTable();
-    });
-  }
-
-  $('#editVisitModal, #addVisitModal').on('shown.bs.modal', function () {
-    $(this).find('.select2').each(function () {
+  const initSelect2 = (container) => {
+    container.find('.select2').each(function () {
       $(this).select2({
         dropdownParent: $(this).closest('.modal'),
         theme: 'bootstrap-5',
@@ -46,28 +47,71 @@ $(document).ready(function () {
         allowClear: true
       });
     });
+  };
 
-    flatpickr("#editVisitDate", {
-      dateFormat: "Y-m-d"
+  const initFlatpickr = () => {
+    ['#procedure_date', '#admission_date', '#discharge_date', '#editVisitDate', '#visit_date'].forEach(selector => {
+      if ($(selector).length) flatpickr(selector, { dateFormat: "Y-m-d" });
     });
+  };
 
-    flatpickr("#visit_date", {
-      dateFormat: "Y-m-d"
+  const initModalFields = (modalSelector) => {
+    const $modal = $(modalSelector);
+    initSelect2($modal);
+    initFlatpickr();
+  };
+
+  const initDataTableGeneric = (tableId, unsortableColumnIndex) => {
+    if ($.fn.DataTable.isDataTable(tableId)) {
+      $(tableId).DataTable().destroy();
+    }
+    return $(tableId).DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      info: true,
+      lengthChange: true,
+      pageLength: 10,
+      columnDefs: [
+        { targets: unsortableColumnIndex, orderable: false }
+      ]
     });
+  };
+
+  let dataTableInstance;
+  const loadWaitingLists = () => {
+    $.get(window.routes.index, function (data) {
+      $('[data-pagination-container]').html($(data).find('[data-pagination-container]').html());
+      dataTableInstance = initDataTableGeneric('#WaitingTable', 4);
+    });
+  };
+
+  let dataTableInstanceNote;
+  const loadFeeNoteLists = () => {
+
+    $.get(window.routes.note_index, function (data) {
+      $('#FeeNoteListContainer').html($(data).find('#FeeNoteListContainer').html());
+      dataTableInstanceNote = initDataTableGeneric('#FeeNoteTable', 6);
+    });
+  };
+
+  $('#editVisitModal, #addVisitModal, #feeNoteModal').on('shown.bs.modal', function () {
+    initModalFields(this);
   });
 
-  // Add new visit
+   loadWaitingLists();
+   loadFeeNoteLists();
+
   $(document).on('submit', '#addVisitModal form', function (e) {
     e.preventDefault();
     const form = $(this);
-    const url = form.attr('action');
     $.ajax({
-      url: url,
+      url: form.attr('action'),
       type: 'POST',
       data: new FormData(this),
       contentType: false,
       processData: false,
-      success: function (response) {
+      success(response) {
         if (response.success) {
           Swal.fire({
             icon: 'success',
@@ -82,13 +126,11 @@ $(document).ready(function () {
           });
         }
       },
-      error: function (xhr) {
+      error(xhr) {
         handleErrors(xhr, form);
       }
     });
   });
-
-  // Edit visit
 
   $(document).on('click', '.edit-btn', function () {
     const id = $(this).data('id');
@@ -100,17 +142,15 @@ $(document).ready(function () {
       $('#editNote').val(data.consult_note);
       $('#editCategory').val(data.category_id);
       $('#editClinic').val(data.clinic_id);
-
-      $('#editVisitForm').attr('action', updateUrl); // ✅ Dynamically set form action
-      const modal = new bootstrap.Modal(document.getElementById('editVisitModal'));
-      modal.show();
+      $('#editVisitForm').attr('action', updateUrl);
+      new bootstrap.Modal(document.getElementById('editVisitModal')).show();
     });
   });
 
   $('#editVisitForm').on('submit', function (e) {
     e.preventDefault();
     const form = $(this);
-    const url = form.attr('action'); // ✅ Get dynamic action
+    const url = form.attr('action');
     const formData = new FormData(this);
     formData.append('_method', 'PUT');
 
@@ -120,144 +160,180 @@ $(document).ready(function () {
       data: formData,
       contentType: false,
       processData: false,
-      success: function () {
+      success: () => {
         $('#editVisitModal').modal('hide');
         loadWaitingLists();
       },
-      error: function (xhr) {
+      error(xhr) {
         alert('Error updating: ' + (xhr.responseJSON?.message || 'Unknown error'));
       }
     });
   });
 
-  // Delete visit
   $(document).on('click', '.delete-btn', function () {
     const id = $(this).data('id');
-    const url = routeUrl(window.routes.destroy, id); // ✅ Dynamic route from Blade
+    const url = routeUrl(window.routes.destroy, id);
 
-    if (!confirm('Are you sure you want to delete this visit?')) return;
-
-    $.ajax({
-      url: url,
-      method: 'DELETE',
-      success: function () {
-        $(`tr[data-id="${id}"]`).remove(); // Remove row from table
-      },
-      error: function (xhr) {
-        alert('Error deleting: ' + (xhr.responseJSON?.message || 'Unknown error'));
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This visit will be permanently deleted.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url,
+          method: 'DELETE',
+          success: () => {
+            $(`tr[data-id="${id}"]`).remove();
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'The visit has been deleted.',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          },
+          error(xhr) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: xhr.responseJSON?.message || 'Something went wrong while deleting.'
+            });
+          }
+        });
       }
     });
   });
 
-  // Handle validation errors
-  function handleErrors(xhr, form) {
-    if (xhr.status === 422) {
-      let errors = xhr.responseJSON.errors;
-      let firstError = null;
-      $.each(errors, function (key, messages) {
-        let input = form.find(`[name="${key}"]`);
-        if (input.length > 0) {
-          input.addClass('is-invalid');
-          input.after(`<div class="text-danger">${messages[0]}</div>`);
-          if (!firstError) firstError = input;
-        }
-      });
-      if (firstError) {
-        $('html, body').animate({
-          scrollTop: firstError.offset().top - 100
-        }, 500);
+  $(document).on('click', '#addFeeNoteBtn', function () {
+    clearFeeNoteForm();
+    $('#feeNoteModalLabel').text('Add Fee Note');
+    new bootstrap.Modal(document.getElementById('feeNoteModal')).show();
+  });
+
+  $(document).on('click', '.editFeeNoteBtn', function () {
+    const feeNote = $(this).data('note');
+    $('#feeNoteModalLabel').text('Edit Fee Note');
+    $('#feeNoteModal').one('shown.bs.modal', () => fillFeeNoteForm(feeNote));
+    new bootstrap.Modal(document.getElementById('feeNoteModal')).show();
+  });
+
+  $('#qty, #charge_gross, #reduction_percent, #charge_net, #vat_rate_percent').on('input', calculateLineTotal);
+
+  $('#feeForm').on('submit', function (e) {
+    e.preventDefault();
+    const form = $(this);
+    const id = $('#fee_note_id').val();
+    const url = id
+      ? `/patients/${patientId}/feenotes/${id}`
+      : `/patients/${patientId}/feenotes`;
+    const method = id ? 'PUT' : 'POST';
+
+    $.ajax({
+      url,
+      type: method,
+      data: form.serialize(),
+      success() {
+        $('#feeNoteModal').modal('hide');
+        Swal.fire({
+          icon: 'success',
+          title: 'Saved',
+          text: 'Fee Note saved successfully!',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        loadFeeNoteLists();
+      },
+      error(xhr) {
+        handleErrors(xhr, form);
       }
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Something went wrong. Please try again.',
-      });
+    });
+  });
+
+  function clearFeeNoteForm() {
+    $('#feeForm')[0].reset();
+    $('#fee_note_id').val('');
+    $('#feeForm .is-invalid').removeClass('is-invalid');
+    $('#feeForm .text-danger').remove();
+    $('#feeForm .select2').val(null).trigger('change');
+  }
+
+  function fillFeeNoteForm(note) {
+    $('#feeForm .is-invalid, #feeForm .text-danger').remove();
+    $('#fee_note_id').val(note.id);
+    $('#procedure_date').val(note.procedure_date);
+    $('#admission_date').val(note.admission_date);
+    $('#discharge_date').val(note.discharge_date);
+    $('#charge_gross').val(note.charge_gross);
+    $('#reduction_percent').val(note.reduction_percent);
+    $('#charge_net').val(note.charge_net);
+    $('#vat_rate_percent').val(note.vat_rate_percent);
+    $('#line_total').val(note.line_total);
+    $('#comment').val(note.comment);
+    $('#qty').val(note.qty);
+
+    $('#clinic_id, #consultant_id, #narrative, #chargecode_id').each(function () {
+
+      const fieldId = $(this).attr('id');
+      const value = note.chargecode_id;
+
+      if (fieldId === 'chargecode_id' && value) {
+        $(this).val(value).trigger('change.select2'); // Updates visible selection
+        setTimeout(() => handleChargeCodeChange(false), 0);
+      } else {
+        $('#' + fieldId).val(note[fieldId]).trigger('change');
+      }
+    });
+
+  }
+
+  function handleChargeCodeChange(updateAll = true) {
+    const selectedOption = $('#chargecode_id').find('option:selected');
+    const chargeDataStr = selectedOption.attr('data-code');
+  
+    if (!chargeDataStr) {
+      if (updateAll) {
+        $('#qty, #charge_gross, #reduction_percent, #description, #charge_net, #vat_rate_percent, #line_total').val('');
+      } else {
+        $('#description').val('');
+      }
+      return;
+    }
+  
+    const chargeData = JSON.parse(chargeDataStr);
+    $('#description').val(chargeData.description);
+  
+    if (updateAll) {
+      $('#qty').val(1);
+      $('#charge_gross').val(chargeData.price);
+      $('#reduction_percent').val(0);
+      $('#vat_rate_percent').val(chargeData.vatrate);
+      calculateLineTotal();
     }
   }
-});
+  
+  // Default usage when user changes it manually
+  $('#chargecode_id').on('change', function () {
+    handleChargeCodeChange(true); // Allow full update on manual change
+  });
+  
 
-$(document).ready(function () {
-    // Open modal for new fee note
-    $(document).on('click', '#addFeeNoteBtn', function () {
-        clearFeeNoteForm();
-        $('#feeNoteModalLabel').text('Add Fee Note');
-        const modal = new bootstrap.Modal(document.getElementById('feeNoteModal'));
-        alert("show");
-        modal.show();
-        alert("show1");
-    });
+  function calculateLineTotal() {
+    const qty = parseFloat($('#qty').val()) || 0;
+    const gross = parseFloat($('#charge_gross').val()) || 0;
+    const reduction = parseFloat($('#reduction_percent').val()) || 0;
+    const vat = parseFloat($('#vat_rate_percent').val()) || 0;
 
-    // Open modal for editing fee note
-    $(document).on('click', '.editFeeNoteBtn', function () {
-        const feeNote = $(this).data('note');
-        fillFeeNoteForm(feeNote);
-        $('#feeNoteModalLabel').text('Edit Fee Note');
-        const modal = new bootstrap.Modal(document.getElementById('feeNoteModal'));
-        modal.show();
-    });
+    const net = gross - (gross * (reduction / 100));
+    const totalBeforeVat = qty * net;
+    const total = totalBeforeVat + (totalBeforeVat * (vat / 100));
 
-    // Auto calculate line total when related fields change
-    $('#qty, #charge_gross, #reduction_percent, #charge_net, #vat_rate_percent').on('input', function () {
-        calculateLineTotal();
-    });
-
-    // Submit form (AJAX)
-    $('#feeForm').on('submit', function (e) {
-        e.preventDefault();
-        const form = $(this);
-        const id = $('#fee_note_id').val();
-        const url = id ? `/fee-notes/${id}` : '/fee-notes';
-        const method = id ? 'PUT' : 'POST';
-
-        $.ajax({
-            url: url,
-            type: method,
-            data: form.serialize(),
-            success: function (response) {
-                $('#feeNoteModal').modal('hide');
-                alert('Fee Note saved successfully!');
-                location.reload(); // or update DOM dynamically
-            },
-            error: function (xhr) {
-                alert('An error occurred. Please check the form and try again.');
-                console.error(xhr.responseText);
-            }
-        });
-    });
-
-    function clearFeeNoteForm() {
-        $('#feeForm')[0].reset();
-        $('#fee_note_id').val('');
-    }
-
-    function fillFeeNoteForm(note) {
-        $('#fee_note_id').val(note.id);
-        $('#visit_date').val(note.visit_date);
-        $('#clinic_id').val(note.clinic_id);
-        $('#consultant_id').val(note.consultant_id);
-        $('#chargecode_id').val(note.chargecode_id);
-        $('#qty').val(note.qty);
-        $('#charge_gross').val(note.charge_gross);
-        $('#reduction_percent').val(note.reduction_percent);
-        $('#charge_net').val(note.charge_net);
-        $('#vat_rate_percent').val(note.vat_rate_percent);
-        $('#line_total').val(note.line_total);
-        $('#comment').val(note.comment);
-    }
-
-    function calculateLineTotal() {
-        const qty = parseFloat($('#qty').val()) || 0;
-        const gross = parseFloat($('#charge_gross').val()) || 0;
-        const reduction = parseFloat($('#reduction_percent').val()) || 0;
-        const vat = parseFloat($('#vat_rate_percent').val()) || 0;
-
-        const reducedGross = gross - (gross * (reduction / 100));
-        const net = reducedGross;
-        const totalBeforeVat = qty * net;
-        const total = totalBeforeVat + (totalBeforeVat * (vat / 100));
-
-        $('#charge_net').val(net.toFixed(2));
-        $('#line_total').val(total.toFixed(2));
-    }
+    $('#charge_net').val(net.toFixed(2));
+    $('#line_total').val(total.toFixed(2));
+  }
 });
