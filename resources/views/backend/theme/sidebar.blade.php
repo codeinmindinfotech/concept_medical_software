@@ -46,7 +46,13 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
                     <span>Clinic</span>
                 </a>
-        
+
+                {{-- Audio --}}
+                <a class="nav-link {{ Request::is('audios*') ? 'active' : '' }}" href="{{ route('audios.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-microphone"></i></div>
+                    <span>Audio Recording</span>
+                </a>
+
                 {{-- Utilities Collapsible Section --}}
                 @php
                     $isUtilitiesOpen = Request::is('users*') || Request::is('roles*') || Request::is('dropdowns*');

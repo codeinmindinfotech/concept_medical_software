@@ -1,4 +1,4 @@
-<table class="table table-hover align-middle text-nowrap" id="AudioTable">
+<table class="table table-hover align-middle text-nowrap" id="PatientAudioTable">
     <thead class="table-dark">
         <tr>
             <th>#</th>
@@ -12,10 +12,14 @@
         <tr>
             <td>{{ $index + 1 }}</td>
             <td>
-                <audio controls>
-                    <source src="{{ asset_url($audio->file_path) }}" type="audio/webm">
-                    Your browser does not support the audio element.
-                </audio>
+                @if($audio->file_path)
+                    <audio controls>
+                        <source src="{{ asset_url($audio->file_path) }}" type="audio/webm">
+                        Your browser does not support the audio element.
+                    </audio>
+                @else
+                    <span class="text-muted">No audio</span>
+                @endif
             </td>
             <td>{{ format_date($audio->created_at) }}</td>
             <td>
@@ -29,9 +33,9 @@
             </td>
         </tr>
         @empty
-            <tr>
-                <td colspan="4" class="text-center">No audio found.</td>
-            </tr>
+        <tr>
+            <td colspan="4" class="text-center">No audio found.</td>
+        </tr>
         @endforelse
     </tbody>
 </table>
