@@ -44,7 +44,7 @@
                 @method('PUT')
 
                 <div class="mb-3">
-                    <label for="patientName" class="form-label"><strong>Patient Name</strong></label>
+                    <label for="patient_id" class="form-label"><strong>Patient Name</strong></label>
                     <select id="patient_id" name="patient_id" class="select2 @error('patient_id') is-invalid @enderror">
                         <option value="">-- Select Patient --</option>
                         @foreach($patients as $patient)
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="patientName" class="form-label"><strong>Patient Name</strong></label>
+                    <label for="doctor_id" class="form-label"><strong>Doctor Name</strong></label>
                     <select id="doctor_id" name="doctor_id" class="select2 @error('doctor_id') is-invalid @enderror">
                         <option value="">-- Select Doctor --</option>
                         @foreach($doctors as $doctor)
