@@ -108,7 +108,7 @@
     destroy: @json(route('waiting-lists.destroy', ['patient' => $patient->id, 'waitingList' => '__ID__'])),
     note_index: @json(route('feenotes.index', ['patient' => $patient->id])),
     note_destroy: @json(route('feenotes.destroy', ['patient' => $patient->id, 'feenote' => '__ID__'])),
-    note_create: @json(route('feenotes.store', ['patient' => $patient->id, 'feenote' => '__ID__'])),
+    note_create: @json(route('feenotes.store', ['patient' => $patient->id])),
     note_update: @json(route('feenotes.update', ['patient' => $patient->id, 'feenote' => '__ID__'])),
  };
 </script>   
