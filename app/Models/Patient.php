@@ -18,6 +18,7 @@ class Patient extends Model
      */
     protected $fillable = [
         'title_id',
+        'patient_picture',
         'first_name',
         'surname',
         'dob',

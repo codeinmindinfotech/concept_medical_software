@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Traits\DropdownTrait;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 
 class PatientController extends Controller
@@ -253,4 +254,38 @@ class PatientController extends Controller
             'recalls'     => $patient->recall,
         ]);
     }
+
+    public function uploadPicture(Request $request)
+    {
+        $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'patient_picture' => 'required|image|max:2048',
+        ]);
+
+        $patient = Patient::findOrFail($request->patient_id);
+
+        if ($request->hasFile('patient_picture')) {
+            $file = $request->file('patient_picture');
+
+            // Delete old picture if exists
+            if ($patient->patient_picture && Storage::disk('public')->exists($patient->patient_picture)) {
+                Storage::disk('public')->delete($patient->patient_picture);
+            }
+
+            // Create new filename like picture_123.jpg
+            $filename = 'picture_' . $patient->id . '.' . $file->getClientOriginalExtension();
+
+            // Save the file in public/patient_pictures
+            $path = $file->storeAs('patient_pictures', $filename, 'public');
+
+            $patient->patient_picture = $path;
+            $patient->save();
+        }
+
+        return response()->json([
+            'message' => 'Profile picture updated successfully.',
+            'image_url' => asset('storage/' . $patient->patient_picture),
+        ]);
+    }
+
 }

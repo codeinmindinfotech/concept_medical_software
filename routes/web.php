@@ -35,6 +35,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
     Route::resource('patients', PatientController::class);
+    Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
+
     Route::resource('doctors', DoctorController::class);
     Route::resource('insurances', InsuranceController::class);
     Route::resource('consultants', ConsultantController::class);
