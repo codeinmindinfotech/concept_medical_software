@@ -85,8 +85,8 @@
                         <div class="card mb-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Fee Notes</h5>
-                                <button id="addFeeNoteBtn" class="btn btn-primary btn-sm">
-                                    <i class="fa bi-plus"></i> Add Fee Note
+                                <button id="addFeeNoteBtn" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Add Fee Note
                                 </button>
                             </div>
 
@@ -99,24 +99,21 @@
                     </div>
                     <div class="tab-pane fade" id="recalls" role="tabpanel">
                         <div class="card mb-4">
-                          
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recall</h5>
+                                <button id="addRecallBtn" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Add Recall
+                                </button>
+                            </div>
 
-                            <!-- Trigger Button -->
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feeNoteModal">
-                                Add Fee Note
-                            </button>
-
-                            <!-- Trigger Button for Edit -->
-                            <button class="btn btn-warning" onclick="editFeeNote(1, '2025-07-15', 2, 3, 101, 2, 100, 10, 90, 5, 'Follow-up visit')"
-                                    data-bs-toggle="modal" data-bs-target="#feeNoteModal">
-                                Edit Fee Note
-                            </button>
-
-  
-
-
+                            <div id="recallList">
+                                @include('patients.dashboard.recalls.list', [
+                                'recalls' => $recalls,
+                                'patient' => $patient])
+                            </div>
                         </div>
                     </div>
+
                     <div class="tab-pane fade" id="docs" role="tabpanel">
                         <div class="card mb-4">
                             Documents Content
@@ -127,6 +124,11 @@
         </div>
     </div>
 </div>
+@include('patients.dashboard.recalls.form', [
+'patient' => $patient,
+'statuses' => $statuses
+])
+
 @include('patients.dashboard.fee_notes.form', [
 'clinics' => $clinics,
 'patient' => $patient,
@@ -138,6 +140,8 @@
 'clinics' => $clinics,
 'categories' => $categories
 ])
+
+
 
 
 

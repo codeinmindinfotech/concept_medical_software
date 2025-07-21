@@ -47,3 +47,55 @@ function initDataTable(selector, options = {}) {
       });
     });
   }
+
+  function handleErrors(xhr, form) {
+    if (xhr.status === 422) {
+      const errors = xhr.responseJSON.errors;
+      let firstError = null;
+  
+      // Clean up old errors
+      form.find('.is-invalid').removeClass('is-invalid');
+      form.find('.text-danger').remove();
+  
+      $.each(errors, function (key, messages) {
+        const input = form.find(`[name="${key}"]`);
+        if (input.length) {
+          input.addClass('is-invalid');
+  
+          const message = `<div class="text-danger">${messages[0]}</div>`;
+  
+          // Handle Select2: insert after parent .form-group or .mb-3
+          if (input.hasClass('select2-hidden-accessible')) {
+            const wrapper = input.closest('.mb-3, .form-group');
+            if (wrapper.length) {
+              wrapper.append(message);
+            } else {
+              input.after(message);
+            }
+  
+          // Handle input groups (text + icon)
+          } else if (input.closest('.input-group').length > 0) {
+            input.closest('.input-group').after(message);
+  
+          // Regular input
+          } else {
+            input.after(message);
+          }
+  
+          if (!firstError) firstError = input;
+        }
+      });
+  
+      if (firstError) {
+        $('html, body').animate({
+          scrollTop: firstError.offset().top - 100
+        }, 500);
+      }
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Something went wrong. Please try again.'
+      });
+    }
+  }

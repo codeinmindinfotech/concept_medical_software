@@ -110,6 +110,11 @@
     note_destroy: @json(route('feenotes.destroy', ['patient' => $patient->id, 'feenote' => '__ID__'])),
     note_create: @json(route('feenotes.store', ['patient' => $patient->id])),
     note_update: @json(route('feenotes.update', ['patient' => $patient->id, 'feenote' => '__ID__'])),
+    recall_index: @json(route('recalls.index', ['patient' => $patient->id])),
+    recall_destroy: @json(route('recalls.destroy', ['patient' => $patient->id, 'recall' => '__ID__'])),
+    recall_store: @json(route('recalls.store', ['patient' => $patient->id])),
+    recall_update: @json(route('recalls.update', ['patient' => $patient->id, 'recall' => '__ID__'])),
+    
  };
 </script>   
 @endpush

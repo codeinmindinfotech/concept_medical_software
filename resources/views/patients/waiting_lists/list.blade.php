@@ -8,10 +8,11 @@
         <i class="fas fa-plus"></i> Add Waiting
       </button>
     </div>
-    <div class="card-body" data-pagination-container>
+    <div class="card-body"  id="WaitingListContainer">
       <table class="table table-hover table-bordered data-table align-middle mb-0" id="WaitingTable" >
         <thead class="table-dark" >
           <tr>
+            <th>ID</th>
             <th>Date</th>
             <th>Clinic</th>
             <th>Category</th>
@@ -22,14 +23,11 @@
         <tbody>
           @forelse($waitingLists as $visit)
             <tr data-id="{{ $visit->id }}">
+              <td>{{ $visit->id }}</td>
               <td>{{ format_date($visit->visit_date) }}</td>
-              <td>
-                {{ $visit->clinic->code }}
-              </td>
-              <td>{{ $visit->category->value }}</td>
-              <td>
-                {{ $visit->consult_note??'' }}
-              </td>
+              <td>{{ $visit->clinic->code ?? '-' }}</td>
+              <td>{{ $visit->category->value ?? '-' }}</td>
+              <td>{{ $visit->consult_note ?? '-' }}</td>
               <td class="text-end">
                 <div class="d-inline-flex gap-2">
                   <button class="btn btn-outline-primary btn-sm edit-btn" data-id="{{ $visit->id }}">
@@ -43,7 +41,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="5" class="text-center text-muted py-4">No visits found.</td>
+              <td colspan="6" class="text-center text-muted py-4">No visits found.</td>
             </tr>
           @endforelse
         </tbody>

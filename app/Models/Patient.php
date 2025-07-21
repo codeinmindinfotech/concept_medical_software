@@ -125,4 +125,9 @@ class Patient extends Model
         return $this->hasMany(PatientAudioFile::class);
     }
 
+    public function recall()
+    {
+        return $this->hasMany(Recall::class);
+    }
+
 }
