@@ -1,0 +1,52 @@
+<table class="table table-hover align-middle text-nowrap" id="AudioTable">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Patient Name</th>
+            <th>Doctor Name</th>
+            <th>Created At</th>
+            <th width="120px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse ($audios as $index => $audio)
+        <tr>
+            <td>{{ $index + 1 }}</td>
+            <td>
+                @if($audio->patient)
+                    {{ $audio->patient->first_name }} {{ $audio->patient->surname }}
+                @else
+                    <span class="text-muted">Not Assigned</span>
+                @endif
+            </td>
+            <td>
+                @if($audio->doctor)
+                    Dr. {{ $audio->doctor->name }}
+                @else
+                    <span class="text-muted">Not Assigned</span>
+                @endif
+            </td>
+            <td>{{ format_date($audio->created_at) }}</td>
+            <td>
+                <a class="btn btn-info btn-sm" href="{{ route('audios.show',$audio->id) }}" title="Show">
+                    <i class="fa-solid fa-eye text-white"></i>
+                </a>
+                <a class="btn btn-primary btn-sm" href="{{ route('audios.edit',$audio->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+
+                <form method="POST" action="{{ route('audios.destroy', [$audio->id]) }}" style="display:inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+
+            </td>
+        </tr>
+        @empty
+            <tr>
+                <td colspan="4" class="text-center">No audio found.</td>
+            </tr>
+        @endforelse
+    </tbody>
+</table>

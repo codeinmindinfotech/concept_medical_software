@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Doctor extends Model
@@ -39,5 +40,15 @@ class Doctor extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(DropDownValue::class, 'payment_method_id');
+    }
+
+    public function audios():HasMany
+    {
+        return $this->hasMany(PatientAudioFile::class);
+    }
+
+    public function patient()
+    {
+        return $this->hasMany(Patient::class);
     }
 }

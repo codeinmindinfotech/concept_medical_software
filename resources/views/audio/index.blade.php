@@ -5,13 +5,13 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.index')],
-            ['label' => 'Patients Audio Recording List'],
+            ['label' => 'Patients', 'url' => route('audios.index')],
+            ['label' => 'Audio Recording List'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Patients Audio Recording List',
+        'pageTitle' => 'Audio Recording List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' => route('audios.create'),
         'isListPage' => true
@@ -30,8 +30,7 @@
         </div>
         <div class="card-body">
             <div id="patient-audio-list">
-                @include('patients.audio.list', [
-                    'patient' => $patient,
+                @include('audio.list', [
                     'audios'=> $audios
                     ])
             </div>
@@ -39,29 +38,22 @@
     </div>
 </div>
 @endsection
-
 @push('scripts')
 <script>
-    $(document).ready(function() {
-    if ( $.fn.DataTable.isDataTable('#PatientAudioTable') ) {
-        $('#PatientAudioTable').DataTable().destroy();
-    }
-
-    $('#PatientAudioTable').DataTable({
-        paging: true,
-        searching: true,
-        ordering: true,
-        info: true,
-        lengthChange: true,
-        pageLength: 10,
-        columnDefs: [
-            {
-                targets: 3, // Disable sorting for Action column
-                orderable: false
-            }
-        ]
-    });
-});
-
+$('#AudioTable').DataTable({
+     paging: true,
+     searching: true,
+     ordering: true,
+     info: true,
+     lengthChange: true,
+     pageLength: 10,
+     columnDefs: [
+       {
+         targets: 3, // column index for "Start Date" (0-based)
+         orderable: false   // Disable sorting
+       }
+     ]
+   });
 </script>
 @endpush
+

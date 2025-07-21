@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Backend\AudioController;
 use App\Http\Controllers\Backend\ChargeCodeController;
 use App\Http\Controllers\Backend\ChargeCodePriceController;
 use App\Http\Controllers\Backend\ClinicController;
@@ -39,9 +40,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('clinics', ClinicController::class);
     Route::resource('chargecodes', ChargeCodeController::class);
     Route::resource('chargecodeprices', ChargeCodePriceController::class);
+    Route::resource('audios', AudioController::class);
+
     Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
     Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
-
 
     // dropdown  parent
     Route::resource('dropdowns', DropDownController::class);
@@ -105,6 +107,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/', [PatientAudioController::class, 'store'])->name('patients.audio.store');
         Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
     });
+
 
    
 });
