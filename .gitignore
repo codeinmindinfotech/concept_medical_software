@@ -3,6 +3,7 @@
 .env
 /public/storage/audio/
 /public/storage/consultants/
+/public/storage/debugbar/
 #/storage
 
 storage/framework/cache
