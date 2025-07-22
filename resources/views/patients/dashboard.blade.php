@@ -39,22 +39,40 @@
         <!-- Patient Header -->
         <div class="card shadow-sm mb-4">
             <div class="card-body d-flex align-items-center">
-                <img src="https://via.placeholder.com/70" alt="Avatar" class="rounded-circle me-3">
+                <form id="uploadPatientPictureForm" action="{{ route('patients.upload-picture', $patient->id) }}" enctype="multipart/form-data" class="position-relative me-3">
+                    @csrf
+                    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                    <input type="file" name="patient_picture" id="patient_picture_input" class="d-none" accept="image/*">
+        
+                    <label for="patient_picture_input" style="cursor: pointer;">
+                        <img id="patient_picture_preview"
+                             src="{{ $patient->patient_picture ? asset('storage/' . $patient->patient_picture) : '' }}"
+                             alt="Avatar"
+                             class="rounded-circle"
+                             style="width: 70px; height: 70px; object-fit: cover;"
+                        >
+                        <span class="position-absolute bottom-0 end-0 bg-white rounded-circle p-1 shadow" title="Change picture">
+                            <i class="fas fa-camera"></i>
+                        </span>
+                    </label>
+                </form>
+        
                 <div>
-                    <h4 class="mb-1"> (Working)
+                    <h4 class="mb-1">
                         {{ optional($patient->title)->value ? $patient->title->value . ' ' : '' }}
                         {{ $patient->first_name }} {{ $patient->surname }}
                     </h4>
                     <p class="mb-0 text-muted">DOB: {{ format_date($patient->dob) }} | Gender: {{ $patient->gender }}</p>
                 </div>
+        
                 @can('update', $patient)
                 <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-outline-primary btn-sm ms-auto">
                     <i class="fas fa-edit"></i> Edit
                 </a>
                 @endcan
-
             </div>
         </div>
+        
 
         <div class="row">
             <!-- Tabs Navigation -->
@@ -85,8 +103,8 @@
                         <div class="card mb-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Fee Notes</h5>
-                                <button id="addFeeNoteBtn" class="btn btn-primary btn-sm">
-                                    <i class="fa bi-plus"></i> Add Fee Note
+                                <button id="addFeeNoteBtn" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Add Fee Note
                                 </button>
                             </div>
 
@@ -99,24 +117,21 @@
                     </div>
                     <div class="tab-pane fade" id="recalls" role="tabpanel">
                         <div class="card mb-4">
-                          
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recall</h5>
+                                <button id="addRecallBtn" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Add Recall
+                                </button>
+                            </div>
 
-                            <!-- Trigger Button -->
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feeNoteModal">
-                                Add Fee Note
-                            </button>
-
-                            <!-- Trigger Button for Edit -->
-                            <button class="btn btn-warning" onclick="editFeeNote(1, '2025-07-15', 2, 3, 101, 2, 100, 10, 90, 5, 'Follow-up visit')"
-                                    data-bs-toggle="modal" data-bs-target="#feeNoteModal">
-                                Edit Fee Note
-                            </button>
-
-  
-
-
+                            <div id="recallList">
+                                @include('patients.dashboard.recalls.list', [
+                                'recalls' => $recalls,
+                                'patient' => $patient])
+                            </div>
                         </div>
                     </div>
+
                     <div class="tab-pane fade" id="docs" role="tabpanel">
                         <div class="card mb-4">
                             Documents Content
@@ -127,6 +142,11 @@
         </div>
     </div>
 </div>
+@include('patients.dashboard.recalls.form', [
+'patient' => $patient,
+'statuses' => $statuses
+])
+
 @include('patients.dashboard.fee_notes.form', [
 'clinics' => $clinics,
 'patient' => $patient,
@@ -138,6 +158,8 @@
 'clinics' => $clinics,
 'categories' => $categories
 ])
+
+
 
 
 

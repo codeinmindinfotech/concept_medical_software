@@ -22,6 +22,7 @@ use App\Http\Controllers\Backend\PatientAudioController;
 use App\Http\Controllers\Backend\PatientHistoryController;
 use App\Http\Controllers\Backend\PatientNoteController;
 use App\Http\Controllers\Backend\PatientPhysicalController;
+use App\Http\Controllers\Backend\RecallController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -34,6 +35,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
     Route::resource('patients', PatientController::class);
+    Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
+
     Route::resource('doctors', DoctorController::class);
     Route::resource('insurances', InsuranceController::class);
     Route::resource('consultants', ConsultantController::class);
@@ -106,6 +109,14 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/create', [PatientAudioController::class, 'create'])->name('patients.audio.create');
         Route::post('/', [PatientAudioController::class, 'store'])->name('patients.audio.store');
         Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
+    });
+
+    Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
+        Route::post('recalls', [RecallController::class, 'store'])->name('store');
+        Route::get('recalls', [RecallController::class, 'index'])->name('index');
+        Route::get('recalls/{recall}', [RecallController::class, 'show'])->name('show');
+        Route::put('recalls/{recall}', [RecallController::class, 'update'])->name('update');
+        Route::delete('recalls/{recall}', [RecallController::class, 'destroy'])->name('destroy');
     });
 
 

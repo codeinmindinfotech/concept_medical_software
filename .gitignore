@@ -4,6 +4,7 @@
 /public/storage/audio/
 /public/storage/consultants/
 /public/storage/debugbar/
+/public/storage/patient_pictures/
 #/storage
 
 storage/framework/cache

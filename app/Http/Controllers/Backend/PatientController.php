@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Traits\DropdownTrait;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 
 class PatientController extends Controller
@@ -42,10 +43,10 @@ class PatientController extends Controller
 
         if ($user->hasRole('patient')) {
             // Restrict to logged-in patient only
-            $patients = Patient::where('id', $user->userable_id)->paginate(1);
+            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
         } else {
             // Admins can search all patients
-            $query = Patient::latest();
+            $query = Patient::with('title')->latest();
 
             if ($request->filled('first_name')) {
                 $query->where('first_name', 'like', '%' . $request->first_name . '%');
@@ -223,15 +224,68 @@ class PatientController extends Controller
 
     public function patient_dashboard(Patient $patient)
     {
-        extract($this->getCommonDropdowns());
-        $waitingLists = $patient->WaitingLists()->latest()->get();
+        // Load dropdowns and options
+        extract($this->getCommonDropdowns()); // contains $categories, etc.
 
-        $clinics = Clinic::all();
-        $consultants = Consultant::all(); // 👈 Add this line
+        $patient->load([
+            'waitingLists' => fn($q) => $q->latest(),
+            'feeNoteList' => fn($q) => $q->latest(),
+            'recall' => fn($q) => $q->latest()->with('status')
+        ]);
+
+        // Load other shared dropdowns
+        $clinics = Clinic::orderBy('name')->get();
+        $consultants = Consultant::all();
         $chargecodes = ChargeCode::all();
-        $feeNotes = $patient->FeeNoteList()->latest()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
-        $clinics = Clinic::orderBy('name')->get(); 
-        return view('patients.dashboard', compact('patient','categories','clinics','waitingLists','feeNotes','clinics','consultants','chargecodes','narrative'));
+        $statuses = $this->getDropdownOptions('STATUS');
+
+        return view('patients.dashboard', compact(
+            'patient',
+            'categories',
+            'clinics',
+            'consultants',
+            'chargecodes',
+            'narrative',
+            'statuses'
+        ) + [
+            'waitingLists' => $patient->waitingLists,
+            'feeNotes'     => $patient->feeNoteList,
+            'recalls'     => $patient->recall,
+        ]);
     }
+
+    public function uploadPicture(Request $request)
+    {
+        $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'patient_picture' => 'required|image|max:2048',
+        ]);
+
+        $patient = Patient::findOrFail($request->patient_id);
+
+        if ($request->hasFile('patient_picture')) {
+            $file = $request->file('patient_picture');
+
+            // Delete old picture if exists
+            if ($patient->patient_picture && Storage::disk('public')->exists($patient->patient_picture)) {
+                Storage::disk('public')->delete($patient->patient_picture);
+            }
+
+            // Create new filename like picture_123.jpg
+            $filename = 'picture_' . $patient->id . '.' . $file->getClientOriginalExtension();
+
+            // Save the file in public/patient_pictures
+            $path = $file->storeAs('patient_pictures', $filename, 'public');
+
+            $patient->patient_picture = $path;
+            $patient->save();
+        }
+
+        return response()->json([
+            'message' => 'Profile picture updated successfully.',
+            'image_url' => asset('storage/' . $patient->patient_picture),
+        ]);
+    }
+
 }

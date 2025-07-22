@@ -24,28 +24,44 @@
                 <td>
                     <div class="d-flex gap-1 justify-content-center flex-wrap">
                         @can('view', $patient)
-                        <a href="{{ route('patients.patient_dashboard', $patient->id) }}" class="btn btn-sm btn-dark" title="Dashboard">
+                        <a href="{{ route('patients.patient_dashboard', $patient->id) }}" 
+                            data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            class="btn btn-sm btn-dark" title="Dashboard">
                             <i class="fas fa-tachometer-alt"></i>
                         </a>
-                        <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-info" title="View Details">
+                        <a href="{{ route('patients.show', $patient->id) }}" data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            class="btn btn-sm btn-info" title="View Details">
                             <i class="fa-solid fa-eye text-white"></i>
                         </a>
-                        <a href="{{ route('patients.notes.index', $patient->id) }}" class="btn btn-sm btn-success" title="Notes">
+                        <a href="{{ route('patients.notes.index', $patient->id) }}" data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            class="btn btn-sm btn-success" title="Notes">
                             <i class="fa-solid fa-notes-medical"></i>
                         </a>
-                        <a href="{{ route('patients.history.index', $patient->id) }}" class="btn btn-sm btn-warning" title="History">
+                        <a href="{{ route('patients.history.index', $patient->id) }}" data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            class="btn btn-sm btn-warning" title="History">
                             <i class="fas fa-history"></i>
                         </a>
-                        <a href="{{ route('patients.physical.index', $patient->id) }}" class="btn btn-sm btn-secondary" title="Physical Exams">
+                        <a href="{{ route('patients.physical.index', $patient->id) }}" data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            class="btn btn-sm btn-secondary" title="Physical Exams">
                             <i class="fas fa-book-open"></i>
                         </a>
-                        {{-- <a href="{{ route('patients.audio.index', $patient->id) }}" class="btn btn-sm btn-secondary" title="Physical Exams">
-                            <i class="fas fa-microphone"></i>	
-                        </a> --}}
+                        <a href="{{ route('patients.audio.index', $patient->id) }}" data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            class="btn btn-sm btn-light" title="Consultation">
+                            <i class="fas fa-microphone text-success"></i>	
+                        </a>
                         @endcan
 
                         @can('update', $patient)
-                        <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-primary" title="Edit">
+                        <a href="{{ route('patients.edit', $patient->id) }}"
+                            data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                             class="btn btn-sm btn-primary" title="Edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
                         @endcan
@@ -54,7 +70,9 @@
                         <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" class="m-0" onsubmit="return confirm('Are you sure to delete this patient?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                            <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            title="Delete">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>

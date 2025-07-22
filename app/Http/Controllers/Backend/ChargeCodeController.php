@@ -18,7 +18,7 @@ class ChargeCodeController extends Controller
     public function index(Request $request): View|string
     {
         $this->authorize('viewAny', ChargeCode::class);
-        $chargecodes = ChargeCode::latest()->get();
+        $chargecodes = ChargeCode::with('chargeGroup')->latest()->get();
 
         if ($request->ajax()) {
             return view('chargecodes.list', compact('chargecodes'))->render();

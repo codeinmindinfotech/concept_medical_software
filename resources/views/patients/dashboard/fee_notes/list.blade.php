@@ -4,6 +4,7 @@
       <table class="table table-bordered" id="FeeNoteTable">
         <thead class="table-dark">
           <tr>
+            <th>Id</th>
             <th>Date</th>
             <th>Charge Code</th>
             <th>Gross</th>
@@ -16,6 +17,7 @@
         <tbody>
           @forelse($feeNotes as $note)
           <tr data-id="{{ $note->id }}">
+            <td>{{ $note->id }}</td>
             <td>{{ format_date($note->procedure_date) }}</td>
             <td>{{ $note->chargecode->code ?? '' }}</td>
             <td>{{ $note->charge_gross }}</td>
@@ -35,7 +37,7 @@
           </tr>
           @empty
           <tr>
-            <td colspan="7" class="text-center">No fee notes</td>
+            <td colspan="8" class="text-center">No fee notes</td>
           </tr>
           @endforelse
         </tbody>

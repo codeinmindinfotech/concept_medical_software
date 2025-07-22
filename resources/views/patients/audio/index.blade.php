@@ -6,14 +6,14 @@
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => route('dashboard.index')],
             ['label' => 'Patients', 'url' => route('patients.index')],
-            ['label' => 'Patients Audio Recording List'],
+            ['label' => 'Patients Consultation List'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Patients Audio Recording List',
+        'pageTitle' => 'Patients Consultation List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('audios.create'),
+        'backUrl' => route('patients.audio.create',$patient->id),
         'isListPage' => true
     ])
 
@@ -26,7 +26,7 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-notes-medical me-1"></i>
-            Patients Audio Recording Management
+            Patients Consultation Management
         </div>
         <div class="card-body">
             <div id="patient-audio-list">

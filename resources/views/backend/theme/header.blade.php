@@ -12,21 +12,41 @@
     </form>
     <!-- Navbar-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <!-- Notification Dropdown -->
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+            <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell fa-fw"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    3
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                <li><h6 class="dropdown-header">Notifications</h6></li>
+                <li><a class="dropdown-item" href="#">New appointment scheduled</a></li>
+                <li><a class="dropdown-item" href="#">Lab results ready</a></li>
+                <li><a class="dropdown-item" href="#">New patient registered</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
+            </ul>
+        </li>
+    
+        <!-- Existing User Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user fa-fw"></i>
+            </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                {{-- <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li> --}}
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();
-                                  document.getElementById('logout-form').submit();">
-                     {{ __('Logout') }}
-                 </a>
-
-                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                     @csrf
-                 </form>
+                <li>
+                    <a class="dropdown-item" href="{{ route('logout') }}"
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        {{ __('Logout') }}
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
                 </li>
             </ul>
         </li>

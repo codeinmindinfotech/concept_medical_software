@@ -367,10 +367,10 @@
                                 <i class="fas fa-calendar-alt text-muted me-2"></i>
                                 <small class="text-muted">{{ $audio->created_at->format('d M Y, h:i A') }}</small>
                             </div>
-                            <div class="mb-2 text-muted small">
+                            {{-- <div class="mb-2 text-muted small">
                                 <i class="fas fa-user-md me-1 text-primary"></i>
                                 <span><strong>Doctor:</strong> Dr. {{ $audio->doctor->name ?? 'N/A' }}</span>
-                            </div>
+                            </div> --}}
                             <audio controls class="w-100 rounded">
                                 <source src="{{ asset_url($audio->file_path) }}" type="audio/webm">
                                 Your browser does not support the audio element.

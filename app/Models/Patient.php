@@ -18,6 +18,7 @@ class Patient extends Model
      */
     protected $fillable = [
         'title_id',
+        'patient_picture',
         'first_name',
         'surname',
         'dob',
@@ -123,6 +124,11 @@ class Patient extends Model
     public function audio():HasMany
     {
         return $this->hasMany(PatientAudioFile::class);
+    }
+
+    public function recall()
+    {
+        return $this->hasMany(Recall::class);
     }
 
 }

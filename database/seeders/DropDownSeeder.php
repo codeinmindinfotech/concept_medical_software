@@ -19,6 +19,7 @@ class DropDownSeeder extends Seeder
         $visitCategory = DropDown::firstOrCreate(['code' => 'Visit_Category','name' => 'Visit Category']);
         $narrative = DropDown::firstOrCreate(['code' => 'Narrative','name' => 'Narrative']);
         $chargeGroupType = DropDown::firstOrCreate(['code' => 'Charge_Group_Type','name' => 'Charge Group Type']);
+        $status = DropDown::firstOrCreate(['code' => 'Status','name' => 'Status']);
 
         $titles = ['Dr.', 'Mr', 'Mrs', 'Fr', 'Prof.', 'Sr', 'Ms'];
         foreach ($titles as $val) {
@@ -72,6 +73,14 @@ class DropDownSeeder extends Seeder
         foreach ($chargeGroupTypes as $val) {
             DropDownValue::firstOrCreate([
                 'drop_down_id' => $chargeGroupType->id,
+                'value' => $val
+            ]);
+        }
+
+        $statuses = ['Pending', 'Inprogress','Completed'];
+        foreach ($statuses as $val) {
+            DropDownValue::firstOrCreate([
+                'drop_down_id' => $status->id,
                 'value' => $val
             ]);
         }

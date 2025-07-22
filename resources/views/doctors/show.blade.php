@@ -32,11 +32,11 @@
                             <i class="fas fa-id-card me-1"></i>Doctor Info
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    {{-- <li class="nav-item" role="presentation">
                         <button class="nav-link" id="doctor-audio-tab" data-bs-toggle="tab" data-bs-target="#doctor-audio" type="button" role="tab">
                             <i class="fas fa-microphone-alt me-1"></i>Audio Recordings
                         </button>
-                    </li>
+                    </li> --}}
                 </ul>
 
                 {{-- Tab Content --}}
@@ -64,7 +64,7 @@
                     </div>
 
                     {{-- Doctor Audio Tab --}}
-                    <div class="tab-pane fade" id="doctor-audio" role="tabpanel" aria-labelledby="doctor-audio-tab">
+                    {{-- <div class="tab-pane fade" id="doctor-audio" role="tabpanel" aria-labelledby="doctor-audio-tab">
                         @if($doctor->audios->isNotEmpty())
                             <div class="list-group">
                                 @foreach($doctor->audios as $audio)
@@ -76,7 +76,6 @@
                                                 Your browser does not support the audio element.
                                             </audio>
                                         </div>
-                                        {{-- Patient Name --}}
                                         <div class="text-muted small">
                                             <i class="fas fa-user me-1 text-secondary"></i>
                                             @if($audio->patient)
@@ -101,7 +100,7 @@
                                 <i class="fas fa-info-circle me-1"></i> No audio recordings available for this doctor.
                             </div>
                         @endif
-                    </div>
+                    </div> --}}
                 </div>
 
             </div>
