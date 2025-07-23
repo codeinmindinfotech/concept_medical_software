@@ -47,6 +47,12 @@
                     <span>Clinic</span>
                 </a>
 
+            {{-- <a href="{{ route('patient.dashboard') }}"
+                class="{{ request()->routeIs('patient.dashboard') ? 'active' : '' }}">
+                 <i class="fas fa-chart-line me-2"></i> Dashboard
+             </a> --}}
+             
+
                 {{-- Audio --}}
                 {{-- <a class="nav-link {{ Request::is('audios*') ? 'active' : '' }}" href="{{ route('audios.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-microphone"></i></div>

@@ -391,12 +391,12 @@
 </div>
 @push('scripts')
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    flatpickr(".flatpickr", {
-        dateFormat: "Y-m-d",
-        maxDate: "today",
-        allowInput: true
-    });
-});
+// document.addEventListener("DOMContentLoaded", function () {
+//     flatpickr(".flatpickr", {
+//         dateFormat: "Y-m-d",
+//         maxDate: "today",
+//         allowInput: true
+//     });
+// });
 </script>
 @endpush

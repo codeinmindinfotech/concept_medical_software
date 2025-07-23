@@ -376,11 +376,11 @@
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
-                        <div class="position-absolute top-0 end-0 p-2">
+                        {{-- <div class="position-absolute top-0 end-0 p-2">
                             <a href="{{ route('audios.edit', $audio->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit Recording">
                                 <i class="fas fa-edit"></i>
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 @endforeach

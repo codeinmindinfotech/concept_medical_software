@@ -1,6 +1,7 @@
 <div id="FeeNoteList">
   <div class="card shadow-sm mb-4">
     <div class="card-body" id="FeeNoteListContainer">
+      @if($feeNotes->count())
       <table class="table table-bordered" id="FeeNoteTable">
         <thead class="table-dark">
           <tr>
@@ -42,6 +43,10 @@
           @endforelse
         </tbody>
       </table>
+      @else
+      <p>No Fee Notes found.</p>
+      @endif
+
     </div>
   </div>
 </div>
