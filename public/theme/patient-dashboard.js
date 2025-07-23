@@ -421,6 +421,7 @@ $(document).ready(function () {
     $('#line_total').val(total.toFixed(2));
   }
  
+  
   $('#patient_picture_input').on('change', function () {
     const form = $('#uploadPatientPictureForm')[0];
     const formData = new FormData(form);
