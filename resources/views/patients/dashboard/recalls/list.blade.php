@@ -1,6 +1,7 @@
 <div id="RecallList">
   <div class="card shadow-sm mb-4">
     <div class="card-body" id="RecallListContainer">
+      @if($recalls->count())
       <table class="table table-bordered" id="RecallTable">
         <thead class="table-dark">
           <tr>
@@ -37,6 +38,9 @@
           @endforelse
         </tbody>
       </table>
+      @else
+        <p>No recalls found for this month.</p>
+      @endif
     </div>
   </div>
 </div>

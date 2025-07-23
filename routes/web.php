@@ -19,10 +19,12 @@ use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
 use App\Http\Controllers\Backend\PatientAudioController;
+use App\Http\Controllers\Backend\PatientDashboardController;
 use App\Http\Controllers\Backend\PatientHistoryController;
 use App\Http\Controllers\Backend\PatientNoteController;
 use App\Http\Controllers\Backend\PatientPhysicalController;
 use App\Http\Controllers\Backend\RecallController;
+use App\Http\Controllers\Backend\RecallNotificationController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -118,6 +120,14 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('recalls/{recall}', [RecallController::class, 'update'])->name('update');
         Route::delete('recalls/{recall}', [RecallController::class, 'destroy'])->name('destroy');
     });
+
+    Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
+    Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
+    Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
+
+    Route::get('/patient/dashboard', [PatientDashboardController::class, 'index'])->name('patient.dashboard');
+    Route::post('/patient/recall/store', [PatientDashboardController::class, 'storeRecall'])->name('patients.recall.store');
+    Route::post('/patient/recall/delete', [PatientDashboardController::class, 'deleteRecall'])->name('patients.recall.delete');
 
 
    
