@@ -7,6 +7,8 @@ use App\Models\Clinic;
 use App\Models\WaitingList;
 use App\Models\Patient;
 use App\Traits\DropdownTrait;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class WaitingListController extends Controller
@@ -20,13 +22,22 @@ class WaitingListController extends Controller
         $waitingLists = $patient->WaitingLists()->latest()->get();
 
         if (request()->ajax()) {
-            return view('patients.waiting_lists.list', compact('patient', 'clinics', 'categories','waitingLists'));
+            return view('patients.dashboard.waiting_lists.index', compact('patient', 'clinics', 'categories','waitingLists'));
         }
-        return view('patients.waiting_lists.list', compact('patient', 'clinics', 'categories','waitingLists'));
+        return view('patients.dashboard.waiting_lists.index', compact('patient', 'clinics', 'categories','waitingLists'));
+    }
+
+    public function create(Patient $patient)
+    {
+        $patient = Patient::findOrFail($patient->id); // <-- Add this line
+        $clinics = Clinic::orderBy('name')->get();
+        extract($this->getCommonDropdowns());
+
+        return view('patients.dashboard.waiting_lists.create', compact('patient', 'clinics', 'categories'));
     }
 
     
-    public function store(Request $request, $patientId)
+    public function store(Request $request, $patientId) : JsonResponse
     {
         $data = $request->validate([
             'visit_date' => 'required|date',
@@ -37,35 +48,46 @@ class WaitingListController extends Controller
         $data['patient_id'] = $patientId;
         WaitingList::create($data);
     
-        return response()->json(['success' => true, 'message' => 'Added']);
-    }
-    
-    public function show($patientId, WaitingList $waitingList)
-    {
-        return response()->json($waitingList);
+        return response()->json([
+            'redirect' => route('waiting-lists.index', ['patient' => $request->patient_id]),
+            'message' => 'Waiting List created successfully',
+        ]);
     }
  
-    public function update(Request $request, $patientId, $id)
+    public function edit(Patient $patient, $waitingId)
+    {
+        $waitingList = WaitingList::findOrFail($waitingId);
+        $clinics = Clinic::orderBy('name')->get();
+        extract($this->getCommonDropdowns());
+
+        return view('patients.dashboard.waiting_lists.edit', compact('waitingList','patient', 'clinics', 'categories'));
+    }
+
+    public function update(Request $request, $patientId, $id): JsonResponse
     {
       $data = $request->validate([
         'visit_date' => 'required|date',
-            'clinic_id' => 'required|integer',
-            'consult_note' => 'required|string',
-            'category_id' => 'required|integer',
+        'clinic_id' => 'required|integer',
+        'consult_note' => 'required|string',
+        'category_id' => 'required|integer',
       ]);
     
       $waitingList = WaitingList::where('patient_id', $patientId)->findOrFail($id);
       $waitingList->update($data);
     
-      return response()->json(['success' => true, 'message' => 'Updated successfully']);
-    }
+      return response()->json([
+        'redirect' => route('waiting-lists.index', ['patient' => $request->patient_id]),
+        'message' => 'Waiting List Updated successfully',
+    ]);
+   }
     
-
-    
-    public function destroy($patientId, WaitingList $waitingList)
+    public function destroy(Patient $patient,WaitingList $waitingList): RedirectResponse
     {
         $waitingList->delete();
-        return response()->json(['success' => true, 'message' => 'Deleted']);
+
+        return redirect()
+            ->route('waiting-lists.index', ['patient' => $patient->id])
+            ->with('success', 'WaitingList deleted successfully.');
     }
     
 }

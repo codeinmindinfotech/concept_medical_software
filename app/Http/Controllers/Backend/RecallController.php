@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Patient;
 use App\Models\Recall;
 use App\Traits\DropdownTrait;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class RecallController extends Controller
@@ -17,12 +19,19 @@ class RecallController extends Controller
         $recalls = $patient->recall()->with('status')->latest()->get();
         $statuses = $this->getDropdownOptions('STATUS');
         if (request()->ajax()) {
-            return view('patients.dashboard.recalls.list', compact('recalls', 'statuses', 'patient'));
+            return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
         }
-        return view('patients.dashboard.recalls.list', compact('recalls', 'statuses', 'patient'));
+        return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
     }
 
-    public function store(Request $request, Patient $patient)
+    public function create(Patient $patient)
+    {
+        $patient = Patient::findOrFail($patient->id); 
+        $statuses = $this->getDropdownOptions('STATUS');
+        return view('patients.dashboard.recalls.create', compact('patient','statuses'));
+    }
+
+    public function store(Request $request, Patient $patient): JsonResponse
     {
         $data = $request->validate([
             'patient_id' => 'required|exists:patients,id',
@@ -37,12 +46,21 @@ class RecallController extends Controller
             ['id' => $request->recall_id],
             $data );
 
-        $recalls = Recall::where('patient_id', $request->patient_id)->latest()->get();
-        $patient = Patient::find($request->patient_id);
+        $recalls = Recall::where('patient_id', $patient->id)->latest()->get();
+        $patient = Patient::find($patient->id);
 
         return response()->json([
-            'view' => view('patients.dashboard.recalls.list', compact('recalls', 'patient'))->render()
+            'redirect' => route('recalls.index', ['patient' => $patient]),
+            'message' => 'Doctor created successfully',
         ]);
+    }
+
+    public function edit(Patient $patient, $recallId)
+    {
+        $recall = Recall::findOrFail($recallId);
+        $patient = Patient::findOrFail($patient->id); 
+        $statuses = $this->getDropdownOptions('STATUS');
+        return view('patients.dashboard.recalls.edit', compact('patient','recall', 'statuses'));
     }
 
     public function show(Recall $recall)
@@ -50,9 +68,9 @@ class RecallController extends Controller
         return response()->json(['data' => $recall]);
     }
 
-    public function update(Request $request, Patient $patient, Recall $recall)
+    public function update(Request $request, Patient $patient, $recallId): JsonResponse
     {
-        $data = $request->validate([
+        $request->validate([
             'patient_id' => 'required',
             'status_id' => 'required',
             'recall_interval' => 'required',
@@ -60,27 +78,21 @@ class RecallController extends Controller
             'recall_date' => 'required|date',
         ]);
 
-        $id = $request->recall_id ?? '';
-        $recall = Recall::updateOrCreate(
-            ['id' => $id],
-            $data
-        );
-        return response()->json(['message' => 'Updated']);
+        $recall = Recall::findOrFail($recallId);
+        $recall->update($request->all());
+
+        return response()->json([
+            'redirect' => route('recalls.recalls.index', ['patient' => $patient->id]),
+            'message' => 'Task updated successfully',
+        ]);
     }
 
-
-    public function destroy($patientId, $recallId)
+    public function destroy(Patient $patient,Recall $recall): RedirectResponse
     {
-        $recall = Recall::where('id', $recallId)
-            ->where('patient_id', $patientId)
-            ->first();
-
-        if (!$recall) {
-            return response()->json(['success' => false, 'message' => 'Recall not found or unauthorized.'], 404);
-        }
-
         $recall->delete();
 
-        return response()->json(['success' => true, 'message' => 'Deleted']);
-    }
+        return redirect()
+            ->route('recalls.recalls.index', ['patient' => $patient->id])
+            ->with('success', 'Recall deleted successfully.');
+    }    
 }

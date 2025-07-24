@@ -1,4 +1,19 @@
 $(document).ready(function () {
+  function handleErrors(xhr, form) {
+    if (xhr.status === 422) {
+      const errors = xhr.responseJSON.errors;
+      for (const field in errors) {
+        const input = form.find(`[name="${field}"]`);
+        input.addClass('is-invalid');
+        input.next('.text-danger').remove(); // remove old errors if any
+        input.after(`<div class="text-danger">${errors[field][0]}</div>`);
+      }
+    } else {
+      Swal.fire('Error', 'Something went wrong', 'error');
+    }
+  }
+
+  
     $('body').on('submit', '.validate-form', function (e) {
       e.preventDefault();
   

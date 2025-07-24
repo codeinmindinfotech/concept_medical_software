@@ -5,13 +5,10 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Recall;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         $this->app->singleton(\App\Services\UserService::class);
@@ -20,23 +17,24 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('backend.theme.header', function ($view) {
+            $user = Auth::user();
             $currentMonth = now()->month;
             $currentYear = now()->year;
 
-            $monthlyRecallCount = Recall::whereMonth('recall_date', $currentMonth)
-                ->whereYear('recall_date', $currentYear)
-                ->count();
+            $query = Recall::whereMonth('recall_date', $currentMonth)
+                   ->whereYear('recall_date', $currentYear);
 
-            $recallsThisMonth = Recall::whereMonth('recall_date', $currentMonth)
-                ->whereYear('recall_date', $currentYear)
+            if ($user && $user->hasRole('patient')) {
+                $query->where('patient_id', $user->userable_id);
+            }
+            $monthlyRecallCount = $query->count();
+
+            $recallsThisMonth = (clone $query)
                 ->orderBy('recall_date', 'asc')
-                ->take(5) // limit to 5 latest recalls
+                ->take(5)
                 ->get();
 
             $view->with(compact('monthlyRecallCount', 'recallsThisMonth'));
         });
     }
-
-
-
 }

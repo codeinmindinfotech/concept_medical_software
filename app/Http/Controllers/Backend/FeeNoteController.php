@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\FeeNote;
 use App\Models\Patient;
 use App\Traits\DropdownTrait;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 class FeeNoteController extends Controller
 {
@@ -22,15 +24,24 @@ class FeeNoteController extends Controller
         $feeNotes = $patient->FeeNoteList()->latest()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::orderBy('name')->get();
-        $feeNotes = $patient->FeeNoteList()->latest()->get();
 
         if (request()->ajax()) {
-            return view('patients.dashboard.fee_notes.list', compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
+            return view('patients.dashboard.fee_notes.index', compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
         }
-        return view('patients.dashboard.fee_notes.list', compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
+        return view('patients.dashboard.fee_notes.index', compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
     }
 
-    public function store(Request $request, Patient $patient)
+    public function create(Patient $patient)
+    {
+        $patient = Patient::findOrFail($patient->id); 
+        $consultants = Consultant::all(); 
+        $chargecodes = ChargeCode::all();
+        $narrative = $this->getDropdownOptions('NARRATIVE');
+        $clinics = Clinic::orderBy('name')->get();
+        return view('patients.dashboard.fee_notes.create', compact('consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
+    }
+
+    public function store(Request $request, Patient $patient): JsonResponse
     {
         $data = $request->validate([
             'patient_id' => 'required|exists:patients,id',
@@ -56,16 +67,23 @@ class FeeNoteController extends Controller
         $patient = Patient::find($request->patient_id);
 
         return response()->json([
-            'view' => view('patients.dashboard.fee_notes.list', compact('feeNotes', 'patient'))->render()
+            'redirect' => route('fee-notes.index', ['patient' => $patient]),
+            'message' => 'feeNotes created successfully',
         ]);
     }
 
-    public function show(FeeNote $feeNote)
+    public function edit(Patient $patient, $feeNoteId)
     {
-        return response()->json(['data' => $feeNote]);
+        $feeNote = FeeNote::findOrFail($feeNoteId);
+        $patient = Patient::findOrFail($patient->id); 
+        $consultants = Consultant::all(); 
+        $chargecodes = ChargeCode::all();
+        $narrative = $this->getDropdownOptions('NARRATIVE');
+        $clinics = Clinic::orderBy('name')->get();
+        return view('patients.dashboard.fee_notes.edit', compact('feeNote','consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
     }
 
-    public function update(Request $request, Patient $patient, FeeNote $feeNote)
+    public function update(Request $request, Patient $patient, FeeNote $feeNote): JsonResponse
     {
         $data = $request->validate([
             'clinic_id' => 'required',
@@ -78,27 +96,22 @@ class FeeNoteController extends Controller
             'line_total' => 'required|numeric',
             'procedure_date' => 'required|date',
         ]);
-        $id = $request->id ?? '';
         $feeNote = FeeNote::updateOrCreate(
-            ['id' => $id],
+            ['id' => $feeNote->id],
             $data + $request->only(['comment', 'narrative', 'admission_date', 'discharge_date'])
         );
-        return response()->json(['message' => 'Updated']);
+        return response()->json([
+            'redirect' => route('fee-notes.index', ['patient' => $patient]),
+            'message' => 'feeNotes updated successfully',
+        ]);
     }
 
-
-    public function destroy($patientId, $noteId)
+    public function destroy(Patient $patient,FeeNote $feeNote): RedirectResponse
     {
-        $feeNote = FeeNote::where('id', $noteId)
-            ->where('patient_id', $patientId)
-            ->first();
-
-        if (!$feeNote) {
-            return response()->json(['success' => false, 'message' => 'Fee note not found or unauthorized.'], 404);
-        }
-
         $feeNote->delete();
 
-        return response()->json(['success' => true, 'message' => 'Deleted']);
-    }
+        return redirect()
+            ->route('fee-notes.index', ['patient' => $patient->id])
+            ->with('success', 'Fee Note deleted successfully.');
+    } 
 }
