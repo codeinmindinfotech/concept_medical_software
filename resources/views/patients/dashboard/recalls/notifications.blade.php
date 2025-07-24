@@ -130,8 +130,8 @@
                             <td>
                                 <a href="{{ route('patients.show', $recall->patient_id) }}"
                                     class="btn btn-info btn-sm">👤 View Patient</a>
-                                {{-- <a href="{{ route('recalls.edit', $recall->id) }}"
-                                    class="btn btn-warning btn-sm">📝 Edit Recall</a> --}}
+                                <a href="{{ route('recalls.recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}"
+                                    class="btn btn-warning btn-sm">📝 Edit Recall</a>
                                 <a href="{{ route('recalls.email', $recall->id) }}" class="btn btn-primary btn-sm">📧
                                     Email</a>
                                 <a href="{{ route('recalls.sms', $recall->id) }}" class="btn btn-success btn-sm">📱

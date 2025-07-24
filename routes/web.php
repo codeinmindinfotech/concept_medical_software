@@ -19,12 +19,12 @@ use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
 use App\Http\Controllers\Backend\PatientAudioController;
-use App\Http\Controllers\Backend\PatientDashboardController;
 use App\Http\Controllers\Backend\PatientHistoryController;
 use App\Http\Controllers\Backend\PatientNoteController;
 use App\Http\Controllers\Backend\PatientPhysicalController;
 use App\Http\Controllers\Backend\RecallController;
 use App\Http\Controllers\Backend\RecallNotificationController;
+use App\Http\Controllers\Backend\TaskController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -87,23 +87,26 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('/{history}', [PatientHistoryController::class, 'update'])->name('patients.history.update');
         Route::delete('/{history}', [PatientHistoryController::class, 'destroy'])->name('patients.history.destroy');
     });
-    
-    Route::get('/patients/dashboard/{patient}', [PatientController::class, 'patient_dashboard'])->name('patients.patient_dashboard');
+    Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
 
-    Route::prefix('patients/{patient}')->name('waiting-lists.')->group(function () {
-        Route::post('waiting-lists', [WaitingListController::class, 'store'])->name('store');
-        Route::get('waiting-lists', [WaitingListController::class, 'index'])->name('index');
-        Route::get('waiting-lists/{waitingList}', [WaitingListController::class, 'show'])->name('show');
-        Route::put('waiting-lists/{waitingList}', [WaitingListController::class, 'update'])->name('update');
-        Route::delete('waiting-lists/{waitingList}', [WaitingListController::class, 'destroy'])->name('destroy');
+    Route::prefix('patients/{patient}')->name('tasks.')->group(function () {
+        Route::resource('tasks', TaskController::class)->except(['show']);
     });
 
-    Route::prefix('patients/{patient}')->name('feenotes.')->group(function () {
-        Route::post('feenotes', [FeeNoteController::class, 'store'])->name('store');
-        Route::get('feenotes', [FeeNoteController::class, 'index'])->name('index');
-        Route::get('feenotes/{feenote}', [FeeNoteController::class, 'show'])->name('show');
-        Route::put('feenotes/{feenote}', [FeeNoteController::class, 'update'])->name('update');
-        Route::delete('feenotes/{feenote}', [FeeNoteController::class, 'destroy'])->name('destroy');
+    Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
+        Route::resource('recalls', RecallController::class)->except(['show']);
+    });
+
+    Route::prefix('patients/{patient}')->group(function () {
+        Route::resource('waiting-lists', WaitingListController::class)
+            ->names('waiting-lists') 
+            ->except(['show']);
+    });
+
+    Route::prefix('patients/{patient}')->group(function () {
+        Route::resource('fee-notes', FeeNoteController::class)
+            ->names('fee-notes') 
+            ->except(['show']);
     });
     
     Route::prefix('patients/{patient}/audio')->group(function () {
@@ -113,22 +116,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
     });
 
-    Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
-        Route::post('recalls', [RecallController::class, 'store'])->name('store');
-        Route::get('recalls', [RecallController::class, 'index'])->name('index');
-        Route::get('recalls/{recall}', [RecallController::class, 'show'])->name('show');
-        Route::put('recalls/{recall}', [RecallController::class, 'update'])->name('update');
-        Route::delete('recalls/{recall}', [RecallController::class, 'destroy'])->name('destroy');
-    });
-
     Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
     Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
     Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
-
-    Route::get('/patient/dashboard', [PatientDashboardController::class, 'index'])->name('patient.dashboard');
-    Route::post('/patient/recall/store', [PatientDashboardController::class, 'storeRecall'])->name('patients.recall.store');
-    Route::post('/patient/recall/delete', [PatientDashboardController::class, 'deleteRecall'])->name('patients.recall.delete');
-
-
    
 });

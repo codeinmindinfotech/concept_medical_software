@@ -13,7 +13,13 @@ class RecallNotificationController extends Controller
 {
     public function index(Request $request): View|string
     {
+        $user = auth()->user();
+
         $query = Recall::with('patient','status')->latest();
+        
+        if ($user->hasRole('patient')) {
+            $query->where('patient_id', $user->userable_id);
+        }
         $defaulting = !$request->filled('from') && !$request->filled('to') && !$request->filled('recall_filter');
 
         if ($defaulting) {

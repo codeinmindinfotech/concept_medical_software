@@ -18,16 +18,8 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $patient = $user->hasRole('patient') ? $user->userable : null;
-
-        if ($user->hasRole('superadmin')) {
-            return view('dashboard.index', compact('patient'));
-        }
-    
-        if ($user->hasRole('patient')) {
-            $patient = $user->userable; // Assuming morph relation to Patient model
-            return redirect()->route('patients.patient_dashboard', $patient->id);
-        }
-
-        abort(403, 'Unauthorized');
+        return view('dashboard.index', compact('patient'));
+        
     }
+    
 }

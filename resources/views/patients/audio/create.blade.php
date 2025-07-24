@@ -36,7 +36,7 @@
     
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-            <i class="fas fa-microphone"></i> Patients Audio Recording Management
+            <i class="fas fa-microphone"></i> Patients Consultation Management
         </div>
         <div class="card-body">
             <form id="audioForm" action="{{ route('patients.audio.store', $patient->id) }}" method="POST" enctype="multipart/form-data" class="mb-4">

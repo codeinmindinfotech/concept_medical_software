@@ -10,50 +10,50 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
                     <span>Dashboard</span>
                 </a>
-        
-                {{-- Patients --}}
                 <a class="nav-link {{ Request::is('patients*') ? 'active' : '' }}" href="{{ route('patients.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-procedures"></i></div>
                     <span>Patients</span>
                 </a>
-        
-                {{-- Doctors --}}
+                <a class="nav-link {{ Request::is('patient/*') ? 'active' : '' }}" href="{{ route('patient.patient_list_dashboard') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                    <span>Patients Dashboard</span>
+                </a>
+
+                @can('viewAny', App\Models\Doctor::class)
                 <a class="nav-link {{ Request::is('doctors*') ? 'active' : '' }}" href="{{ route('doctors.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
                     <span>Doctors</span>
                 </a>
+                @endcan
         
-                {{-- Consultants --}}
+                @can('viewAny', App\Models\Consultant::class)
                 <a class="nav-link {{ Request::is('consultants*') ? 'active' : '' }}" href="{{ route('consultants.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-stethoscope"></i></div>
                     <span>Consultants</span>
                 </a>
+                @endcan
         
-                {{-- Insurance --}}
+                @if(auth()->user()->can('insurance-list'))
                 <a class="nav-link {{ Request::is('insurances*') ? 'active' : '' }}" href="{{ route('insurances.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-file-medical"></i></div>
                     <span>Insurance</span>
                 </a>
+                @endif
         
-                {{-- Charge Codes --}}
+                @can('viewAny', App\Models\ChargeCode::class)
                 <a class="nav-link {{ Request::is('chargecodes*') ? 'active' : '' }}" href="{{ route('chargecodes.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
                     <span>Charge Codes</span>
                 </a>
+                @endcan
 
-                {{-- Clinic --}}
+                @if(auth()->user()->can('clinic-list'))
                 <a class="nav-link {{ Request::is('clinics*') ? 'active' : '' }}" href="{{ route('clinics.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
                     <span>Clinic</span>
                 </a>
+                @endif
 
-            {{-- <a href="{{ route('patient.dashboard') }}"
-                class="{{ request()->routeIs('patient.dashboard') ? 'active' : '' }}">
-                 <i class="fas fa-chart-line me-2"></i> Dashboard
-             </a> --}}
-             
-
-                {{-- Audio --}}
                 {{-- <a class="nav-link {{ Request::is('audios*') ? 'active' : '' }}" href="{{ route('audios.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-microphone"></i></div>
                     <span>Audio Recording</span>
@@ -76,21 +76,24 @@
         
                 <div id="collapseUtilities" class="collapse {{ $isUtilitiesOpen ? 'show' : '' }}">
                     <div class="collapse-inner py-2 rounded-2 border-start border-3 border-primary ps-3">
-        
-                        <a class="nav-link {{ Request::is('users*') ? 'active fw-bold text-primary' : '' }}"
+                       <a class="nav-link {{ Request::is('users*') ? 'active fw-bold text-primary' : '' }}"
                            href="{{ route('users.index') }}">
                             <i class="fas fa-user me-2"></i> Users
                         </a>
         
+                        @if(auth()->user()->can('role-list'))
                         <a class="nav-link {{ Request::is('roles*') ? 'active fw-bold text-primary' : '' }}"
                            href="{{ route('roles.index') }}">
                             <i class="fas fa-user-shield me-2"></i> Roles
                         </a>
+                        @endif
         
+                        @if(auth()->user()->can('dropdown-list'))
                         <a class="nav-link {{ Request::is('dropdowns*') ? 'active fw-bold text-primary' : '' }}"
                            href="{{ route('dropdowns.index') }}">
                             <i class="fas fa-list-ul me-2"></i> Dropdowns
                         </a>
+                        @endif
         
                     </div>
                 </div>

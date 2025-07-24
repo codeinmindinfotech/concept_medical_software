@@ -9,6 +9,8 @@ use App\Models\Clinic;
 use App\Models\Consultant;
 use App\Models\Doctor;
 use App\Models\Patient;
+use App\Models\Task;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -222,9 +224,20 @@ class PatientController extends Controller
                         ->with('success','Patient deleted successfully');
     }
 
+    public function patient_list_dashboard()
+    {
+        $user = auth()->user();
+
+        if ($user->hasRole('patient')) {
+            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+        } else { 
+            $patients = Patient::latest()->get();
+        }
+        return view('patients.dashboard.dashboard',compact('patients'));
+    }
+
     public function patient_dashboard(Patient $patient)
     {
-        // Load dropdowns and options
         extract($this->getCommonDropdowns()); // contains $categories, etc.
 
         $patient->load([
@@ -239,6 +252,9 @@ class PatientController extends Controller
         $chargecodes = ChargeCode::all();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $statuses = $this->getDropdownOptions('STATUS');
+        $taskcategories = $this->getDropdownOptions('CATEGORY');
+        $tasks = Task::with('status')->where('patient_id', $patient->id)->latest()->paginate(10);
+        $users = User::role('superadmin')->get();
 
         return view('patients.dashboard', compact(
             'patient',
@@ -247,7 +263,10 @@ class PatientController extends Controller
             'consultants',
             'chargecodes',
             'narrative',
-            'statuses'
+            'statuses',
+            'tasks',
+            'taskcategories',
+            'users'
         ) + [
             'waitingLists' => $patient->waitingLists,
             'feeNotes'     => $patient->feeNoteList,
