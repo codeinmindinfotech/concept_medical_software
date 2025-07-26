@@ -20,7 +20,8 @@ class TaskController extends Controller
     {
         $tasks = Task::with(['creator', 'owner', 'category', 'status'])->where('patient_id', $patient->id)->paginate(10);
         // Pass other variables as needed
-        $users = User::all();
+        $users = User::role('superadmin')->get();
+
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
@@ -31,7 +32,7 @@ class TaskController extends Controller
     {
         $patient = Patient::findOrFail($patient->id); // <-- Add this line
 
-        $users = User::all(); // or apply any filtering
+        $users = User::role('superadmin')->get();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
@@ -64,8 +65,8 @@ class TaskController extends Controller
 
     public function edit(Patient $patient, $taskId)
     {
-        $task = Task::findOrFail($taskId);
-        $users = User::all();
+        $task = Task::with(['creator', 'owner', 'category', 'status'])->findOrFail($taskId);
+        $users = User::role('superadmin')->get();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskCategories = $this->getDropdownOptions('CATEGORY');
 
