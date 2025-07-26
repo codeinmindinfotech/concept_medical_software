@@ -40,13 +40,29 @@
             <td>{{ $visit->category->value ?? '-' }}</td>
             <td>{{ $visit->consult_note ?? '-' }}</td>
             <td class="text-end">
-                <a href="{{ route('waiting-lists.edit', ['patient' => $patient, 'waiting_list' => $visit->id]) }}" class="btn btn-sm btn-warning">Edit</a>
-                <form action="{{ route('waiting-lists.destroy',['patient' => $patient, 'waiting_list' => $visit->id]) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
-            </td>
+              <div class="d-flex justify-content-end gap-1">
+                  <a href="{{ route('waiting-lists.edit', ['patient' => $patient, 'waiting_list' => $visit->id]) }}" 
+                     class="btn btn-sm btn-warning" 
+                     title="Edit">
+                      <i class="fa fa-edit"></i>
+                  </a>
+          
+                  <form action="{{ route('waiting-lists.destroy',['patient' => $patient, 'waiting_list' => $visit->id]) }}" 
+                        method="POST" 
+                        onsubmit="return confirm('Are you sure you want to delete this item?');"
+                        style="display: inline;">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" 
+                              class="btn btn-sm btn-danger" 
+                              title="Delete">
+                          <i class="fa fa-trash"></i>
+                      </button>
+                  </form>
+              </div>
+          </td>
+          
+          
           </tr>
         @empty
           <tr>

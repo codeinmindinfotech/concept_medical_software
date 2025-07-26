@@ -236,44 +236,6 @@ class PatientController extends Controller
         return view('patients.dashboard.dashboard',compact('patients'));
     }
 
-    public function patient_dashboard(Patient $patient)
-    {
-        extract($this->getCommonDropdowns()); // contains $categories, etc.
-
-        $patient->load([
-            'waitingLists' => fn($q) => $q->latest(),
-            'feeNoteList' => fn($q) => $q->latest(),
-            'recall' => fn($q) => $q->latest()->with('status')
-        ]);
-
-        // Load other shared dropdowns
-        $clinics = Clinic::orderBy('name')->get();
-        $consultants = Consultant::all();
-        $chargecodes = ChargeCode::all();
-        $narrative = $this->getDropdownOptions('NARRATIVE');
-        $statuses = $this->getDropdownOptions('STATUS');
-        $taskcategories = $this->getDropdownOptions('CATEGORY');
-        $tasks = Task::with('status')->where('patient_id', $patient->id)->latest()->paginate(10);
-        $users = User::role('superadmin')->get();
-
-        return view('patients.dashboard', compact(
-            'patient',
-            'categories',
-            'clinics',
-            'consultants',
-            'chargecodes',
-            'narrative',
-            'statuses',
-            'tasks',
-            'taskcategories',
-            'users'
-        ) + [
-            'waitingLists' => $patient->waitingLists,
-            'feeNotes'     => $patient->feeNoteList,
-            'recalls'     => $patient->recall,
-        ]);
-    }
-
     public function uploadPicture(Request $request)
     {
         $request->validate([

@@ -18,7 +18,7 @@ class TaskController extends Controller
 
     public function index(Patient $patient)
     {
-        $tasks = Task::where('patient_id', $patient->id)->paginate(10);
+        $tasks = Task::with(['creator', 'owner', 'category', 'status'])->where('patient_id', $patient->id)->paginate(10);
         // Pass other variables as needed
         $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
