@@ -11,8 +11,8 @@
                 <h5 class="mb-0">
                     <i class="fas fa-user-clock me-2"></i> Task Management
                 </h5>
-                <a href="{{ route('tasks.tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                    <i class="fas fa-plus-circle me-1"></i> New Task
+                <a href="{{ route('tasks.tasks.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+                    <i class="fas fa-plus-circle me-1"></i> Task List
                 </a>
             </div>
             <div class="card-body">
