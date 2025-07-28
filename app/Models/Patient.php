@@ -131,4 +131,9 @@ class Patient extends Model
         return $this->hasMany(Recall::class);
     }
 
+    public function communication()
+    {
+        return $this->hasMany(Communication::class);
+    }
+
 }

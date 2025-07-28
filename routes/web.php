@@ -5,6 +5,7 @@ use App\Http\Controllers\Backend\AudioController;
 use App\Http\Controllers\Backend\ChargeCodeController;
 use App\Http\Controllers\Backend\ChargeCodePriceController;
 use App\Http\Controllers\Backend\ClinicController;
+use App\Http\Controllers\Backend\CommunicationController;
 use App\Http\Controllers\Backend\WaitingListController;
 use App\Http\Controllers\Backend\ConsultantController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Backend\PatientNoteController;
 use App\Http\Controllers\Backend\PatientPhysicalController;
 use App\Http\Controllers\Backend\RecallController;
 use App\Http\Controllers\Backend\RecallNotificationController;
+use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 
@@ -115,6 +117,22 @@ Route::group(['middleware' => ['auth']], function() {
             ->names('fee-notes') 
             ->except(['show']);
     });
+
+    Route::prefix('patients/{patient}')->group(function () {
+        Route::resource('sms', SmsController::class)
+            ->names('sms') 
+            ->except(['show','create','update','edit']);
+    });
+
+    Route::prefix('patients/{patient}')->group(function () {
+        Route::resource('communications', CommunicationController::class)
+        ->names('communications');
+    });
+    Route::post('/communications/{communication}/received', 
+        [CommunicationController::class, 'markAsReceived'])
+        ->name('communications.received');
+
+    
     
     Route::prefix('patients/{patient}/audio')->group(function () {
         Route::get('/', [PatientAudioController::class, 'index'])->name('patients.audio.index');

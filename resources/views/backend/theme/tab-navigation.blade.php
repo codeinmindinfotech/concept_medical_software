@@ -19,6 +19,16 @@
        <i class="fas fa-money-check-alt me-2"></i>Fee Notes
     </a>
 
+   <a href="{{ route('sms.index', ['patient' => $patient]) }}"
+      class="nav-link {{ request()->routeIs('sms.*') ? 'active' : '' }}">
+      <i class="fas fa-sms me-2"></i>SMS
+   </a>
+
+   <a href="{{ route('communications.index', ['patient' => $patient]) }}"
+      class="nav-link {{ request()->routeIs('communications.*') ? 'active' : '' }}">
+      <i class="fas fa-comments me-2"></i> Communications
+   </a>
+   
     <a 
        class="nav-link {{ request()->routeIs('documents.*') ? 'active' : '' }}">
        <i class="fas fa-file-alt me-2"></i>Documents
