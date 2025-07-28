@@ -6,6 +6,16 @@
 
 @section('tab-content')
 <div class="tab-pane fade show active" id="tasks" role="tabpanel" aria-labelledby="tab-tasks">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center  ">
+            <h5 class="mb-0">
+                <i class="fas fa-user-clock me-2"></i>Edit Fee Note
+            </h5>
+            <a href="{{ route('fee-notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+                <i class="fas fa-plus-circle me-1"></i> Add Fee Note
+            </a>
+        </div>
+        <div class="card-body">
     <form action="{{ route('fee-notes.update', ['patient' => $patient->id, 'fee_note' => $feeNote]) }}" class="validate-form" method="POST">
         @csrf
         @method('PUT')
@@ -150,7 +160,7 @@
             <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </form>
-</div>
+</div></div></div>
 @endsection
 
 @push('scripts')

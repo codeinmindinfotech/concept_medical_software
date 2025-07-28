@@ -25,6 +25,7 @@ use App\Http\Controllers\Backend\PatientPhysicalController;
 use App\Http\Controllers\Backend\RecallController;
 use App\Http\Controllers\Backend\RecallNotificationController;
 use App\Http\Controllers\Backend\TaskController;
+use App\Http\Controllers\Backend\TaskFollowupController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -46,6 +47,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('chargecodes', ChargeCodeController::class);
     Route::resource('chargecodeprices', ChargeCodePriceController::class);
     Route::resource('audios', AudioController::class);
+    Route::prefix('patients/{patient}/tasks/{task}/followups')->name('followups.')->group(function () {
+        Route::post('/{followup?}', [TaskFollowupController::class, 'storeOrUpdate'])->name('storeOrUpdate');
+        Route::delete('/{followup}', [TaskFollowupController::class, 'destroy'])->name('destroy');
+    });
 
     Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
     Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
@@ -92,6 +97,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::prefix('patients/{patient}')->name('tasks.')->group(function () {
         Route::resource('tasks', TaskController::class)->except(['show']);
     });
+
+    Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 
     Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
         Route::resource('recalls', RecallController::class)->except(['show']);
