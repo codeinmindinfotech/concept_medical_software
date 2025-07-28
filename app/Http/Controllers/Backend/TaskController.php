@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Task;
 use App\Models\User;
 use App\Traits\DropdownTrait;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,10 +19,8 @@ class TaskController extends Controller
 
     public function index(Patient $patient)
     {
-        $tasks = Task::with(['creator', 'owner', 'category', 'status'])->where('patient_id', $patient->id)->paginate(10);
-        // Pass other variables as needed
+        $tasks = Task::with(['creator', 'owner', 'category', 'status','followups'])->where('patient_id', $patient->id)->paginate(10);
         $users = User::role('superadmin')->get();
-
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
@@ -102,5 +101,60 @@ class TaskController extends Controller
         return redirect()
             ->route('tasks.tasks.index', ['patient' => $patient->id])
             ->with('success', 'Task deleted successfully.');
+    }
+
+    public function notifications(Request $request): View|string
+    {
+        $users = User::role('superadmin')->get();
+        $statuses = $this->getDropdownOptions('STATUS');
+        $taskcategories = $this->getDropdownOptions('CATEGORY');
+        $user = auth()->user();
+
+        $query = Task::with(['creator', 'owner', 'category', 'status','followups'])->latest();
+        
+        if ($user->hasRole('patient')) {
+            $query->where('patient_id', $user->userable_id);
+        }
+
+        // $defaulting = !$request->filled('from') && !$request->filled('to') && !$request->filled('recall_filter');
+
+        // if ($defaulting) {
+        //     $request->merge([
+        //         'recall_filter' => 'month',
+        //         'from' => Carbon::now()->startOfMonth()->toDateString(),
+        //         'to' => Carbon::now()->endOfMonth()->toDateString(),
+        //     ]);
+        // }
+
+        if ($request->filled('first_name')) {
+            $query->whereHas('patient', fn ($q) =>
+                $q->where('first_name', 'like', '%' . $request->first_name . '%')
+            );
+        }
+
+        if ($request->filled('surname')) {
+            $query->whereHas('patient', fn ($q) =>
+                $q->where('surname', 'like', '%' . $request->surname . '%')
+            );
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status_id', $request->status);
+        }
+        
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+        
+        if ($request->filled('owner')) {
+            $query->where('owner_id', $request->owner);
+        }
+        
+        $tasks = $query->get();
+        if ($request->ajax()) {
+            return view('patients.dashboard.tasks.notifications', compact('tasks','users', 'taskcategories', 'statuses'))->render();
+        }
+
+        return view('patients.dashboard.tasks.notifications', compact('tasks','users', 'taskcategories', 'statuses'));
     }
 }

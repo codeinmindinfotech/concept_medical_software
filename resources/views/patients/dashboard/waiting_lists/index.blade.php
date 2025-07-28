@@ -32,7 +32,7 @@
         </tr>
       </thead>
       <tbody>
-        @forelse($waitingLists as $visit)
+        @foreach($waitingLists as $visit)
           <tr data-id="{{ $visit->id }}">
             <td>{{ $visit->id }}</td>
             <td>{{ format_date($visit->visit_date) }}</td>
@@ -61,14 +61,8 @@
                   </form>
               </div>
           </td>
-          
-          
-          </tr>
-        @empty
-          <tr>
-            <td colspan="6" class="text-center text-muted py-4">No visits found.</td>
-          </tr>
-        @endforelse
+        </tr>
+        @endforeach
       </tbody>
     </table>
     </div>
