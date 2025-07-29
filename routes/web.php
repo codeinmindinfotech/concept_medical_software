@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Backend\AppointmentController;
 use App\Http\Controllers\Backend\AudioController;
 use App\Http\Controllers\Backend\ChargeCodeController;
 use App\Http\Controllers\Backend\ChargeCodePriceController;
@@ -141,6 +142,13 @@ Route::group(['middleware' => ['auth']], function() {
         Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
     });
 
+    Route::prefix('patients/{patient}/appointments')->group(function () {
+        Route::get('/schedule', [AppointmentController::class, 'patientSchedulePage'])->name('patients.appointments.schedule');
+        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate');
+        Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store');
+    });
+
+    
     Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
     Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
     Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');

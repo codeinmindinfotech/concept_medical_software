@@ -68,6 +68,9 @@
                         <a href="{{ route('communications.index', ['patient' => $patient]) }}" class="btn btn-sm btn-dark" title="Communications">
                             <i class="fas fa-comments"></i>
                         </a>
+                        <a href="{{ route('patients.appointments.schedule', ['patient' => $patient]) }}" class="btn btn-sm btn-dark" title="Communications">
+                            <i class="fas fa-calender"></i>
+                        </a>
                         @endcan
                 
                         @can('update', $patient)
