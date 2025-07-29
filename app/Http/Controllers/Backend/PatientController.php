@@ -219,18 +219,6 @@ class PatientController extends Controller
                         ->with('success','Patient deleted successfully');
     }
 
-    public function patient_list_dashboard()
-    {
-        $user = auth()->user();
-
-        if ($user->hasRole('patient')) {
-            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
-        } else { 
-            $patients = Patient::latest()->get();
-        }
-        return view('patients.dashboard.dashboard',compact('patients'));
-    }
-
     public function uploadPicture(Request $request)
     {
         $request->validate([
