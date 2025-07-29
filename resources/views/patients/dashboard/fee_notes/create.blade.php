@@ -11,8 +11,8 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Fee Notes Management
             </h5>
-            <a href="{{ route('fee-notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                <i class="fas fa-plus-circle me-1"></i> Add Fee Note
+            <a href="{{ route('fee-notes.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+                <i class="fas fa-plus-circle me-1"></i> Fee Note List
             </a>
         </div>
         <div class="card-body">
@@ -25,7 +25,7 @@
               <input type="hidden" name="patient_id" id="patient_id" value="{{ $patient->id }}">
       
               <div class="mb-3 col-md-4">
-                <label>Charge Code</label>
+                <label>Charge Code<span class="txt-error">*</span></label>
                 <select name="chargecode_id" id="chargecode_id" class="select2" required>
                   <option value="">-- Charge Code --</option>
                   @foreach($chargecodes as $code)
@@ -126,7 +126,7 @@
             <hr>
             <div class="row g-3">
               <div class="col-md-3">
-                <label>Clinic</label>
+                <label>Clinic<span class="txt-error">*</span></label>
                 <select name="clinic_id" id="clinic_id" class="form-select select2">
                   <option value="">-- Select --</option>
                   @foreach($clinics as $clinic)
@@ -136,7 +136,7 @@
               </div>
           
               <div class="col-md-3">
-                <label>Consultant</label>
+                <label>Consultant<span class="txt-error">*</span></label>
                 <select name="consultant_id" id="consultant_id" class="select2">
                   <option value="">-- Consultant --</option>
                   @foreach($consultants as $consultant)

@@ -14,11 +14,7 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-procedures"></i></div>
                     <span>Patients</span>
                 </a>
-                <a class="nav-link {{ Request::is('patient/*') ? 'active' : '' }}" href="{{ route('patient.patient_list_dashboard') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
-                    <span>Patients Dashboard</span>
-                </a>
-
+               
                 @can('viewAny', App\Models\Doctor::class)
                 <a class="nav-link {{ Request::is('doctors*') ? 'active' : '' }}" href="{{ route('doctors.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>

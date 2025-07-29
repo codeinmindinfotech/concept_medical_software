@@ -97,10 +97,6 @@
                 </div>
             </div>
             <div id="patients-list" data-pagination-container>
-                
-                
-                
-                
                 @include('patients.list', ['patients' => $patients])
             </div>
         </div> 
@@ -127,7 +123,7 @@
      pageLength: 10,
      columnDefs: [
        {
-         targets: 5, // column index for "Start Date" (0-based)
+         targets: 4, // column index for "Start Date" (0-based)
          orderable: false   // Disable sorting
        }
      ]
