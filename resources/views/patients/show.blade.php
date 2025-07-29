@@ -348,7 +348,7 @@
                 <h5 class="text-info mb-0">
                     <i class="fas fa-microphone-alt me-2"></i>Audio Recordings
                 </h5>
-                <a href="{{ route('audios.create', $patient->id) }}" class="btn btn-sm btn-primary">
+                <a href="{{ route('patients.audio.create',$patient->id) }}" class="btn btn-sm btn-primary">
                     <i class="fas fa-plus me-1"></i>Add Recording
                 </a>
             </div>
