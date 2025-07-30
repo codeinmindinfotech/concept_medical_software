@@ -6,15 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Clinic;
 use App\Models\Patient;
+use App\Traits\DropdownTrait;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
+    use DropdownTrait;
 
     public function patientSchedulePage(Patient $patient)
     {
         $clinics = Clinic::all();
-        return view('patients.appointments.patient-schedule', compact('clinics', 'patient'));
+        $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
+        return view('patients.appointments.patient-schedule', compact('clinics', 'patient','appointment_types'));
     }
 
     public function getAppointmentsByDate(Request $request, Patient $patient)
@@ -29,7 +32,6 @@ class AppointmentController extends Controller
                 // ->where('patient_id', $patient->id)
                 ->whereDate('appointment_date', $request->date);
 
-            // If a specific clinic is selected
             if ($request->filled('clinic_id')) {
                 $appointmentsQuery->where('clinic_id', $request->clinic_id);
                 $clinic = Clinic::findOrFail($request->clinic_id);
