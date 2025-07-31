@@ -17,9 +17,8 @@ class Appointment extends Model
         'patient_need',
         'appointment_note',
         'arrival_time',
+        'appointment_status'
     ];
-
-    // Relationships
 
     public function patient()
     {
@@ -34,5 +33,10 @@ class Appointment extends Model
     public function appointmentType()
     {
         return $this->belongsTo(DropDownValue::class, 'appointment_type');
+    }
+
+    public function appointmentStatus()
+    {
+        return $this->belongsTo(DropDownValue::class, 'appointment_status');
     }
 }

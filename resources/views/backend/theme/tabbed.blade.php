@@ -21,8 +21,7 @@
 
                 <div>
                     <h4 class="mb-1">
-                        {{ optional($patient->title)->value ? $patient->title->value . ' ' : '' }}
-                        {{ $patient->first_name }} {{ $patient->surname }}
+                        {{ $patient->full_name }}
                     </h4>
                     <p class="mb-0 text-muted">DOB: {{ format_date($patient->dob) }} | Gender: {{ $patient->gender }}</p>
                 </div>

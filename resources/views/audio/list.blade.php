@@ -14,7 +14,7 @@
             <td>{{ $index + 1 }}</td>
             <td>
                 @if($audio->patient)
-                    {{ $audio->patient->first_name }} {{ $audio->patient->surname }}
+                    {{ $audio->patient->full_name }}
                 @else
                     <span class="text-muted">Not Assigned</span>
                 @endif

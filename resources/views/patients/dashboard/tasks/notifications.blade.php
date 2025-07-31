@@ -126,7 +126,7 @@
                         @foreach($tasks as $task)
                         <tr>
                             <td> {{ $task->owner->name ?? 'N/A' }} </td>
-                            <td> {{ $task->patient->first_name }} {{ $task->patient->surname }} </td>
+                            <td> {{ $task->patient->full_name }} </td>
                             <td>{{ format_date($task->start_date) }}</td>
                             <td>{{ format_date($task->end_date) }}</td>
                             <td>{{ $task->subject }}</td>

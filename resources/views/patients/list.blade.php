@@ -25,9 +25,7 @@
                             <i class="fa-solid fa-user"></i>
                         </div>
                     @endif
-                    
-                        {{ optional($patient->title)->value ? $patient->title->value . ' ' : '' }}
-                        {{ $patient->first_name }} {{ $patient->surname }}
+                    {{ $patient->full_name }}
                     </div>
                 </td>
                 <td>{{ $patient->address ?? '-' }}</td>

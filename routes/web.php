@@ -146,6 +146,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/schedule', [AppointmentController::class, 'patientSchedulePage'])->name('patients.appointments.schedule');
         Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate');
         Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store');
+        Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy');
     });
 
     

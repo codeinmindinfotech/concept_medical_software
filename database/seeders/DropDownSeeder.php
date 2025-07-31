@@ -22,6 +22,7 @@ class DropDownSeeder extends Seeder
         $status = DropDown::firstOrCreate(['code' => 'Status','name' => 'Status']);
         $category = DropDown::firstOrCreate(['code' => 'Category','name' => 'Category']);
         $appointment = DropDown::firstOrCreate(['code' => 'Appointment_Type','name' => 'Appointment Type']);
+        $diary_category = DropDown::firstOrCreate(['code' => 'Diary_Categories','name' => 'Diary Categories']);
 
         $titles = ['Dr.', 'Mr', 'Mrs', 'Fr', 'Prof.', 'Sr', 'Ms'];
         foreach ($titles as $val) {
@@ -120,6 +121,14 @@ class DropDownSeeder extends Seeder
         foreach ($appointments as $val) {
             DropDownValue::firstOrCreate([
                 'drop_down_id' => $appointment->id,
+                'value' => $val
+            ]);
+        }
+
+        $diary_categories = ['Scheduled','Arrived','DNA'];
+        foreach ($diary_categories as $val) {
+            DropDownValue::firstOrCreate([
+                'drop_down_id' => $diary_category->id,
                 'value' => $val
             ]);
         }

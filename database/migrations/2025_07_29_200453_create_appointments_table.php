@@ -27,6 +27,12 @@ return new class extends Migration
             $table->text('patient_need')->nullable();
             $table->text('appointment_note')->nullable();
             $table->time('arrival_time')->nullable();
+
+            $table->unsignedBigInteger('appointment_status')->nullable();
+            $table->foreign('appointment_status')
+                  ->references('id')
+                  ->on('drop_down_values')
+                  ->onDelete('set null');
             $table->timestamps();
         });
     }
