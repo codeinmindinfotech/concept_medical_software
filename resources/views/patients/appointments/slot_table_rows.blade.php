@@ -21,7 +21,7 @@ $count = $appointmentsForSlot->count();
     
     <td>{{ $appointment->appointmentType->value ?? '-' }}</td>
     <td>
-        <a href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
+        <a target="_blank" rel="noopener noreferrer" href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
         <div class="align-items-center gap-2 d-flex">
         @if ($patient->patient_picture)
             <img src="{{ asset('storage/' . $appointment->patient->patient_picture) }}"
@@ -39,12 +39,13 @@ $count = $appointmentsForSlot->count();
     </td>
     <td>{{ format_date($appointment->patient->dob ?? '') }}</td>
     <td>{{ $appointment->appointmentStatus->value ?? '-' }}</td>
+    <td>{{ $appointment->appointment_note ?? '' }}</td>
     <td>
         <div class="dropdown">
             <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                 Actions
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" style="z-index: 1055;">
                 @if(isset($patient) && $appointment->patient->id === $patient->id)
                 <li>
                     <a href="javascript:void(0)" 
@@ -63,6 +64,12 @@ $count = $appointmentsForSlot->count();
                     <a class="dropdown-item text-danger" href="javascript:void(0)"
                         onclick="deleteAppointment({{ $appointment->id }})">
                         <i class="fa fa-trash"></i> Delete Appointment
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-primary" href="javascript:void(0)"
+                    onclick="openStatusModal({{ $appointment->id }}, '{{ $appointment->appointment_status }}')">
+                        <i class="fa fa-sync-alt"></i> Change Status
                     </a>
                 </li>
                 @endif
@@ -97,6 +104,7 @@ $count = $appointmentsForSlot->count();
 @else
 <tr>
     <td>{{ $time }}</td>
+    <td class="text-muted"></td>
     <td class="text-muted"></td>
     <td class="text-muted"></td>
     <td class="text-muted"></td>

@@ -8,7 +8,6 @@ use App\Models\Clinic;
 use App\Models\Patient;
 use App\Traits\DropdownTrait;
 use Carbon\Carbon;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,7 +19,8 @@ class AppointmentController extends Controller
     {
         $clinics = Clinic::all();
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
-        return view('patients.appointments.patient-schedule', compact('clinics', 'patient', 'appointment_types'));
+        $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
+        return view('patients.appointments.patient-schedule', compact('diary_status','clinics', 'patient', 'appointment_types'));
     }
 
     public function getAppointmentsByDate(Request $request, Patient $patient)
@@ -82,12 +82,19 @@ class AppointmentController extends Controller
                 ));
             }
 
+            $stats = $appointments->groupBy(fn($apt) => optional($apt->appointmentType)->value)
+    ->map(fn($group) => $group->count());
+
             return response()->json([
                 'html' => view('patients.appointments.slot_table_rows', [
                     'appointments' => $appointments,
                     'slots' => $slots,
                     'patient' => $patient
                 ])->render(),
+                'stats' => [
+                    'total' => count($appointments),
+                    'byType' => $stats,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -216,6 +223,29 @@ class AppointmentController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function updateStatus(Request $request, $patientId, Appointment $appointment)
+    {
+        $validator = Validator::make($request->all(), [
+            'appointment_status' => 'required|exists:drop_down_values,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $appointment->appointment_status = $request->input('appointment_status');
+        $appointment->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Appointment status updated successfully.',
+            'status' => $appointment->appointment_status,
+        ]);
     }
 
 

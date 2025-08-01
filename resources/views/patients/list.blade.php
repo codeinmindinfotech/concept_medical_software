@@ -67,7 +67,7 @@
                             <i class="fas fa-comments"></i>
                         </a>
                         <a href="{{ route('patients.appointments.schedule', ['patient' => $patient]) }}" class="btn btn-sm btn-dark" title="Communications">
-                            <i class="fas fa-calender"></i>
+                            <i class="fas fa-calendar-check"></i>
                         </a>
                         @endcan
                 
