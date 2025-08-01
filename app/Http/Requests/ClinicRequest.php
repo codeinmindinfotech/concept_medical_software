@@ -24,7 +24,6 @@ class ClinicRequest extends FormRequest
     public function rules(): array
     {
         $clinicId = $this->route('clinic')?->id;
-
         $rules = [
             'code'         => 'required|string|unique:clinics,code,' . $clinicId,
             'name'         => 'required|string|max:255',

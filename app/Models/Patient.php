@@ -136,4 +136,10 @@ class Patient extends Model
         return $this->hasMany(Communication::class);
     }
 
+    public function getFullNameAttribute()
+    {
+        $title = optional($this->title)->value;
+        return ($title ? $title . ' ' : '') . "{$this->first_name} {$this->surname}";
+    }
+
 }

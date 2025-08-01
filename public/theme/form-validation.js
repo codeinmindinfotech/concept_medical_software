@@ -74,6 +74,88 @@ if (imageInput) {
   });
 }
 
+// form-validation.js
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('bookAppointmentForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const id = document.getElementById('appointment-id').value || '';
+      const patientId = document.getElementById('patient-id').value || '';
+      const selectedClinic = document.getElementById('clinic-select')?.value || null;
+
+      const data = {
+          appointment_id: id,
+          appointment_type: form.appointment_type.value,
+          appointment_date: form.appointment_date.value,
+          start_time: form.start_time.value,
+          end_time: form.end_time.value,
+          patient_need: form.patient_need.value,
+          appointment_note: form.appointment_note.value,
+          clinic_id: selectedClinic,
+          apt_slots: parseInt(form.querySelector('input[name="apt_slots"]:checked')?.value || 1),
+      };
+
+      try {
+          const response = await fetch(form.dataset.action, {
+              method: 'POST',
+              headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+              },
+              body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                  text: id ? 'Appointment updated successfully!' : 'Appointment booked successfully!',
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+              bootstrap.Modal.getInstance(document.getElementById('bookAppointmentModal')).hide();
+              if (typeof loadSlotsAndAppointments === 'function') {
+                  loadSlotsAndAppointments();
+              }
+          } else if (response.status === 422 && result.errors) {
+              handleValidationErrors(result.errors, form);
+          } else {
+              alert(result.message || 'Operation failed.');
+          }
+      } catch (error) {
+          console.error(error);
+          alert('Something went wrong. Please try again.');
+      }
+  });
+});
+
+/**
+* Display validation errors beside form fields
+*/
+function handleValidationErrors(errors, form) {
+  form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+  form.querySelectorAll('.invalid-feedback, .text-danger').forEach(el => el.remove());
+
+  for (const [field, messages] of Object.entries(errors)) {
+      const input = form.querySelector(`[name="${field}"]`);
+      if (input) {
+          input.classList.add('is-invalid');
+          const errorDiv = document.createElement('div');
+          errorDiv.classList.add('invalid-feedback');
+          errorDiv.textContent = messages[0];
+          input.parentNode.appendChild(errorDiv);
+      }
+  }
+}
+
+
 
 
 

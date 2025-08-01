@@ -25,6 +25,7 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    @stack('styles')
 </head>
 <body class="sb-nav-fixed">
 
@@ -45,6 +46,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ asset('theme/main/js/scripts.js') }}"></script>
+    @stack('scripts')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -72,12 +74,6 @@
 
     {{-- <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="{{ asset('theme/main/js/datatables-simple-demo.js') }}"></script> --}}
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-
-    <script src="{{ asset('theme/assets/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('theme/assets/demo/chart-bar-demo.js') }}"></script>
-    @stack('scripts')
     <!-- Initialize Select2 -->
     <script>
         $(document).ready(function() {
