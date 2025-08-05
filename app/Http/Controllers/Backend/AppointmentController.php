@@ -17,10 +17,32 @@ class AppointmentController extends Controller
 
     public function patientSchedulePage(Patient $patient)
     {
-        $clinics = Clinic::all();
+        $clinics = Clinic::all()->map(function ($clinic) {
+            $clinic->color = '#'.substr(md5($clinic->id), 0, 6); // assign hex color
+            return $clinic;
+        });
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         return view('patients.appointments.patient-schedule', compact('diary_status','clinics', 'patient', 'appointment_types'));
+    }
+
+    public function calendarEvents(Request $request, Patient $patient)
+    {
+        $appointments = Appointment::where('patient_id', $patient->id)
+            ->when($request->clinic_id, function($q) use ($request) {
+                $q->where('clinic_id', $request->clinic_id);
+            })
+            ->get()
+            ->map(function($appointment) {
+                return [
+                    'title' => '✔',
+                    'start' => $appointment->appointment_date,
+                    'allDay' => true,
+                    'color' => $appointment->clinic->color ?? '#3788d8', // assign a clinic-specific color
+                ];
+            });
+
+        return response()->json($appointments);
     }
 
     public function getAppointmentsByDate(Request $request, Patient $patient)

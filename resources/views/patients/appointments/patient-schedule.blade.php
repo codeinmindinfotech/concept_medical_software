@@ -344,8 +344,26 @@
                 left: 'prev,next'
                 , center: 'title'
                 , right: ''
-            }
-            , dayMaxEventRows: 1, // Avoid clutter
+            },
+            eventSources: [
+                {
+                    url: "{{ route('patients.appointments.calendarEvents', ['patient' => $patient->id]) }}",
+                    method: 'POST',
+                    extraParams: function() {
+                        return {
+                            _token: '{{ csrf_token() }}',
+                            clinic_id: selectedClinic
+                        }
+                    },
+                    failure: function() {
+                        console.error('Failed to load events');
+                    }
+                }
+            ],
+            eventsSet: function(events) {
+                console.log('Loaded events:', events);
+            },
+            dayMaxEventRows: 1, // Avoid clutter
             fixedWeekCount: false, // Show only required number of weeks
             dayCellClassNames: function(arg) {
                 return (arg.dateStr === selectedDate) ? ['selected-date'] : [];

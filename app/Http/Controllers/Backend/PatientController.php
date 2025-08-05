@@ -237,7 +237,7 @@ class PatientController extends Controller
             }
 
             // Create new filename like picture_123.jpg
-            $filename = 'picture_' . $patient->id . '.' . $file->getClientOriginalExtension();
+            $filename = 'picture_' . $patient->id . '.' . strtolower($file->getClientOriginalExtension());
 
             // Save the file in public/patient_pictures
             $path = $file->storeAs('patient_pictures', $filename, 'public');

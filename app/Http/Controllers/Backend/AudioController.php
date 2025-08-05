@@ -41,7 +41,7 @@ class AudioController extends Controller
 
         if ($request->hasFile('file_path')) {
             $file = $request->file('file_path');
-            $filename = $patient->id . '_audio_' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = $patient->id . '_audio_' . time() . '.' . strtolower($file->getClientOriginalExtension());
             $folder = storage_path('app/public/audio');
 
             if (!file_exists($folder)) {
