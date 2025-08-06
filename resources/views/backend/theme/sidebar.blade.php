@@ -14,6 +14,11 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-procedures"></i></div>
                     <span>Patients</span>
                 </a>
+
+                <a class="nav-link {{ Request::is('planner*') ? 'active' : '' }}" href="{{ route('planner.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <span>Planner</span>
+                </a>
                
                 @can('viewAny', App\Models\Doctor::class)
                 <a class="nav-link {{ Request::is('doctors*') ? 'active' : '' }}" href="{{ route('doctors.index') }}">
