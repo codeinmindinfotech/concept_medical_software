@@ -75,7 +75,7 @@
 
           <!-- Email -->
           <div class="col-md-4">
-            <label for="email" class="form-label"><strong>Email</strong></label>
+            <label for="email" class="form-label"><strong>Email</strong><span class="txt-error">*</span></label>
             <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
               value="{{ old('email', $doctor->email ?? '') }}">
             @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror

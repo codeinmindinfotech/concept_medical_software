@@ -26,7 +26,7 @@
       
               <div class="mb-3 col-md-4">
                 <label>Charge Code<span class="txt-error">*</span></label>
-                <select name="chargecode_id" id="chargecode_id" class="select2" required>
+                <select name="chargecode_id" id="chargecode_id" class="select2" >
                   <option value="">-- Charge Code --</option>
                   @foreach($chargecodes as $code)
                     <option value="{{ $code->id }}" data-code="{{ json_encode($code) }}">{{ $code->code }}</option>
@@ -74,7 +74,7 @@
               <!-- Narrative -->
               <div class="col-md-3">
                 <label for="narrative" class="form-label">Narrative</label>
-                <select class="select2" id="narrative" name="narrative" required>
+                <select class="select2" id="narrative" name="narrative" >
                   @foreach($narrative as $id => $value)
                     <option value="{{ $id }}" {{ old('narrative') == $id ? 'selected' : '' }}>
                       {{ $value }}
@@ -91,7 +91,7 @@
           
               <!-- Gross -->
               <div class="col-md-2">
-                <label>Gross</label>
+                <label>Gross<span class="txt-error">*</span></label>
                 <input type="number" name="charge_gross" id="charge_gross" class="form-control">
               </div>
           
@@ -103,19 +103,19 @@
           
               <!-- Net -->
               <div class="col-md-2">
-                <label>Net</label>
+                <label>Net<span class="txt-error">*</span></label>
                 <input type="number" name="charge_net" id="charge_net" class="form-control">
               </div>
           
               <!-- VAT % -->
               <div class="col-md-2">
-                <label>VAT %</label>
+                <label>VAT %<span class="txt-error">*</span></label>
                 <input type="number" name="vat_rate_percent" id="vat_rate_percent" class="form-control">
               </div>
           
               <!-- Total -->
               <div class="col-md-2">
-                <label>Total</label>
+                <label>Total<span class="txt-error">*</span></label>
                 <input type="number" name="line_total" id="line_total" class="form-control" readonly>
               </div>
           

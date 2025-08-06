@@ -25,14 +25,14 @@
       <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
       <div class="mb-3">
-        <label for="editVisitDate" class="form-label">Visit Date</label>
+        <label for="editVisitDate" class="form-label">Visit Date<span class="txt-error">*</span></label>
         <div class="input-group">
-          <input id="editVisitDate" name="visit_date" type="text" class="form-control flatpickr" placeholder="YYYY-MM-DD" required >
+          <input id="editVisitDate" name="visit_date" type="text" class="form-control flatpickr" placeholder="YYYY-MM-DD"  >
           <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
         </div>
       </div>
       <div class="mb-3">
-        <label for="note" class="form-label">Clinic</label>
+        <label for="note" class="form-label">Clinic<span class="txt-error">*</span></label>
         <select class="select2" id="editClinic" name="clinic_id">
             <option value="">-- Select Clinic --</option>
             @foreach($clinics as $clinic)
@@ -42,12 +42,12 @@
       </div>
       
       <div class="mb-3">
-        <label for="editNote" class="form-label">Type Of appointment</label>
-        <textarea class="form-control" id="editNote" name="consult_note" required></textarea>
+        <label for="editNote" class="form-label">Type Of appointment<span class="txt-error">*</span></label>
+        <textarea class="form-control" id="editNote" name="consult_note" ></textarea>
       </div>
       <div class="mb-3">
-        <label for="editCategory" class="form-label">Category</label>
-        <select class="select2" id="editCategory" name="category_id" required>
+        <label for="editCategory" class="form-label">Category<span class="txt-error">*</span></label>
+        <select class="select2" id="editCategory" name="category_id" >
           @foreach($categories as $category)
             <option value="{{ $category->id }}">{{ $category->value }}</option>
           @endforeach
