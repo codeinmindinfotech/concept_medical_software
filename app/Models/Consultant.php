@@ -28,5 +28,4 @@ class Consultant extends Model
         return $this->belongsToMany(Insurance::class)
                     ->withTimestamps();
     }
-    
 }
