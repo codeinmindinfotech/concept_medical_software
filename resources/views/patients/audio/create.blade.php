@@ -43,7 +43,7 @@
                 @csrf
                 <div class="mb-3">
                     <label for="patientName" class="form-label"><strong>Patient Name</strong></label>
-                    <input type="text" id="patientName" class="form-control" value="{{ $patient->surname ?? 'N/A' }}" disabled>
+                    <input type="text" id="patientName" class="form-control" value="{{ $patient->full_name ?? 'N/A' }}" disabled>
                     <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                 </div>
 

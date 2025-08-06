@@ -13,7 +13,7 @@
           <div class="col-md-6">
             <label class="form-label"><strong>Patient</strong></label>
             <input type="text" class="form-control" 
-              value="{{ $patient->surname ?? 'N/A' }}" disabled>
+              value="{{ $patient->full_name ?? 'N/A' }}" disabled>
             <input type="hidden" name="patient_id" value="{{ $patient->id }}">
           </div>
 
