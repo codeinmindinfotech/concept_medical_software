@@ -70,19 +70,33 @@ class PatientAudioController extends Controller
 
         if ($request->hasFile('file_path')) {
             $file = $request->file('file_path');
-            $filename = $patient->id . '_audio_' . time() . '.' .strtolower($file->getClientOriginalExtension());
-            $folder = storage_path('app/public/audio');
 
-            if (!file_exists($folder)) {
-                mkdir($folder, 0755, true);  // Create directory with 0755 permissions recursively
-            }
-            
+            // Create new filename like picture_123.jpg
+            $filename = $patient->id . '_audio_' . time() . '.' .strtolower($file->getClientOriginalExtension());
+
+            // Save the file in public/patient_pictures
             $data['file_path'] = $file->storeAs('audio', $filename, 'public');
+            $patient->audio()->create([
+                ...$data
+            ]);
+            
         }
 
-        $patient->audio()->create([
-            ...$data
-        ]);
+        // if ($request->hasFile('file_path')) {
+        //     $file = $request->file('file_path');
+        //     $filename = $patient->id . '_audio_' . time() . '.' .strtolower($file->getClientOriginalExtension());
+        //     $folder = storage_path('app/public/audio');
+
+        //     if (!file_exists($folder)) {
+        //         mkdir($folder, 0755, true);  // Create directory with 0755 permissions recursively
+        //     }
+            
+        //     $data['file_path'] = $file->storeAs('audio', $filename, 'public');
+        // }
+
+        // $patient->audio()->create([
+        //     ...$data
+        // ]);
 
         return redirect()
             ->route('patients.audio.index', $patient->id)
