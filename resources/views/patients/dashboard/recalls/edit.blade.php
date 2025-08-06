@@ -38,7 +38,7 @@
                 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
                 <div class="mb-3">
-                    <label for="recall_interval" class="form-label">Interval</label>
+                    <label for="recall_interval" class="form-label">Interval<span class="txt-error">*</span></label>
                     <select name="recall_interval" id="recall_interval" class="form-select select2">
                         <option value="">-- Select --</option>
                         @php
@@ -53,7 +53,7 @@
 
                 </div>
                 <div class="mb-3">
-                    <label for="recall_date" class="form-label"><strong>Recall Date</strong></label>
+                    <label for="recall_date" class="form-label">Recall Date<span class="txt-error">*</span></label>
                     <div class="input-group">
                         <input id="recall_date" name="recall_date" type="text" value="{{ old('recall_date', $recall->recall_date) }}" class="form-control flatpickr" placeholder="YYYY-MM-DD">
                         <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="status_id" class="form-label">Status</label>
+                    <label for="status_id" class="form-label">Status<span class="txt-error">*</span></label>
                     <select name="status_id" id="status_id" class="form-select select2">
                         @foreach($statuses as $id => $value)
                         <option value="{{ $id }}" {{ old('status_id', $recall->status_id) == $id ? 'selected' : '' }}>
@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="note" class="form-label">Note</label>
+                    <label for="note" class="form-label">Note<span class="txt-error">*</span></label>
                     <textarea name="note" id="note" class="form-control">{{ old('note', $recall->note) }}</textarea>
                 </div>
 

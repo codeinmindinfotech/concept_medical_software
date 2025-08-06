@@ -50,8 +50,8 @@ class RecallController extends Controller
         $patient = Patient::find($patient->id);
 
         return response()->json([
-            'redirect' => route('recalls.index', ['patient' => $patient]),
-            'message' => 'Doctor created successfully',
+            'redirect' => route('recalls.recalls.index', ['patient' => $patient]),
+            'message' => 'Recall created successfully',
         ]);
     }
 
@@ -83,7 +83,7 @@ class RecallController extends Controller
 
         return response()->json([
             'redirect' => route('recalls.recalls.index', ['patient' => $patient->id]),
-            'message' => 'Task updated successfully',
+            'message' => 'Recall updated successfully',
         ]);
     }
 

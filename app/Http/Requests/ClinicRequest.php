@@ -19,6 +19,12 @@ class ClinicRequest extends FormRequest
                 }
             }
         }
+
+        if (!$this->filled('color')) {
+            $this->merge([
+                'color' => '#3788d8',
+            ]);
+        }
     }
 
     public function rules(): array
@@ -35,6 +41,7 @@ class ClinicRequest extends FormRequest
             'mrn'          => 'nullable|string|max:50',
             'planner_seq'  => 'nullable|string|max:50',
             'clinic_type'  => 'required|in:clinic,hospital',
+            'color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6})$/'],
         ];
 
         foreach (['mon','tue','wed','thu','fri','sat','sun'] as $day) {

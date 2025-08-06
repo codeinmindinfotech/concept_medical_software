@@ -22,12 +22,43 @@
     ])
 
     <div class="card shadow-sm rounded-4 border-0">
-        <div class="card-header bg-primary text-white d-flex align-items-center">
-          <i class="fas fa-calendar-check me-2 fs-4"></i>
-          <h5 class="mb-0">Patients Appointment Management</h5>
-        </div>
+        <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-calendar-check me-2 fs-4"></i>
+              <h5 class="mb-0">Patients Appointment Management</h5>
+            </div>
+            <button id="reset-filters" class="btn btn-outline-light btn-sm" title="Reset filters">
+              <i class="fas fa-undo"></i> Reset
+            </button>
+          </div>
+                
       
         <div class="card-body">
+
+            <form id="filter-form" class="row g-3 align-items-end mb-4">
+                <!-- Patient select -->
+                <div class="col-md-6 col-lg-4">
+                  <label for="patient-select" class="form-label fw-semibold">Select Patient</label>
+                  <select id="patient-select" class="form-select" aria-label="Select Patient">
+                    <option value="">-- All Patients --</option>
+                    @foreach($patients as $patientItem)
+                    <option value="{{ $patientItem->id }}" {{ $patientItem->id == $patient->id ? 'selected' : '' }}>
+                      {{ $patientItem->full_name }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+          
+                <!-- Date picker -->
+                {{-- <div class="col-md-6 col-lg-4">
+                  <label for="appointment-date" class="form-label fw-semibold">Select Date</label>
+                  <input type="date" id="appointment-date" class="form-control" value="">
+                </div> --}}
+              </form>
+          
+              <!-- Show selected patient name and date -->
+              <h4 class="mb-4">
+
           <h4 class="mb-4">Appointment Scheduler for <strong>{{ $patient->full_name }}</strong></h4>
       
           <input type="hidden" id="patient-id" value="{{ $patient->id }}">
@@ -70,13 +101,15 @@
                   </div>
                 </div>
               </div>
-      
+            
               <div class="mt-4">
                 <label for="clinic-select" class="form-label fw-semibold">Select Clinic:</label>
                 <select id="clinic-select" class="form-select shadow-sm">
                   <option value="">-- Choose Clinic --</option>
                   @foreach($clinics as $clinic)
-                    <option value="{{ $clinic->id }}" @if ($loop->first) selected @endif>{{ $clinic->name }}</option>
+                    <option value="{{ $clinic->id }}"  @if ($loop->first) selected @endif>
+                        {{ $clinic->name }}
+                    </option>
                   @endforeach
                 </select>
               </div>
@@ -319,9 +352,22 @@
         }
     });
 
+    let selectedPatient = document.getElementById('patient-select').value || null;
+
+    // Listen to patient select change
+    document.getElementById('patient-select').addEventListener('change', function() {
+        selectedPatient = this.value;
+
+        // Reset calendar & reload appointments for new patient
+        initCalendar();
+        refreshCalendarEvents();
+        loadSlotsAndAppointments();
+    });
+
     document.getElementById('clinic-select').addEventListener('change', function() {
         selectedClinic = this.value;
         initCalendar();
+        refreshCalendarEvents();
         loadSlotsAndAppointments();
     });
 
@@ -332,7 +378,12 @@
         const day = String(now.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
-
+    // Then whenever you want to update the events (e.g., after changing clinic or adding appointment):
+    function refreshCalendarEvents() {
+    if (calendar) {
+        calendar.refetchEvents();
+    }
+    }
     function initCalendar() {
         if (calendar) calendar.destroy();
 
@@ -352,7 +403,8 @@
                     extraParams: function() {
                         return {
                             _token: '{{ csrf_token() }}',
-                            clinic_id: selectedClinic
+                            clinic_id: selectedClinic,
+                            patient_id: selectedPatient,  
                         }
                     },
                     failure: function() {
@@ -363,6 +415,29 @@
             eventsSet: function(events) {
                 console.log('Loaded events:', events);
             },
+            // eventDidMount: function(info) {
+            //     const clinicColor = info.event.extendedProps.clinicColor || '#3788d8';
+            //     // info.el.style.backgroundColor = '#fff';
+            //     info.el.style.position = 'relative';
+
+            //     // const arrow = document.createElement('div');
+            //     // arrow.style.width = '0';
+            //     // arrow.style.height = '0';
+            //     // arrow.style.borderTop = '10px solid transparent';
+            //     // arrow.style.borderBottom = '10px solid transparent';
+            //     // arrow.style.borderRight = `10px solid ${clinicColor}`;
+            //     // arrow.style.position = 'absolute';
+            //     // arrow.style.left = '0';
+            //     // arrow.style.top = '50%';
+            //     // arrow.style.transform = 'translateY(-50%)';
+
+            //     // info.el.prepend(arrow);
+            //     info.el.style.paddingLeft = '20px';
+            //     info.el.style.color = '#000 !important';
+            //     info.el.classList.add('custom-event-color');
+
+            // },
+
             dayMaxEventRows: 1, // Avoid clutter
             fixedWeekCount: false, // Show only required number of weeks
             dayCellClassNames: function(arg) {
@@ -371,6 +446,7 @@
             , dateClick: function(info) {
                 selectedDate = info.dateStr;
                 loadSlotsAndAppointments();
+                refreshCalendarEvents();
 
                 // Remove previous selection
                 document.querySelectorAll('.fc-daygrid-day.selected-date').forEach(el => {
@@ -428,8 +504,9 @@
                 , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
             , body: JSON.stringify({
-                clinic_id: selectedClinic
-                , date: selectedDate
+                clinic_id: selectedClinic,
+                patient_id: selectedPatient,
+                date: selectedDate
             })
         });
 
@@ -562,6 +639,7 @@
                 const modal = bootstrap.Modal.getInstance(document.getElementById('statusChangeModal'));
                 modal.hide();
                 loadSlotsAndAppointments(); // reload UI
+                refreshCalendarEvents();
             } else {
                 Swal.fire('Error', data.message || 'Failed to update status.', 'error');
             }
@@ -601,6 +679,7 @@
                             showConfirmButton: false
                         });
                         loadSlotsAndAppointments(); // Reload appointments
+                        refreshCalendarEvents();
                     } else {
                         Swal.fire('Error', data.message || 'Failed to delete.', 'error');
                     }
@@ -651,7 +730,22 @@
         document.body.classList.add('sb-sidenav-toggled');
         initCalendar();
         loadSlotsAndAppointments();
+        refreshCalendarEvents();
 
+        const resetBtn = document.getElementById('reset-filters');
+        const patientSelect = document.getElementById('patient-select');
+        // const dateInput = document.getElementById('appointment-date');
+
+        resetBtn.addEventListener('click', function () {
+            // Reset values
+            patientSelect.value = '';
+            // dateInput.value = new Date().toISOString().split('T')[0]; // today's date in YYYY-MM-DD
+
+            // Optionally trigger reload
+            const event = new Event('change');
+            patientSelect.dispatchEvent(event);
+            // dateInput.dispatchEvent(event);
+        });
     });
 
 </script>
