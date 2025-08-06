@@ -60,7 +60,7 @@ if (!function_exists('asset_url')) {
         if (app()->environment('local')) {
             return asset('storage/' . $path);
         } else {
-            return asset('/public/storage/' . $path);
+            return asset('storage/' . $path);
         }
     }
 }
