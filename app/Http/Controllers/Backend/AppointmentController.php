@@ -17,30 +17,44 @@ class AppointmentController extends Controller
 
     public function patientSchedulePage(Patient $patient)
     {
+        $patients = Patient::all();
         $clinics = Clinic::all()->map(function ($clinic) {
             $clinic->color = '#'.substr(md5($clinic->id), 0, 6); // assign hex color
             return $clinic;
         });
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
-        return view('patients.appointments.patient-schedule', compact('diary_status','clinics', 'patient', 'appointment_types'));
+        return view('patients.appointments.patient-schedule', compact('patients','diary_status','clinics', 'patient', 'appointment_types'));
     }
 
-    public function calendarEvents(Request $request, Patient $patient)
+    public function calendarEvents(Request $request)
     {
-        $appointments = Appointment::where('patient_id', $patient->id)
-            ->when($request->clinic_id, function($q) use ($request) {
-                $q->where('clinic_id', $request->clinic_id);
-            })
-            ->get()
-            ->map(function($appointment) {
-                return [
-                    'title' => '✔',
-                    'start' => $appointment->appointment_date,
-                    'allDay' => true,
-                    'color' => $appointment->clinic->color ?? '#3788d8', // assign a clinic-specific color
-                ];
-            });
+        $clinicId = $request->input('clinic_id');
+        $patientId = $request->input('patient_id');
+
+        $query = Appointment::query();
+
+        if ($patientId) {
+            $query->where('patient_id', $patientId);
+        }
+        if ($clinicId) {
+            $query->where('clinic_id', $clinicId);
+        }
+
+        $appointments = $query->get()->map(function ($appointment) {
+            return [
+                'title' => '✔ ' . $appointment->patient->full_name . " " . 
+                        $appointment->start_time . "-" . $appointment->end_time,
+                'start' => $appointment->appointment_date . 'T' . $appointment->start_time,
+                'end' => $appointment->appointment_date . 'T' . $appointment->end_time,
+                'allDay' => false,
+                'color' => '#ffffff', // white background
+                'borderColor' => $appointment->clinic->color ?? '#3788d8', // colored border
+                'extendedProps' => [
+                    'clinicColor' => $appointment->clinic->color ?? '#3788d8',
+                ],
+            ];
+        });
 
         return response()->json($appointments);
     }
@@ -56,6 +70,9 @@ class AppointmentController extends Controller
             $appointmentsQuery = Appointment::with('appointmentType', 'patient')
                 ->whereDate('appointment_date', $request->date);
 
+            if ($request->filled('patient_id')) {
+                $appointmentsQuery->where('patient_id', $request->patient_id);
+            }
             $clinic = null;
 
             if ($request->filled('clinic_id')) {
@@ -105,19 +122,18 @@ class AppointmentController extends Controller
             }
 
             $stats = $appointments->groupBy(fn($apt) => optional($apt->appointmentType)->value)
-    ->map(fn($group) => $group->count());
-
-            return response()->json([
-                'html' => view('patients.appointments.slot_table_rows', [
-                    'appointments' => $appointments,
-                    'slots' => $slots,
-                    'patient' => $patient
-                ])->render(),
-                'stats' => [
-                    'total' => count($appointments),
-                    'byType' => $stats,
-                ],
-            ]);
+            ->map(fn($group) => $group->count());
+                return response()->json([
+                    'html' => view('patients.appointments.slot_table_rows', [
+                        'appointments' => $appointments,
+                        'slots' => $slots,
+                        'patient' => $patient
+                    ])->render(),
+                    'stats' => [
+                        'total' => count($appointments),
+                        'byType' => $stats,
+                    ],
+                ]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()

@@ -53,10 +53,15 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
         <input id="mrn" name="mrn" type="text" class="form-control @error('mrn') is-invalid @enderror" value="{{ old('mrn', $clinic->mrn ?? '') }}">
         @error('mrn')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
-    <div class="col-md-4">
+    <div class="col-md-2">
         <label for="planner_seq" class="form-label"><strong>Planner Seq</strong></label>
         <input id="planner_seq" name="planner_seq" type="text" class="form-control @error('planner_seq') is-invalid @enderror" value="{{ old('planner_seq', $clinic->planner_seq ?? '') }}">
         @error('planner_seq')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-2">
+        <label for="color" class="form-label"><strong>Color</strong></label>
+        <input id="color" name="color" type="color" class="form-control form-control-color @error('color') is-invalid @enderror" value="{{ old('color', $clinic->color ?? '#ffffff') }}">
+        @error('color')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 </div>
 

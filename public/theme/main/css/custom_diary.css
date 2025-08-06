@@ -10,6 +10,22 @@
         color: white;
         z-index: 10;
     }
+    .fc-h-event .fc-event-main{
+        color: #000 !important; 
+    }
+    .color-circle {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid #ccc;
+    }
+    
+    a.fc-event.fc-event-start.fc-event-end.fc-daygrid-event.fc-daygrid-block-event.fc-h-event.custom-event-color {
+        color: #000 !important;
+        background-color: #fff !important;
+    }
+      
     .fc .fc-scrollgrid, .fc .fc-scrollgrid table {
         table-layout: fixed;
         width: 100%;
