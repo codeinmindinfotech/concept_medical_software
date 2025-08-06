@@ -24,6 +24,7 @@ use App\Http\Controllers\Backend\PatientAudioController;
 use App\Http\Controllers\Backend\PatientHistoryController;
 use App\Http\Controllers\Backend\PatientNoteController;
 use App\Http\Controllers\Backend\PatientPhysicalController;
+use App\Http\Controllers\Backend\PlannerController;
 use App\Http\Controllers\Backend\RecallController;
 use App\Http\Controllers\Backend\RecallNotificationController;
 use App\Http\Controllers\Backend\SmsController;
@@ -100,6 +101,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::prefix('patients/{patient}')->name('tasks.')->group(function () {
         Route::resource('tasks', TaskController::class)->except(['show']);
     });
+
+    Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
 
     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 
