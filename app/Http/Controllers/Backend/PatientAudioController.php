@@ -20,25 +20,26 @@ class PatientAudioController extends Controller
 
         ]);
 
-        if ($request->hasFile('file_path')) {
-            $file = $request->file('file_path');
-            $filename = $request->patient_id . '_audio_' . time() . '.' . strtolower($file->getClientOriginalExtension());
-            $folder = storage_path('app/public/audio');
-
-            if (!file_exists($folder)) {
-                mkdir($folder, 0755, true);  // Create directory with 0755 permissions recursively
-            }
-            
-            $data['file_path'] = $file->storeAs('audio', $filename, 'public');
-        }
-
         // if ($request->hasFile('file_path')) {
-        //     $path  = $request->file('file_path')->store('audio', 'public');
+        //     $file = $request->file('file_path');
+            
+        //     $filename = $request->patient_id . '_audio_' . time() . '.' . strtolower($file->getClientOriginalExtension());
+        //     $folder = storage_path('app/public/audio');
+
+        //     if (!file_exists($folder)) {
+        //         mkdir($folder, 0755, true);  // Create directory with 0755 permissions recursively
+        //     }
+            
+        //     $data['file_path'] = $file->storeAs('audio', $filename, 'public');
         // }
+
+        if ($request->hasFile('file_path')) {
+            $path  = $request->file('file_path')->store('audio', 'public');
+        }
         // Save in DB
         $audio = PatientAudioFile::create([
             'patient_id' => $request->patient_id,
-            'file_path' => $data['file_path'],
+            'file_path' => $path,
         ]);
 
 
@@ -69,7 +70,7 @@ class PatientAudioController extends Controller
 
         if ($request->hasFile('file_path')) {
             $file = $request->file('file_path');
-            $filename = $patient->id . '_audio_' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = $patient->id . '_audio_' . time() . '.' .strtolower($file->getClientOriginalExtension());
             $folder = storage_path('app/public/audio');
 
             if (!file_exists($folder)) {
