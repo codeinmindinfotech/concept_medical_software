@@ -87,31 +87,6 @@
                             @endforeach
                         </tr>
                     </thead>
-                    {{-- <tbody>
-                        @for ($hour = 7; $hour <= 18; $hour++) <tr>
-                            <td>{{ str_pad($hour, 2, '0', STR_PAD_LEFT) }}:00</td>
-                            @foreach($clinics as $clinic)
-                            <td>
-                                @foreach($appointments as $appointment)
-                                    @if($appointment->clinic_id == $clinic->id && \Carbon\Carbon::parse($appointment->start_time)->hour == $hour)
-                                    <div class="card p-2 mb-2 appointment-{{ str_replace(' ', '_', strtolower($appointment->appointmentType->value)) }}">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span>{{ $appointment->patient->full_name ?? 'No Name' }}</span>
-                                            @include('planner.partials.actions', ['appointment' => $appointment])
-                                        </div>
-                                        <small>
-                                            {{ format_time($appointment->start_time) }}
-                                            -
-                                            {{ format_time($appointment->end_time) }}
-                                        </small>
-                                    </div>
-                                    @endif
-                                @endforeach
-                            </td>
-                            @endforeach
-                            </tr>
-                            @endfor
-                    </tbody> --}}
                     <tbody>
                         @for ($hour = 7; $hour <= 18; $hour++)
                             <tr>
@@ -129,7 +104,12 @@
                                         @endphp
                     
                                         @forelse($hourlyAppointments as $appointment)
-                                            <div class="card shadow-sm mb-2 border-start border-3 appointment-{{ str_replace(' ', '_', strtolower($appointment->appointmentType->value)) }}">
+                                        @php
+                                            $typeClass = $appointment->appointmentType
+                                                ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
+                                                : 'appointment-default';
+                                        @endphp
+                                            <div class="card shadow-sm mb-2 border-start border-3 appointment-{{ $typeClass }}">
                                                 <div class="card-body p-2 small">
                                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                                         <div class="d-flex align-items-center gap-2">
@@ -160,14 +140,13 @@
                                                             <i class="far fa-clock me-1"></i>
                                                             {{ format_time($appointment->start_time) }} - {{ format_time($appointment->end_time) }}
                                                         </div>
-                    
-                                                        @if(!empty($appointment->status))
+                                                        @if(!empty($appointment->appointmentStatus->value))
                                                             <span class="badge rounded-pill bg-{{ 
-                                                                $appointment->status === 'Scheduled' ? 'primary' :
-                                                                ($appointment->status === 'Completed' ? 'success' :
-                                                                ($appointment->status === 'Cancelled' ? 'danger' : 'secondary'))
+                                                                $appointment->appointmentStatus->value === 'Scheduled' ? 'primary' :
+                                                                ($appointment->appointmentStatus->value === 'Arrived' ? 'success' :
+                                                                ($appointment->appointmentStatus->value === 'DNA' ? 'danger' : 'secondary'))
                                                             }}">
-                                                                {{ $appointment->status }}
+                                                                {{ $appointment->appointmentStatus->value }}
                                                             </span>
                                                         @endif
                                                     </div>

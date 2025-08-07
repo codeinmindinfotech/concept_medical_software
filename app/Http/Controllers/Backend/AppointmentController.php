@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\ChargeCode;
 use App\Models\Clinic;
 use App\Models\Patient;
 use App\Traits\DropdownTrait;
@@ -24,7 +25,8 @@ class AppointmentController extends Controller
         });
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
-        return view('patients.appointments.patient-schedule', compact('patients','diary_status','clinics', 'patient', 'appointment_types'));
+        $procedures = ChargeCode::all();
+        return view('patients.appointments.patient-schedule', compact('procedures','patients','diary_status','clinics', 'patient', 'appointment_types'));
     }
 
     public function calendarEvents(Request $request)
@@ -34,7 +36,7 @@ class AppointmentController extends Controller
 
         $query = Appointment::query();
 
-        if ($patientId) {
+        if (isset($patientId)) {
             $query->where('patient_id', $patientId);
         }
         if ($clinicId) {
@@ -67,7 +69,7 @@ class AppointmentController extends Controller
                 'date' => 'required|date',
             ]);
 
-            $appointmentsQuery = Appointment::with('appointmentType', 'patient')
+            $appointmentsQuery = Appointment::with('appointmentType', 'patient','appointmentStatus')
                 ->whereDate('appointment_date', $request->date);
 
             if ($request->filled('patient_id')) {
@@ -78,6 +80,11 @@ class AppointmentController extends Controller
             if ($request->filled('clinic_id')) {
                 $appointmentsQuery->where('clinic_id', $request->clinic_id);
                 $clinic = Clinic::findOrFail($request->clinic_id);
+
+                // Check clinic type and route accordingly
+                if (strtolower($clinic->clinic_type) === 'hospital') {
+                    return $this->getHospitalAppointmentsByDate($request, $patient, $clinic);
+                }
             }
 
             $appointments = $appointmentsQuery->get();
@@ -124,7 +131,7 @@ class AppointmentController extends Controller
             $stats = $appointments->groupBy(fn($apt) => optional($apt->appointmentType)->value)
             ->map(fn($group) => $group->count());
                 return response()->json([
-                    'html' => view('patients.appointments.slot_table_rows', [
+                    'html' => view('patients.appointments.slot_table_clinic', [
                         'appointments' => $appointments,
                         'slots' => $slots,
                         'patient' => $patient
@@ -140,6 +147,34 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
+
+    private function getHospitalAppointmentsByDate(Request $request, Patient $patient, Clinic $clinic)
+    {
+        $hospitalAppointmentsQuery = Appointment::with('procedure', 'patient')
+            ->where('clinic_id', $clinic->id)
+            ->whereDate('appointment_date', $request->date);
+
+        if ($request->filled('patient_id')) {
+            $hospitalAppointmentsQuery->where('patient_id', $request->patient_id);
+        }
+
+        $hospitalAppointments = $hospitalAppointmentsQuery->get();
+
+        $stats = $hospitalAppointments->groupBy(fn($apt) => optional($apt->procedure)->code)
+            ->map(fn($group) => $group->count());
+
+        return response()->json([
+            'html' => view('patients.appointments.slot_table_hospital', [
+                'appointments' => $hospitalAppointments,
+                'patient' => $patient,
+            ])->render(),
+            'stats' => [
+                'total' => count($hospitalAppointments),
+                'byType' => $stats,
+            ],
+        ]);
+    }
+
 
     protected function generateTimeSlots($start, $end, $interval)
     {
@@ -237,6 +272,79 @@ class AppointmentController extends Controller
         Appointment::insert($appointments);
 
         return response()->json(['success' => true, 'message' => 'Appointment(s) created']);
+    }
+
+    public function storeHospitalAppointment(Request $request, Patient $patient)
+    {
+        $validator = Validator::make($request->all(), [
+            'clinic_id' => 'required|exists:clinics,id',
+            'procedure_id' => 'required|exists:charge_codes,id',  // Adjust if your foreign key table is different
+            'appointment_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'admission_date' => 'nullable|date',
+            'admission_time' => 'nullable|date_format:H:i',
+            'operation_duration' => 'nullable|integer|min:1',  // duration in minutes
+            'ward' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:1000',
+            'allergy' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $now = now();
+        $startTime = Carbon::createFromFormat('H:i', $request->start_time);
+        $duration = intval($request->operation_duration ?? 30); // or any default value
+        $endTime = $startTime->copy()->addMinutes($duration);
+
+        if ($request->filled('hospital_id')) {
+            $hospitalAppointment = Appointment::find($request->hospital_id);
+
+            if (!$hospitalAppointment) {
+                return response()->json(['error' => 'Hospital Appointment not found.'], 404);
+            }
+
+            $hospitalAppointment->update([
+                'patient_id' => $patient->id,
+                'clinic_id' => $request->clinic_id,
+                'procedure_id' => $request->procedure_id,
+                'appointment_date' => $request->appointment_date,
+                'start_time' => $request->start_time,
+                'end_time' => $endTime,
+                'admission_date' => $request->admission_date,
+                'admission_time' => $request->admission_time,
+                'operation_duration' => $request->operation_duration,
+                'ward' => $request->ward,
+                'appointment_note' => $request->notes,
+                'allergy' => $request->allergy,
+                'updated_at' => $now,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Hospital appointment updated']);
+        }
+
+        $hospitalAppointment = Appointment::create([
+            'patient_id' => $patient->id,
+            'clinic_id' => $request->clinic_id,
+            'procedure_id' => $request->procedure_id,
+            'appointment_date' => $request->appointment_date,
+            'start_time' => $request->start_time,
+            'end_time' => $endTime,
+            'admission_date' => $request->admission_date,
+            'admission_time' => $request->admission_time,
+            'operation_duration' => $request->operation_duration,
+            'ward' => $request->ward,
+            'appointment_note' => $request->notes,
+            'allergy' => $request->allergy,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Hospital appointment created', 'id' => $hospitalAppointment->id]);
     }
 
     public function destroy(Patient $patient, Appointment $appointment)
