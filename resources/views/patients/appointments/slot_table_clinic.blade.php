@@ -16,9 +16,7 @@ $count = $appointmentsForSlot->count();
 @foreach($appointmentsForSlot as $index => $appointment)
 <tr
     class="{{ $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' }}">
-    <td>{{ $time }}</td>
-
-    
+    <td>{{ $time }}</td>    
     <td>{{ $appointment->appointmentType->value ?? '-' }}</td>
     <td>
         <a target="_blank" rel="noopener noreferrer" href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">

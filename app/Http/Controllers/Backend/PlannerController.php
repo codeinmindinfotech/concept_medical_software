@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\ChargeCode;
 use App\Models\Clinic;
 use App\Models\Patient;
 use App\Traits\DropdownTrait;
@@ -17,7 +18,7 @@ class PlannerController extends Controller
         $date = $request->get('date', now()->toDateString());
 
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
-             
+        $procedures = ChargeCode::all();
         $appointments = Appointment::with(['patient', 'appointmentType'])
             ->whereDate('start_time', $date);
 
@@ -39,7 +40,8 @@ class PlannerController extends Controller
             'clinics' => Clinic::all(),
             'patients' => Patient::all(), // Make sure this is passed
             'appointment_types' => $appointment_types,
-            'diary_status' => $diary_status
+            'diary_status' => $diary_status,
+            'procedures' => $procedures
         ]);
     }
 

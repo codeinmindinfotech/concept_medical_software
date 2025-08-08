@@ -111,7 +111,7 @@
                                     @foreach($group as $clinic)
                                         <option value="{{ $clinic->id }}" 
                                             data-type="{{ $clinic->clinic_type }}"
-                                            style="background-color: #d3d7dc; color: {{ $clinic->color ?? '#000000' }};" 
+                                            style="background-color:{{ $clinic->color ?? '#ffffff' }} ; color: #000000;" 
                                             @if ($loop->first && $loop->parent->first) selected @endif>
                                             {{ $clinic->name }}
                                         </option>
@@ -167,8 +167,10 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="mb-3" id="manualSlotButton" style="display: none;">
-                            <button class="btn btn-primary" onclick="openManualBookingModal()">+ Add Manual Slot</button>
+                        <div class="mb-3" id="manualSlotButton" class="d-flex justify-content-end p-3 border-bottom" style="display: none;">
+                            <button class="btn btn-sm btn-outline-primary" onclick="openManualBookingModal()">
+                                <i class="fas fa-plus me-1"></i> Add Manual Slot
+                            </button>
                         </div>
                     </div>
                 </div>

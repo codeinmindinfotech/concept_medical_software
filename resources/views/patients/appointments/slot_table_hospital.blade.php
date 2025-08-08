@@ -1,5 +1,10 @@
 @foreach ($appointments as $appointment)
-<tr class="{{ $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' }}">
+@php
+    $typeClass = $appointment->appointmentType
+        ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
+        : 'appointment-default';
+@endphp
+<tr class="{{ $typeClass }}">
     <td>{{ format_time($appointment->start_time??'') }}</td>
     <td>
         <a target="_blank" rel="noopener noreferrer" href="{{ route('chargecodes.show',$appointment->procedure->id) }}">

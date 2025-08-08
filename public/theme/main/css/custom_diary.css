@@ -163,7 +163,23 @@
         /* light green */
     }
 
+    .appointment-default {
+        background-color: #f5f5f5; /* neutral light gray */
+        color: #333;
+    }
+
     .fc .fc-daygrid-day-frame {
         max-height: 34px;
         position: relative;
+    }
+
+    /* Removes default link styling in table cells */
+    td a {
+        color: inherit;       /* Inherits the text color from parent (usually black) */
+        text-decoration: none; /* Removes underline */
+    }
+
+    td a:hover {
+        text-decoration: underline; /* Optional: add underline on hover for better UX */
+        color: #0d6efd; /* Optional: Bootstrap primary color on hover */
     }

@@ -33,8 +33,9 @@ class AppointmentController extends Controller
     {
         $clinicId = $request->input('clinic_id');
         $patientId = $request->input('patient_id');
+        $query = Appointment::with(['patient', 'clinic']); // Eager load relations
 
-        $query = Appointment::query();
+        // $query = Appointment::query();
 
         if (isset($patientId)) {
             $query->where('patient_id', $patientId);
@@ -45,15 +46,14 @@ class AppointmentController extends Controller
 
         $appointments = $query->get()->map(function ($appointment) {
             return [
-                'title' => '✔ ' . $appointment->patient->full_name . " " . 
-                        $appointment->start_time . "-" . $appointment->end_time,
-                'start' => $appointment->appointment_date . 'T' . $appointment->start_time,
-                'end' => $appointment->appointment_date . 'T' . $appointment->end_time,
+                'title' => '✔ ' . optional($appointment->patient)->full_name . " " . $appointment->start_time . "-" . $appointment->end_time,
+                'borderColor' => optional($appointment->clinic)->color ?? '#000000',
+                'start' => $appointment->appointment_date . 'T' . format_time($appointment->start_time),
+                // 'end' => $appointment->appointment_date . 'T' . $appointment->end_time,
                 'allDay' => false,
-                'color' => '#ffffff', // white background
-                'borderColor' => $appointment->clinic->color ?? '#3788d8', // colored border
+                // 'color' => '#ffffff', // white background
                 'extendedProps' => [
-                    'clinicColor' => $appointment->clinic->color ?? '#3788d8',
+                    'clinicColor' => $appointment->clinic->color ?? '#ffffff',
                 ],
             ];
         });
