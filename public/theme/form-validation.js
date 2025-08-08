@@ -79,7 +79,6 @@ if (imageInput) {
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('bookAppointmentForm');
   if (!form) return;
-
   form.addEventListener('submit', async function (e) {
       e.preventDefault();
 

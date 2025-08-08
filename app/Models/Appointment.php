@@ -17,7 +17,13 @@ class Appointment extends Model
         'patient_need',
         'appointment_note',
         'arrival_time',
-        'appointment_status'
+        'appointment_status',
+        'admission_date',
+        'admission_time',
+        'procedure_id',
+        'operation_duration',
+        'ward',
+        'allergy'
     ];
 
     public function patient()
@@ -38,5 +44,10 @@ class Appointment extends Model
     public function appointmentStatus()
     {
         return $this->belongsTo(DropDownValue::class, 'appointment_status');
+    }
+
+    public function procedure()
+    {
+        return $this->belongsTo(ChargeCode::class, 'procedure_id');
     }
 }

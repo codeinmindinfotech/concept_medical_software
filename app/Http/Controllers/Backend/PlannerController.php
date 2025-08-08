@@ -16,6 +16,8 @@ class PlannerController extends Controller
     {
         $date = $request->get('date', now()->toDateString());
 
+        $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
+             
         $appointments = Appointment::with(['patient', 'appointmentType'])
             ->whereDate('start_time', $date);
 
@@ -30,7 +32,6 @@ class PlannerController extends Controller
         $appointments = $appointments->get();
 
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
-        $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         
         return view('planner.index', [
             'appointments' => $appointments,

@@ -152,6 +152,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy');
         Route::post('/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('patients.appointments.updateStatus');
         Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('patients.appointments.calendarEvents');
+        Route::post('/hospital-appointments', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.store');
     });
 
     
