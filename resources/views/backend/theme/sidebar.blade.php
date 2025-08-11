@@ -20,49 +20,16 @@
                     <span>Planner</span>
                 </a>
                
-                @can('viewAny', App\Models\Doctor::class)
-                <a class="nav-link {{ Request::is('doctors*') ? 'active' : '' }}" href="{{ route('doctors.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
-                    <span>Doctors</span>
-                </a>
-                @endcan
-        
-                @can('viewAny', App\Models\Consultant::class)
-                <a class="nav-link {{ Request::is('consultants*') ? 'active' : '' }}" href="{{ route('consultants.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-stethoscope"></i></div>
-                    <span>Consultants</span>
-                </a>
-                @endcan
-        
-                @if(auth()->user()->can('insurance-list'))
-                <a class="nav-link {{ Request::is('insurances*') ? 'active' : '' }}" href="{{ route('insurances.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-file-medical"></i></div>
-                    <span>Insurance</span>
-                </a>
-                @endif
-        
-                @can('viewAny', App\Models\ChargeCode::class)
-                <a class="nav-link {{ Request::is('chargecodes*') ? 'active' : '' }}" href="{{ route('chargecodes.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                    <span>Charge Codes</span>
-                </a>
-                @endcan
-
-                @if(auth()->user()->can('clinic-list'))
-                <a class="nav-link {{ Request::is('clinics*') ? 'active' : '' }}" href="{{ route('clinics.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
-                    <span>Clinic</span>
-                </a>
-                @endif
+                
 
                 {{-- <a class="nav-link {{ Request::is('audios*') ? 'active' : '' }}" href="{{ route('audios.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-microphone"></i></div>
                     <span>Audio Recording</span>
                 </a> --}}
 
-                {{-- Utilities Collapsible Section --}}
+                {{-- Utilities Collapsible Section --}}   
                 @php
-                    $isUtilitiesOpen = Request::is('users*') || Request::is('roles*') || Request::is('dropdowns*');
+                    $isUtilitiesOpen = Request::is('users*') || Request::is('roles*') || Request::is('dropdowns*') || Request::is('clinics*') || Request::is('doctors*') || Request::is('consultants*') || Request::is('insurances*')  || Request::is('chargecodes*') ;
                 @endphp
         
                 <a class="nav-link d-flex justify-content-between align-items-center {{ $isUtilitiesOpen ? '' : 'collapsed' }}"
@@ -95,6 +62,42 @@
                             <i class="fas fa-list-ul me-2"></i> Dropdowns
                         </a>
                         @endif
+
+                        @can('viewAny', App\Models\Doctor::class)
+                        <a class="nav-link {{ Request::is('doctors*') ? 'active' : '' }}" href="{{ route('doctors.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
+                            <span>Doctors</span>
+                        </a>
+                        @endcan
+                
+                        @can('viewAny', App\Models\Consultant::class)
+                        <a class="nav-link {{ Request::is('consultants*') ? 'active' : '' }}" href="{{ route('consultants.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-stethoscope"></i></div>
+                            <span>Consultants</span>
+                        </a>
+                        @endcan
+                       
+                        @if(auth()->user()->can('insurance-list'))
+                        <a class="nav-link {{ Request::is('insurances*') ? 'active' : '' }}" href="{{ route('insurances.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-medical"></i></div>
+                            <span>Insurance</span>
+                        </a>
+                        @endif
+                
+                        @can('viewAny', App\Models\ChargeCode::class)
+                        <a class="nav-link {{ Request::is('chargecodes*') ? 'active' : '' }}" href="{{ route('chargecodes.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                            <span>Charge Codes</span>
+                        </a>
+                        @endcan
+
+                        @if(auth()->user()->can('clinic-list'))
+                        <a class="nav-link {{ Request::is('clinics*') ? 'active' : '' }}" href="{{ route('clinics.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
+                            <span>Clinic</span>
+                        </a>
+                        @endif
+                        
         
                     </div>
                 </div>

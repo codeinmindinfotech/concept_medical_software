@@ -1,5 +1,32 @@
 <div class="row g-4">
 
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h5 class="card-title mb-0"><strong>Consultant Information</strong></h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="consultant_id" class="form-label"><strong>Consultant <span class="txt-error">*</span></strong></label>
+            <select id="consultant_id" name="consultant_id"
+              class="select2 @error('consultant_id') is-invalid @enderror">
+              <option value="">-- Select Consultant --</option>
+              @foreach($consultants as $consultant)
+                <option value="{{ $consultant->id }}"
+                  {{ old('consultant_id', $patient->consultant_id ?? '') == $consultant->id ? 'selected' : '' }}>
+                  {{ $consultant->name }} - [{{ $consultant->code }}]
+                </option>
+              @endforeach
+            </select>
+            @error('consultant_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  
   {{-- ▶ Personal Information --}}
   <div class="col-12">
     <div class="card shadow-sm">

@@ -150,7 +150,7 @@
                         </tr>
                         @endforeach
                         @else
-                            <tr colspan="10">No tasks found for this month.</tr>
+                        <tr><td colspan="10">No tasks found for this month.</td></tr>
                         @endif 
                     </tbody>
                 </table>

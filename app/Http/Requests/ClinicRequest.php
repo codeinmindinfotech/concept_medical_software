@@ -39,7 +39,7 @@ class ClinicRequest extends FormRequest
             'email'        => ['required','email:rfc,dns','max:255',
                                 Rule::unique('clinics','email')->ignore($clinicId)],
             'mrn'          => 'nullable|string|max:50',
-            'planner_seq'  => 'nullable|string|max:50',
+            'planner_seq'  => 'required|string|max:50',
             'clinic_type'  => 'required|in:clinic,hospital',
             'color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6})$/'],
         ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PatientRequest;
 use App\Models\Backend\Insurance;
+use App\Models\Consultant;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Services\UserService;
@@ -90,8 +91,9 @@ class PatientController extends Controller
         $pageTitle = "Patients Create";
         extract($this->getCommonDropdowns());
         $doctors = Doctor::orderBy('name')->get(); 
+        $consultants = Consultant::orderBy('name')->get(); 
         $insurances = Insurance::orderBy('code')->get(); 
-        return view('patients.create', compact('pageTitle','titles','insurances', 'preferredContact','doctors'));
+        return view('patients.create', compact('pageTitle','titles','insurances','consultants', 'preferredContact','doctors'));
     }
     
     /**
@@ -151,7 +153,8 @@ class PatientController extends Controller
         extract($this->getCommonDropdowns());
         $doctors = Doctor::orderBy('name')->get(); 
         $insurances = Insurance::orderBy('code')->get();
-        return view('patients.edit',compact('patient','pageTitle','titles','insurances', 'preferredContact','doctors'));
+        $consultants = Consultant::orderBy('name')->get();
+        return view('patients.edit',compact('patient','pageTitle','titles','consultants','insurances', 'preferredContact','doctors'));
     }
     
     /**

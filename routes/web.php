@@ -154,6 +154,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('patients.appointments.calendarEvents');
         Route::post('/hospital-appointments', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.store');
     });
+    Route::post('/appointments/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
 
     
     Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');

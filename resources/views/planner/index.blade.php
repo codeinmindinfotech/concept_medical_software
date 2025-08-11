@@ -185,95 +185,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="manualBookingModal" tabindex="-1" aria-labelledby="manualBookingLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg"><!-- wider dialog -->
-        <form id="manualBookingForm">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="manualBookingLabel">Add Hospital Appointment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
+<x-hospital-appointment-modal :clinics="$clinics" :procedures="$procedures" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
 
-                    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
-                    <input type="hidden" class="form-control" id="hospital-clinic-id" name="clinic_id">
-                    <input type="hidden" class="form-control" id="hospital-appointment-id" name="hospital_id">
-                    <div class="row g-3">
-
-                        <div class="col-md-6">
-                            <label class="form-label">Patient Name</label>
-                            <input type="text" class="form-control" id="hospital-patient-name" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Date of Birth</label>
-                            <div class="input-group">
-                                <input readonly id="hospital-dob" type="text" class="form-control " placeholder="YYYY-MM-DD">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="hospital_appointment_date" class="form-label">Procedure Date</label>
-                            <input type="date" class="form-control" id="hospital_appointment_date" name="appointment_date" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="hospital_start_time" class="form-label">Procedure Time</label>
-                            <input type="time" class="form-control" id="hospital_start_time" name="start_time" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="admission_date" class="form-label">Admission Date</label>
-                            <input type="date" class="form-control" id="admission_date" name="admission_date" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="admission_time" class="form-label">Admission Time</label>
-                            <input type="time" class="form-control" id="admission_time" name="admission_time" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="procedure_id" class="form-label">Procedure</label>
-                            <select class="form-select" id="procedure_id" name="procedure_id" required>
-                                <option value="">Select Procedure</option>
-                                @foreach($procedures as $procedure)
-                                    <option value="{{ $procedure->id }}">{{ $procedure->code }} - {{ $procedure->description }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="operation_duration" class="form-label">Operation Duration (minutes)</label>
-                            <input type="number" min="1" class="form-control" id="operation_duration" name="operation_duration" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="ward" class="form-label">Ward</label>
-                            <input type="text" class="form-control" id="ward" name="ward" placeholder="Ward name or number">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="allergy" class="form-label">Allergy Information</label>
-                            <input type="text" class="form-control" id="allergy" name="allergy" placeholder="Patient allergy details">
-                        </div>
-
-                        <div class="col-12">
-                            <label for="notes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Additional notes"></textarea>
-                        </div>
-
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success" id="booking-submit-btn">Add Appointment</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 <!-- Status Change Modal -->
 <div class="modal fade" id="statusChangeModal" tabindex="-1" aria-hidden="true" aria-labelledby="statusChangeModalLabel">
     <div class="modal-dialog">
@@ -307,101 +220,8 @@
     </div>
 </div>
 <!-- Appointment Booking Modal -->
-<div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-labelledby="bookAppointmentLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <form id="bookAppointmentForm">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="bookAppointmentLabel">Book Appointment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+<x-appointment-modal :clinics="$clinics" :appointmentTypes="$appointmentTypes" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
 
-                <div class="modal-body">
-                    <input type="hidden" name="appointment_id" id="appointment-id">
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Patient Name</label>
-                            <input type="text" class="form-control" id="appointment-patient" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Date of Birth</label>
-                            <div class="input-group">
-                                <input readonly id="appointment-dob" type="text" class="form-control " placeholder="YYYY-MM-DD">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="appointment_type" class="form-label">Appointment Type</label>
-                            <select class="form-select" id="appointment_type" name="appointment_type">
-                                @foreach($appointment_types as $id => $value)
-                                <option value="{{ $id }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="dob" class="form-label"><strong>Appointment Date</strong></label>
-                            <div class="input-group">
-                                <input id="modal-appointment-date" name="appointment_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Start Time</label>
-                            <input type="text" class="form-control" id="start_time" name="start_time" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">End Time</label>
-                            <input type="text" class="form-control" id="end_time" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Slots</label>
-                            <div id="slot-options">
-                                @for ($i = 1; $i <= 10; $i++) <div class="form-check form-check-inline">
-                                    <input class="form-check-input apt-slot-radio" type="radio" name="apt_slots" id="slot{{ $i }}" {{ $i==1 ? 'checked' : '' }} value="{{ $i }}">
-                                    <label class="form-check-label" for="slot{{ $i }}">{{ $i }}</label>
-                            </div>
-                            @endfor
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Patient Need</label>
-                        <input type="text" class="form-control" id="patient_need" name="patient_need">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Appointment Note</label>
-                        <input type="text" class="form-control" id="appointment_note" name="appointment_note">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="appointment-clinic-id" class="form-label fw-semibold">Select Clinic:</label>
-                        <select id="appointment-clinic-id" name="clinic_id" class="form-select shadow-sm">
-                            <option value="">-- Choose Clinic --</option>
-                            @foreach($clinics as $clinic)
-                            <option value="{{ $clinic->id }}">
-                                {{ $clinic->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-success" id="modal-submit-btn">Confirm Booking</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
 @endsection
 @push('scripts')
 <script>
@@ -410,7 +230,7 @@
 
         // Set form values
         $('#appointment-id').val(btn.data('id'));
-        $('#appointment-patient').val(btn.data('patient'));
+        $('#appointment-patient').val(btn.data('patient_name'));
         $('#appointment-dob').val(btn.data('dob'));
         $('#appointment_type').val(btn.data('type'));
         $('#modal-appointment-date').val(btn.data('date'));
@@ -421,7 +241,7 @@
         $('#appointment-clinic-id').val(btn.data('clinic-id'));
 
         // Set patient info (optional)
-        $('#modal-patient-name').val(btn.data('name') || '');
+        $('#modal-patient-name').val(btn.data('patient_name') || '');
         $('#modal-dob').val(btn.data('dob') || '');
 
         // Set form action dynamically
@@ -542,12 +362,16 @@
             const ward = button.dataset.ward;
             const allergy = button.dataset.allergy;
             const clinic_id = button.dataset.clinic_id;
-            const action =  button.dataset.action;  
-
+            const action =  button.dataset.action; 
+            const patient_id =  button.dataset.patient_id;  
+            const patient_name =  button.dataset.patient_name;
+            const patient_dob =  button.dataset.patient_dob;
             document.getElementById('manualBookingLabel').textContent = 'Edit Appointment';
             document.getElementById('booking-submit-btn').textContent = 'Update Appointment';
 
             document.getElementById('hospital-appointment-id').value = id;
+            document.getElementById('hospital-patient-id').value = patient_id;
+
             // document.getElementById('appointment_type').value = type;
             document.getElementById('hospital_appointment_date').value = date;
             document.getElementById('hospital_start_time').value = start;
@@ -561,8 +385,8 @@
             document.getElementById('allergy').value = allergy;
             document.getElementById('hospital-clinic-id').value = clinic_id;
 
-            document.getElementById('hospital-patient-name').value = "{{ $patient->full_name }}";
-            document.getElementById('hospital-dob').value = "{{ format_date($patient->dob) }}";
+            document.getElementById('hospital-patient-name').value = patient_name;
+            document.getElementById('hospital-dob').value = patient_dob;
 
             $('#manualBookingForm').attr('action', action);
             const modal = new bootstrap.Modal(document.getElementById('manualBookingModal'));

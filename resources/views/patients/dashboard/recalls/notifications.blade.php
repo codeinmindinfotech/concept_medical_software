@@ -135,7 +135,7 @@
                     </tr>
                     @endforeach
                     @else
-                    <tr colspan="5">No recalls found for this month.</tr>
+                    <tr><td colspan="5">No recalls found for this month.</td></tr>
                     @endif
                 </tbody>
             </table>

@@ -14,8 +14,15 @@ $count = $appointmentsForSlot->count();
 
 @if($count > 0)
 @foreach($appointmentsForSlot as $index => $appointment)
-<tr
+<tr 
+    data-appointment-id="{{ $appointment->id }}"
+    data-time-slot="{{ $time }}"
+    draggable="true"
+    ondragstart="onDragStart(event)"
+    ondrop="onDrop(event)"
+    ondragover="onDragOver(event)"
     class="{{ $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' }}">
+
     <td>{{ $time }}</td>    
     <td>{{ $appointment->appointmentType->value ?? '-' }}</td>
     <td>
@@ -49,6 +56,8 @@ $count = $appointmentsForSlot->count();
                     <a href="javascript:void(0)" 
                         class="dropdown-item text-success edit-appointment" 
                         data-id="{{ $appointment->id }}" 
+                        data-patient_id="{{ $appointment->patient->id }}"
+                        data-patient_name="{{ $appointment->patient->full_name }}"
                         data-type="{{ $appointment->appointment_type }}" 
                         data-date="{{ $appointment->appointment_date }}" 
                         data-start="{{ format_time($appointment->start_time) }}" 
@@ -100,7 +109,10 @@ $count = $appointmentsForSlot->count();
 </tr>
 @endforeach
 @else
-<tr>
+<tr 
+    data-time-slot="{{ $time }}"
+    ondrop="onDrop(event)"
+    ondragover="onDragOver(event)">
     <td>{{ $time }}</td>
     <td class="text-muted"></td>
     <td class="text-muted"></td>

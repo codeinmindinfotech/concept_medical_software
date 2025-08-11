@@ -4,12 +4,12 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
 {{-- Basic Info --}}
 <div class="row mb-3">
     <div class="col-md-4">
-        <label for="code" class="form-label"><strong>Code <span class="text-danger">*</span></strong></label>
+        <label for="code" class="form-label"><strong>Code <span class="txt-error">*</span></strong></label>
         <input id="code" name="code" type="text" class="form-control @error('code') is-invalid @enderror" value="{{ old('code', $clinic->code ?? '') }}">
         @error('code')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-4">
-        <label for="name" class="form-label"><strong>Name <span class="text-danger">*</span></strong></label>
+        <label for="name" class="form-label"><strong>Name <span class="txt-error">*</span></strong></label>
         <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $clinic->name ?? '') }}">
         @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
@@ -44,7 +44,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
 
 <div class="row mb-3">
     <div class="col-md-4">
-        <label for="email" class="form-label"><strong>Email <span class="text-danger">*</span></strong></label>
+        <label for="email" class="form-label"><strong>Email <span class="txt-error">*</span></strong></label>
         <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $clinic->email ?? '') }}">
         @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
@@ -54,7 +54,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
         @error('mrn')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-2">
-        <label for="planner_seq" class="form-label"><strong>Planner Seq</strong></label>
+        <label for="planner_seq" class="form-label"><strong>Planner Seq <span class="txt-error">*</span></strong></label>
         <input id="planner_seq" name="planner_seq" type="text" class="form-control @error('planner_seq') is-invalid @enderror" value="{{ old('planner_seq', $clinic->planner_seq ?? '') }}">
         @error('planner_seq')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>

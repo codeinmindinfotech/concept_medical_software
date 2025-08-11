@@ -23,10 +23,10 @@ class AppointmentController extends Controller
             $clinic->color = '#'.substr(md5($clinic->id), 0, 6); // assign hex color
             return $clinic;
         });
-        $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
+        $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::all();
-        return view('patients.appointments.patient-schedule', compact('procedures','patients','diary_status','clinics', 'patient', 'appointment_types'));
+        return view('patients.appointments.patient-schedule', compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));
     }
 
     public function calendarEvents(Request $request)
@@ -34,8 +34,6 @@ class AppointmentController extends Controller
         $clinicId = $request->input('clinic_id');
         $patientId = $request->input('patient_id');
         $query = Appointment::with(['patient', 'clinic']); // Eager load relations
-
-        // $query = Appointment::query();
 
         if (isset($patientId)) {
             $query->where('patient_id', $patientId);
@@ -72,9 +70,10 @@ class AppointmentController extends Controller
             $appointmentsQuery = Appointment::with('appointmentType', 'patient','appointmentStatus')
                 ->whereDate('appointment_date', $request->date);
 
-            if ($request->filled('patient_id')) {
-                $appointmentsQuery->where('patient_id', $request->patient_id);
+            if ($request->filled('patientSelect')) {
+                $appointmentsQuery->where('patient_id', $request->patientSelect);
             }
+
             $clinic = null;
 
             if ($request->filled('clinic_id')) {
@@ -393,6 +392,23 @@ class AppointmentController extends Controller
             'status' => $appointment->appointment_status,
         ]);
     }
-
+    public function updateSlot(Request $request)
+    {
+        $request->validate([
+            'appointment_id' => 'required|exists:appointments,id',
+            'new_time' => 'required|date_format:H:i',
+        ]);
+    
+        $appointment = Appointment::find($request->appointment_id);
+        $appointment->start_time = $request->new_time;
+    
+        // You can also recalculate end_time if needed here
+        $appointment->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Appointment updated successfully.',
+        ]);
+    }
+    
 
 }

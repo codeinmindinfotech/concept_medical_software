@@ -17,6 +17,7 @@ class Patient extends Model
      * @var array
      */
     protected $fillable = [
+        'consultant_id',
         'title_id',
         'patient_picture',
         'first_name',
@@ -56,6 +57,10 @@ class Patient extends Model
         'dob' => 'date'
     ];
 
+    public function consultant() {
+        return $this->belongsTo(Consultant::class);
+    }
+    
     public function title()
     {
         return $this->belongsTo(DropDownValue::class, 'title_id');

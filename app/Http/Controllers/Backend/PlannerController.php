@@ -37,9 +37,9 @@ class PlannerController extends Controller
         return view('planner.index', [
             'appointments' => $appointments,
             'date' => $date,
-            'clinics' => Clinic::all(),
-            'patients' => Patient::all(), // Make sure this is passed
-            'appointment_types' => $appointment_types,
+            'clinics' => Clinic::orderBy('planner_seq', 'asc')->get(),
+            'patients' => Patient::all(), 
+            'appointmentTypes' => $appointment_types,
             'diary_status' => $diary_status,
             'procedures' => $procedures
         ]);

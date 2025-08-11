@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = document.getElementById('appointment-id').value || '';
       const patientId = document.getElementById('patient-id').value || '';
       const selectedClinic = document.getElementById('clinic-select')?.value || null;
-
+      
       const data = {
           appointment_id: id,
           appointment_type: form.appointment_type.value,
@@ -122,6 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
               bootstrap.Modal.getInstance(document.getElementById('bookAppointmentModal')).hide();
               if (typeof loadSlotsAndAppointments === 'function') {
                   loadSlotsAndAppointments();
+                  refreshCalendarEvents();
+              }
+              if (typeof initCalendar === 'function') {
+                initCalendar();
               }
           } else if (response.status === 422 && result.errors) {
               handleValidationErrors(result.errors, form);

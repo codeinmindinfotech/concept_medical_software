@@ -8,7 +8,6 @@
                 class="dropdown-item text-success edit-appointment" 
                 data-id="{{ $appointment->id }}"
                 data-action="{{ route('patients.appointments.store', ['patient' => $appointment->patient->id]) }}" 
-                data-patient="{{ $appointment->patient->full_name }}"
                 data-clinic-id="{{ $appointment->clinic_id }}" 
                 data-dob="{{ format_date($appointment->patient->dob) }}" 
                 data-type="{{ $appointment->appointment_type }}" 
@@ -16,6 +15,8 @@
                 data-start="{{ format_time($appointment->start_time) }}" 
                 data-end="{{ $appointment->end_time }}" 
                 data-need="{{ $appointment->patient_need }}" 
+                data-patient_id="{{ $appointment->patient->id }}"
+                data-patient_name="{{ $appointment->patient->full_name }}"
                 data-note="{{ $appointment->appointment_note }}">
                 <i class="fa fa-pencil-square"></i> Edit Appointment
             </a>

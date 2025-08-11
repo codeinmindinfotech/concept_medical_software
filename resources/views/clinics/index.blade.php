@@ -45,7 +45,7 @@
      pageLength: 10,
      columnDefs: [
        {
-         targets: 5, // column index for "Start Date" (0-based)
+         targets: 6, // column index for "Start Date" (0-based)
          orderable: false   // Disable sorting
        }
      ]
