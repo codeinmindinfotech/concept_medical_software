@@ -16,6 +16,7 @@ class PatientRequest extends FormRequest
     {
         $patientId = $this->route('patient')?->id;
         return [
+            'consultant_id'         => 'required|exists:consultants,id',
             'title_id'              => 'required|exists:drop_down_values,id',
             'first_name'            => 'required|string|max:255',
             'surname'               => 'required|string|max:255',

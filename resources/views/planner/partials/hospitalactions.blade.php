@@ -4,20 +4,24 @@
     </button>
     <ul class="dropdown-menu" style="z-index: 1055;">
         <li>
-            <a href="javascript:void(0)" 
-                class="dropdown-item text-success edit-appointment" 
+            <a class="dropdown-item text-success edit-hospital-appointment"
+                href="javascript:void(0)"
                 data-id="{{ $appointment->id }}"
-                data-action="{{ route('patients.appointments.store', ['patient' => $appointment->patient->id]) }}" 
-                data-clinic-id="{{ $appointment->clinic_id }}" 
-                data-dob="{{ format_date($appointment->patient->dob) }}" 
-                data-type="{{ $appointment->appointment_type }}" 
-                data-date="{{ $appointment->appointment_date }}" 
-                data-start="{{ format_time($appointment->start_time) }}" 
-                data-end="{{ $appointment->end_time }}" 
-                data-need="{{ $appointment->patient_need }}" 
                 data-patient_id="{{ $appointment->patient->id }}"
                 data-patient_name="{{ $appointment->patient->full_name }}"
-                data-note="{{ $appointment->appointment_note }}">
+                data-action="{{ route('hospital_appointments.store', ['patient' => $appointment->patient->id]) }}" 
+                data-type="{{ $appointment->appointment_type }}"
+                data-date="{{ $appointment->appointment_date }}"
+                data-admission_date="{{ $appointment->admission_date }}"
+                data-start="{{ format_time($appointment->start_time) }}"
+                data-operation_duration="{{ $appointment->operation_duration }}"
+                data-ward="{{ $appointment->ward }}"
+                data-admission_time="{{ format_time($appointment->admission_time) }}"
+                data-procedure_id="{{ $appointment->procedure_id }}"
+                data-allergy="{{ $appointment->allergy }}"
+                data-clinic_id="{{ $appointment->clinic_id }}"
+                data-note="{{ $appointment->appointment_note }}"
+                data-patient_dob="{{ format_date($appointment->patient->dob) }}" >
                 <i class="fa fa-pencil-square"></i> Edit Appointment
             </a>
         </li>

@@ -109,7 +109,7 @@
                                                 ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
                                                 : 'appointment-default';
                                         @endphp
-                                            <div class="card shadow-sm mb-2 border-start border-3 appointment-{{ $typeClass }}">
+                                            <div class="card shadow-sm mb-2 border-start border-3 {{ $typeClass }}">
                                                 <div class="card-body p-2 small">
                                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                                         <div class="d-flex align-items-center gap-2">
@@ -131,7 +131,11 @@
                                                         </div>
                                                             
                                                         <div>
-                                                            @include('planner.partials.actions', ['appointment' => $appointment])
+                                                            @if (strtolower($clinic->clinic_type) === 'hospital')
+                                                                @include('planner.partials.hospitalactions', ['appointment' => $appointment])
+                                                            @else
+                                                                @include('planner.partials.actions', ['appointment' => $appointment])
+                                                            @endif
                                                         </div>
                                                     </div>
                     
@@ -181,6 +185,8 @@
         </div>
     </div>
 </div>
+<x-hospital-appointment-modal :clinics="$clinics" :procedures="$procedures" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
+
 <!-- Status Change Modal -->
 <div class="modal fade" id="statusChangeModal" tabindex="-1" aria-hidden="true" aria-labelledby="statusChangeModalLabel">
     <div class="modal-dialog">
@@ -214,101 +220,8 @@
     </div>
 </div>
 <!-- Appointment Booking Modal -->
-<div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-labelledby="bookAppointmentLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <form id="bookAppointmentForm">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="bookAppointmentLabel">Book Appointment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+<x-appointment-modal :clinics="$clinics" :appointmentTypes="$appointmentTypes" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
 
-                <div class="modal-body">
-                    <input type="hidden" name="appointment_id" id="appointment-id">
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Patient Name</label>
-                            <input type="text" class="form-control" id="appointment-patient" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Date of Birth</label>
-                            <div class="input-group">
-                                <input readonly id="appointment-dob" type="text" class="form-control " placeholder="YYYY-MM-DD">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="appointment_type" class="form-label">Appointment Type</label>
-                            <select class="form-select" id="appointment_type" name="appointment_type">
-                                @foreach($appointment_types as $id => $value)
-                                <option value="{{ $id }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="dob" class="form-label"><strong>Appointment Date</strong></label>
-                            <div class="input-group">
-                                <input id="modal-appointment-date" name="appointment_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Start Time</label>
-                            <input type="text" class="form-control" id="start_time" name="start_time" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">End Time</label>
-                            <input type="text" class="form-control" id="end_time" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Slots</label>
-                            <div id="slot-options">
-                                @for ($i = 1; $i <= 10; $i++) <div class="form-check form-check-inline">
-                                    <input class="form-check-input apt-slot-radio" type="radio" name="apt_slots" id="slot{{ $i }}" {{ $i==1 ? 'checked' : '' }} value="{{ $i }}">
-                                    <label class="form-check-label" for="slot{{ $i }}">{{ $i }}</label>
-                            </div>
-                            @endfor
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Patient Need</label>
-                        <input type="text" class="form-control" id="patient_need" name="patient_need">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Appointment Note</label>
-                        <input type="text" class="form-control" id="appointment_note" name="appointment_note">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="appointment-clinic-id" class="form-label fw-semibold">Select Clinic:</label>
-                        <select id="appointment-clinic-id" name="clinic_id" class="form-select shadow-sm">
-                            <option value="">-- Choose Clinic --</option>
-                            @foreach($clinics as $clinic)
-                            <option value="{{ $clinic->id }}">
-                                {{ $clinic->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-success" id="modal-submit-btn">Confirm Booking</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
 @endsection
 @push('scripts')
 <script>
@@ -317,7 +230,7 @@
 
         // Set form values
         $('#appointment-id').val(btn.data('id'));
-        $('#appointment-patient').val(btn.data('patient'));
+        $('#appointment-patient').val(btn.data('patient_name'));
         $('#appointment-dob').val(btn.data('dob'));
         $('#appointment_type').val(btn.data('type'));
         $('#modal-appointment-date').val(btn.data('date'));
@@ -328,7 +241,7 @@
         $('#appointment-clinic-id').val(btn.data('clinic-id'));
 
         // Set patient info (optional)
-        $('#modal-patient-name').val(btn.data('name') || '');
+        $('#modal-patient-name').val(btn.data('patient_name') || '');
         $('#modal-dob').val(btn.data('dob') || '');
 
         // Set form action dynamically
@@ -433,5 +346,66 @@
             }
         });
     }
-</script>
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.edit-hospital-appointment')) {
+            const button = e.target.closest('.edit-hospital-appointment');
+
+            const id = button.dataset.id;
+            const date = button.dataset.date;
+            const admission_date = button.dataset.admission_date;
+            const start = button.dataset.start;
+            const admission_time = button.dataset.admission_time;
+            const need = button.dataset.need;
+            const note = button.dataset.note;
+            const procedure_id = button.dataset.procedure_id;
+            const operation_duration = button.dataset.operation_duration;
+            const ward = button.dataset.ward;
+            const allergy = button.dataset.allergy;
+            const clinic_id = button.dataset.clinic_id;
+            const action =  button.dataset.action; 
+            const patient_id =  button.dataset.patient_id;  
+            const patient_name =  button.dataset.patient_name;
+            const patient_dob =  button.dataset.patient_dob;
+            document.getElementById('manualBookingLabel').textContent = 'Edit Appointment';
+            document.getElementById('booking-submit-btn').textContent = 'Update Appointment';
+
+            document.getElementById('hospital-appointment-id').value = id;
+            document.getElementById('hospital-patient-id').value = patient_id;
+
+            // document.getElementById('appointment_type').value = type;
+            document.getElementById('hospital_appointment_date').value = date;
+            document.getElementById('hospital_start_time').value = start;
+            document.getElementById('admission_time').value = admission_time;
+            document.getElementById('admission_date').value = admission_date;
+            document.getElementById('patient_need').value = need;
+            document.getElementById('appointment_note').value = note;
+            document.getElementById('procedure_id').value = procedure_id;
+            document.getElementById('operation_duration').value = operation_duration;
+            document.getElementById('ward').value = ward;
+            document.getElementById('allergy').value = allergy;
+            document.getElementById('hospital-clinic-id').value = clinic_id;
+
+            document.getElementById('hospital-patient-name').value = patient_name;
+            document.getElementById('hospital-dob').value = patient_dob;
+
+            $('#manualBookingForm').attr('action', action);
+            const modal = new bootstrap.Modal(document.getElementById('manualBookingModal'));
+            modal.show();
+        }
+    });
+    // Handle submission
+    $('#manualBookingForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let actionUrl = $(this).attr('action');
+        let formData = $(this).serialize();
+
+        $.post(actionUrl, formData, function(res) {
+            $('#manualBookingModal').modal('hide');
+            location.reload();
+        }).fail(function() {
+            alert('Failed to submit appointment form.');
+        });
+    });
+ </script>
 @endpush

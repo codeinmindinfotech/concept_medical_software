@@ -150,6 +150,8 @@ class TaskController extends Controller
             $query->where('owner_id', $request->owner);
         }
         
+        $query->whereDate('start_date', '>=', now())
+                    ->orderBy('start_date', 'asc');
         $tasks = $query->get();
         if ($request->ajax()) {
             return view('patients.dashboard.tasks.notifications', compact('tasks','users', 'taskcategories', 'statuses'))->render();

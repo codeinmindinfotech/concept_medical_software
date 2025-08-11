@@ -52,10 +52,9 @@ class AppServiceProvider extends ServiceProvider
                     });
                 }
             }
-
+            $taskQuery->whereDate('start_date', '>=', now())
+                    ->orderBy('start_date', 'asc');
             $upcomingTasks = (clone $taskQuery)
-                ->whereDate('end_date', '>=', now())
-                ->orderBy('end_date', 'asc')
                 ->take(5)
                 ->get();
 

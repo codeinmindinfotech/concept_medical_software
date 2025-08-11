@@ -6,6 +6,7 @@
             <th>Name</th>
             <th>Type</th>
             <th>Phone</th>
+            <th>Planner Sequence</th>
             <th style="width: 220px;">Actions</th>
         </tr>
     </thead>
@@ -28,6 +29,7 @@
                     @endswitch
                 </td>
                 <td>{{ $clinic->phone ?? '-' }}</td>
+                <td>{{ $clinic->planner_seq }}</td>
                 <td>
                     <div class="btn-group" role="group" aria-label="Clinic Actions">
                         <a href="{{ route('clinics.show', $clinic->id) }}" class="btn btn-info btn-sm" title="View">
@@ -54,7 +56,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" class="text-center text-muted">No clinics found.</td>
+                <td colspan="7" class="text-center text-muted">No clinics found.</td>
             </tr>
         @endforelse
     </tbody>

@@ -61,6 +61,19 @@
         {{-- Patient Information --}}
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
             <div class="row g-4">
+                {{-- ▶ Consultant Information --}}
+                <div class="col-md-12">
+                    <div class="card border-start border-warning shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-stethoscope me-2 text-warning"></i>Consultant Information
+                            </h5>
+                        </div>
+                        <div class="card-body row g-3">
+                            <x-show-field label="Consultant" :value="$patient->consultant->name ?? '-'" />
+                        </div>
+                    </div>
+                </div>
 
                 {{-- ▶ Personal Information --}}
                 <div class="col-md-6">
