@@ -472,8 +472,6 @@
         container.innerHTML = html;
     }
 
-
-
     document.addEventListener('click', function (e) {
         if (e.target.closest('.edit-appointment')) {
             const button = e.target.closest('.edit-appointment');
@@ -571,19 +569,6 @@
             rows.forEach(row => tbody.appendChild(row));
         });
     });
-
-    function openStatusModal(appointmentId, currentStatus) {
-       
-        document.getElementById('appointment_id').value = appointmentId;
-        document.getElementById('appointment_status').value = currentStatus;
-
-        let finalUrl = routes.statusAppointment(appointmentId,patientId);
-        $('#statusChangeForm').attr('data-action', finalUrl);
-
-        const statusModal = new bootstrap.Modal(document.getElementById('statusChangeModal'));
-        statusModal.show();
-    }
-
 
     function bookSlot(startTime) {
         const endTime = addMinutesToTime(startTime, 15); // Default 15 minutes (or based on slots)

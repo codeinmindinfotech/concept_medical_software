@@ -118,4 +118,16 @@ $(document).ready(function () {
         Swal.fire('Error', 'Something went wrong.', 'error');
       });
   });
+
+  window.openStatusModal = function (appointmentId, patientId, currentStatus) {
+     $('#appointment_id').val(appointmentId);
+      $('#patient_id').val(patientId);
+      $('#appointment_status').val(currentStatus);
+
+      let finalUrl = routes.statusAppointment(appointmentId,patientId);
+      $('#statusChangeForm').attr('data-action', finalUrl);
+
+      $('#statusChangeModal').modal('show');
+  };
+
 });
