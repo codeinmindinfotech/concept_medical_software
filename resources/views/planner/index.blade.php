@@ -185,45 +185,19 @@
         </div>
     </div>
 </div>
+
+<!-- Hospital booking Modal -->
 <x-hospital-appointment-modal :clinics="$clinics" :procedures="$procedures" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
 
 <!-- Status Change Modal -->
-<div class="modal fade" id="statusChangeModal" tabindex="-1" aria-hidden="true" aria-labelledby="statusChangeModalLabel">
-    <div class="modal-dialog">
-        <form id="statusChangeForm">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title" id="statusChangeModalLabel">Change Appointment Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+<x-status-modal :diary_status="$diary_status" :flag="1"/>
 
-                <div class="modal-body">
-                    <input type="hidden" name="appointment_id" id="appointment_id">
-                    <input type="hidden" name="patient_id" id="patient_id">
-                    <div class="mb-3">
-                        <label for="appointment_status" class="form-label">Select Status:</label>
-                        <select id="appointment_status" name="appointment_status" class="form-select">
-                            @foreach($diary_status as $id => $value)
-                            <option value="{{ $id }}">{{ $value }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Update Status</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 <!-- Appointment Booking Modal -->
 <x-appointment-modal :clinics="$clinics" :appointmentTypes="$appointmentTypes" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
 
 @endsection
 @push('scripts')
+<script src="{{ asset('theme/patient-diary.js') }}"></script>
 <script>
     $(document).on('click', '.edit-appointment', function() {
         let btn = $(this);
@@ -268,9 +242,19 @@
             alert('Failed to submit appointment form.');
         });
     });
-    const statusAppointmentRoute = `{{ route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`;
-    const destroyAppointment = `{{ route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`;
+    const routes = {
+        destroyAppointment: (appointmentId, patientId) =>
+            `{{ route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+                .replace('__PATIENT_ID__', patientId)
+                .replace('__APPOINTMENT_ID__', appointmentId),
 
+        statusAppointment: (appointmentId, patientId) =>
+            `{{ route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+                .replace('__PATIENT_ID__', patientId)
+                .replace('__APPOINTMENT_ID__', appointmentId),
+    };
+
+   
     // OPEN STATUS CHANGE MODAL
     function openStatusModal(appointmentId, patientId, currentStatus) {
         $('#appointment_id').val(appointmentId);
@@ -278,74 +262,13 @@
         $('#appointment_status').val(currentStatus);
 
         // Replace placeholders with actual values
-        let finalUrl = statusAppointmentRoute
-            .replace('__PATIENT_ID__', patientId)
-            .replace('__APPOINTMENT_ID__', appointmentId);
-        $('#statusChangeForm').data('action', finalUrl);
+        let finalUrl = routes.statusAppointment(appointmentId,patientId);
+        $('#statusChangeForm').attr('data-action', finalUrl);
 
         $('#statusChangeModal').modal('show');
     }
 
-    // SUBMIT STATUS FORM (AJAX optional)
-    $('#statusChangeForm').on('submit', function(e) {
-        e.preventDefault();
-        const data = $(this).serialize();
-        const url = $(this).data('action');
 
-        $.post(url, data, function(response) {
-            $('#statusChangeModal').modal('hide');
-            location.reload();
-        }).fail(function() {
-            alert('Status update failed.');
-        });
-    });
-
-    function deleteAppointment(appointmentId, patientId) {
-        
-        // Replace placeholders with actual values
-        let finalUrl = destroyAppointment
-            .replace('__PATIENT_ID__', patientId)
-            .replace('__APPOINTMENT_ID__', appointmentId);
-        const url = finalUrl;
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'This will permanently delete the appointment.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Deleted!',
-                            text: data.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                        location.reload();
-
-                    } else {
-                        Swal.fire('Error', data.message || 'Failed to delete.', 'error');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    Swal.fire('Error', 'Something went wrong.', 'error');
-                });
-            }
-        });
-    }
     document.addEventListener('click', function (e) {
         if (e.target.closest('.edit-hospital-appointment')) {
             const button = e.target.closest('.edit-hospital-appointment');
@@ -372,7 +295,7 @@
             document.getElementById('hospital-appointment-id').value = id;
             document.getElementById('hospital-patient-id').value = patient_id;
 
-            // document.getElementById('appointment_type').value = type;
+            document.getElementById('flag').value = 1;
             document.getElementById('hospital_appointment_date').value = date;
             document.getElementById('hospital_start_time').value = start;
             document.getElementById('admission_time').value = admission_time;
@@ -384,28 +307,16 @@
             document.getElementById('ward').value = ward;
             document.getElementById('allergy').value = allergy;
             document.getElementById('hospital-clinic-id').value = clinic_id;
-
+            document.getElementById('notes').value = note;
             document.getElementById('hospital-patient-name').value = patient_name;
             document.getElementById('hospital-dob').value = patient_dob;
 
-            $('#manualBookingForm').attr('action', action);
+            $('#manualBookingForm').attr('data-action', action);
+
             const modal = new bootstrap.Modal(document.getElementById('manualBookingModal'));
             modal.show();
         }
     });
-    // Handle submission
-    $('#manualBookingForm').on('submit', function(e) {
-        e.preventDefault();
 
-        let actionUrl = $(this).attr('action');
-        let formData = $(this).serialize();
-
-        $.post(actionUrl, formData, function(res) {
-            $('#manualBookingModal').modal('hide');
-            location.reload();
-        }).fail(function() {
-            alert('Failed to submit appointment form.');
-        });
-    });
  </script>
 @endpush

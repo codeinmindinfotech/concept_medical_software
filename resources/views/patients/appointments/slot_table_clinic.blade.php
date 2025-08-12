@@ -69,7 +69,7 @@ $count = $appointmentsForSlot->count();
                 </li>
                 <li>
                     <a class="dropdown-item text-danger" href="javascript:void(0)"
-                        onclick="deleteAppointment({{ $appointment->id }})">
+                        onclick="deleteAppointment({{ $appointment->id }},{{ $appointment->patient->id }},0)">
                         <i class="fa fa-trash"></i> Delete Appointment
                     </a>
                 </li>

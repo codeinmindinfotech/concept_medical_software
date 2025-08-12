@@ -51,8 +51,8 @@
 
                 <!-- Date picker -->
                 {{-- <div class="col-md-6 col-lg-4">
-                  <label for="appointment-date" class="form-label fw-semibold">Select Date</label>
-                  <input type="date" id="appointment-date" class="form-control" value="">
+                    <label for="appointment-date" class="form-label fw-semibold">Select Date</label>
+                    <input type="date" id="appointment-date" class="form-control" value="">
                 </div> --}}
             </form>
 
@@ -100,23 +100,20 @@
                         </div>
                     </div>
                     @php
-                        $groupedClinics = $clinics->groupBy('clinic_type');
+                    $groupedClinics = $clinics->groupBy('clinic_type');
                     @endphp
                     <div class="mt-4">
                         <label for="clinic-select" class="form-label fw-semibold">Select Clinic:</label>
                         <select id="clinic-select" class="form-select shadow-sm">
                             <option value="">-- Choose Clinic --</option>
                             @foreach($groupedClinics as $type => $group)
-                                <optgroup label="{{ ucfirst($type) }}" >
-                                    @foreach($group as $clinic)
-                                        <option value="{{ $clinic->id }}" 
-                                            data-type="{{ $clinic->clinic_type }}"
-                                            style="background-color:{{ $clinic->color ?? '#ffffff' }} ; color: #000000;" 
-                                            @if ($loop->first && $loop->parent->first) selected @endif>
-                                            {{ $clinic->name }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
+                            <optgroup label="{{ ucfirst($type) }}">
+                                @foreach($group as $clinic)
+                                <option value="{{ $clinic->id }}" data-type="{{ $clinic->clinic_type }}" style="background-color:{{ $clinic->color ?? '#ffffff' }} ; color: #000000;" @if ($loop->first && $loop->parent->first) selected @endif>
+                                    {{ $clinic->name }}
+                                </option>
+                                @endforeach
+                            </optgroup>
                             @endforeach
                         </select>
                     </div>
@@ -180,47 +177,21 @@
     </div>
 </div>
 
+<!-- Hospital Booking Modal -->
 <x-hospital-appointment-modal :clinics="$clinics" :procedures="$procedures" :flag="0" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
 
 <!-- Status Change Modal -->
-<div class="modal fade" id="statusChangeModal" tabindex="-1" aria-hidden="true" aria-labelledby="statusChangeModalLabel">
-    <div class="modal-dialog">
-        <form id="statusChangeForm">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title" id="statusChangeModalLabel">Change Appointment Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                    <input type="hidden" name="appointment_id" id="appointment_id">
-                    <div class="mb-3">
-                        <label for="appointment_status" class="form-label">Select Status:</label>
-                        <select id="appointment_status" name="appointment_status" class="form-select">
-                            @foreach($diary_status as $id => $value)
-                            <option value="{{ $id }}">{{ $value }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Update Status</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+<x-status-modal :diary_status="$diary_status" :flag="0" />
 
 <!-- Appointment Booking Modal -->
-<x-appointment-modal :clinics="$clinics" :appointmentTypes="$appointmentTypes" :flag="0" :action="route('patients.appointments.store', ['patient' => $patient->id])"/>
+<x-appointment-modal :clinics="$clinics" :appointmentTypes="$appointmentTypes" :flag="0" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
 
 @endsection
 
+
 @push('scripts')
 <script src="{{ asset('theme/form-validation.js') }}"></script>
+<script src="{{ asset('theme/patient-diary.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
     let calendar;
@@ -274,6 +245,7 @@
             }
 
             // Load appointments
+            refreshCalendarEvents();
             loadSlotsAndAppointments();
         }
     });
@@ -422,13 +394,18 @@
     const routes = {
         fetchAppointments: "{{ route('patients.appointments.byDate', ['patient' => $patient->id]) }}",
         storeAppointment: "{{ route('patients.appointments.store', ['patient' => $patient->id]) }}",
-        destroyAppointment: (appointmentId) => 
-        `{{ route('patients.appointments.destroy', ['patient' => $patient->id, 'appointment' => '__APPOINTMENT_ID__']) }}`.replace('__APPOINTMENT_ID__', appointmentId),
-        statusAppointment: (appointmentId) =>`{{ route('patients.appointments.updateStatus', ['patient' => $patient->id, 'appointment' => '__APPOINTMENT_ID__']) }}`
-        .replace('__APPOINTMENT_ID__', appointmentId),
         storeHospitalAppointment: "{{ route('hospital_appointments.store', ['patient' => $patient->id]) }}",
+        destroyAppointment: (appointmentId, patientId) =>
+            `{{ route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+                .replace('__PATIENT_ID__', patientId)
+                .replace('__APPOINTMENT_ID__', appointmentId),
+
+        statusAppointment: (appointmentId, patientId) =>
+            `{{ route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+                .replace('__PATIENT_ID__', patientId)
+                .replace('__APPOINTMENT_ID__', appointmentId),
     };
-    
+
     const slotDuration = window.currentSlotDuration || 15;
 
     function setupSlotChangeHandler(startTime) {
@@ -443,7 +420,6 @@
     }
 
     async function loadSlotsAndAppointments() {
-        // const patientId = document.getElementById('patient-id').value;
         const patientSelect = document.getElementById('patient-select');
         if (!selectedDate) return;
         const res = await fetch(routes.fetchAppointments, {
@@ -483,7 +459,6 @@
         for (const [type, count] of Object.entries(data.byType)) {
             const formatted = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
-            // Convert to valid CSS class: lowercase, replace spaces with underscores
             const className = `appointment-${type.toLowerCase().replace(/\s+/g, '_')}`;
 
             html += `
@@ -602,84 +577,11 @@
         document.getElementById('appointment_id').value = appointmentId;
         document.getElementById('appointment_status').value = currentStatus;
 
+        let finalUrl = routes.statusAppointment(appointmentId,patientId);
+        $('#statusChangeForm').attr('data-action', finalUrl);
+
         const statusModal = new bootstrap.Modal(document.getElementById('statusChangeModal'));
         statusModal.show();
-    }
-
-    document.getElementById('statusChangeForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const appointmentId = document.getElementById('appointment_id').value;
-        const appointment_status = document.getElementById('appointment_status').value;
-        const url = routes.statusAppointment(appointmentId);
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                appointment_status: appointment_status
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire('Success', data.message || 'Status updated successfully.', 'success');
-                const modal = bootstrap.Modal.getInstance(document.getElementById('statusChangeModal'));
-                modal.hide();
-                loadSlotsAndAppointments(); // reload UI
-                refreshCalendarEvents();
-            } else {
-                Swal.fire('Error', data.message || 'Failed to update status.', 'error');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            Swal.fire('Error', 'Something went wrong.', 'error');
-        });
-    });
-
-    function deleteAppointment(appointmentId) {
-        const url = routes.destroyAppointment(appointmentId);
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'This will permanently delete the appointment.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Deleted!',
-                            text: data.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                        loadSlotsAndAppointments(); // Reload appointments
-                        refreshCalendarEvents();
-                    } else {
-                        Swal.fire('Error', data.message || 'Failed to delete.', 'error');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    Swal.fire('Error', 'Something went wrong.', 'error');
-                });
-            }
-        });
     }
 
 
@@ -738,8 +640,7 @@
         });
     });
 
-</script>
-<script>
+
     function openManualBookingModal() {
         const form = document.getElementById('manualBookingForm');
     
@@ -749,40 +650,15 @@
         document.getElementById('hospital-clinic-id').value = document.getElementById('clinic-select')?.value || null;
         document.getElementById('hospital_appointment_date').value = selectedDate;
         document.getElementById('admission_date').value = selectedDate;
+
+        let finalUrl = routes.storeHospitalAppointment;
+        $('#manualBookingForm').attr('data-action', finalUrl);
+
         const modal = new bootstrap.Modal(document.getElementById('manualBookingModal'));
         modal.show();
     }
+
     
-    document.getElementById('manualBookingForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        
-        const form = this;
-        const formData = new FormData(form);
-    
-        fetch(routes.storeHospitalAppointment, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire('Success', 'Appointment booked.', 'success');
-                bootstrap.Modal.getInstance(document.getElementById('manualBookingModal')).hide();
-                loadSlotsAndAppointments(); // Reload table
-            } else {
-                Swal.fire('Error', data.message || 'Something went wrong.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error(error);
-            Swal.fire('Error', 'Something went wrong.', 'error');
-        });
-    });
-    </script>
-    <script>
         let draggedRow;
         
         function onDragStart(event) {
@@ -845,6 +721,6 @@
                 Swal.fire('Error', data.message || 'Error updating appointment.', 'error');
             });
         }
-        </script>
-        
+</script>
+
 @endpush

@@ -1,133 +1,121 @@
 $(document).ready(function () {
-  $.ajaxSetup({
-    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
-  });
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-  $('#qty, #charge_gross, #reduction_percent, #charge_net, #vat_rate_percent').on('input', calculateLineTotal);
+  document.getElementById('manualBookingForm').addEventListener('submit', function (e) {
+    e.preventDefault();
 
-  function handleChargeCodeChange(updateAll = true) {
-    const selectedOption = $('#chargecode_id').find('option:selected');
-    const chargeDataStr = selectedOption.attr('data-code');
-  
-    if (!chargeDataStr) {
-      if (updateAll) {
-        $('#qty, #charge_gross, #reduction_percent, #description, #charge_net, #vat_rate_percent, #line_total').val('');
-      } else {
-        $('#description').val('');
-      }
-      return;
-    }
-  
-    const chargeData = JSON.parse(chargeDataStr);
-    $('#description').val(chargeData.description);
-  
-    if (updateAll) {
-      $('#qty').val(1);
-      $('#charge_gross').val(chargeData.price);
-      $('#reduction_percent').val(0);
-      $('#vat_rate_percent').val(chargeData.vatrate);
-      calculateLineTotal();
-    }
-  }
-  
-  // Default usage when user changes it manually
-  $('#chargecode_id').on('change', function () {
-    handleChargeCodeChange(true); // Allow full update on manual change
-  });
-  
-
-  function calculateLineTotal() {
-    const qty = parseFloat($('#qty').val()) || 0;
-    const gross = parseFloat($('#charge_gross').val()) || 0;
-    const reduction = parseFloat($('#reduction_percent').val()) || 0;
-    const vat = parseFloat($('#vat_rate_percent').val()) || 0;
-
-    const net = gross - (gross * (reduction / 100));
-    const totalBeforeVat = qty * net;
-    const total = totalBeforeVat + (totalBeforeVat * (vat / 100));
-
-    $('#charge_net').val(net.toFixed(2));
-    $('#line_total').val(total.toFixed(2));
-  }
- 
-  
-  $('#patient_picture_input').on('change', function () {
-    const form = $('#uploadPatientPictureForm')[0];
+    const form = this;
     const formData = new FormData(form);
-  
-    const file = this.files[0];
-    if (!file) return;
-  
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      $('#patient_picture_preview').attr('src', e.target.result);
-    };
-    reader.readAsDataURL(file);
-  
-    $.ajax({
-      url: form.action, 
+    const flag = document.getElementById('flag').value;
+    const url = this.getAttribute('data-action');
+    fetch(url, {
       method: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success(response) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Updated',
-          text: response.message || 'Picture uploaded successfully!',
-          timer: 1500,
-          showConfirmButton: false
-        });
-  
-        if (response.image_url) {
-          $('#patient_picture_preview').attr('src', response.image_url);
-        }
+      headers: {
+        'X-CSRF-TOKEN': csrfToken
       },
-      error(xhr) {
-        handleErrors(xhr, $(form));
+      body: formData
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire('Success', 'Appointment booked.', 'success');
+          bootstrap.Modal.getInstance(document.getElementById('manualBookingModal')).hide();
+          if (flag == 1) {
+            location.reload();
+          } else {
+            loadSlotsAndAppointments(); // Reload table
+          }
+        } else {
+          Swal.fire('Error', data.message || 'Something went wrong.', 'error');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        Swal.fire('Error', 'Something went wrong.', 'error');
+      });
+  });
+
+  window.deleteAppointment = function (appointmentId, patientId, flag) {
+    const url = routes.destroyAppointment(appointmentId, patientId);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the appointment.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+          }
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: data.message,
+                timer: 1500,
+                showConfirmButton: false
+              });
+              if (flag == 1) {
+                location.reload();
+              } else {
+                loadSlotsAndAppointments(); // Reload appointments
+                refreshCalendarEvents();
+              }
+            } else {
+              Swal.fire('Error', data.message || 'Failed to delete.', 'error');
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            Swal.fire('Error', 'Something went wrong.', 'error');
+          });
       }
     });
+  };
+
+  document.getElementById('statusChangeForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const flag = document.getElementById('flag').value;
+    const appointment_status = document.getElementById('appointment_status').value;
+    const url = this.getAttribute('data-action');
+    // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        appointment_status: appointment_status
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire('Success', data.message || 'Status updated successfully.', 'success');
+          const modal = bootstrap.Modal.getInstance(document.getElementById('statusChangeModal'));
+          modal.hide();
+          if (flag == 1) {
+            location.reload();
+          } else {
+            loadSlotsAndAppointments(); // Reload appointments
+            refreshCalendarEvents();
+          }
+        } else {
+          Swal.fire('Error', data.message || 'Failed to update status.', 'error');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        Swal.fire('Error', 'Something went wrong.', 'error');
+      });
   });
-
-function calculateRecallDate(interval) {
-  const today = new Date();
-  let recallDate = new Date(today); // clone today
-
-  switch (interval) {
-    case 'Today':
-      // already today
-      break;
-    case '6 weeks':
-      recallDate.setDate(today.getDate() + 42); // 6 weeks = 42 days
-      break;
-    case '2 months':
-      recallDate.setMonth(today.getMonth() + 2);
-      break;
-    case '3 months':
-      recallDate.setMonth(today.getMonth() + 3);
-      break;
-    case '6 months':
-      recallDate.setMonth(today.getMonth() + 6);
-      break;
-    case '1 year':
-      recallDate.setFullYear(today.getFullYear() + 1);
-      break;
-    default:
-      return '';
-  }
-
-  return recallDate.toISOString().split('T')[0]; // format YYYY-MM-DD
-}
-
-$(document).on('change', '#recall_interval', function () {
-  const interval = $(this).val();
-  const date = calculateRecallDate(interval);
-  if (date) {
-    $('#recall_date').val(date);
-  } else {
-    $('#recall_date').val('');
-  }
-});
-
- 
 });
