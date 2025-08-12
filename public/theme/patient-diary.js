@@ -1,6 +1,18 @@
 $(document).ready(function () {
   const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+    $('#appointment-patient-id').on('change', function () {
+        const selectedOption = $(this).find(':selected');
+        const dob = selectedOption.data('dob') || '';
+
+        $('#modal-dob').val(dob);
+    });
+
+    $('#appointment-patient-id').select2({
+        dropdownParent: $('#bookAppointmentModal') // Replace with modal ID if needed
+    });
+   
+
   document.getElementById('manualBookingForm').addEventListener('submit', function (e) {
     e.preventDefault();
 

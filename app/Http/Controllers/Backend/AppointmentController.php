@@ -16,7 +16,7 @@ class AppointmentController extends Controller
 {
     use DropdownTrait;
 
-    public function patientSchedulePage(Patient $patient)
+    public function schedulePage(Request $request, ?Patient $patient = null)
     {
         $patients = Patient::all();
         $clinics = Clinic::all()->map(function ($clinic) {
@@ -29,7 +29,7 @@ class AppointmentController extends Controller
         return view('patients.appointments.patient-schedule', compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));
     }
 
-    public function calendarEvents(Request $request)
+    public function calendarEvents(Request $request, ?Patient $patient = null)
     {
         $clinicId = $request->input('clinic_id');
         $patientId = $request->input('patient_id');
@@ -199,6 +199,7 @@ class AppointmentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
+            'patient_id' => $patient ? 'nullable' : 'required|exists:patients,id',
             'appointment_type' => 'required|exists:drop_down_values,id',
             'appointment_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
@@ -221,6 +222,14 @@ class AppointmentController extends Controller
         $startTime = Carbon::createFromFormat('H:i', substr($startTimeRaw, 0, 5));
 
         $now = now();
+        $patientId = $request->patient_id ? $request->patient_id : $patient->id;
+
+        if (!$patientId) {
+            return response()->json([
+                'success' => false,
+                'errors' => 'Patient ID is required.'
+            ], 422);
+        }
 
         if ($request->filled('appointment_id')) {
             $appointment = Appointment::find($request->appointment_id);
@@ -232,6 +241,7 @@ class AppointmentController extends Controller
             $endTime = $startTime->copy()->addMinutes($interval);
 
             $appointment->update([
+                'patient_id' =>$patientId,
                 'clinic_id' => $request->clinic_id,
                 'appointment_type' => $request->appointment_type,
                 'appointment_date' => $request->appointment_date,
@@ -253,7 +263,7 @@ class AppointmentController extends Controller
             $slotEnd = $slotStart->copy()->addMinutes($interval);
 
             $appointments[] = [
-                'patient_id' => $patient->id,
+                'patient_id' =>$patientId,
                 'clinic_id' => $request->clinic_id,
                 'appointment_type' => $request->appointment_type,
                 'appointment_date' => $request->appointment_date,
