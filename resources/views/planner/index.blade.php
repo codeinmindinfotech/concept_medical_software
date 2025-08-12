@@ -214,17 +214,14 @@
         $('#appointment_note').val(btn.data('note'));
         $('#appointment-clinic-id').val(btn.data('clinic-id'));
 
-        // Set patient info (optional)
         $('#modal-patient-name').val(btn.data('patient_name') || '');
         $('#modal-dob').val(btn.data('dob') || '');
 
-        // Set form action dynamically
         let appointmentId = btn.data('id');
         let route = btn.data('action');
 
         $('#bookAppointmentForm').attr('action', route);
 
-        // Show modal
         $('#bookAppointmentModal').modal('show');
     });
 
@@ -253,21 +250,6 @@
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
     };
-
-   
-    // OPEN STATUS CHANGE MODAL
-    function openStatusModal(appointmentId, patientId, currentStatus) {
-        $('#appointment_id').val(appointmentId);
-        $('#patient_id').val(patientId);
-        $('#appointment_status').val(currentStatus);
-
-        // Replace placeholders with actual values
-        let finalUrl = routes.statusAppointment(appointmentId,patientId);
-        $('#statusChangeForm').attr('data-action', finalUrl);
-
-        $('#statusChangeModal').modal('show');
-    }
-
 
     document.addEventListener('click', function (e) {
         if (e.target.closest('.edit-hospital-appointment')) {

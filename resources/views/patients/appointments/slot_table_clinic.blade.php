@@ -17,10 +17,15 @@ $count = $appointmentsForSlot->count();
 <tr 
     data-appointment-id="{{ $appointment->id }}"
     data-time-slot="{{ $time }}"
-    draggable="true"
-    ondragstart="onDragStart(event)"
-    ondrop="onDrop(event)"
-    ondragover="onDragOver(event)"
+    
+    
+    @if(isset($patient) && $appointment->patient->id === $patient->id)
+        ondragstart="onDragStart(event)"
+        ondrop="onDrop(event)"
+        ondragover="onDragOver(event)"
+        draggable="true"
+    @endif
+
     class="{{ $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' }}">
 
     <td>{{ $time }}</td>    
@@ -75,7 +80,7 @@ $count = $appointmentsForSlot->count();
                 </li>
                 <li>
                     <a class="dropdown-item text-primary" href="javascript:void(0)"
-                    onclick="openStatusModal({{ $appointment->id }}, '{{ $appointment->appointment_status }}')">
+                    onclick="openStatusModal({{ $appointment->id }},{{ $appointment->patient->id }}, '{{ $appointment->appointment_status }}')">
                         <i class="fa fa-sync-alt"></i> Change Status
                     </a>
                 </li>

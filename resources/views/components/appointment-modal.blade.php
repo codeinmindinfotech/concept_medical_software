@@ -66,12 +66,12 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Patient Need</label>
-                        <input type="text" class="form-control" id="patient_need" name="patient_need">
+                        <textarea class="form-control" id="patient_need" name="patient_need" rows="3" placeholder="Patient needs"></textarea>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Appointment Note</label>
-                        <input type="text" class="form-control" id="appointment_note" name="appointment_note">
+                        <textarea class="form-control" id="appointment_note" name="appointment_note" rows="3" placeholder="Patient needs"></textarea>
                     </div>
                     @if ($flag == 1)
                         <div class="col-md-6" >

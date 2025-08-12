@@ -68,7 +68,7 @@
                     </li>
                     <li>
                         <a class="dropdown-item text-primary" href="javascript:void(0)"
-                        onclick="openStatusModal({{ $appointment->id }}, '{{ $appointment->appointment_status }}')">
+                        onclick="openStatusModal({{ $appointment->id }},{{ $appointment->patient->id }}, '{{ $appointment->appointment_status }}')">
                             <i class="fa fa-sync-alt"></i> Change Status
                         </a>
                     </li>
