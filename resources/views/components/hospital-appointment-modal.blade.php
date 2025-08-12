@@ -11,6 +11,7 @@
                 <div class="modal-body">
 
                     <input type="hidden" id="hospital-patient-id" name="patient_id" value="">
+                    <input type="hidden" id="flag" name="flag" value="{{$flag}}">
                     @if ($flag == 0)
                         <input type="hidden" class="form-control" id="hospital-clinic-id" name="clinic_id">
                     @endif

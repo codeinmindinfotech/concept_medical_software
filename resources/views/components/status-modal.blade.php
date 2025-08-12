@@ -1,3 +1,5 @@
+@props(['diary_status','flag'])
+
 <div class="modal fade" id="statusChangeModal" tabindex="-1" aria-hidden="true" aria-labelledby="statusChangeModalLabel">
     <div class="modal-dialog">
         <form id="statusChangeForm">
@@ -10,6 +12,7 @@
 
                 <div class="modal-body">
                     <input type="hidden" name="appointment_id" id="appointment_id">
+                    <input type="hidden" name="flag" id="flag" value="{{$flag}}">
                     <div class="mb-3">
                         <label for="appointment_status" class="form-label">Select Status:</label>
                         <select id="appointment_status" name="appointment_status" class="form-select">
