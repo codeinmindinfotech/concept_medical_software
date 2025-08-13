@@ -1,4 +1,4 @@
-@props(['clinics', 'procedures', 'flag', 'action'])
+@props(['clinics', 'procedures', 'flag', 'action','patient','patients'])
 <div class="modal fade" id="manualBookingModal" tabindex="-1" aria-labelledby="manualBookingLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg"><!-- wider dialog -->
         <form id="manualBookingForm">
@@ -10,18 +10,28 @@
                 </div>
                 <div class="modal-body">
 
-                    <input type="hidden" id="hospital-patient-id" name="patient_id" value="">
                     <input type="hidden" id="flag" name="flag" value="{{$flag}}">
                     @if ($flag == 0)
                         <input type="hidden" class="form-control" id="hospital-clinic-id" name="clinic_id">
                     @endif
                     <input type="hidden" class="form-control" id="hospital-appointment-id" name="hospital_id">
                     <div class="row g-3">
-
+                        @if ($patient)
                         <div class="col-md-6">
+                            <input type="hidden" id="hospital-patient-id" name="patient_id" value="">
                             <label class="form-label">Patient Name</label>
                             <input type="text" class="form-control" id="hospital-patient-name" readonly>
                         </div>
+                        @else 
+                        <div class="col-md-6">
+                            <label class="form-label">Select Patient</label>
+                            <select class="form-control select2" id="hospital-patient-id" name="patient_id" required>
+                                <option value="">-- Select Patient --</option>
+                                @foreach ($patients as $p)
+                                    <option value="{{ $p->id }}">{{ $p->full_name }} ({{ format_date($p->dob) }})</option>
+                                @endforeach
+                            </select>
+                        </div>                        @endif
                         <div class="col-md-6">
                             <label class="form-label">Date of Birth</label>
                             <div class="input-group">

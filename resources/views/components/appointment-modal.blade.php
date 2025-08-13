@@ -1,4 +1,4 @@
-@props(['clinics', 'appointmentTypes', 'flag', 'action'])
+@props(['clinics', 'appointmentTypes', 'flag', 'action','patient','patients'])
 
 <div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-labelledby="bookAppointmentLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -14,10 +14,24 @@
                     <input type="hidden" name="appointment_id" id="appointment-id">
 
                     <div class="row g-3">
+                        @if ($patient)
                         <div class="col-md-6">
+                            <input type="hidden" name="patient_id" id="patient-id" value="{{$patient->id??''}}">
                             <label class="form-label">Patient Name</label>
                             <input type="text" class="form-control" id="modal-patient-name" readonly>
                         </div>
+                        @else 
+                            <div class="col-md-6">
+                                <label class="form-label">Select Patient</label>
+                                <select class="select2" id="appointment-patient-id" name="patient_id" required style="width:100%">
+                                    <option value="">-- Select Patient --</option>
+                                    @foreach ($patients as $p)
+                                        <option value="{{ $p->id }}"
+                                            data-dob="{{ format_date($p->dob) }}">{{ $p->full_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
                         <div class="col-md-6">
                             <label class="form-label">Date of Birth</label>
                             <div class="input-group">

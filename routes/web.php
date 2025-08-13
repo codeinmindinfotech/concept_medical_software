@@ -145,8 +145,16 @@ Route::group(['middleware' => ['auth']], function() {
         Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
     });
 
+    Route::prefix('appointments')->group(function () {
+        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule');
+        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('appointments.byDateGlobal');
+        Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('appointments.calendarEvents');
+        Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal');
+        Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal');
+    });
+
     Route::prefix('patients/{patient}/appointments')->group(function () {
-        Route::get('/schedule', [AppointmentController::class, 'patientSchedulePage'])->name('patients.appointments.schedule');
+        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule');
         Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate');
         Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store');
         Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy');
@@ -154,6 +162,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('patients.appointments.calendarEvents');
         Route::post('/hospital-appointments', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.store');
     });
+
     Route::post('/appointments/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
 
     

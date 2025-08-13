@@ -57,10 +57,9 @@
             </form>
 
             <!-- Show selected patient name and date -->
-            <h4 class="mb-4">Appointment Scheduler for <strong>{{ $patient->full_name }}</strong></h4>
-
-            <input type="hidden" id="patient-id" value="{{ $patient->id }}">
-
+            @if($patient)
+                <h4 class="mb-4">Appointment Scheduler for <strong>{{ $patient->full_name }}</strong></h4>
+            @endif
             <div class="row gy-4">
                 <!-- Left Column -->
                 <div class="col-md-4">
@@ -176,15 +175,26 @@
         </div>
     </div>
 </div>
-
 <!-- Hospital Booking Modal -->
-<x-hospital-appointment-modal :clinics="$clinics" :procedures="$procedures" :flag="0" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
+<x-hospital-appointment-modal
+    :clinics="$clinics"
+    :patients="$patients"
+    :patient="$patient ? $patient : ''"
+    :procedures="$procedures"
+    :flag="0"
+    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
 
 <!-- Status Change Modal -->
 <x-status-modal :diary_status="$diary_status" :flag="0" />
 
 <!-- Appointment Booking Modal -->
-<x-appointment-modal :clinics="$clinics" :appointmentTypes="$appointmentTypes" :flag="0" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
+<x-appointment-modal
+    :clinics="$clinics"
+    :patients="$patients"
+    :patient="$patient ? $patient : ''"
+    :appointmentTypes="$appointmentTypes"
+    :flag="0"
+    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
 
 @endsection
 
@@ -197,7 +207,7 @@
     let calendar;
     let selectedClinic = document.getElementById('clinic-select').value || null;
     let selectedDate = null;
-    const patientId = "{{ $patient->id }}";
+    const patientId = "{{ $patient ? $patient->id : '' }}";
     // Handle quick date checkboxes
     document.addEventListener('change', function(e) {
         if (e.target.classList.contains('quick-date')) {
@@ -317,7 +327,7 @@
             },
             eventSources: [
                 {
-                    url: "{{ route('patients.appointments.calendarEvents', ['patient' => $patient->id]) }}",
+                    url: "{{ $patient ? route('patients.appointments.calendarEvents', ['patient' => $patient ? $patient->id : '']) : route('appointments.calendarEvents') }}",
                     method: 'POST',
                     extraParams: function() {
                         return {
@@ -392,9 +402,9 @@
     
 
     const routes = {
-        fetchAppointments: "{{ route('patients.appointments.byDate', ['patient' => $patient->id]) }}",
-        storeAppointment: "{{ route('patients.appointments.store', ['patient' => $patient->id]) }}",
-        storeHospitalAppointment: "{{ route('hospital_appointments.store', ['patient' => $patient->id]) }}",
+        fetchAppointments: "{{ $patient ? route('patients.appointments.byDate', ['patient' => $patient->id]) : route('appointments.byDateGlobal') }}",
+        storeAppointment: "{{ $patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal') }}",
+        storeHospitalAppointment: "{{ $patient ? route('hospital_appointments.store', ['patient' => $patient->id]) : route('hospital_appointments.storeGlobal') }}",
         destroyAppointment: (appointmentId, patientId) =>
             `{{ route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
@@ -404,6 +414,7 @@
             `{{ route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
+
     };
 
     const slotDuration = window.currentSlotDuration || 15;
@@ -495,8 +506,8 @@
             document.getElementById('patient_need').value = need;
             document.getElementById('appointment_note').value = note;
 
-            document.getElementById('modal-patient-name').value = "{{ $patient->full_name }}";
-            document.getElementById('modal-dob').value = "{{ format_date($patient->dob) }}";
+            document.getElementById('modal-patient-name').value = "{{ $patient ? $patient->full_name : '' }}";
+            document.getElementById('modal-dob').value = "{{ $patient ? format_date($patient->dob): '' }}";
 
             const modal = new bootstrap.Modal(document.getElementById('bookAppointmentModal'));
             modal.show();
@@ -536,8 +547,8 @@
             document.getElementById('allergy').value = allergy;
             document.getElementById('hospital-clinic-id').value = clinic_id;
 
-            document.getElementById('hospital-patient-name').value = "{{ $patient->full_name }}";
-            document.getElementById('hospital-dob').value = "{{ format_date($patient->dob) }}";
+            document.getElementById('hospital-patient-name').value = "{{ $patient ? $patient->full_name : ''}}";
+            document.getElementById('hospital-dob').value = "{{ $patient ? format_date($patient->dob): '' }}";
 
             const modal = new bootstrap.Modal(document.getElementById('manualBookingModal'));
             modal.show();
@@ -572,10 +583,14 @@
 
     function bookSlot(startTime) {
         const endTime = addMinutesToTime(startTime, 15); // Default 15 minutes (or based on slots)
-        const patientName = "{{ $patient->full_name }}";
+        const patientName = "{{ $patient ? $patient->full_name : ""}}";
 
-        document.getElementById('modal-patient-name').value = patientName;
-        document.getElementById('modal-dob').value = "{{format_date($patient->dob)}}";
+        const modalPatientNameInput = document.getElementById('modal-patient-name');
+        if (modalPatientNameInput) {
+            modalPatientNameInput.value = patientName;
+        }
+
+        document.getElementById('modal-dob').value = "{{$patient ? format_date($patient->dob): ''}}";
         document.getElementById('start_time').value = startTime;
         document.getElementById('end_time').value = endTime;
         document.getElementById('modal-appointment-date').value = selectedDate;
@@ -584,6 +599,10 @@
         document.getElementById('appointment_type').value = '';
         document.getElementById('appointment_note').value = '';
 
+        $('#appointment-patient-id').select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#bookAppointmentModal')  // important for modals!
+        });
         const modal = new bootstrap.Modal(document.getElementById('bookAppointmentModal'));
         modal.show();
 
@@ -630,8 +649,8 @@
         const form = document.getElementById('manualBookingForm');
     
         form.reset();
-        document.getElementById('hospital-patient-name').value = "{{ $patient->full_name }}";
-        document.getElementById('hospital-dob').value = "{{ format_date($patient->dob) }}";
+        document.getElementById('hospital-patient-name').value = "{{ $patient ? $patient->full_name : '' }}";
+        document.getElementById('hospital-dob').value = "{{ $patient ? format_date($patient->dob) : '' }}";
         document.getElementById('hospital-clinic-id').value = document.getElementById('clinic-select')?.value || null;
         document.getElementById('hospital_appointment_date').value = selectedDate;
         document.getElementById('admission_date').value = selectedDate;

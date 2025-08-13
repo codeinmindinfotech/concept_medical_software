@@ -83,11 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
 
       const id = document.getElementById('appointment-id').value || '';
-      const patientId = document.getElementById('patient-id').value || '';
+      const patientId = document.getElementById('appointment-patient-id').value || '';
       const selectedClinic = document.getElementById('clinic-select')?.value || null;
       
       const data = {
           appointment_id: id,
+          patient_id: patientId,
           appointment_type: form.appointment_type.value,
           appointment_date: form.appointment_date.value,
           start_time: form.start_time.value,
