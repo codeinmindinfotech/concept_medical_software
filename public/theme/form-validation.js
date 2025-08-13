@@ -83,7 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
 
       const id = document.getElementById('appointment-id').value || '';
-      const patientId = document.getElementById('appointment-patient-id').value || '';
+      const patient_input = document.getElementById('appointment-patient-id');
+      var patientId = '';
+      if (patient_input) {
+        patientId = document.getElementById('appointment-patient-id').value || '';
+      } else {
+        patientId = document.getElementById('patient-id').value || '';
+      }
+      
       const selectedClinic = document.getElementById('clinic-select')?.value || null;
       
       const data = {

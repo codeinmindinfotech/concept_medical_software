@@ -4,12 +4,10 @@ use Carbon\Carbon;
 
 @foreach($slots as $time)
 @php
-// Get all appointments matching the slot time (ignoring seconds)
-$appointmentsForSlot = $appointments->filter(function ($apt) use ($time) {
-return \Illuminate\Support\Str::substr($apt->start_time, 0, 5) === $time;
-});
-
-$count = $appointmentsForSlot->count();
+    $appointmentsForSlot = $appointments->filter(function ($apt) use ($time) {
+        return \Illuminate\Support\Str::substr($apt->start_time, 0, 5) === $time;
+    });
+    $count = $appointmentsForSlot->count();
 @endphp
 
 @if($count > 0)
@@ -17,9 +15,7 @@ $count = $appointmentsForSlot->count();
 <tr 
     data-appointment-id="{{ $appointment->id }}"
     data-time-slot="{{ $time }}"
-    
-    
-    @if(isset($patient) && $appointment->patient->id === $patient->id)
+    @if(isset($patient) && $appointment->patient->id === $patient->id || $flag == 1)
         ondragstart="onDragStart(event)"
         ondrop="onDrop(event)"
         ondragover="onDragOver(event)"
@@ -56,11 +52,12 @@ $count = $appointmentsForSlot->count();
                 Actions
             </button>
             <ul class="dropdown-menu" style="z-index: 1055;">
-                @if(isset($patient) && $appointment->patient->id === $patient->id)
+                @if(isset($patient) && $appointment->patient->id === $patient->id || $flag == 1)
                 <li>
                     <a href="javascript:void(0)" 
                         class="dropdown-item text-success edit-appointment" 
                         data-id="{{ $appointment->id }}" 
+                        data-dob="{{ format_date($appointment->patient->dob) }}" 
                         data-patient_id="{{ $appointment->patient->id }}"
                         data-patient_name="{{ $appointment->patient->full_name }}"
                         data-type="{{ $appointment->appointment_type }}" 

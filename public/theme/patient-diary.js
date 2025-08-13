@@ -1,15 +1,24 @@
 $(document).ready(function () {
   const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    $('#appointment-patient-id').on('change', function () {
+    $('#patient-id').on('change', function () {
         const selectedOption = $(this).find(':selected');
         const dob = selectedOption.data('dob') || '';
 
         $('#modal-dob').val(dob);
     });
+    $('#bookAppointmentModal .select2').select2({
+      dropdownParent: $('#bookAppointmentModal') // Replace with modal ID if needed
+    });
 
-    $('#appointment-patient-id').select2({
-        dropdownParent: $('#bookAppointmentModal') // Replace with modal ID if needed
+    $('#hospital-patient-id').on('change', function () {
+        const selectedOption = $(this).find(':selected');
+        const dob = selectedOption.data('dob') || '';
+
+        $('#hospital-dob').val(dob);
+    });
+    $('#manualBookingModal .select2').select2({
+      dropdownParent: $('#manualBookingModal')
     });
    
 
@@ -37,13 +46,15 @@ $(document).ready(function () {
           } else {
             loadSlotsAndAppointments(); // Reload table
           }
-        } else {
-          Swal.fire('Error', data.message || 'Something went wrong.', 'error');
+        } else if (data.errors) {
+          handleValidationErrors(data.errors, form);
+      } else {
+          Swal.fire('Error', data.message || 'Something went hhh wrong.'+data.status, 'error');
         }
       })
       .catch(error => {
         console.error(error);
-        Swal.fire('Error', 'Something went wrong.', 'error');
+        Swal.fire('Error', 'Something went 122 wrong.', 'error');
       });
   });
 

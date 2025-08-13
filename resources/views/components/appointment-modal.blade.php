@@ -15,15 +15,15 @@
 
                     <div class="row g-3">
                         @if ($patient)
-                        <div class="col-md-6">
-                            <input type="hidden" name="patient_id" id="patient-id" value="{{$patient->id??''}}">
-                            <label class="form-label">Patient Name</label>
-                            <input type="text" class="form-control" id="modal-patient-name" readonly>
-                        </div>
+                            <div class="col-md-6">
+                                <input type="hidden" name="patient_id" id="appointment-patient-id" value="{{$patient->id??''}}">
+                                <label class="form-label">Patient Name<span class="txt-error">*</span></label>
+                                <input type="text" class="form-control" id="modal-patient-name" readonly>
+                            </div>
                         @else 
                             <div class="col-md-6">
-                                <label class="form-label">Select Patient</label>
-                                <select class="select2" id="appointment-patient-id" name="patient_id" required style="width:100%">
+                                <label class="form-label">Select Patientv</label>
+                                <select class="form-select select2" id="patient-id" name="patient_id" style="width:100%">
                                     <option value="">-- Select Patient --</option>
                                     @foreach ($patients as $p)
                                         <option value="{{ $p->id }}"
@@ -41,7 +41,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="appointment_type" class="form-label">Appointment Type</label>
+                            <label for="appointment_type" class="form-label">Appointment Type<span class="txt-error">*</span></label>
                             <select class="form-select" id="appointment_type" name="appointment_type">
                                 @foreach($appointmentTypes as $id => $value)
                                 <option value="{{ $id }}">{{ $value }}</option>
@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="dob" class="form-label"><strong>Appointment Date</strong></label>
+                            <label for="dob" class="form-label"><strong>Appointment Date<span class="txt-error">*</span></strong></label>
                             <div class="input-group">
                                 <input id="modal-appointment-date" name="appointment_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD">
                                 <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
@@ -58,17 +58,17 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Start Time</label>
+                            <label class="form-label">Start Time<span class="txt-error">*</span></label>
                             <input type="text" class="form-control" id="start_time" name="start_time" readonly>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">End Time</label>
+                            <label class="form-label">End Time<span class="txt-error">*</span></label>
                             <input type="text" class="form-control" id="end_time" readonly>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Slots</label>
+                            <label class="form-label">Slots<span class="txt-error">*</span></label>
                             <div id="slot-options">
                                 @for ($i = 1; $i <= 10; $i++) <div class="form-check form-check-inline">
                                     <input class="form-check-input apt-slot-radio" type="radio" name="apt_slots" id="slot{{ $i }}" {{ $i==1 ? 'checked' : '' }} value="{{ $i }}">

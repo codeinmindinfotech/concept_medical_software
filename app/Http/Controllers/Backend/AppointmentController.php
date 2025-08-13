@@ -61,6 +61,8 @@ class AppointmentController extends Controller
 
     public function getAppointmentsByDate(Request $request, Patient $patient)
     {
+        $flag = $request->route('flag'); 
+
         try {
             $request->validate([
                 'clinic_id' => 'nullable|exists:clinics,id',
@@ -91,19 +93,26 @@ class AppointmentController extends Controller
             // Determine working day schedule
             if (!$clinic) {
                 return response()->json([
-                    'html' => '<tr><td colspan="6">No clinic selected</td></tr>',
+                    'html' => '<tr><td class="text-center text-muted" colspan="7">No clinic selected</td></tr>',
                 ]);
             }
 
             $date = Carbon::parse($request->date);
-            $day = strtolower($date->format('D')); // mon, tue, wed...
+            $day = strtolower($date->format('D')); 
             $dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
             $dayKey = $dayMap[$date->dayOfWeek];
 
             // Clinic open/close check
             if (!$clinic->$dayKey) {
                 return response()->json([
-                    'html' => '<tr><td colspan="6">Clinic is closed on this day.</td></tr>',
+                    'html' => '<tr>
+                        <td colspan="7">
+                            <div class="alert alert-warning d-flex align-items-center justify-content-center mb-0 py-4 rounded-3 shadow-sm" role="alert" id="close_clinic">
+                                <i class="fas fa-exclamation-triangle me-2 fs-5 text-warning"></i>
+                                <strong class="me-1">Clinic Closed:</strong> The clinic is closed on this date.
+                            </div>
+                        </td>
+                    </tr>',
                 ]);
             }
 
@@ -133,7 +142,8 @@ class AppointmentController extends Controller
                     'html' => view('patients.appointments.slot_table_clinic', [
                         'appointments' => $appointments,
                         'slots' => $slots,
-                        'patient' => $patient
+                        'patient' => $patient,
+                        'flag' => $flag
                     ])->render(),
                     'stats' => [
                         'total' => count($appointments),
@@ -149,6 +159,16 @@ class AppointmentController extends Controller
 
     private function getHospitalAppointmentsByDate(Request $request, Patient $patient, Clinic $clinic)
     {
+        $isOpen = 0;
+        $flag = $request->route('flag'); 
+
+        // Determine working day schedule
+        if (!$clinic) {
+            return response()->json([
+                'html' => '<tr><td class="text-center text-muted" colspan="7">No clinic selected</td></tr>',
+            ]);
+        }
+        
         $hospitalAppointmentsQuery = Appointment::with('procedure', 'patient')
             ->where('clinic_id', $clinic->id)
             ->whereDate('appointment_date', $request->date);
@@ -162,11 +182,21 @@ class AppointmentController extends Controller
         $stats = $hospitalAppointments->groupBy(fn($apt) => optional($apt->procedure)->code)
             ->map(fn($group) => $group->count());
 
+        $date = Carbon::parse($request->date);
+        $dayField = strtolower($date->format('D')); 
+
+        $clinic = Clinic::findOrFail($request->clinic_id);
+
+        $isOpen = $clinic->{$dayField}; 
+
         return response()->json([
             'html' => view('patients.appointments.slot_table_hospital', [
                 'appointments' => $hospitalAppointments,
                 'patient' => $patient,
+                'isOpen' => $isOpen,
+                'flag'  => $flag
             ])->render(),
+            'isOpen' => $isOpen,
             'stats' => [
                 'total' => count($hospitalAppointments),
                 'byType' => $stats,
@@ -197,9 +227,10 @@ class AppointmentController extends Controller
 
     public function store(Request $request, Patient $patient)
     {
+        $flag = $request->route('flag'); 
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
-            'patient_id' => $patient ? 'nullable' : 'required|exists:patients,id',
+            'patient_id' => ($flag == 0) ? 'nullable' : 'required|exists:patients,id',
             'appointment_type' => 'required|exists:drop_down_values,id',
             'appointment_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
@@ -285,14 +316,16 @@ class AppointmentController extends Controller
 
     public function storeHospitalAppointment(Request $request, Patient $patient)
     {
+        $flag = $request->route('flag'); 
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
+            'patient_id' => ($flag == 0) ? 'nullable' : 'required|exists:patients,id',
             'procedure_id' => 'required|exists:charge_codes,id',  // Adjust if your foreign key table is different
             'appointment_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
-            'admission_date' => 'nullable|date',
-            'admission_time' => 'nullable|date_format:H:i',
-            'operation_duration' => 'nullable|integer|min:1',  // duration in minutes
+            'admission_date' => 'required|date',
+            'admission_time' => 'required|date_format:H:i',
+            'operation_duration' => 'required|integer|min:1',  // duration in minutes
             'ward' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:1000',
             'allergy' => 'nullable|string|max:1000',
@@ -306,6 +339,14 @@ class AppointmentController extends Controller
         }
 
         $now = now();
+        $patientId = $request->patient_id ? $request->patient_id : $patient->id;
+
+        if (!$patientId) {
+            return response()->json([
+                'success' => false,
+                'errors' => 'Patient ID is required.'
+            ], 422);
+        }
         $startTime = Carbon::createFromFormat('H:i', $request->start_time);
         $duration = intval($request->operation_duration ?? 30); // or any default value
         $endTime = $startTime->copy()->addMinutes($duration);
@@ -318,7 +359,7 @@ class AppointmentController extends Controller
             }
 
             $hospitalAppointment->update([
-                'patient_id' => $patient->id,
+                'patient_id' =>$patientId,
                 'clinic_id' => $request->clinic_id,
                 'procedure_id' => $request->procedure_id,
                 'appointment_date' => $request->appointment_date,
@@ -337,7 +378,7 @@ class AppointmentController extends Controller
         }
 
         $hospitalAppointment = Appointment::create([
-            'patient_id' => $patient->id,
+            'patient_id' =>$patientId,
             'clinic_id' => $request->clinic_id,
             'procedure_id' => $request->procedure_id,
             'appointment_date' => $request->appointment_date,

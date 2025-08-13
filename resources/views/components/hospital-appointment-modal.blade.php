@@ -19,21 +19,23 @@
                         @if ($patient)
                         <div class="col-md-6">
                             <input type="hidden" id="hospital-patient-id" name="patient_id" value="">
-                            <label class="form-label">Patient Name</label>
+                            <label class="form-label">Patient Name<span class="txt-error">*</span></label>
                             <input type="text" class="form-control" id="hospital-patient-name" readonly>
                         </div>
                         @else 
                         <div class="col-md-6">
-                            <label class="form-label">Select Patient</label>
-                            <select class="form-control select2" id="hospital-patient-id" name="patient_id" required>
+                            <label class="form-label">Select Patient<span class="txt-error">*</span></label>
+                            <select class="select2 form-select" id="hospital-patient-id" name="patient_id" style="width:100%">
                                 <option value="">-- Select Patient --</option>
                                 @foreach ($patients as $p)
-                                    <option value="{{ $p->id }}">{{ $p->full_name }} ({{ format_date($p->dob) }})</option>
+                                    <option value="{{ $p->id }}"
+                                        data-dob="{{ format_date($p->dob) }}">{{ $p->full_name }}</option>
                                 @endforeach
                             </select>
-                        </div>                        @endif
+                        </div>                        
+                        @endif
                         <div class="col-md-6">
-                            <label class="form-label">Date of Birth</label>
+                            <label class="form-label">Date of Birth<span class="txt-error">*</span></label>
                             <div class="input-group">
                                 <input readonly id="hospital-dob" type="text" class="form-control " placeholder="YYYY-MM-DD">
                                 <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
@@ -41,28 +43,28 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="hospital_appointment_date" class="form-label">Procedure Date</label>
-                            <input type="date" class="form-control" id="hospital_appointment_date" name="appointment_date" required>
+                            <label for="hospital_appointment_date" class="form-label">Procedure Date<span class="txt-error">*</span></label>
+                            <input type="date" class="form-control" id="hospital_appointment_date" name="appointment_date" >
                         </div>
 
                         <div class="col-md-6">
-                            <label for="hospital_start_time" class="form-label">Procedure Time</label>
-                            <input type="time" class="form-control" id="hospital_start_time" name="start_time" required>
+                            <label for="hospital_start_time" class="form-label">Procedure Time<span class="txt-error">*</span></label>
+                            <input type="time" class="form-control" id="hospital_start_time" name="start_time" >
                         </div>
 
                         <div class="col-md-6">
-                            <label for="admission_date" class="form-label">Admission Date</label>
-                            <input type="date" class="form-control" id="admission_date" name="admission_date" required>
+                            <label for="admission_date" class="form-label">Admission Date<span class="txt-error">*</span></label>
+                            <input type="date" class="form-control" id="admission_date" name="admission_date" >
                         </div>
 
                         <div class="col-md-6">
-                            <label for="admission_time" class="form-label">Admission Time</label>
-                            <input type="time" class="form-control" id="admission_time" name="admission_time" required>
+                            <label for="admission_time" class="form-label">Admission Time<span class="txt-error">*</span></label>
+                            <input type="time" class="form-control" id="admission_time" name="admission_time" >
                         </div>
 
                         <div class="col-md-6">
-                            <label for="procedure_id" class="form-label">Procedure</label>
-                            <select class="form-select" id="procedure_id" name="procedure_id" required>
+                            <label for="procedure_id" class="form-label">Procedure<span class="txt-error">*</span></label>
+                            <select class="form-select select2" id="procedure_id" name="procedure_id" style="width:100%" >
                                 <option value="">Select Procedure</option>
                                 @foreach($procedures as $procedure)
                                     <option value="{{ $procedure->id }}">{{ $procedure->code }} - {{ $procedure->description }}</option>
@@ -71,8 +73,8 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="operation_duration" class="form-label">Operation Duration (minutes)</label>
-                            <input type="number" min="1" class="form-control" id="operation_duration" name="operation_duration" required>
+                            <label for="operation_duration" class="form-label">Operation Duration (minutes)<span class="txt-error">*</span></label>
+                            <input type="number" min="1" class="form-control" id="operation_duration" name="operation_duration" >
                         </div>
 
                         <div class="col-md-6">
