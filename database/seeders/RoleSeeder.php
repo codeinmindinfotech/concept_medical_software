@@ -21,8 +21,8 @@ class RoleSeeder extends Seeder
         $patientPermissions = [
             'patient-list',
             'patient-edit',
-            // 'appointment-list',
-            // 'appointment-create'
+            'appointment-list',
+            'appointment-create'
         ];
         $patientRole->syncPermissions($patientPermissions);
 
@@ -32,10 +32,10 @@ class RoleSeeder extends Seeder
             'clinic-edit',
             'clinic-create',
             'clinic-delete',
-            // 'appointment-list',
-            // 'appointment-edit',
-            // 'appointment-create',
-            // 'appointment-delete',
+            'appointment-list',
+            'appointment-edit',
+            'appointment-create',
+            'appointment-delete',
             'patient-list'
         ];
         $clinicRole->syncPermissions($clinicPermissions);
