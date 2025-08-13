@@ -18,6 +18,7 @@ class AppointmentController extends Controller
 
     public function schedulePage(Request $request, ?Patient $patient = null)
     {
+        $this->authorize('viewAny', Appointment::class);
         $patients = Patient::all();
         $clinics = Clinic::all()->map(function ($clinic) {
             $clinic->color = '#'.substr(md5($clinic->id), 0, 6); // assign hex color
@@ -31,6 +32,7 @@ class AppointmentController extends Controller
 
     public function calendarEvents(Request $request, ?Patient $patient = null)
     {
+        $this->authorize('viewAny', Appointment::class);
         $clinicId = $request->input('clinic_id');
         $patientId = $request->input('patient_id');
         $query = Appointment::with(['patient', 'clinic']); // Eager load relations
@@ -61,6 +63,7 @@ class AppointmentController extends Controller
 
     public function getAppointmentsByDate(Request $request, Patient $patient)
     {
+        $this->authorize('viewAny', Appointment::class);
         try {
             $request->validate([
                 'clinic_id' => 'nullable|exists:clinics,id',
@@ -149,6 +152,7 @@ class AppointmentController extends Controller
 
     private function getHospitalAppointmentsByDate(Request $request, Patient $patient, Clinic $clinic)
     {
+        $this->authorize('viewAny', Appointment::class);
         $hospitalAppointmentsQuery = Appointment::with('procedure', 'patient')
             ->where('clinic_id', $clinic->id)
             ->whereDate('appointment_date', $request->date);
@@ -197,6 +201,7 @@ class AppointmentController extends Controller
 
     public function store(Request $request, Patient $patient)
     {
+        $this->authorize('create', Appointment::class);
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
             'patient_id' => $patient ? 'nullable' : 'required|exists:patients,id',
@@ -285,6 +290,7 @@ class AppointmentController extends Controller
 
     public function storeHospitalAppointment(Request $request, Patient $patient)
     {
+        $this->authorize('create', Appointment::class);
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
             'procedure_id' => 'required|exists:charge_codes,id',  // Adjust if your foreign key table is different
@@ -358,6 +364,7 @@ class AppointmentController extends Controller
 
     public function destroy(Patient $patient, Appointment $appointment)
     {
+        $this->authorize('delete', $appointment);
         try {
             if ($appointment->patient_id !== $patient->id) {
                 return response()->json([
@@ -382,6 +389,7 @@ class AppointmentController extends Controller
 
     public function updateStatus(Request $request, $patientId, Appointment $appointment)
     {
+        $this->authorize('update', $appointment);
         $validator = Validator::make($request->all(), [
             'appointment_status' => 'required|exists:drop_down_values,id'
         ]);
@@ -404,6 +412,7 @@ class AppointmentController extends Controller
     }
     public function updateSlot(Request $request)
     {
+        $this->authorize('update', Appointment::class);
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'new_time' => 'required|date_format:H:i',
