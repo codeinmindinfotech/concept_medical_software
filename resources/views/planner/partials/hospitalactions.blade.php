@@ -3,6 +3,12 @@
         Actions
     </button>
     <ul class="dropdown-menu" style="z-index: 1055;">
+        @php
+            $user = auth()->user();
+            $isSuperAdmin =($user->hasRole('superadmin'));
+            $isPatient = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id);
+        @endphp
+        @if($isPatient || $isSuperAdmin)
         <li>
             <a class="dropdown-item text-success edit-hospital-appointment"
                 href="javascript:void(0)"
@@ -35,6 +41,7 @@
                 <i class="fa fa-sync-alt"></i> Change Status
             </a>
         </li>
+        @endif
         <li>
             <a class="dropdown-item" target="_blank" href="{{ route('patients.edit', $appointment->patient->id) }}">
                 <i class="fa-solid fa-pen-to-square"></i> Edit Patient

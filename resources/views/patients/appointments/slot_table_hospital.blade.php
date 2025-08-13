@@ -14,7 +14,12 @@
         $typeClass = $appointment->appointmentType
             ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
             : 'appointment-default';
-    @endphp
+
+            $user = auth()->user();
+            $isSuperAdmin =( $user->hasRole('superadmin') && $flag == 1);
+            $isPatientUserEditingOwnAppointment = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id && $flag == 1);
+            $isCurrentPatient = ($user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id);
+        @endphp
     <tr class="{{ $typeClass }}">
         <td>{{ format_time($appointment->start_time??'') }}</td>
         <td>
@@ -50,13 +55,7 @@
                     Actions
                 </button>
                 <ul class="dropdown-menu" style="z-index: 1055;">
-                    @php
-                        $user = auth()->user();
-                        $isPatientUserEditingOwnAppointment = $user->hasRole('patient') && $appointment->patient->id === $user->patient->id;
-                        $isCurrentPatient = isset($patient) && $appointment->patient->id === $patient->id;
-                    @endphp
-
-                    @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $flag == 1)
+                    @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
                         <li>
                             <a class="dropdown-item text-success edit-hospital-appointment"
                             href="javascript:void(0)"
