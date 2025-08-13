@@ -50,7 +50,13 @@
                     Actions
                 </button>
                 <ul class="dropdown-menu" style="z-index: 1055;">
-                    @if(isset($patient) && $appointment->patient->id === $patient->id || $flag == 1)
+                    @php
+                        $user = auth()->user();
+                        $isPatientUserEditingOwnAppointment = $user->hasRole('patient') && $appointment->patient->id === $user->patient->id;
+                        $isCurrentPatient = isset($patient) && $appointment->patient->id === $patient->id;
+                    @endphp
+
+                    @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $flag == 1)
                         <li>
                             <a class="dropdown-item text-success edit-hospital-appointment"
                             href="javascript:void(0)"

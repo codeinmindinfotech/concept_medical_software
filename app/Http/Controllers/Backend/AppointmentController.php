@@ -19,7 +19,13 @@ class AppointmentController extends Controller
     public function schedulePage(Request $request, ?Patient $patient = null)
     {
         $this->authorize('viewAny', Appointment::class);
-        $patients = Patient::all();
+        $user = auth()->user();
+        if ($user->hasRole('patient')) {
+            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+        } else {
+            $patients = Patient::all();
+        }
+        
         $clinics = Clinic::all()->map(function ($clinic) {
             $clinic->color = '#'.substr(md5($clinic->id), 0, 6); // assign hex color
             return $clinic;
@@ -63,9 +69,8 @@ class AppointmentController extends Controller
 
     public function getAppointmentsByDate(Request $request, Patient $patient)
     {
-        $flag = $request->route('flag'); 
-
         $this->authorize('viewAny', Appointment::class);
+        $flag = $request->route('flag'); 
         try {
             $request->validate([
                 'clinic_id' => 'nullable|exists:clinics,id',
@@ -320,8 +325,8 @@ class AppointmentController extends Controller
 
     public function storeHospitalAppointment(Request $request, Patient $patient)
     {
-        $flag = $request->route('flag'); 
         $this->authorize('create', Appointment::class);
+        $flag = $request->route('flag'); 
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
             'patient_id' => ($flag == 0) ? 'nullable' : 'required|exists:patients,id',
@@ -429,7 +434,7 @@ class AppointmentController extends Controller
 
     public function updateStatus(Request $request, $patientId, Appointment $appointment)
     {
-        $this->authorize('update', $appointment);
+        $this->authorize('create', Appointment::class);
         $validator = Validator::make($request->all(), [
             'appointment_status' => 'required|exists:drop_down_values,id'
         ]);
@@ -452,7 +457,7 @@ class AppointmentController extends Controller
     }
     public function updateSlot(Request $request)
     {
-        $this->authorize('update', Appointment::class);
+        $this->authorize('create', Appointment::class);
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'new_time' => 'required|date_format:H:i',

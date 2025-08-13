@@ -12,10 +12,16 @@ use Carbon\Carbon;
 
 @if($count > 0)
 @foreach($appointmentsForSlot as $index => $appointment)
+@php
+    $user = auth()->user();
+    $isSuperAdmin =( $user->hasRole('superadmin') && $flag == 1);
+    $isPatientUserEditingOwnAppointment = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id && $flag == 1);
+    $isCurrentPatient = ($user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id);
+@endphp
 <tr 
     data-appointment-id="{{ $appointment->id }}"
     data-time-slot="{{ $time }}"
-    @if(isset($patient) && $appointment->patient->id === $patient->id || $flag == 1)
+    @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
         ondragstart="onDragStart(event)"
         ondrop="onDrop(event)"
         ondragover="onDragOver(event)"
@@ -52,7 +58,7 @@ use Carbon\Carbon;
                 Actions
             </button>
             <ul class="dropdown-menu" style="z-index: 1055;">
-                @if(isset($patient) && $appointment->patient->id === $patient->id || $flag == 1)
+                @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
                 <li>
                     <a href="javascript:void(0)" 
                         class="dropdown-item text-success edit-appointment" 
@@ -81,7 +87,7 @@ use Carbon\Carbon;
                         <i class="fa fa-sync-alt"></i> Change Status
                     </a>
                 </li>
-                @endif
+                @endif 
                 <li>
                     <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{{ route('patients.edit', $appointment->patient->id) }}">
                         <i class="fa-solid fa-pen-to-square"></i> Edit Patient
