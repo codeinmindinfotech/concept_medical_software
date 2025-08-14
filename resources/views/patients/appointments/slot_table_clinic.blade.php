@@ -4,22 +4,24 @@ use Carbon\Carbon;
 
 @foreach($slots as $time)
 @php
-// Get all appointments matching the slot time (ignoring seconds)
-$appointmentsForSlot = $appointments->filter(function ($apt) use ($time) {
-return \Illuminate\Support\Str::substr($apt->start_time, 0, 5) === $time;
-});
-
-$count = $appointmentsForSlot->count();
+    $appointmentsForSlot = $appointments->filter(function ($apt) use ($time) {
+        return \Illuminate\Support\Str::substr($apt->start_time, 0, 5) === $time;
+    });
+    $count = $appointmentsForSlot->count();
 @endphp
 
 @if($count > 0)
 @foreach($appointmentsForSlot as $index => $appointment)
+@php
+    $user = auth()->user();
+    $isSuperAdmin =( $user->hasRole('superadmin') && $flag == 1);
+    $isPatientUserEditingOwnAppointment = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id && $flag == 1);
+    $isCurrentPatient = ($user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id);
+@endphp
 <tr 
     data-appointment-id="{{ $appointment->id }}"
     data-time-slot="{{ $time }}"
-    
-    
-    @if(isset($patient) && $appointment->patient->id === $patient->id)
+    @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
         ondragstart="onDragStart(event)"
         ondrop="onDrop(event)"
         ondragover="onDragOver(event)"
@@ -56,11 +58,12 @@ $count = $appointmentsForSlot->count();
                 Actions
             </button>
             <ul class="dropdown-menu" style="z-index: 1055;">
-                @if(isset($patient) && $appointment->patient->id === $patient->id)
+                @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
                 <li>
                     <a href="javascript:void(0)" 
                         class="dropdown-item text-success edit-appointment" 
                         data-id="{{ $appointment->id }}" 
+                        data-dob="{{ format_date($appointment->patient->dob) }}" 
                         data-patient_id="{{ $appointment->patient->id }}"
                         data-patient_name="{{ $appointment->patient->full_name }}"
                         data-type="{{ $appointment->appointment_type }}" 
@@ -84,7 +87,7 @@ $count = $appointmentsForSlot->count();
                         <i class="fa fa-sync-alt"></i> Change Status
                     </a>
                 </li>
-                @endif
+                @endif 
                 <li>
                     <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{{ route('patients.edit', $appointment->patient->id) }}">
                         <i class="fa-solid fa-pen-to-square"></i> Edit Patient

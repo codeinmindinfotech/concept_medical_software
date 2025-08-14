@@ -186,14 +186,26 @@
     </div>
 </div>
 
-<!-- Hospital booking Modal -->
-<x-hospital-appointment-modal :clinics="$clinics" :procedures="$procedures" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
+<!-- Hospital Booking Modal -->
+<x-hospital-appointment-modal
+    :clinics="$clinics"
+    :patients="$patients"
+    :patient="$patient ? $patient : ''"
+    :procedures="$procedures"
+    :flag="0"
+    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
 
 <!-- Status Change Modal -->
-<x-status-modal :diary_status="$diary_status" :flag="1"/>
+<x-status-modal :diary_status="$diary_status" :flag="0" />
 
 <!-- Appointment Booking Modal -->
-<x-appointment-modal :clinics="$clinics" :appointmentTypes="$appointmentTypes" :flag="1" :action="route('patients.appointments.store', ['patient' => $patient->id])" />
+<x-appointment-modal
+    :clinics="$clinics"
+    :patients="$patients"
+    :patient="$patient ? $patient : ''"
+    :appointmentTypes="$appointmentTypes"
+    :flag="0"
+    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
 
 @endsection
 @push('scripts')

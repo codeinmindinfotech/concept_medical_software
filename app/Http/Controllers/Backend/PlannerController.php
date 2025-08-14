@@ -34,11 +34,18 @@ class PlannerController extends Controller
 
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
         
+        $user = auth()->user();
+        if ($user->hasRole('patient')) {
+            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+        } else {
+            $patients = Patient::all();
+        }
+
         return view('planner.index', [
             'appointments' => $appointments,
             'date' => $date,
             'clinics' => Clinic::orderBy('planner_seq', 'asc')->get(),
-            'patients' => Patient::all(), 
+            'patients' => $patients, 
             'appointmentTypes' => $appointment_types,
             'diary_status' => $diary_status,
             'procedures' => $procedures

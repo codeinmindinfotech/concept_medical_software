@@ -163,7 +163,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="mb-3" id="manualSlotButton" class="d-flex justify-content-end p-3 border-bottom" style="display: none;">
+                        <div class="mb-3 justify-content-end p-3 border-bottom" id="manualSlotButton" class="d-flex " style="display: none;">
                             <button class="btn btn-sm btn-outline-primary" onclick="openManualBookingModal()">
                                 <i class="fas fa-plus me-1"></i> Add Manual Slot
                             </button>
@@ -365,10 +365,10 @@
             moreLinkContent: function(args) {
                 return '+' + args.num + '...    ' ;
             },
-            eventsSet: function(events) {
-                console.log('Loaded events:', events);
-            },
-            dayMaxEventRows: 1, // Avoid clutter
+            // eventsSet: function(events) {
+            //     console.log('Loaded events:', events);
+            // },
+            dayMaxEventRows: 0, // Avoid clutter
             fixedWeekCount: false, // Show only required number of weeks
             dayCellClassNames: function(arg) {
                 return (arg.dateStr === selectedDate) ? ['selected-date'] : [];
@@ -398,9 +398,6 @@
 
         calendar.render();
     }
-
-    
-
     const routes = {
         fetchAppointments: "{{ $patient ? route('patients.appointments.byDate', ['patient' => $patient->id]) : route('appointments.byDateGlobal') }}",
         storeAppointment: "{{ $patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal') }}",
@@ -451,8 +448,15 @@
             `Appointments for ${day}/${month}/${year}`;
 
         const data = await res.json();
-        document.getElementById('slot-body').innerHTML = data.html || '<tr><td colspan="6">No data available</td></tr>';
+        document.getElementById('slot-body').innerHTML = data.html || '<tr><td colspan="7">No data available</td></tr>';
    
+        const manualSlotButton = document.getElementById('manualSlotButton');
+        if (data.isOpen) {
+            manualSlotButton.style.display = 'flex'; // Or 'block' depending on your layout
+        } else {
+            manualSlotButton.style.display = 'none';
+        }
+
         // Update stats
         if (data.stats) {
             renderAppointmentStats(data.stats);
@@ -494,6 +498,8 @@
             const end = button.dataset.end;
             const need = button.dataset.need;
             const note = button.dataset.note;
+            const patient_id = button.dataset.patient_id;
+            const dob = button.dataset.dob;
 
             document.getElementById('bookAppointmentLabel').textContent = 'Edit Appointment';
             document.getElementById('modal-submit-btn').textContent = 'Update Appointment';
@@ -505,12 +511,27 @@
             document.getElementById('end_time').value = end;
             document.getElementById('patient_need').value = need;
             document.getElementById('appointment_note').value = note;
+            
+            const patientName = "{{ $patient ? $patient->full_name : ""}}";
 
-            document.getElementById('modal-patient-name').value = "{{ $patient ? $patient->full_name : '' }}";
+            const modalPatientNameInput = document.getElementById('modal-patient-name');
+            if (modalPatientNameInput) {
+                modalPatientNameInput.value = patientName;
+            }
+
             document.getElementById('modal-dob').value = "{{ $patient ? format_date($patient->dob): '' }}";
 
             const modal = new bootstrap.Modal(document.getElementById('bookAppointmentModal'));
             modal.show();
+            
+            if(patientName == ''){
+                $('#patient-id').val(patient_id).trigger('change');
+                $('#patient-id').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $('#bookAppointmentModal')  // important for modals!
+                });
+            }
+            
         }
 
         if (e.target.closest('.edit-hospital-appointment')) {
@@ -534,7 +555,6 @@
             document.getElementById('booking-submit-btn').textContent = 'Update Appointment';
 
             document.getElementById('hospital-appointment-id').value = id;
-            document.getElementById('hospital-patient-id').value = patient_id;
             document.getElementById('hospital_appointment_date').value = date;
             document.getElementById('hospital_start_time').value = start;
             document.getElementById('admission_time').value = admission_time;
@@ -547,12 +567,29 @@
             document.getElementById('allergy').value = allergy;
             document.getElementById('hospital-clinic-id').value = clinic_id;
 
-            document.getElementById('hospital-patient-name').value = "{{ $patient ? $patient->full_name : ''}}";
             document.getElementById('hospital-dob').value = "{{ $patient ? format_date($patient->dob): '' }}";
+            const patientName = "{{ $patient ? $patient->full_name : ''}}";
+            const modalPatientNameInput = document.getElementById('hospital-patient-name');
+            if (modalPatientNameInput) {
+                modalPatientNameInput.value = patientName;
+            } 
 
             const modal = new bootstrap.Modal(document.getElementById('manualBookingModal'));
             modal.show();
-        }
+            
+            $('#procedure_id').val(procedure_id).trigger('change');
+                $('#procedure_id').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $('#manualBookingModal')  // important for modals!
+                });
+            if(patientName == ''){
+                $('#hospital-patient-id').val(patient_id).trigger('change');
+                $('#hospital-patient-id').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $('#manualBookingModal')  // important for modals!
+                });
+            }
+        }   
     });
 
     document.querySelectorAll('#slot-table thead th[data-sort]').forEach(th => {
@@ -585,11 +622,6 @@
         const endTime = addMinutesToTime(startTime, 15); // Default 15 minutes (or based on slots)
         const patientName = "{{ $patient ? $patient->full_name : ""}}";
 
-        const modalPatientNameInput = document.getElementById('modal-patient-name');
-        if (modalPatientNameInput) {
-            modalPatientNameInput.value = patientName;
-        }
-
         document.getElementById('modal-dob').value = "{{$patient ? format_date($patient->dob): ''}}";
         document.getElementById('start_time').value = startTime;
         document.getElementById('end_time').value = endTime;
@@ -598,11 +630,16 @@
         document.getElementById('patient_need').value = '';
         document.getElementById('appointment_type').value = '';
         document.getElementById('appointment_note').value = '';
-
-        $('#appointment-patient-id').select2({
-            theme: 'bootstrap-5',
-            dropdownParent: $('#bookAppointmentModal')  // important for modals!
-        });
+        const modalPatientNameInput = document.getElementById('modal-patient-name');
+        if (modalPatientNameInput) {
+            modalPatientNameInput.value = patientName;
+        } else {
+            $('#patient-id').select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#bookAppointmentModal')  // important for modals!
+            });
+        }
+        
         const modal = new bootstrap.Modal(document.getElementById('bookAppointmentModal'));
         modal.show();
 
@@ -649,12 +686,24 @@
         const form = document.getElementById('manualBookingForm');
     
         form.reset();
-        document.getElementById('hospital-patient-name').value = "{{ $patient ? $patient->full_name : '' }}";
+        const patientName = "{{ $patient ? $patient->full_name : '' }}";
+        const modalPatientNameInput = document.getElementById('hospital-patient-name');
+        if (modalPatientNameInput) {
+            modalPatientNameInput.value = patientName;
+        } else {
+            $('#hospital-patient-id').select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#manualBookingModal')  // important for modals!
+            });
+        }
         document.getElementById('hospital-dob').value = "{{ $patient ? format_date($patient->dob) : '' }}";
         document.getElementById('hospital-clinic-id').value = document.getElementById('clinic-select')?.value || null;
         document.getElementById('hospital_appointment_date').value = selectedDate;
         document.getElementById('admission_date').value = selectedDate;
-
+        $('#procedure_id').select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#manualBookingModal')  // important for modals!
+        });
         let finalUrl = routes.storeHospitalAppointment;
         $('#manualBookingForm').attr('data-action', finalUrl);
 
@@ -662,69 +711,67 @@
         modal.show();
     }
 
+    // Drag nad drop and save
+
+    let draggedRow;    
+    function onDragStart(event) {
+        draggedRow = event.currentTarget;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", draggedRow.dataset.appointmentId);
+    }
     
-        let draggedRow;
+    function onDragOver(event) {
+        event.preventDefault();
+    }
+    
+    function onDrop(event) {
+        event.preventDefault();
+    
+        const targetRow = event.currentTarget;
+        const targetTimeSlot = targetRow.dataset.timeSlot;
+    
+        const appointmentId = draggedRow.dataset.appointmentId;
+    
+        if (!appointmentId || !targetTimeSlot) return;
+    
+        targetRow.parentNode.insertBefore(draggedRow, targetRow.nextSibling);
+    
+        saveAppointmentSlotChange(appointmentId, targetTimeSlot);
+    }
         
-        function onDragStart(event) {
-            draggedRow = event.currentTarget;
-            event.dataTransfer.effectAllowed = "move";
-            event.dataTransfer.setData("text/plain", draggedRow.dataset.appointmentId);
-        }
-        
-        function onDragOver(event) {
-            event.preventDefault();
-        }
-        
-        function onDrop(event) {
-            event.preventDefault();
-        
-            const targetRow = event.currentTarget;
-            const targetTimeSlot = targetRow.dataset.timeSlot;
-        
-            const appointmentId = draggedRow.dataset.appointmentId;
-        
-            if (!appointmentId || !targetTimeSlot) return;
-        
-            // Move the dragged row to the new position in the DOM (optional visual update)
-            targetRow.parentNode.insertBefore(draggedRow, targetRow.nextSibling);
-        
-            // Save to backend via AJAX
-            saveAppointmentSlotChange(appointmentId, targetTimeSlot);
-        }
-        
-        function saveAppointmentSlotChange(appointmentId, newTime) {
-            fetch("{{ route('appointments.update-slot') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({
-                    appointment_id: appointmentId,
-                    new_time: newTime
-                })
+    function saveAppointmentSlotChange(appointmentId, newTime) {
+        fetch("{{ route('appointments.update-slot') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                appointment_id: appointmentId,
+                new_time: newTime
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                            icon: 'success',
-                            title: 'Updated!',
-                            text: data.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                        loadSlotsAndAppointments(); // Reload appointments
-                        refreshCalendarEvents();
-                } else {
-                    Swal.fire('Error', data.message || 'Failed to update appointment.', 'error');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                Swal.fire('Error', data.message || 'Error updating appointment.', 'error');
-            });
-        }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    loadSlotsAndAppointments(); // Reload appointments
+                    refreshCalendarEvents();
+            } else {
+                Swal.fire('Error', data.message || 'Failed to update appointment.', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Error', data.message || 'Error updating appointment.', 'error');
+        });
+    }
 </script>
 
 @endpush

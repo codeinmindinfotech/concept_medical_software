@@ -15,15 +15,17 @@
                     <span>Patients</span>
                 </a>
 
-                <a class="nav-link {{ Request::is('planner*') ? 'active' : '' }}" href="{{ route('planner.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
-                    <span>Planner</span>
-                </a>
-
-                <a class="nav-link {{ Request::is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.schedule') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>
-                    <span>Diary</span> 
-                </a>
+                
+                    <a class="nav-link {{ Request::is('planner*') ? 'active' : '' }}" href="{{ route('planner.index') }}">
+                        <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <span>Planner</span>
+                    </a>
+                
+                    <a class="nav-link {{ Request::is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.schedule') }}">
+                        <div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>
+                        <span>Diary</span> 
+                    </a>
+                
 
                
                 
