@@ -52,7 +52,7 @@
                         <div class="col-md-6">
                             <label for="dob" class="form-label"><strong>Appointment Date<span class="txt-error">*</span></strong></label>
                             <div class="input-group">
-                                <input id="modal-appointment-date" name="appointment_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD">
+                                <input id="modal-appointment-date" name="appointment_date" type="text" class="form-control  @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD" readonly>
                                 <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
                             </div>
                         </div>

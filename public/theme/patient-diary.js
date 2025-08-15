@@ -44,7 +44,9 @@ $(document).ready(function () {
           if (flag == 1) {
             location.reload();
           } else {
-            loadSlotsAndAppointments(); // Reload table
+            if (typeof loadSlotsAndAppointments === 'function') {
+              loadSlotsAndAppointments();
+            }
           }
         } else if (data.errors) {
           handleValidationErrors(data.errors, form);
@@ -89,8 +91,12 @@ $(document).ready(function () {
               if (flag == 1) {
                 location.reload();
               } else {
-                loadSlotsAndAppointments(); // Reload appointments
-                refreshCalendarEvents();
+                if (typeof loadSlotsAndAppointments === 'function') {
+                    loadSlotsAndAppointments();
+                }
+                if (typeof refreshCalendarEvents === 'function') {
+                  refreshCalendarEvents();
+                }
               }
             } else {
               Swal.fire('Error', data.message || 'Failed to delete.', 'error');
@@ -129,8 +135,12 @@ $(document).ready(function () {
           if (flag == 1) {
             location.reload();
           } else {
-            loadSlotsAndAppointments(); // Reload appointments
-            refreshCalendarEvents();
+            if (typeof loadSlotsAndAppointments === 'function') {
+                loadSlotsAndAppointments();
+            }
+            if (typeof refreshCalendarEvents === 'function') {
+              refreshCalendarEvents();
+            }
           }
         } else {
           Swal.fire('Error', data.message || 'Failed to update status.', 'error');

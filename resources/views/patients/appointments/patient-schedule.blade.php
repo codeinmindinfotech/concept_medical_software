@@ -144,17 +144,17 @@
                         </div>
                     </div>
 
-                    <div id="slot-table" class="flex-grow-1 overflow-auto shadow-sm rounded border">
+                    <div id="slot-table" class="table-responsive flex-grow-1 overflow-auto shadow-sm rounded border">
                         <table class="table table-bordered table-hover mb-0">
                             <thead class="table-dark sticky-top">
-                                <tr>
-                                    <th data-sort="time">Time <i class="fa fa-sort"></i></th>
-                                    <th data-sort="type">Type <i class="fa fa-sort"></i></th>
-                                    <th data-sort="patient">Patient <i class="fa fa-sort"></i></th>
-                                    <th data-sort="dob">DOB <i class="fa fa-sort"></i></th>
-                                    <th data-sort="status">Status <i class="fa fa-sort"></i></th>
-                                    <th data-sort="note">Note <i class="fa fa-sort"></i></th>
-                                    <th>Appointment</th>
+                                <tr class="align-middle">
+                                    <th style="width: 80px;" data-sort="time">Time<i class="fa fa-sort"></i></th>
+                                    <th style="width: 120px;" data-sort="type">Type<i class="fa fa-sort"></i></th>
+                                    <th data-sort="patient">Patient<i class="fa fa-sort"></i></th>
+                                    <th data-sort="dob" style="width: 110px;">DOB<i class="fa fa-sort"></i></th>
+                                    <th data-sort="status" style="width: 130px;">Status<i class="fa fa-sort"></i></th>
+                                    <th data-sort="note">Note<i class="fa fa-sort"></i></th>
+                                    <th style="width: 80px;">Actions<i class="fa fa-sort"></i></th>
                                 </tr>
                             </thead>
                             <tbody id="slot-body" class="align-middle">

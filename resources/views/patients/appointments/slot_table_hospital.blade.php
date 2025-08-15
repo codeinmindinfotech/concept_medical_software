@@ -14,21 +14,22 @@
         $typeClass = $appointment->appointmentType
             ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
             : 'appointment-default';
-
             $user = auth()->user();
             $isSuperAdmin =( $user->hasRole('superadmin') && $flag == 1);
-            $isPatientUserEditingOwnAppointment = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id && $flag == 1);
+            $isPatientUserEditingOwnAppointment = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id);
             $isCurrentPatient = ($user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id);
         @endphp
-    <tr class="{{ $typeClass }}">
-        <td>{{ format_time($appointment->start_time??'') }}</td>
+     <tr class="align-middle">
+        <td class="fw-bold text-primary">{{ format_time($appointment->start_time??'') }}</td>
         <td>
-            <a target="_blank" rel="noopener noreferrer" href="{{ route('chargecodes.show',$appointment->procedure->id) }}">
+            <a target="_blank"
+            class="text-decoration-none text-dark fw-semibold" href="{{ route('chargecodes.show',$appointment->procedure->id) }}">
                 {{ $appointment->procedure->code ?? '-' }}
             </a>
         </td>
         <td>
-            <a target="_blank" rel="noopener noreferrer" href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
+            <a target="_blank"
+            class="text-decoration-none text-dark fw-semibold" href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
                 <div class="align-items-center gap-2 d-flex">
                     @if ($appointment->patient->patient_picture)
                         <img src="{{ asset('storage/' . $appointment->patient->patient_picture) }}"
@@ -47,14 +48,18 @@
         </td>
         <td>{{ format_date($appointment->patient->dob) }}</td>
         
-        <td>{{ $appointment->appointmentStatus->value ?? '-' }}</td>
-        <td>{{ $appointment->appointment_note ?? '-' }}</td>
+        <td>
+            <span class="badge bg-light border text-dark">
+                {{ $appointment->appointmentStatus->value ?? '-' }}
+            </span>
+        </td>
+        <td class="text-muted small appointment-note">{{ $appointment->appointment_note ?? '-' }}</td>
         <td>
             <div class="dropdown">
-                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    Actions
+                <button class="btn btn-sm btn-light border dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
                 </button>
-                <ul class="dropdown-menu" style="z-index: 1055;">
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                     @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
                         <li>
                             <a class="dropdown-item text-success edit-hospital-appointment"
@@ -88,6 +93,7 @@
                                 <i class="fa fa-sync-alt"></i> Change Status
                             </a>
                         </li>
+                        <li><hr class="dropdown-divider"></li>
                     @endif
                     <li>
                         <a class="dropdown-item" target="_blank" rel="noopener noreferrer"
@@ -119,8 +125,12 @@
     @endforeach
 
     @if ($appointments->isEmpty())
-    <tr>
-        <td colspan="7" class="text-center text-muted">No hospital appointments for this date.</td>
+    <tr class="text-muted fst-italic">
+        <td colspan="7" class="text-center">
+          <i class="fas fa-hospital me-2 text-secondary"></i>
+          No hospital appointments scheduled for this date.
+        </td>
     </tr>
+      
     @endif
 @endif

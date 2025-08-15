@@ -130,7 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
               bootstrap.Modal.getInstance(document.getElementById('bookAppointmentModal')).hide();
               if (typeof loadSlotsAndAppointments === 'function') {
                   loadSlotsAndAppointments();
-                  refreshCalendarEvents();
+              }
+              if (typeof refreshCalendarEvents === 'function') {
+                refreshCalendarEvents();
               }
               if (typeof initCalendar === 'function') {
                 initCalendar();

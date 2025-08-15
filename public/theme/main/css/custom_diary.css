@@ -10,6 +10,19 @@
         color: white;
         z-index: 10;
     }
+
+    #slot-table td, #slot-table th {
+        vertical-align: middle;
+    }
+
+    #slot-table .fa-user {
+        font-size: 20px;
+        line-height: 40px;
+    }
+
+    .dropdown-menu {
+        font-size: 0.9rem;
+    }
     .fc-h-event .fc-event-main{
         color: #000 !important; 
     }
@@ -154,12 +167,7 @@
         color: #0d6efd; /* Optional: Bootstrap primary color on hover */
     }
 
-   /* === Base Row Styling for Drag-and-Drop === */
-table tr {
-    transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    border-radius: 4px;
-    border-left: 8px solid transparent;
-}
+
 
 /* === Appointment Type Colors === */
 .appointment-first_visit {
@@ -193,7 +201,36 @@ table tr {
     color: #333;
 }
 
+/* Limit the note column and enable ellipsis */
+.appointment-note {
+    display: inline-block;
+    max-width: 100px;     /* Control width here */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+/* Show full note on hover */
+.appointment-note:hover {
+    white-space: normal;
+    max-width: none;
+    background-color: #f8f9fa;
+    position: relative;
+    z-index: 1;
+    padding: 4px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
 /* === Hover & Drag Styles === */
+table tr {
+    transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    border-radius: 4px;
+    border-left: 6px solid transparent;
+}
+
 tr[draggable="true"]:hover {
     background-color: #f8f9fa;
     cursor: grab;
@@ -203,13 +240,15 @@ tr[draggable="true"]:hover {
 tr.dragging {
     opacity: 0.6;
     transform: scale(1.01);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    background-color: #e0e0e0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background-color: #e9ecef !important;
+    cursor: grabbing !important;
 }
 
 tr.drag-over {
-    background-color: #dbeafe;
+    background-color: #dbeafe !important;
     outline: 2px dashed #60a5fa;
+    border-left-color: #60a5fa;
 }
 
 tr.dropped {
@@ -227,7 +266,19 @@ td .d-flex {
     gap: 10px;
 }
 
+/* === Avatar Enhancements === */
 img.rounded-circle {
     border: 2px solid #dee2e6;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* === Optional Row Hover Pulse === */
+tr[draggable="true"]:hover {
+    animation: hoverPulse 0.2s ease-in-out;
+}
+
+@keyframes hoverPulse {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.005); }
+    100% { transform: scale(1); }
 }

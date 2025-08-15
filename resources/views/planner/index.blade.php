@@ -7,7 +7,6 @@
     @php
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-    ['label' => 'Patients', 'url' => route('patients.index')],
     ['label' => 'Scheduled Appointment List'],
     ];
     @endphp
@@ -81,9 +80,16 @@
                 <table class="table table-bordered align-middle text-center">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 100px;">Time</th>
+                            <th style="width: 100px;"><i class="far fa-clock me-1  text-primary"></i>Time</th>
                             @foreach($clinics as $clinic)
-                                <th>{{ $clinic->name }}</th>
+                                <th>
+                                    @if(strtolower($clinic->clinic_type) === 'hospital')
+                                        <i class="fas fa-hospital me-1 text-danger" title="Hospital"></i>
+                                    @else
+                                        <i class="fas fa-clinic-medical me-1 text-primary" title="Clinic"></i>
+                                    @endif
+                                    {{ $clinic->name }}
+                                </th>
                             @endforeach
                         </tr>
                     </thead>
@@ -125,9 +131,12 @@
                                                                 </div>
                                                             @endif
                                                         
-                                                            <span class="fw-semibold text-dark text-truncate" title="View Details">
-                                                                {{ $appointment->patient->full_name ?? 'No Name' }}
-                                                            </span>
+                                                            <a href="{{ route('tasks.tasks.index', $appointment->patient_id) }}"
+                                                                target="_blank"
+                                                                class="fw-semibold text-dark text-truncate text-decoration-none"
+                                                                title="View Patient Tasks">
+                                                                 {{ $appointment->patient->full_name ?? '-' }}
+                                                             </a>
                                                         </div>
                                                             
                                                         <div>
@@ -192,11 +201,11 @@
     :patients="$patients"
     :patient="$patient ? $patient : ''"
     :procedures="$procedures"
-    :flag="0"
+    :flag="1"
     :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
 
 <!-- Status Change Modal -->
-<x-status-modal :diary_status="$diary_status" :flag="0" />
+<x-status-modal :diary_status="$diary_status" :flag="1" />
 
 <!-- Appointment Booking Modal -->
 <x-appointment-modal
@@ -204,7 +213,7 @@
     :patients="$patients"
     :patient="$patient ? $patient : ''"
     :appointmentTypes="$appointmentTypes"
-    :flag="0"
+    :flag="1"
     :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
 
 @endsection

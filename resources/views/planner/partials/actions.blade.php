@@ -33,10 +33,12 @@
             </a>
         </li>
         <li>
-            <a class="dropdown-item text-primary" href="javascript:void(0)" onclick="openStatusModal({{ $appointment->id }},{{ $appointment->patient->id }}, '{{ $appointment->appointment_status }}')">
+            <a class="dropdown-item text-primary" href="javascript:void(0)"
+            onclick="openStatusModal({{ $appointment->id }},{{ $appointment->patient->id }}, '{{ $appointment->appointment_status }}')">
                 <i class="fa fa-sync-alt"></i> Change Status
             </a>
         </li>
+        <li><hr class="dropdown-divider"></li>
         @endif
         <li>
             <a class="dropdown-item" target="_blank" href="{{ route('patients.edit', $appointment->patient->id) }}">
