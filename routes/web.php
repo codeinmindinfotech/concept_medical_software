@@ -103,6 +103,8 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
     Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
+    Route::post('/appointments/{appointment}/reschedule', [PlannerController::class, 'reschedule'])->name('appointments.reschedule');
+
 
     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 

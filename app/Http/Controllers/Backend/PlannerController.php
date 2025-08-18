@@ -9,6 +9,7 @@ use App\Models\Clinic;
 use App\Models\Patient;
 use App\Traits\DropdownTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class PlannerController extends Controller
 {
@@ -19,7 +20,7 @@ class PlannerController extends Controller
 
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::all();
-        $appointments = Appointment::with(['patient', 'appointmentType'])
+        $appointments = Appointment::with(['patient', 'appointmentType','appointmentStatus','procedure'])
             ->whereDate('start_time', $date);
 
         if ($request->filled('clinic_id')) {
@@ -36,9 +37,9 @@ class PlannerController extends Controller
         
         $user = auth()->user();
         if ($user->hasRole('patient')) {
-            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+            $patients = Patient::with(['title','preferredContact'])->where('id', $user->userable_id)->paginate(1);
         } else {
-            $patients = Patient::all();
+            $patients = Patient::with(['title', 'preferredContact'])->get();
         }
 
         return view('planner.index', [
@@ -50,6 +51,29 @@ class PlannerController extends Controller
             'diary_status' => $diary_status,
             'procedures' => $procedures
         ]);
+    }
+
+    public function reschedule(Request $request, Appointment $appointment)
+    {
+        $request->validate([
+            'clinic_id' => 'required|exists:clinics,id',
+            'hour' => 'required|integer|min:0|max:23',
+            'date' => 'required|date',
+        ]);
+
+        $date = Carbon::parse($request->date);
+        $start = $date->copy()->setTime($request->hour, 0);
+        $end = $start->copy()->addMinutes(15); // or your appointment duration
+        
+        $appointment->update([
+            'clinic_id' => $request->clinic_id,
+            'start_time' => $start,
+            'end_time' => $end,
+            'appointment_type' => $request->appointment_type,
+            'procedure_id' => $request->procedure_id
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
 }
