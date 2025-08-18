@@ -260,6 +260,51 @@ tr.dropped {
     100% { background-color: inherit; }
 }
 
+/* === Appointment Card Drag Styles === */
+.draggable-appointment {
+    cursor: grab;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    border-left: 4px solid transparent;
+    border-radius: 4px;
+}
+
+.draggable-appointment:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.draggable-appointment.dragging {
+    opacity: 0.6;
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background-color: #e9ecef !important;
+    cursor: grabbing !important;
+}
+
+/* === Dropzone Cell Styles === */
+.dropzone {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    border: 1px dashed transparent;
+    min-height: 80px; /* ensure height even if no appointment */
+    position: relative;
+}
+
+.dropzone.drag-over {
+    background-color: #dbeafe !important; /* Light blue */
+    border: 2px dashed #60a5fa; /* Tailwind's blue-400 */
+}
+
+/* Optional: visual flash on successful drop */
+.dropzone.dropped {
+    animation: dropFlash 0.4s ease;
+}
+
+@keyframes dropFlash {
+    0%   { background-color: #d1e7dd; } /* green-tinted */
+    100% { background-color: inherit; }
+}
+
+
 /* === Patient Info Alignment === */
 td .d-flex {
     align-items: center;

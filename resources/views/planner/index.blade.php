@@ -101,7 +101,9 @@
                                 </td>
                     
                                 @foreach($clinics as $clinic)
-                                    <td class="p-2 align-top">
+                                    <td class="p-2 align-top dropzone"
+                                        data-hour="{{ $hour }}"
+                                        data-clinic-id="{{ $clinic->id }}">
                                         @php
                                             $hourlyAppointments = $appointments->filter(function ($appointment) use ($clinic, $hour) {
                                                 return $appointment->clinic_id == $clinic->id &&
@@ -115,7 +117,17 @@
                                                 ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
                                                 : 'appointment-default';
                                         @endphp
-                                            <div class="card shadow-sm mb-2 border-start border-3 {{ $typeClass }}">
+                                            <div 
+                                                class="card shadow-sm mb-2 border-start border-3 {{ $typeClass }} draggable-appointment"
+                                                draggable="true"
+                                                data-id="{{ $appointment->id }}"
+                                                data-patient-id="{{ $appointment->patient_id }}"
+                                                data-appointment_type="{{ $appointment->appointment_type }}"
+                                                data-procedure-id="{{ $appointment->procedure_id }}"
+                                                data-end-time="{{ $appointment->end_time }}"
+                                                data-hour="{{ $hour }}"
+                                                data-clinic-id="{{ $clinic->id }}"
+                                            >
                                                 <div class="card-body p-2 small">
                                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                                         <div class="d-flex align-items-center gap-2">
@@ -187,8 +199,6 @@
                             </tr>
                         @endfor
                     </tbody>
-                    
-                    
                 </table>
             </div>
         </div>
@@ -218,6 +228,7 @@
 
 @endsection
 @push('scripts')
+<script src="{{ asset('theme/custom.js') }}"></script>
 <script src="{{ asset('theme/patient-diary.js') }}"></script>
 <script>
     $(document).on('click', '.edit-appointment', function() {
@@ -250,16 +261,37 @@
     $('#bookAppointmentForm').on('submit', function(e) {
         e.preventDefault();
 
-        let actionUrl = $(this).attr('action');
-        let formData = $(this).serialize();
+        const form = this;
+        let actionUrl = $(form).attr('action');
+        let formData = $(form).serialize();
+        let id = $('#appointment-id').val();
 
-        $.post(actionUrl, formData, function(res) {
-            $('#bookAppointmentModal').modal('hide');
-            location.reload();
-        }).fail(function() {
-            alert('Failed to submit appointment form.');
-        });
+        $.post(actionUrl, formData)
+            .done(function(res) {
+                $('#bookAppointmentModal').modal('hide');
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: id ? 'Appointment updated successfully!' : 'Appointment booked successfully!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                } else {
+                    Swal.fire('Error', res.message || 'Operation failed.', 'error');
+                }
+            })
+            .fail(function(xhr) {
+            if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                handleValidationErrors(xhr.responseJSON.errors, form);
+                } else {
+                    Swal.fire('Error', 'Failed to submit appointment form.', 'error');
+                    console.error(xhr.responseText);
+                }
+            });
     });
+
     const routes = {
         destroyAppointment: (appointmentId, patientId) =>
             `{{ route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
@@ -318,8 +350,92 @@
 
             const modal = new bootstrap.Modal(document.getElementById('manualBookingModal'));
             modal.show();
+            $('#procedure_id').val(procedure_id).trigger('change');
+                $('#procedure_id').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $('#manualBookingModal')  // important for modals!
+                });
         }
     });
+    let draggedAppointment = null;
 
- </script>
+    document.querySelectorAll('.draggable-appointment').forEach(el => {
+        el.addEventListener('dragstart', function (e) {
+            draggedAppointment = this;
+            setTimeout(() => this.classList.add('dragging'), 0);
+        });
+
+        el.addEventListener('dragend', function () {
+            this.classList.remove('dragging');
+        });
+    });
+
+    document.querySelectorAll('.dropzone').forEach(zone => {
+        zone.addEventListener('dragover', e => {
+            e.preventDefault(); // Allow drop
+            zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+
+            if (!draggedAppointment) return;
+
+            const appointmentId = draggedAppointment.dataset.id;
+            const oldClinicId = draggedAppointment.dataset.clinicId;
+            const oldHour = draggedAppointment.dataset.hour;
+            const end_time = draggedAppointment.dataset.end_time;
+            const procedureId = draggedAppointment.dataset.procedureId;
+            const appointment_type = draggedAppointment.dataset.appointmentType;
+
+            const newClinicId = this.dataset.clinicId;
+            const newHour = this.dataset.hour;
+
+            if (oldClinicId === newClinicId && oldHour === newHour) return;
+
+            // Make AJAX request to update appointment
+            updateAppointmentTimeAndClinic(appointmentId, newClinicId, newHour, end_time, procedureId, appointment_type);
+        });
+    });
+
+    function updateAppointmentTimeAndClinic(appointmentId, clinicId, hour, end_time, procedureId, appointment_type) {
+        const date = "{{ $date }}"; // Blade variable
+
+        const url = `/appointments/${appointmentId}/reschedule`; // Adjust to your route
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                clinic_id: clinicId,
+                hour: hour,
+                date: date,
+                end_time: end_time,
+                procedureId: procedureId,
+                appointment_type: appointment_type
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Or dynamically move the card
+            } else {
+                alert('Could not reschedule appointment.');
+            }
+        })
+        .catch(() => {
+            alert('Error updating appointment.');
+        });
+    }
+</script>
+
 @endpush

@@ -49,6 +49,8 @@ $(document).ready(function () {
             }
           }
         } else if (data.errors) {
+          console.log(typeof handleValidationErrors);
+
           handleValidationErrors(data.errors, form);
       } else {
           Swal.fire('Error', data.message || 'Something went hhh wrong.'+data.status, 'error');
@@ -56,7 +58,7 @@ $(document).ready(function () {
       })
       .catch(error => {
         console.error(error);
-        Swal.fire('Error', 'Something went 122 wrong.', 'error');
+        Swal.fire('Error', 'Something went wrong.', 'error');
       });
   });
 

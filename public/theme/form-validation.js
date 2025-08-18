@@ -149,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
 /**
 * Display validation errors beside form fields
 */
@@ -167,8 +168,3 @@ function handleValidationErrors(errors, form) {
       }
   }
 }
-
-
-
-
-

@@ -57,6 +57,8 @@ class Patient extends Model
         'dob' => 'date'
     ];
 
+    protected $with = ['title'];
+
     public function consultant() {
         return $this->belongsTo(Consultant::class);
     }
@@ -141,10 +143,14 @@ class Patient extends Model
         return $this->hasMany(Communication::class);
     }
 
-    public function getFullNameAttribute()
+    public function getTitleValueAttribute(): ?string
     {
-        $title = optional($this->title)->value;
-        return ($title ? $title . ' ' : '') . "{$this->first_name} {$this->surname}";
+        return optional($this->title)->value;
     }
 
+    public function getFullNameAttribute()
+    {
+        $title = $this->title_value;
+        return ($title ? $title . ' ' : '') . "{$this->first_name} {$this->surname}";
+    }
 }

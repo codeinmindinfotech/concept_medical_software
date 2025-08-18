@@ -23,7 +23,7 @@ class AppointmentController extends Controller
         if ($user->hasRole('patient')) {
             $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
         } else {
-            $patients = Patient::all();
+            $patients = Patient::with(['title', 'preferredContact'])->get();
         }
         
         $clinics = Clinic::all()->map(function ($clinic) {
@@ -177,7 +177,8 @@ class AppointmentController extends Controller
                 'html' => '<tr><td class="text-center text-muted" colspan="7">No clinic selected</td></tr>',
             ]);
         }
-        $hospitalAppointmentsQuery = Appointment::with('procedure', 'patient')
+        
+        $hospitalAppointmentsQuery = Appointment::with(['patient', 'appointmentType','appointmentStatus','procedure'])
             ->where('clinic_id', $clinic->id)
             ->whereDate('appointment_date', $request->date);
 
