@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\ChargeCode;
@@ -9,8 +10,6 @@ use App\Models\Clinic;
 use App\Models\Patient;
 use App\Traits\DropdownTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-
 class PlannerController extends Controller
 {
     use DropdownTrait;
@@ -61,19 +60,45 @@ class PlannerController extends Controller
             'date' => 'required|date',
         ]);
 
-        $date = Carbon::parse($request->date);
+        $duration = 15;
+        $date = Carbon::parse($request->date)->startOfDay(); // e.g., 2025-08-18 00:00:00
         $start = $date->copy()->setTime($request->hour, 0);
-        $end = $start->copy()->addMinutes(15); // or your appointment duration
-        
+        $latestStart = $date->copy()->setTime(23, 45); // Last possible start time
+        $end = $start->copy()->addMinutes($duration);
+
+        while (
+            Appointment::where('clinic_id', $request->clinic_id)
+                ->where('id', '!=', $appointment->id) // Skip the current appointment
+                ->where(function ($query) use ($start, $end) {
+                    $query->whereBetween('start_time', [$start, $end->copy()->subSecond()])
+                        ->orWhereBetween('end_time', [$start->copy()->addSecond(), $end]);
+                })
+                ->exists()
+        ) {
+            $start->addMinutes($duration);
+            $end->addMinutes($duration);
+
+            if ($start->gt($latestStart)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No available time slots for this day.'
+                ], 409); // Conflict
+            }
+        }
+
         $appointment->update([
             'clinic_id' => $request->clinic_id,
             'start_time' => $start,
             'end_time' => $end,
             'appointment_type' => $request->appointment_type,
-            'procedure_id' => $request->procedure_id
+            'procedure_id' => $request->procedure_id,
         ]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => "updated..."
+        ]);
     }
+
 
 }

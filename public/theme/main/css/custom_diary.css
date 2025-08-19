@@ -299,10 +299,6 @@ tr.dropped {
     animation: dropFlash 0.4s ease;
 }
 
-@keyframes dropFlash {
-    0%   { background-color: #d1e7dd; } /* green-tinted */
-    100% { background-color: inherit; }
-}
 
 
 /* === Patient Info Alignment === */
