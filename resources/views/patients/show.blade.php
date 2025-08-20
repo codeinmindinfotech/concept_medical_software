@@ -372,35 +372,66 @@
             </div>
             @else
             <div class="row g-3">
+                <x-transcription-modal :title="''" :transcription="''" />
+
                 @foreach($patient->audio as $audio)
-                <div class="col-md-6">
-                    <div class="card shadow-sm border border-light rounded-3 h-100 position-relative">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-calendar-alt text-muted me-2"></i>
-                                <small class="text-muted">{{ $audio->created_at->format('d M Y, h:i A') }}</small>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0 rounded-3 h-100">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                {{-- Created Date --}}
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-calendar-alt text-muted me-2"></i>
+                                    <small class="text-muted">{{ $audio->created_at->format('d M Y, h:i A') }}</small>
+                                </div>
+
+                                {{-- Audio Player --}}
+                                <div class="mb-3">
+                                    <audio controls class="w-100 rounded">
+                                        <source src="{{ asset_url($audio->file_path) }}" type="audio/webm">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+
+                                {{-- Transcription Button --}}
+                                <div>
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-sm btn-outline-info w-100 show-transcription-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#transcriptionModal"
+                                        data-transcription="{{ e($audio->transcription) }}"
+                                        data-title="Transcription ({{ $audio->created_at->format('d M Y') }})"
+                                    >
+                                        <i class="fas fa-align-left me-1"></i> Show Transcription
+                                    </button>
+                                </div>
                             </div>
-                            {{-- <div class="mb-2 text-muted small">
-                                <i class="fas fa-user-md me-1 text-primary"></i>
-                                <span><strong>Doctor:</strong> Dr. {{ $audio->doctor->name ?? 'N/A' }}</span>
-                            </div> --}}
-                            <audio controls class="w-100 rounded">
-                                <source src="{{ asset_url($audio->file_path) }}" type="audio/webm">
-                                Your browser does not support the audio element.
-                            </audio>
                         </div>
-                        {{-- <div class="position-absolute top-0 end-0 p-2">
-                            <a href="{{ route('audios.edit', $audio->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit Recording">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div> --}}
                     </div>
-                </div>
                 @endforeach
+
             </div>
             @endif
         </div>
  </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalTitle = document.getElementById('transcriptionModalLabel');
+        const modalBody = document.getElementById('transcriptionModalBody');
+
+        document.querySelectorAll('.show-transcription-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const transcription = button.getAttribute('data-transcription');
+                const title = button.getAttribute('data-title');
+
+                modalTitle.textContent = title || 'Transcription';
+                modalBody.textContent = transcription || 'No transcription available.';
+            });
+        });
+    });
+</script>
+@endpush
 

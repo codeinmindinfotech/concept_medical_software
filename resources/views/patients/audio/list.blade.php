@@ -21,8 +21,20 @@
                     <span class="text-muted">No audio</span>
                 @endif
             </td>
+            
+                           
             <td>{{ format_date($audio->created_at) }}</td>
             <td>
+                <button 
+                    type="button" 
+                    class="btn btn-info btn-sm me-1 show-transcription-btn" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#transcriptionModal"
+                    data-transcription="{{ e($audio->transcription) }}"
+                    data-title="Transcription #{{ $index + 1 }}"
+                >
+                    <i class="fa-solid fa-align-left"></i> Transcription
+                </button>
                 <form method="POST" action="{{ route('patients.audio.destroy', [$patient->id, $audio->id]) }}" style="display:inline">
                     @csrf
                     @method('DELETE')

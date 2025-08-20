@@ -10,7 +10,8 @@ class PatientAudioFile extends Model
     protected $fillable = [
         'patient_id',
         'doctor_id',
-        'file_path'
+        'file_path',
+        'transcription'
     ];
 
     public function patient(): BelongsTo

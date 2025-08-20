@@ -38,10 +38,28 @@
         </div> 
     </div>
 </div>
+
+<x-transcription-modal :title="''" :transcription="''" />
+
 @endsection
 
 @push('scripts')
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('transcriptionModal');
+        const modalBody = document.getElementById('transcriptionModalBody');
+        const modalTitle = document.getElementById('transcriptionModalLabel');
+
+        document.querySelectorAll('.show-transcription-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const transcription = button.getAttribute('data-transcription');
+                const title = button.getAttribute('data-title');
+
+                modalTitle.textContent = title || 'Transcription';
+                modalBody.textContent = transcription || 'No transcription available.';
+            });
+        });
+    });
     $(document).ready(function() {
     if ( $.fn.DataTable.isDataTable('#PatientAudioTable') ) {
         $('#PatientAudioTable').DataTable().destroy();
