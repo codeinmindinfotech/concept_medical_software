@@ -456,22 +456,49 @@ class AppointmentController extends Controller
             'status' => $appointment->appointment_status,
         ]);
     }
+
     public function updateSlot(Request $request)
     {
         $this->authorize('create', Appointment::class);
+
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'new_time' => 'required|date_format:H:i',
         ]);
-    
-        $appointment = Appointment::find($request->appointment_id);
-        $appointment->start_time = $request->new_time;
-    
-        // You can also recalculate end_time if needed here
+
+        $appointment = Appointment::findOrFail($request->appointment_id);
+
+        $date = Carbon::parse($appointment->appointment_date);
+
+        $newStart = $date->copy()->setTimeFromTimeString($request->new_time)->setSeconds(0);
+        $newEnd = $newStart->copy()->addMinutes(15); // End cleanly at next 15 min mark
+
+        $isSlotTaken = Appointment::where('appointment_date', $appointment->appointment_date)
+            ->where('id', '!=', $appointment->id)
+            ->where('clinic_id', '=', $appointment->clinic_id)
+            ->where(function ($query) use ($newStart, $newEnd) {
+                $query->whereRaw('TIME(start_time) < ?', [$newEnd->format('H:i:s')])
+                    ->whereRaw('TIME(end_time) > ?', [$newStart->format('H:i:s')]);
+            })
+            ->exists();
+        
+        if ($isSlotTaken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The selected time slot is already booked.',
+            ]);
+        }
+
+        $appointment->start_time = $newStart;
+        $appointment->end_time = $newEnd;
         $appointment->save();
+
         return response()->json([
             'success' => true,
             'message' => 'Appointment updated successfully.',
         ]);
+    
     }
+
+
 }

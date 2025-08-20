@@ -427,6 +427,13 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 location.reload(); // Or dynamically move the card
             } else {
                 alert('Could not reschedule appointment.');

@@ -732,7 +732,7 @@
     
         const appointmentId = draggedRow.dataset.appointmentId;
     
-        if (!appointmentId || !targetTimeSlot) return;
+        if (!appointmentId || !targetTimeSlot ) return;
     
         targetRow.parentNode.insertBefore(draggedRow, targetRow.nextSibling);
     
@@ -765,6 +765,8 @@
                     refreshCalendarEvents();
             } else {
                 Swal.fire('Error', data.message || 'Failed to update appointment.', 'error');
+                loadSlotsAndAppointments(); // Reload appointments
+                refreshCalendarEvents();
             }
         })
         .catch(err => {
