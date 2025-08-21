@@ -39,6 +39,13 @@
             <i class="fas fa-microphone"></i> Patients Consultation Management
         </div>
         <div class="card-body">
+            <!-- Add Loader Here -->
+            <div id="uploadLoader" class="text-center my-3" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Uploading...</span>
+                </div>
+                <p class="mt-2">Uploading & transcribing audio. Please wait...</p>
+            </div>
             <form id="audioForm" action="{{ route('patients.audio.store', $patient->id) }}" method="POST" enctype="multipart/form-data" class="mb-4">
                 @csrf
                 <div class="mb-3">
@@ -69,6 +76,7 @@
             </div>
         </div>
     </div>
+    
 </div>
 @endsection
 
@@ -82,6 +90,16 @@
 
   let mediaRecorder;
   let audioChunks = [];
+
+  const form = document.getElementById('audioForm');
+  const loader = document.getElementById('uploadLoader');
+
+  form.addEventListener('submit', function (e) {
+      loader.style.display = 'block';
+      uploadBtn.disabled = true;
+      startBtn.disabled = true;
+      stopBtn.disabled = true;
+  });
 
   startBtn.addEventListener('click', async () => {
       try {

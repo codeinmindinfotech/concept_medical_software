@@ -35,6 +35,18 @@
 
         @include('backend.theme.sidebar')
         <div id="layoutSidenav_content">
+        <!-- Global AJAX Loader -->
+        <div id="globalLoader" style="display: none; position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100%; background-color: rgba(255,255,255,0.7); 
+            z-index: 9999; text-align: center;">
+            <div style="position: absolute; top: 50%; left: 50%; 
+                        transform: translate(-50%, -50%);">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 fw-bold text-primary">Please wait...</p>
+            </div>
+        </div>
 
             <main>
                 @yield('content')

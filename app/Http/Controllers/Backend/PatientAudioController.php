@@ -60,18 +60,16 @@ class PatientAudioController extends Controller
         if ($request->hasFile('file_path')) {
             $file = $request->file('file_path');
     
-            // Create unique filename based on patient ID + timestamp + extension
             $filename = $patient->id . '_audio_' . time() . '.' . $file->getClientOriginalExtension();
     
             // Store original uploaded file in 'public/audio'
             $storedPath = $file->storeAs('audio', $filename, 'public');
             $fullInputPath = storage_path('app/public/' . $storedPath);
-    
+
             // Prepare WAV filename & path for converted audio
             $wavFilename = pathinfo($filename, PATHINFO_FILENAME) . '.wav';
             $fullWavPath = storage_path('app/public/audio/' . $wavFilename);
     
-            // Paths to Python and ffmpeg executables — set in .env
             $pythonPath = env('PYTHON_PATH');
             $ffmpegPath = env('FFMPEG_PATH');
     
@@ -79,10 +77,12 @@ class PatientAudioController extends Controller
                 // Step 1: Convert uploaded audio to WAV with ffmpeg
                 $ffmpeg = new Process([
                     $ffmpegPath,
-                    '-y', // overwrite output if exists
-                    '-i', $fullInputPath,
+                    '-y', 
+                    '-i', 
+                    $fullInputPath,
                     $fullWavPath,
                 ]);
+                
                 $ffmpeg->run();
     
                 if (!$ffmpeg->isSuccessful()) {
