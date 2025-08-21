@@ -85,7 +85,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Appointment Note</label>
-                        <textarea class="form-control" id="appointment_note" name="appointment_note" rows="3" placeholder="Patient needs"></textarea>
+                        <textarea class="form-control" id="appointment_note" name="appointment_note" rows="3" placeholder="Appointment Notes"></textarea>
                     </div>
                     @if ($flag == 1)
                         <div class="col-md-6" >
