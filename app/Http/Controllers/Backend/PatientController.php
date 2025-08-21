@@ -234,17 +234,21 @@ class PatientController extends Controller
         if ($request->hasFile('patient_picture')) {
             $file = $request->file('patient_picture');
 
-            // Delete old picture if exists
-            if ($patient->patient_picture && Storage::disk('public')->exists($patient->patient_picture)) {
-                Storage::disk('public')->delete($patient->patient_picture);
+            // 🔁 Delete ALL previous versions with different extensions
+            $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            foreach ($extensions as $ext) {
+                $existingPath = "patient_pictures/picture_{$patient->id}." . $ext;
+                if (Storage::disk('public')->exists($existingPath)) {
+                    Storage::disk('public')->delete($existingPath);
+                }
             }
 
-            // Create new filename like picture_123.jpg
-            $filename = 'picture_' . $patient->id . '.' . strtolower($file->getClientOriginalExtension());
-
-            // Save the file in public/patient_pictures
+            // 📸 Store the new picture (retain original extension)
+            $ext = strtolower($file->getClientOriginalExtension());
+            $filename = "picture_{$patient->id}." . $ext;
             $path = $file->storeAs('patient_pictures', $filename, 'public');
 
+            // 💾 Save path to database
             $patient->patient_picture = $path;
             $patient->save();
         }
