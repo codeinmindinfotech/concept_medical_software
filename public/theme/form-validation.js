@@ -26,6 +26,9 @@ $(document).ready(function () {
       form.find('.is-invalid').removeClass('is-invalid');
       form.find('.text-danger').remove();
   
+      // Show loader
+      $('#globalLoader').show();
+
       $.ajax({
         url,
         type: method,
@@ -33,6 +36,8 @@ $(document).ready(function () {
         contentType: false,
         processData: false,
         success: function (response) {
+          // Hide loader
+          $('#globalLoader').hide();
           Swal.fire({
             icon: 'success',
             title: 'Saved',
@@ -48,6 +53,7 @@ $(document).ready(function () {
           }, 2000);
         },
         error: function (xhr) {
+          $('#globalLoader').hide();
           handleErrors(xhr, form); 
         }
       });
