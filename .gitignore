@@ -7,7 +7,7 @@
 /public/storage/patient_pictures/
 #/storage
 /whisper_env
-
+storage/framework/sessions
 storage/framework/cache
 #public/storage/images
 package-lock.json
