@@ -28,7 +28,9 @@ class DoctorController extends Controller
      */
     public function index(Request $request): View|string
     {
-        $this->authorize('viewAny', Doctor::class);
+        if (!user_can('doctor-list')) {
+            abort(403, 'Unauthorized access.');
+        }
         $doctors = Doctor::latest()->get();
         if ($request->ajax()) {
             return view('doctors.list', compact('doctors'))->render();
@@ -37,27 +39,20 @@ class DoctorController extends Controller
         return view('doctors.index',compact('doctors'));
     }
     
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(): View
     {
-        $this->authorize('create', Doctor::class);
+        if (!user_can('doctor-create')) {
+            abort(403, 'Unauthorized access.');
+        }
         extract($this->getCommonDropdowns());
         return view('doctors.create',compact('contactTypes','paymentMethods'));
     }
     
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(DoctorRequest $request): JsonResponse
     {
-        $this->authorize('create', Doctor::class);
+        if (!user_can('doctor-create')) {
+            abort(403, 'Unauthorized access.');
+        }
         $validated = $request->validated();
         Doctor::create($validated);
     
@@ -67,41 +62,28 @@ class DoctorController extends Controller
         ]);
     }
     
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\doctor  $doctor
-     * @return \Illuminate\Http\Response
-     */
     public function show(Doctor $doctor): View
     {
-        $this->authorize('view', $doctor);
+        if (!user_can('doctor-list')) {
+            abort(403, 'Unauthorized access.');
+        }
         return view('doctors.show',compact('doctor'));
     }
     
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\doctor  $doctor
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Doctor $doctor): View
     {
-        $this->authorize('update', $doctor);
+        if (!user_can('doctor-edit')) {
+            abort(403, 'Unauthorized access.');
+        }
         extract($this->getCommonDropdowns());
         return view('doctors.edit',compact('doctor','contactTypes','paymentMethods'));
     }
-    
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\doctor  $doctor
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(DoctorRequest $request, Doctor $doctor): JsonResponse 
     {
-        $this->authorize('update', $doctor);
+        if (!user_can('doctor-edit')) {
+            abort(403, 'Unauthorized access.');
+        }
         $validated = $request->validated();
         $doctor->update($validated);
         return response()->json([
@@ -110,15 +92,11 @@ class DoctorController extends Controller
         ]);
     }
     
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\doctor  $doctor
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Doctor $doctor): RedirectResponse
     {
-        $this->authorize('delete', $doctor);
+        if (!user_can('doctor-delete')) {
+            abort(403, 'Unauthorized access.');
+        }
         $doctor->delete();
     
         return redirect()->route('doctors.index')

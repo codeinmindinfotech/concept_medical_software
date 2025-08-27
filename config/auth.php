@@ -17,6 +17,7 @@ return [
         'guard' => env('AUTH_GUARD', 'web'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -35,12 +36,34 @@ return [
     |
     */
 
+    // 'guards' => [
+    //     'web' => [
+    //         'driver' => 'session',
+    //         'provider' => 'users',
+    //     ],
+    // ],
     'guards' => [
-        'web' => [
+        'superadmin' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'users', // superadmin
+        ],
+
+        'clinic' => [
+            'driver' => 'session',
+            'provider' => 'clinics',
+        ],
+
+        'doctor' => [
+            'driver' => 'session',
+            'provider' => 'doctors',
+        ],
+
+        'patient' => [
+            'driver' => 'session',
+            'provider' => 'patients',
         ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -59,17 +82,39 @@ return [
     |
     */
 
+    // 'providers' => [
+    //     'users' => [
+    //         'driver' => 'eloquent',
+    //         'model' => env('AUTH_MODEL', App\Models\User::class),
+    //     ],
+
+    //     // 'users' => [
+    //     //     'driver' => 'database',
+    //     //     'table' => 'users',
+    //     // ],
+    // ],
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,  // superadmin
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'clinics' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Clinic::class,
+        ],
+
+        'doctors' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Doctor::class,
+        ],
+
+        'patients' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Patient::class,
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -90,14 +135,45 @@ return [
     |
     */
 
+    // 'passwords' => [
+    //     'users' => [
+    //         'provider' => 'users',
+    //         'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+    //         'expire' => 60,
+    //         'throttle' => 60,
+    //     ],
+    // ],
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'table' => 'password_resets',  // default table for user password resets
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'clinics' => [
+            'provider' => 'clinics',
+            'table' => 'password_resets',  // same table, or separate if you want
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'doctors' => [
+            'provider' => 'doctors',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'patients' => [
+            'provider' => 'patients',
+            'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
         ],
     ],
+
+
 
     /*
     |--------------------------------------------------------------------------

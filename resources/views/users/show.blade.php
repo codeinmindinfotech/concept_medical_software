@@ -5,7 +5,7 @@
   {{-- Back Button --}}
   <div class="row mb-4">
     <div class="col">
-      <a href="{{ route('users.index') }}" class="btn btn-primary">
+      <a href="{{guard_route('users.index') }}" class="btn btn-primary">
          Back to List
       </a>
     </div>
@@ -26,14 +26,14 @@
           <label class="form-label">Email</label>
           <input type="email" readonly class="form-control-plaintext" value="{{ $user->email }}">
         </div>
-        <div class="col-md-12">
+        {{-- <div class="col-md-12">
           <label class="form-label">Roles</label>
           <div>
             @foreach($user->getRoleNames() as $role)
               <span class="badge bg-success">{{ $role }}</span>
             @endforeach
           </div>
-        </div>
+        </div> --}}
       </div>
     </div>
   </div>

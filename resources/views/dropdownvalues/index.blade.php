@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'DropDowns', 'url' => route('dropdowns.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'DropDowns', 'url' =>guard_route('dropdowns.index')],
             ['label' => 'Dropdownvalue List'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Dropdownvalue List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('dropdownvalues.create',$dropDownId),
+        'backUrl' =>guard_route('dropdownvalues.create',$dropDownId),
         'isListPage' => true
     ])
 

@@ -6,11 +6,12 @@ use App\Models\Backend\Insurance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+// use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Patient extends Model
+class Patient extends ClinicAuthenticatable
 {
     use HasFactory;
-  
+    protected $guard_name = 'patient'; 
     /**
      * The attributes that are mass assignable.
      *	
@@ -22,6 +23,7 @@ class Patient extends Model
         'patient_picture',
         'first_name',
         'surname',
+        'password',
         'dob',
         'gender',
         'doctor_id',
@@ -49,6 +51,12 @@ class Patient extends Model
         'covid_19_vaccination_date',
         'covid_19_vaccination_note',
         'fully_covid_19_vaccinated'
+    ];
+
+    // Make sure password is hidden when serialized
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
@@ -100,7 +108,7 @@ class Patient extends Model
 
     public function user()
     {
-        return $this->morphOne(User::class, 'userable');
+        return $this->hasMany(User::class);
     }
 
     public function notes():HasMany

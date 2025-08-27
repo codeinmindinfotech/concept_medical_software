@@ -6,7 +6,7 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
     ['label' => 'Scheduled Appointment List'],
     ];
     @endphp
@@ -14,7 +14,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Scheduled Appointment List',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('patients.create'),
+    'backUrl' =>guard_route('patients.create'),
     'isListPage' => true
     ])
 
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="GET" action="{{ route('planner.index') }}" class="mb-4">
+            <form method="GET" action="{{guard_route('planner.index') }}" class="mb-4">
                 <div class="row g-3 align-items-end">
                     <!-- Date Filter -->
                     <div class="col-md-3 col-sm-6">
@@ -68,7 +68,7 @@
                     <!-- Reset Button -->
                     <div class="col-md-3 col-sm-6">
                         <label class="form-label d-block invisible">Reset</label>
-                        <a href="{{ route('planner.index', ['date' => now()->toDateString()]) }}" class="btn btn-outline-primary w-100">
+                        <a href="{{guard_route('planner.index', ['date' => now()->toDateString()]) }}" class="btn btn-outline-primary w-100">
                             <i class="fas fa-undo"></i> Reset Filters
                         </a>
                     </div>
@@ -143,7 +143,7 @@
                                                                 </div>
                                                             @endif
                                                         
-                                                            <a href="{{ route('tasks.tasks.index', $appointment->patient_id) }}"
+                                                            <a href="{{guard_route('tasks.tasks.index', $appointment->patient_id) }}"
                                                                 target="_blank"
                                                                 class="fw-semibold text-dark text-truncate text-decoration-none"
                                                                 title="View Patient Tasks">
@@ -212,7 +212,7 @@
     :patient="$patient ? $patient : ''"
     :procedures="$procedures"
     :flag="1"
-    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
+    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
 <!-- Status Change Modal -->
 <x-status-modal :diary_status="$diary_status" :flag="1" />
@@ -224,7 +224,7 @@
     :patient="$patient ? $patient : ''"
     :appointmentTypes="$appointmentTypes"
     :flag="1"
-    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
+    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
 @endsection
 @push('scripts')
@@ -294,12 +294,12 @@
 
     const routes = {
         destroyAppointment: (appointmentId, patientId) =>
-            `{{ route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+            `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
 
         statusAppointment: (appointmentId, patientId) =>
-            `{{ route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+            `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
     };
@@ -385,13 +385,12 @@
             zone.classList.remove('drag-over');
 
             if (!draggedAppointment) return;
-
             const appointmentId = draggedAppointment.dataset.id;
             const oldClinicId = draggedAppointment.dataset.clinicId;
             const oldHour = draggedAppointment.dataset.hour;
-            const end_time = draggedAppointment.dataset.end_time;
+            const end_time = draggedAppointment.dataset.endTime;
             const procedureId = draggedAppointment.dataset.procedureId;
-            const appointment_type = draggedAppointment.dataset.appointmentType;
+            const appointment_type = draggedAppointment.dataset.appointment_type;
 
             const newClinicId = this.dataset.clinicId;
             const newHour = this.dataset.hour;

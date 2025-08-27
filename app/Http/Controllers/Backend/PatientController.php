@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\AuthHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PatientRequest;
 use App\Models\Backend\Insurance;
 use App\Models\Consultant;
 use App\Models\Doctor;
 use App\Models\Patient;
-use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -15,19 +15,17 @@ use App\Traits\DropdownTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 
-class PatientController extends Controller
+class PatientController extends BaseController
 { 
     use DropdownTrait;
-    protected $userService;
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct(UserService $userService)
+    public function __construct()
     {
-        $this->userService = $userService;            
     }
 
     /**
@@ -39,11 +37,9 @@ class PatientController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->hasRole('patient')) {
-            // Restrict to logged-in patient only
-            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+        if (AuthHelper::isRole('patient')) {
+            $patients = Patient::with('title')->where('id', $user->id)->paginate(1);
         } else {
-            // Admins can search all patients
             $query = Patient::with('title')->latest();
 
             if ($request->filled('first_name')) {
@@ -111,18 +107,9 @@ class PatientController extends Controller
         $validated['email_consent'] = $request->has('email_consent');
 
         $patient = Patient::create($validated);
-
-        // Create linked user for patient
-        $this->userService->createUserForModel(
-            $patient->first_name . ' ' . $patient->surname,
-            $patient->email,
-            'patient',
-            $patient->id,
-            Patient::class
-        );
-
+     
         return response()->json([
-            'redirect' => route('patients.index'),
+            'redirect' => $this->routeWithGuard('patients.index'),
             'message' => 'Patient created successfully',
         ]);
     }
@@ -133,11 +120,13 @@ class PatientController extends Controller
      * @param  \App\patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function show(Patient $patient): View
+    public function show($id): View
     {
-        $this->authorize('view', $patient);
         $pageTitle = "Show Patient";
-        return view('patients.show',compact('patient','pageTitle'));
+
+        $patient = Patient::findOrFail($id);
+
+        return view('patients.show', compact('patient', 'pageTitle'));
     }
     
     /**
@@ -146,9 +135,10 @@ class PatientController extends Controller
      * @param  \App\patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function edit(Patient $patient): View
+    public function edit($id): View
     {
-        $this->authorize('update', $patient);
+        $patient = Patient::findOrFail($id);
+
         $pageTitle = "Edit Patient";
         extract($this->getCommonDropdowns());
         $doctors = Doctor::orderBy('name')->get(); 
@@ -164,10 +154,8 @@ class PatientController extends Controller
      * @param  \App\patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function update(PatientRequest $request, Patient $patient): JsonResponse
+    public function update(PatientRequest $request, $id): JsonResponse
     {
-        $this->authorize('update', $patient);
-
         $validated = $request->validated();
     
         // Handle checkbox fields (they won't be present if unchecked)
@@ -175,33 +163,11 @@ class PatientController extends Controller
         $validated['sms_consent'] = $request->has('sms_consent');
         $validated['email_consent'] = $request->has('email_consent');
 
-        // Update the patient
+        $patient = Patient::findOrFail($id);
         $patient->update($validated);
         
-        // Sync user details after patient update
-        $user = $this->userService->updateUserForModel(
-            $patient->id,
-            Patient::class,
-            [
-                'name' => $patient->first_name . ' ' . $patient->surname,
-                'email' => $patient->email,
-                'role' => 'patient',
-            ]
-        );
-        
-        // If no linked user found, create one
-        if (!$user) {
-            $this->userService->createUserForModel(
-                $patient->first_name . ' ' . $patient->surname,
-                $patient->email,
-                'patient',
-                $patient->id,
-                Patient::class
-            );
-        }
-
         return response()->json([
-            'redirect' => route('patients.index'),
+            'redirect' => $this->routeWithGuard('patients.index'),
             'message' => 'Patient updated successfully',
         ]);
     }
@@ -214,11 +180,9 @@ class PatientController extends Controller
      */
     public function destroy(Patient $patient): RedirectResponse
     {
-        $this->authorize('delete', $patient);
-
         $patient->delete();
     
-        return redirect()->route('patients.index')
+        return redirect()->$this->routeWithGuard('patients.index')
                         ->with('success','Patient deleted successfully');
     }
 

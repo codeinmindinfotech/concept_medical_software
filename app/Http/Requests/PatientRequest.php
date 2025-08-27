@@ -7,14 +7,10 @@ use Illuminate\Validation\Rule;
 
 class PatientRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        $patientId = $this->route('patient')?->id;
+        $patientParam = $this->route('patient');
+        $patientId = is_object($patientParam) ? $patientParam->id : $patientParam;
         return [
             'consultant_id'         => 'required|exists:consultants,id',
             'title_id'              => 'required|exists:drop_down_values,id',

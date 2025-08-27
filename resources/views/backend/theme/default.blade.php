@@ -127,24 +127,13 @@
             }
         });
         document.addEventListener('DOMContentLoaded', function() {
-            // flatpickr("#datepicker", {
-            //     dateFormat: "Y-m-d",
-            //     maxDate: "today",
-            //     allowInput: true,
-            //     clickOpens: false // prevent auto open on input
-            // });
-
-            // document.getElementById('dobTrigger').addEventListener('click', function () {
-            //     document.querySelector('#datepicker')._flatpickr.open();
-            // });
-
             flatpickr("#datepicker", {
-                dateFormat: "Y-m-d"
-                , maxDate: "today", // only allow past dates
+                dateFormat: "Y-m-d",
+                //maxDate: "today", // only allow past dates
                 allowInput: true, // also allow manual input
             });
         });
-
+        
         function ajaxPaginate(containerSelector, url) {
             $.ajax({
                 url: url

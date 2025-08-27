@@ -17,7 +17,6 @@ class ChargeCodePriceController extends Controller
     use DropdownTrait;
     public function index(Request $request): View|string
     {
-        $this->authorize('viewAny', ChargeCode::class);
         // Admins can search all patients
         $query = Insurance::latest();
 
@@ -81,7 +80,6 @@ class ChargeCodePriceController extends Controller
 
     public function create()
     {
-        $this->authorize('create', ChargeCode::class);
         return view('chargecodes.create', [
             'insurances' => Insurance::all(),
             'groupTypes' => $this->getDropdownOptions('CHARGE_GROUP_TYPE')

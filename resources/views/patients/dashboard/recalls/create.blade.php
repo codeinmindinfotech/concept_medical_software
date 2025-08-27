@@ -11,12 +11,12 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Create Recall
             </h5>
-            <a href="{{ route('recalls.recalls.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('recalls.recalls.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> Recall List
             </a>
         </div>
         <div class="card-body">
-            <form action="{{ route('recalls.recalls.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
+            <form action="{{guard_route('recalls.recalls.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
                 @csrf
                 <input type="hidden" name="patient_id" value="{{ $patient->id ?? '' }}">
                 <input type="hidden" name="recall_id" id="recall_id">

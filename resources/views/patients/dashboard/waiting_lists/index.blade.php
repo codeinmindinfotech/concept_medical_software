@@ -11,7 +11,7 @@
         <h5 class="mb-0">
             <i class="fas fa-user-clock me-2"></i> Waiting Management
         </h5>
-        <a href="{{ route('waiting-lists.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+        <a href="{{guard_route('waiting-lists.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
             <i class="fas fa-plus-circle me-1"></i> New Waiting
         </a>
     </div>
@@ -41,13 +41,13 @@
             <td>{{ $visit->consult_note ?? '-' }}</td>
             <td class="text-end">
               <div class="d-flex justify-content-end gap-1">
-                  <a href="{{ route('waiting-lists.edit', ['patient' => $patient, 'waiting_list' => $visit->id]) }}" 
+                  <a href="{{guard_route('waiting-lists.edit', ['patient' => $patient, 'waiting_list' => $visit->id]) }}" 
                      class="btn btn-sm btn-warning" 
                      title="Edit">
                       <i class="fa fa-edit"></i>
                   </a>
           
-                  <form action="{{ route('waiting-lists.destroy',['patient' => $patient, 'waiting_list' => $visit->id]) }}" 
+                  <form action="{{guard_route('waiting-lists.destroy',['patient' => $patient, 'waiting_list' => $visit->id]) }}" 
                         method="POST" 
                         onsubmit="return confirm('Are you sure you want to delete this item?');"
                         style="display: inline;">

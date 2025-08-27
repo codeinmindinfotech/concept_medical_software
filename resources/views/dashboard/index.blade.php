@@ -3,6 +3,24 @@
 @section('content')
 
 <div class="container-fluid px-4">
+    {{-- For Superadmin --}}
+    @auth('superadmin')
+    <p>Welcome, Superadmin!</p>
+    @endauth
+
+    {{-- For Clinic --}}
+    @auth('clinic')
+    <p>Welcome, Clinic!</p>
+    @endauth
+
+    @auth('patient')
+    <p>Welcome, patient!</p>
+    @endauth
+
+    @auth('doctor')
+    <p>Welcome, doctor!</p>
+    @endauth
+
     @if ($patient)
         <h2>Welcome, {{ $patient->first_name }}</h2>
         <p>This is your personal patient dashboard.</p>

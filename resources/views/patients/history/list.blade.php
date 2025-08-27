@@ -14,10 +14,10 @@
                 <td>{{ $history->history_notes }}</td>
                 <td>{{ optional($history->created_at)->format('Y-m-d H:i') }}</td>
                 <td>
-                    <a href="{{ route('patients.history.edit', [$patient->id, $history->id]) }}" class="btn btn-primary btn-sm" title="Edit">
+                    <a href="{{guard_route('patients.history.edit', [$patient->id, $history->id]) }}" class="btn btn-primary btn-sm" title="Edit">
                         <i class="fa fa-pen"></i>
                     </a>
-                    <form method="POST" action="{{ route('patients.history.destroy', [$patient->id, $history->id]) }}" style="display:inline">
+                    <form method="POST" action="{{guard_route('patients.history.destroy', [$patient->id, $history->id]) }}" style="display:inline">
                         @csrf
                         @method('DELETE')
     

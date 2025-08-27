@@ -6,7 +6,7 @@
         
         <div class="card shadow-sm mb-4">
             <div class="card-body d-flex align-items-center">
-                <form id="uploadPatientPictureForm" action="{{ route('patients.upload-picture', $patient->id) }}" enctype="multipart/form-data" class="position-relative me-3">
+                <form id="uploadPatientPictureForm" action="{{ guard_route('patients.upload-picture', $patient->id) }}" enctype="multipart/form-data" class="position-relative me-3">
                     @csrf
                     <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                     <input type="file" name="patient_picture" id="patient_picture_input" class="d-none" accept="image/*">
@@ -26,11 +26,11 @@
                     <p class="mb-0 text-muted">DOB: {{ format_date($patient->dob) }} | Gender: {{ $patient->gender }}</p>
                 </div>
 
-                @can('update', $patient)
-                <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-outline-primary btn-sm ms-auto">
+                {{-- @can('update', $patient) --}}
+                <a href="{{ guard_route('patients.edit', $patient->id) }}" class="btn btn-outline-primary btn-sm ms-auto">
                     <i class="fas fa-edit"></i> Edit
                 </a>
-                @endcan
+                {{-- @endcan --}}
             </div>
         </div>
         {{-- Sidebar Tabs --}}

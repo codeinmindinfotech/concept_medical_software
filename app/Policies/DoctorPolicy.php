@@ -1,33 +1,32 @@
-<?php 
-
+<?php
 namespace App\Policies;
 
-use App\Models\User;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Doctor;
 
 class DoctorPolicy
 {
-    public function viewAny(User $user)
+    public function viewAny(Authenticatable $user)
     {
         return $user->can('doctor-list');
     }
 
-    public function view(User $user, Doctor $doctor)
+    public function view(Authenticatable $user, Doctor $doctor)
     {
         return $user->can('doctor-list');
     }
 
-    public function create(User $user)
+    public function create(Authenticatable $user)
     {
         return $user->can('doctor-create');
     }
 
-    public function update(User $user, Doctor $doctor)
+    public function update(Authenticatable $user, Doctor $doctor)
     {
         return $user->can('doctor-edit');
     }
 
-    public function delete(User $user, Doctor $doctor)
+    public function delete(Authenticatable $user, Doctor $doctor)
     {
         return $user->can('doctor-delete');
     }

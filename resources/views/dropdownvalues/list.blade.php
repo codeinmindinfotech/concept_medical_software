@@ -11,11 +11,11 @@
         @forelse ($values as $index => $val)
         <tr>
             <td>{{ $index + 1 }}</td>
-            <td><a href="{{ route('dropdowns.edit', [$dropDownId]) }}" >{{ $val->dropdown->name??'' }}</a></td>
+            <td><a href="{{guard_route('dropdowns.edit', [$dropDownId]) }}" >{{ $val->dropdown->name??'' }}</a></td>
             <td>{{ $val->value }}</td>
             <td>
                 @can('dropdownvalue-edit')
-                <a href="{{ route('dropdownvalues.edit', [$val->id, $dropDownId]) }}" class="btn btn-primary btn-sm" title="Edit">
+                <a href="{{guard_route('dropdownvalues.edit', [$val->id, $dropDownId]) }}" class="btn btn-primary btn-sm" title="Edit">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </a>
                 @endcan

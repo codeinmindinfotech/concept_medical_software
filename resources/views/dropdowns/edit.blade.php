@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'DropDowns', 'url' => route('dropdowns.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'DropDowns', 'url' =>guard_route('dropdowns.index')],
             ['label' => 'Edit DropDown'],
         ];
     @endphp
@@ -13,12 +13,12 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Edit DropDown',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('dropdowns.index'),
+        'backUrl' =>guard_route('dropdowns.index'),
         'isListPage' => false
     ])
 
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-        <form action="{{ route('dropdowns.update', $dropdown->id) }}" method="POST">
+        <form action="{{guard_route('dropdowns.update', $dropdown->id) }}" method="POST">
             @csrf
             @method('PUT')
         

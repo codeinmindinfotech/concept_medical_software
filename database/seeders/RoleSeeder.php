@@ -3,41 +3,71 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Create roles
-        $patientRole = Role::firstOrCreate(['name' => 'patient']);
-        $clinicRole = Role::firstOrCreate(['name' => 'clinic']);
-
-        // Assign permissions to patient
-        $patientPermissions = [
-            'patient-list',
-            'patient-edit',
-            'appointment-list',
-            'appointment-create'
+        // Define roles and guards
+        $roles = [
+            'superadmin' => 'superadmin',
+            'clinic'     => 'clinic',
+            'doctor'     => 'doctor',
+            'patient'    => 'patient',
         ];
-        $patientRole->syncPermissions($patientPermissions);
 
-        // Assign permissions to clinic
-        $clinicPermissions = [
-            'clinic-list',
-            'clinic-edit',
-            'clinic-create',
-            'clinic-delete',
-            'appointment-list',
-            'appointment-edit',
-            'appointment-create',
-            'appointment-delete',
-            'patient-list'
+        // Define permissions per role
+        $permissionsByRole = [
+            'superadmin' => [ // for 'web' guard
+                'role-list', 'role-create', 'role-edit', 'role-delete',
+                'user-list', 'user-create', 'user-edit', 'user-delete',
+                'dropdown-list', 'dropdown-create', 'dropdown-edit', 'dropdown-delete',
+                'doctor-list', 'doctor-create', 'doctor-edit', 'doctor-delete',
+                'patient-list', 'patient-edit',
+                'appointment-list', 'appointment-create', 'appointment-edit', 'appointment-delete',
+                'clinic-list', 'clinic-create', 'clinic-edit', 'clinic-delete',
+                'chargecode-list', 'chargecode-create', 'chargecode-edit', 'chargecode-delete',
+            ],
+            'clinic' => [
+                'role-list', 'role-create', 'role-edit', 'role-delete',
+                'user-list',
+                'dropdown-list', 'dropdown-create', 'dropdown-edit', 'dropdown-delete',
+                'doctor-list', 'doctor-create', 'doctor-edit', 'doctor-delete',
+                'patient-list', 'patient-edit',
+                'appointment-list', 'appointment-create', 'appointment-edit', 'appointment-delete',
+                'clinic-list', 'clinic-create', 'clinic-edit', 'clinic-delete',
+                'chargecode-list', 'chargecode-create', 'chargecode-edit', 'chargecode-delete',
+            ],
+            'doctor' => [
+                'appointment-list', 'appointment-edit',
+                'patient-list',
+            ],
+            'patient' => [
+                'patient-list', 'patient-edit',
+                'appointment-list', 'appointment-create',
+            ],
         ];
-        $clinicRole->syncPermissions($clinicPermissions);
+
+        // Loop through each role
+        // foreach ($roles as $roleName => $guardName) {
+        //     $role = Role::firstOrCreate([
+        //         'name' => $roleName,
+        //         'guard_name' => $guardName
+        //     ]);
+
+        //     // Create and assign permissions
+        //     $permissions = $permissionsByRole[$roleName] ?? [];
+
+        //     foreach ($permissions as $perm) {
+        //         Permission::firstOrCreate([
+        //             'name' => $perm,
+        //             'guard_name' => $guardName,
+        //         ]);
+        //     }
+
+        //     $role->syncPermissions(
+        //         Permission::whereIn('name', $permissions)->where('guard_name', $guardName)->get()
+        //     );
+        // }
     }
 }

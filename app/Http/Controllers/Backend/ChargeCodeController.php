@@ -17,7 +17,6 @@ class ChargeCodeController extends Controller
     use DropdownTrait;
     public function index(Request $request): View|string
     {
-        $this->authorize('viewAny', ChargeCode::class);
         $chargecodes = ChargeCode::with('chargeGroup')->latest()->get();
 
         if ($request->ajax()) {
@@ -26,9 +25,9 @@ class ChargeCodeController extends Controller
 
         return view('chargecodes.index', compact('chargecodes'));
     }
+
     public function create()
     {
-        $this->authorize('create', ChargeCode::class);
         return view('chargecodes.create', [
             'insurances' => Insurance::all(),
             'groupTypes' => $this->getDropdownOptions('CHARGE_GROUP_TYPE')
@@ -37,7 +36,6 @@ class ChargeCodeController extends Controller
 
     public function store(Request $request) : JsonResponse
     {
-        $this->authorize('create', ChargeCode::class);
         $request->validate([
             'chargeGroupType' => 'required|exists:drop_down_values,id',
             'code' => 'required|string|max:255|unique:charge_codes,code',
@@ -74,15 +72,9 @@ class ChargeCodeController extends Controller
             'message' => 'Charge Code created successfully',
         ]);
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\doctor  $doctor
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(ChargeCode $chargecode): View
     {
-        $this->authorize('view', $chargecode);
         $insurances = Insurance::all();
         $groupTypes = $this->getDropdownOptions('CHARGE_GROUP_TYPE');
 
@@ -91,7 +83,6 @@ class ChargeCodeController extends Controller
 
     public function edit(ChargeCode $chargecode): View
     {
-        $this->authorize('update', $chargecode);
         $insurances = Insurance::all();
         $groupTypes = $this->getDropdownOptions('CHARGE_GROUP_TYPE');
         return view('chargecodes.edit',compact('chargecode', 'insurances', 'groupTypes'));
@@ -99,7 +90,6 @@ class ChargeCodeController extends Controller
 
     public function update(Request $request, ChargeCode $chargecode): JsonResponse
     {
-        $this->authorize('update', $chargecode);
         $request->validate([
             'code' => 'required|string|max:255',
             'chargeGroupType' => 'required|exists:drop_down_values,id',
@@ -142,7 +132,6 @@ class ChargeCodeController extends Controller
 
     public function destroy(ChargeCode $chargecode): RedirectResponse
     {
-        $this->authorize('delete', $chargecode);
         $chargecode->delete();
     
         return redirect()->route('chargecodes.index')

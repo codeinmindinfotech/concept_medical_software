@@ -14,10 +14,10 @@
                 <td>{{ $physical->physical_notes }}</td>
                 <td>{{ optional($physical->created_at)->format('Y-m-d H:i') }}</td>
                 <td>
-                    <a href="{{ route('patients.physical.edit', [$patient->id, $physical->id]) }}" class="btn btn-primary btn-sm" title="Edit">
+                    <a href="{{guard_route('patients.physical.edit', [$patient->id, $physical->id]) }}" class="btn btn-primary btn-sm" title="Edit">
                         <i class="fa fa-pen"></i>
                     </a>
-                    <form method="POST" action="{{ route('patients.physical.destroy', [$patient->id, $physical->id]) }}" style="display:inline">
+                    <form method="POST" action="{{guard_route('patients.physical.destroy', [$patient->id, $physical->id]) }}" style="display:inline">
                         @csrf
                         @method('DELETE')
     

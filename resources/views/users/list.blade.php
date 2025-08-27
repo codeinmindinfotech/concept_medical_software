@@ -4,7 +4,7 @@
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Role</th>
+            {{-- <th>Role</th> --}}
             <th width="280px">Action</th>
         </tr>
     </thead>
@@ -23,17 +23,17 @@
                 <td>{{ ++$i }}</td>
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
-                <td>
+                {{-- <td>
                 @if(!empty($user->getRoleNames()))
                     @foreach($user->getRoleNames() as $v)
                     <label class="badge bg-success">{{ $v }}</label>
                     @endforeach
                 @endif
-                </td>
+                </td> --}}
                 <td>
-                    <a class="btn btn-info btn-sm" href="{{ route('users.show',$user->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
-                    <a class="btn btn-primary btn-sm" href="{{ route('users.edit',$user->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                    <form method="POST" action="{{ route('users.destroy', $user->id) }}" style="display:inline">
+                    <a class="btn btn-info btn-sm" href="{{guard_route('users.show',$user->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
+                    <a class="btn btn-primary btn-sm" href="{{guard_route('users.edit',$user->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                    <form method="POST" action="{{guard_route('users.destroy', $user->id) }}" style="display:inline">
                         @csrf
                         @method('DELETE')
 
@@ -43,7 +43,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5">There are no users.</td>
+                <td colspan="4">There are no users.</td>
             </tr>
         @endforelse
     </tbody>

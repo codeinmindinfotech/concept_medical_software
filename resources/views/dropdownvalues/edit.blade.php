@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'DropDownValues', 'url' => route('dropdownvalues.index',$dropdown->id)],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'DropDownValues', 'url' =>guard_route('dropdownvalues.index',$dropdown->id)],
             ['label' => 'Edit DropDownValue'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Edit DropDownValue',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('dropdownvalues.index',$dropdown->id),
+        'backUrl' =>guard_route('dropdownvalues.index',$dropdown->id),
         'isListPage' => false
     ])
 
@@ -29,7 +29,7 @@
 @endif
 
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-        <form action="{{ route('dropdownvalues.update', $value->id) }}" method="POST">
+        <form action="{{guard_route('dropdownvalues.update', $value->id) }}" method="POST">
             @csrf
             @method('PUT')
         

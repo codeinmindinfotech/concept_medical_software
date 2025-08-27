@@ -11,7 +11,7 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i>Fee Note List
             </h5>
-            <a href="{{ route('fee-notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('fee-notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> Add Fee Note
             </a>
         </div>
@@ -48,13 +48,13 @@
                                     <td>{{ $note->line_total }}</td>
                                     <td>{{ $note->qty }}</td>
                                     <td class="text-end">
-                                      <a href="{{ route('fee-notes.edit', ['patient' => $patient, 'fee_note' => $note]) }}" 
+                                      <a href="{{guard_route('fee-notes.edit', ['patient' => $patient, 'fee_note' => $note]) }}" 
                                          class="btn btn-sm btn-warning" 
                                          title="Edit Fee Note">
                                           <i class="fa fa-edit"></i>
                                       </a>
                                   
-                                      <form action="{{ route('fee-notes.destroy', ['patient' => $patient, 'fee_note' => $note]) }}" 
+                                      <form action="{{guard_route('fee-notes.destroy', ['patient' => $patient, 'fee_note' => $note]) }}" 
                                             method="POST" 
                                             style="display:inline;" 
                                             onsubmit="return confirm('Are you sure you want to delete this fee note?');">

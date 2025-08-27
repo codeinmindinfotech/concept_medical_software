@@ -23,18 +23,18 @@ class CreateAdminUserSeeder extends Seeder
             ]
         );
 
-        // Create or find the superadmin role
-        $role = Role::firstOrCreate(['name' => 'superadmin']);
+        // // Create or find the superadmin role
+        // $role = Role::firstOrCreate(['name' => 'superadmin']);
 
-        // Get all permissions
-        $permissions = Permission::pluck('id', 'id')->all();
+        // // Get all permissions
+        // $permissions = Permission::pluck('id', 'id')->all();
 
-        // Assign all permissions to the role
-        $role->syncPermissions($permissions);
+        // // Assign all permissions to the role
+        // $role->syncPermissions($permissions);
 
-        // Assign role to the user if not already assigned
-        if (!$user->hasRole($role->name)) {
-            $user->assignRole($role->name);
-        }
+        // // Assign role to the user if not already assigned
+        // if (!$user->hasRole($role->name)) {
+        //     $user->assignRole($role->name);
+        // }
     }
 }

@@ -17,17 +17,17 @@
                 <td>{{ $note->notes }}</td>
                 <td>
                     <span class="badge bg-{{ $note->completed ? 'success' : 'warning' }} toggle-completed"
-                        data-url="{{ route('patients.notes.toggleCompleted', [$patient->id, $note->id]) }}"
+                        data-url="{{guard_route('patients.notes.toggleCompleted', [$patient->id, $note->id]) }}"
                         style="cursor: pointer;">
                       {{ $note->completed ? 'Yes' : 'No' }}
                   </span>  
                 </td>
                 <td>{{ $note->created_at->format('Y-m-d H:i') }}</td>
                 <td>
-                    <a href="{{ route('patients.notes.edit', [$patient->id, $note->id]) }}" class="btn btn-primary btn-sm" title="Edit">
+                    <a href="{{guard_route('patients.notes.edit', [$patient->id, $note->id]) }}" class="btn btn-primary btn-sm" title="Edit">
                         <i class="fa fa-pen"></i>
                     </a>
-                    <form method="POST" action="{{ route('patients.notes.destroy', [$patient->id, $note->id]) }}" style="display:inline">
+                    <form method="POST" action="{{guard_route('patients.notes.destroy', [$patient->id, $note->id]) }}" style="display:inline">
                         @csrf
                         @method('DELETE')
     

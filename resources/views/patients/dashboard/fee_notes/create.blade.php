@@ -11,12 +11,12 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Fee Notes Management
             </h5>
-            <a href="{{ route('fee-notes.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('fee-notes.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> Fee Note List
             </a>
         </div>
         <div class="card-body">
-        <form action="{{ route('fee-notes.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
+        <form action="{{guard_route('fee-notes.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
             @csrf
             <input type="hidden" name="patient_id" value="{{ $patient->id ?? '' }}">
             

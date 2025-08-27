@@ -1,3 +1,6 @@
+@php
+    use App\Helpers\AuthHelper;
+@endphp
 @if ($isOpen == 0)
 <tr>
     <td colspan="7">
@@ -15,21 +18,21 @@
             ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
             : 'appointment-default';
             $user = auth()->user();
-            $isSuperAdmin =( $user->hasRole('superadmin') && $flag == 1);
-            $isPatientUserEditingOwnAppointment = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id);
-            $isCurrentPatient = ($user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id);
+            $isSuperAdmin = (AuthHelper::isRole('superadmin') && $flag == 1) || (AuthHelper::isRole('clinic') && $flag == 1)
+            $isPatientUserEditingOwnAppointment = (AuthHelper::isRole('patient') && $appointment->patient_id === $user->userable_id);
+            $isCurrentPatient = (AuthHelper::isRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id);
         @endphp
      <tr class="align-middle">
         <td class="fw-bold text-primary">{{ format_time($appointment->start_time??'') }}</td>
         <td>
             <a target="_blank"
-            class="text-decoration-none text-dark fw-semibold" href="{{ route('chargecodes.show',$appointment->procedure->id) }}">
+            class="text-decoration-none text-dark fw-semibold" href="{{guard_route('chargecodes.show',$appointment->procedure->id) }}">
                 {{ $appointment->procedure->code ?? '-' }}
             </a>
         </td>
         <td>
             <a target="_blank"
-            class="text-decoration-none text-dark fw-semibold" href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
+            class="text-decoration-none text-dark fw-semibold" href="{{guard_route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
                 <div class="align-items-center gap-2 d-flex">
                     @if ($appointment->patient->patient_picture)
                         <img src="{{ asset('storage/' . $appointment->patient->patient_picture) }}"
@@ -97,7 +100,7 @@
                     @endif
                     <li>
                         <a class="dropdown-item" target="_blank" rel="noopener noreferrer"
-                        href="{{ route('patients.edit', $appointment->patient->id) }}">
+                        href="{{guard_route('patients.edit', $appointment->patient->id) }}">
                             <i class="fa-solid fa-pen-to-square"></i> Edit Patient
                         </a>
                     </li>
@@ -108,13 +111,13 @@
                     </li>
                     <li>
                         <a class="dropdown-item" target="_blank" rel="noopener noreferrer"
-                        href="{{ route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+                        href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
                             <i class="fas fa-bell"></i> Add Recall
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" target="_blank" rel="noopener noreferrer"
-                        href="{{ route('sms.index', ['patient' => $appointment->patient->id]) }}">
+                        href="{{guard_route('sms.index', ['patient' => $appointment->patient->id]) }}">
                             <i class="fas fa-sms"></i> Send SMS
                         </a>
                     </li>

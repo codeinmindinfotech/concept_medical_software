@@ -15,8 +15,6 @@ class ConsultantController extends Controller
 {
     public function index(Request $request): View|string
     {
-        $this->authorize('viewAny', Consultant::class);
-
         $pageTitle = "Consultants List";
         $consultants = Consultant::latest()->paginate(5);
 
@@ -29,8 +27,6 @@ class ConsultantController extends Controller
 
     public function create(): View
     {
-        $this->authorize('create', Consultant::class);
-
         $pageTitle = "Consultants Create";
         $insurances = Insurance::all();
         return view('consultants.create', compact('pageTitle', 'insurances'));
@@ -38,8 +34,6 @@ class ConsultantController extends Controller
 
     public function store(ConsultantRequest $request): JsonResponse
     {
-        $this->authorize('create', Consultant::class);
-
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -57,16 +51,12 @@ class ConsultantController extends Controller
 
     public function show(Consultant $consultant): View
     {
-        $this->authorize('view', $consultant);
-
         $pageTitle = "Show Consultant";
         return view('consultants.show', compact('consultant', 'pageTitle'));
     }
 
     public function edit(Consultant $consultant): View
     {
-        $this->authorize('update', $consultant);
-
         $pageTitle = "Edit Consultant";
         $insurances = Insurance::all();
         return view('consultants.edit', compact('consultant', 'pageTitle', 'insurances'));
@@ -74,8 +64,6 @@ class ConsultantController extends Controller
 
     public function update(ConsultantRequest $request, Consultant $consultant): JsonResponse
     {
-        $this->authorize('update', $consultant);
-
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -98,8 +86,6 @@ class ConsultantController extends Controller
 
     public function destroy(Consultant $consultant): RedirectResponse
     {
-        $this->authorize('delete', $consultant);
-
         $consultant->delete();
 
         return redirect()->route('consultants.index')->with('success', 'Consultant deleted successfully');

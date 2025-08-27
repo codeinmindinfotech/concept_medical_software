@@ -8,7 +8,7 @@
             <h2>Create New User</h2>
         </div>
         <div class="pull-right">
-            <a class="btn btn-primary btn-sm mb-2" href="{{ route('users.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
+            <a class="btn btn-primary btn-sm mb-2" href="{{guard_route('users.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
         </div>
     </div>
 </div>
@@ -28,7 +28,7 @@
       <h5 class="mb-0">User Information</h5>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ route('users.store') }}">
+        <form method="POST" action="{{guard_route('users.store') }}">
             @csrf
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12">
@@ -55,7 +55,7 @@
                         <input type="password" name="confirm-password" placeholder="Confirm Password" class="form-control">
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-12">
+                {{-- <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group">
                         <strong>Role:</strong>
                         <select name="roles[]" class="form-control" multiple="multiple">
@@ -66,7 +66,7 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-xs-12 col-sm-12 col-md-12 text-center">
                     <button type="submit" class="btn btn-primary btn-sm mt-2 mb-3"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
                 </div>

@@ -8,8 +8,8 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-    ['label' => 'Patients', 'url' => route('patients.index')],
+    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+    ['label' => 'Patients', 'url' =>guard_route('patients.index')],
     ['label' => 'Patients Appointment '],
     ];
     @endphp
@@ -17,7 +17,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Patients Appointment ',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('patients.index'),
+    'backUrl' =>guard_route('patients.index'),
     'isListPage' => false
     ])
 
@@ -182,7 +182,7 @@
     :patient="$patient ? $patient : ''"
     :procedures="$procedures"
     :flag="0"
-    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
+    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
 <!-- Status Change Modal -->
 <x-status-modal :diary_status="$diary_status" :flag="0" />
@@ -194,7 +194,7 @@
     :patient="$patient ? $patient : ''"
     :appointmentTypes="$appointmentTypes"
     :flag="0"
-    :action="$patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal')" />
+    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
 @endsection
 
@@ -327,7 +327,7 @@
             },
             eventSources: [
                 {
-                    url: "{{ $patient ? route('patients.appointments.calendarEvents', ['patient' => $patient ? $patient->id : '']) : route('appointments.calendarEvents') }}",
+                    url: "{{ $patient ?guard_route('patients.appointments.calendarEvents', ['patient' => $patient ? $patient->id : '']) :guard_route('appointments.calendarEvents') }}",
                     method: 'POST',
                     extraParams: function() {
                         return {
@@ -399,16 +399,16 @@
         calendar.render();
     }
     const routes = {
-        fetchAppointments: "{{ $patient ? route('patients.appointments.byDate', ['patient' => $patient->id]) : route('appointments.byDateGlobal') }}",
-        storeAppointment: "{{ $patient ? route('patients.appointments.store', ['patient' => $patient->id]) : route('appointments.storeGlobal') }}",
-        storeHospitalAppointment: "{{ $patient ? route('hospital_appointments.store', ['patient' => $patient->id]) : route('hospital_appointments.storeGlobal') }}",
+        fetchAppointments: "{{ $patient ?guard_route('patients.appointments.byDate', ['patient' => $patient->id]) :guard_route('appointments.byDateGlobal') }}",
+        storeAppointment: "{{ $patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal') }}",
+        storeHospitalAppointment: "{{ $patient ?guard_route('hospital_appointments.store', ['patient' => $patient->id]) :guard_route('hospital_appointments.storeGlobal') }}",
         destroyAppointment: (appointmentId, patientId) =>
-            `{{ route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+            `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
 
         statusAppointment: (appointmentId, patientId) =>
-            `{{ route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+            `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
 
@@ -740,7 +740,7 @@
     }
         
     function saveAppointmentSlotChange(appointmentId, newTime) {
-        fetch("{{ route('appointments.update-slot') }}", {
+        fetch("{{guard_route('appointments.update-slot') }}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

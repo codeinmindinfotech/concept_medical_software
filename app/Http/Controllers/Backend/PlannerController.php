@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\AuthHelper;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
@@ -16,11 +17,11 @@ class PlannerController extends Controller
     public function index(Request $request)
     {
         $date = $request->get('date', now()->toDateString());
-
+        $patient = null;
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::all();
         $appointments = Appointment::with(['patient', 'appointmentType','appointmentStatus','procedure'])
-            ->whereDate('start_time', $date);
+            ->whereDate('appointment_date', $date);
 
         if ($request->filled('clinic_id')) {
             $appointments->where('clinic_id', $request->clinic_id);
@@ -33,19 +34,14 @@ class PlannerController extends Controller
         $appointments = $appointments->get();
 
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
-        
-        $user = auth()->user();
-        if ($user->hasRole('patient')) {
-            $patients = Patient::with(['title','preferredContact'])->where('id', $user->userable_id)->paginate(1);
-        } else {
-            $patients = Patient::with(['title', 'preferredContact'])->get();
-        }
+        $patients = Patient::with(['title', 'preferredContact'])->get();
 
         return view('planner.index', [
             'appointments' => $appointments,
             'date' => $date,
             'clinics' => Clinic::orderBy('planner_seq', 'asc')->get(),
             'patients' => $patients, 
+            'patient' => $patient, 
             'appointmentTypes' => $appointment_types,
             'diary_status' => $diary_status,
             'procedures' => $procedures

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Doctor extends Model
+class Doctor extends Authenticatable
 {
     use HasFactory;
-  
+    protected $guard_name = 'doctor'; 
     /**
      * The attributes that are mass assignable.
      *	
@@ -26,12 +27,18 @@ class Doctor extends Model
         'phone',
         'fax',
         'email',
+        'password',
         'contact',
         'contact_type_id',
         'payment_method_id',
         'note'
     ];  
     
+    // Make sure password is hidden when serialized
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
     public function contactType()
     {
         return $this->belongsTo(DropDownValue::class,'contact_type_id');

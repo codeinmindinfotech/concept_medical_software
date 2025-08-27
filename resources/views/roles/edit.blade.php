@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
 @php
     $breadcrumbs = [
-        ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-        ['label' => 'Roles', 'url' => route('roles.index')],
+        ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+        ['label' => 'Roles', 'url' =>guard_route('roles.index')],
         ['label' => 'Edit Role'],
     ];
 @endphp
@@ -13,7 +13,7 @@
 @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Edit Role',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('roles.index'),
+    'backUrl' =>guard_route('roles.index'),
     'isListPage' => false
 ])
 
@@ -28,7 +28,7 @@
     </div>
 @endif
 
-<form method="POST" action="{{ route('roles.update', $role->id) }}">
+<form method="POST" action="{{guard_route('roles.update', $role->id) }}">
     @csrf
     @method('PUT')
 

@@ -11,12 +11,12 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i>Edit Fee Note
             </h5>
-            <a href="{{ route('fee-notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('fee-notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> Add Fee Note
             </a>
         </div>
         <div class="card-body">
-    <form action="{{ route('fee-notes.update', ['patient' => $patient->id, 'fee_note' => $feeNote]) }}" class="validate-form" method="POST">
+    <form action="{{guard_route('fee-notes.update', ['patient' => $patient->id, 'fee_note' => $feeNote]) }}" class="validate-form" method="POST">
         @csrf
         @method('PUT')
 

@@ -7,27 +7,27 @@ use App\Models\User;
 
 class PatientPolicy
 {
-    public function view(User $user, Patient $patient): bool
-    {
-        return $this->isOwnerOrAdmin($user, $patient);
-    }
+    // public function view(User $user, Patient $patient): bool
+    // {
+    //     return $this->isOwnerOrAdmin($user, $patient);
+    // }
 
-    public function update(User $user, Patient $patient): bool
-    {
-        return $this->isOwnerOrAdmin($user, $patient);
-    }
+    // public function update(User $user, Patient $patient): bool
+    // {
+    //     return $this->isOwnerOrAdmin($user, $patient);
+    // }
 
-    public function delete(User $user, Patient $patient): bool
-    {
-        return $user->hasRole(['admin', 'superadmin']);
-    }
+    // public function delete(User $user, Patient $patient): bool
+    // {
+    //     return $user->hasRole(['admin', 'superadmin']);
+    // }
 
-    protected function isOwnerOrAdmin(User $user, Patient $patient): bool
-    {
-        if ($user->hasRole(['admin', 'superadmin'])) {
-            return true;
-        }
+    // protected function isOwnerOrAdmin(User $user, Patient $patient): bool
+    // {
+    //     if ($user->hasRole(['admin', 'superadmin'])) {
+    //         return true;
+    //     }
 
-        return $user->hasRole('patient') && $user->userable_id === $patient->id;
-    }
+    //     return $user->hasRole('patient') && $user->userable_id === $patient->id;
+    // }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\AuthHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Recall;
@@ -17,9 +18,11 @@ class RecallNotificationController extends Controller
 
         $query = Recall::with('patient','status')->latest();
         
-        if ($user->hasRole('patient')) {
-            $query->where('patient_id', $user->userable_id);
+        if (AuthHelper::isRole('patient')) {
+            $user = AuthHelper::user();
+            $query->where('patient_id', $user->id);
         }
+
         $defaulting = !$request->filled('from') && !$request->filled('to') && !$request->filled('recall_filter');
 
         if ($defaulting) {

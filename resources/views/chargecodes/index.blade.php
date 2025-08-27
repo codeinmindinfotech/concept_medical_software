@@ -4,7 +4,7 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' => route('dashboard.index')],
+    ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
     ['label' => 'Charge Code List'],
     ];
     @endphp
@@ -12,7 +12,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Charge Code List',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('chargecodes.create'),
+    'backUrl' => guard_route('chargecodes.create'),
     'isListPage' => true
     ])
 
@@ -31,7 +31,7 @@
                 <i class="fas fa-table me-1"></i> Charge Codes Management
             </div>
             <div>
-                <a href="{{ route('chargecodeprices.index') }}" class="btn btn-sm btn-primary">
+                <a href="{{ guard_route('chargecodeprices.index') }}" class="btn btn-sm btn-primary">
                     <i class="fas fa-dollar-sign"></i> Maintain Prices
                 </a>
             </div>

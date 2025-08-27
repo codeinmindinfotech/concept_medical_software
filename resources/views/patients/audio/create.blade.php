@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Patients', 'url' =>guard_route('patients.index')],
             ['label' => 'Patients Audio Recording List'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Patients Audio Recording List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.audio.index', $patient->id),
+        'backUrl' =>guard_route('patients.audio.index', $patient->id),
         'isListPage' => false
     ])
 
@@ -46,7 +46,7 @@
                 </div>
                 <p class="mt-2">Uploading & transcribing audio. Please wait...</p>
             </div>
-            <form id="audioForm" action="{{ route('patients.audio.store', $patient->id) }}" method="POST" enctype="multipart/form-data" class="mb-4">
+            <form id="audioForm" action="{{guard_route('patients.audio.store', $patient->id) }}" method="POST" enctype="multipart/form-data" class="mb-4">
                 @csrf
                 <div class="mb-3">
                     <label for="patientName" class="form-label"><strong>Patient Name</strong></label>

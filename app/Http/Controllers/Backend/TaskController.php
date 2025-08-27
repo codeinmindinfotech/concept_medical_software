@@ -12,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Helpers\AuthHelper;
 
 class TaskController extends Controller
 {
@@ -20,7 +21,7 @@ class TaskController extends Controller
     public function index(Patient $patient)
     {
         $tasks = Task::with(['creator', 'owner', 'category', 'status','followups'])->where('patient_id', $patient->id)->paginate(10);
-        $users = User::role('superadmin')->get();
+        $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
@@ -31,7 +32,7 @@ class TaskController extends Controller
     {
         $patient = Patient::findOrFail($patient->id); // <-- Add this line
 
-        $users = User::role('superadmin')->get();
+        $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
@@ -65,7 +66,7 @@ class TaskController extends Controller
     public function edit(Patient $patient, $taskId)
     {
         $task = Task::with(['creator', 'owner', 'category', 'status'])->findOrFail($taskId);
-        $users = User::role('superadmin')->get();
+        $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskCategories = $this->getDropdownOptions('CATEGORY');
 
@@ -105,16 +106,17 @@ class TaskController extends Controller
 
     public function notifications(Request $request): View|string
     {
-        $users = User::role('superadmin')->get();
+        $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
-        $user = auth()->user();
 
         $query = Task::with(['creator', 'owner', 'category', 'status','followups'])->latest();
         
-        if ($user->hasRole('patient')) {
-            $query->where('patient_id', $user->userable_id);
+        if (AuthHelper::isRole('patient')) {
+            $user = AuthHelper::user();
+            $query->where('patient_id', $user->id);
         }
+        
 
         // $defaulting = !$request->filled('from') && !$request->filled('to') && !$request->filled('recall_filter');
 

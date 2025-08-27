@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'DropDowns', 'url' => route('dropdowns.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'DropDowns', 'url' =>guard_route('dropdowns.index')],
             ['label' => 'Show DropDown'],
         ];
     @endphp
@@ -13,11 +13,11 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Show DropDown',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('dropdowns.index'),
+        'backUrl' =>guard_route('dropdowns.index'),
         'isListPage' => false
     ])
 
-<form action="{{ route('dropdowns.store') }}" method="POST">
+<form action="{{guard_route('dropdowns.store') }}" method="POST">
     @csrf
 
     <div class="row mb-3">

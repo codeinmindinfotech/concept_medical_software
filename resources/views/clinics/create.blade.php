@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Clinics', 'url' => route('clinics.index')],
+            ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
+            ['label' => 'Clinics', 'url' => guard_route('clinics.index')],
             ['label' => 'Create Clinic'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Create Clinic',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('clinics.index'),
+        'backUrl' => guard_route('clinics.index'),
         'isListPage' => false
     ])
 
@@ -28,7 +28,7 @@
     </div>
     @endif
 
-    <form action="{{ route('clinics.store') }}" method="POST" class="validate-form">
+    <form action="{{ guard_route('clinics.store') }}" method="POST" class="validate-form">
         @csrf
 
         @include('clinics.form')

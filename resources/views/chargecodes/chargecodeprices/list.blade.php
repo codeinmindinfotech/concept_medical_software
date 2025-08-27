@@ -12,7 +12,7 @@
         @forelse ($insurances as $i => $insurance)
         <tr style="cursor:pointer;" onmouseover="this.style.backgroundColor='#f0f8ff'"
             onmouseout="this.style.backgroundColor=''"
-            onclick="window.location='{{ route('chargecodeprices.adjust-prices', $insurance->id) }}'">
+            onclick="window.location='{{ guard_route('chargecodeprices.adjust-prices', $insurance->id) }}'">
             <td>{{ ++$i }}</td>
             <td>{{ $insurance->code }}</td>
             <td>{{ $insurance->address }}</td>
