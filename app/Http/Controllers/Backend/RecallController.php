@@ -14,8 +14,9 @@ class RecallController extends Controller
 {
     use DropdownTrait;
 
-    public function index(Patient $patient)
+    public function index($patientId)
     {
+        $patient = Patient::findOrFail($patientId);
         $recalls = $patient->recall()->with('status')->latest()->get();
         $statuses = $this->getDropdownOptions('STATUS');
         if (request()->ajax()) {
@@ -24,14 +25,14 @@ class RecallController extends Controller
         return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
     }
 
-    public function create(Patient $patient)
+    public function create($patientId)
     {
-        $patient = Patient::findOrFail($patient->id); 
+        $patient = Patient::findOrFail($patientId);
         $statuses = $this->getDropdownOptions('STATUS');
         return view('patients.dashboard.recalls.create', compact('patient','statuses'));
     }
 
-    public function store(Request $request, Patient $patient): JsonResponse
+    public function store(Request $request, $patientId): JsonResponse
     {
         $data = $request->validate([
             'patient_id' => 'required|exists:patients,id',
@@ -40,6 +41,7 @@ class RecallController extends Controller
             'note' => 'required',
             'recall_date' => 'required|date',
         ]);
+        $patient = Patient::findOrFail($patientId);
         $data['patient_id'] = $patient->id;
 
         Recall::updateOrCreate(
@@ -50,15 +52,15 @@ class RecallController extends Controller
         $patient = Patient::find($patient->id);
 
         return response()->json([
-            'redirect' => route('recalls.recalls.index', ['patient' => $patient]),
+            'redirect' => guard_route('recalls.recalls.index', ['patient' => $patient]),
             'message' => 'Recall created successfully',
         ]);
     }
 
-    public function edit(Patient $patient, $recallId)
+    public function edit($patientId, $recallId)
     {
+        $patient = Patient::findOrFail($patientId);
         $recall = Recall::findOrFail($recallId);
-        $patient = Patient::findOrFail($patient->id); 
         $statuses = $this->getDropdownOptions('STATUS');
         return view('patients.dashboard.recalls.edit', compact('patient','recall', 'statuses'));
     }
@@ -68,7 +70,7 @@ class RecallController extends Controller
         return response()->json(['data' => $recall]);
     }
 
-    public function update(Request $request, Patient $patient, $recallId): JsonResponse
+    public function update(Request $request, $patientId, $recallId): JsonResponse
     {
         $request->validate([
             'patient_id' => 'required',
@@ -78,19 +80,20 @@ class RecallController extends Controller
             'recall_date' => 'required|date',
         ]);
 
+        $patient = Patient::findOrFail($patientId);
         $recall = Recall::findOrFail($recallId);
         $recall->update($request->all());
 
         return response()->json([
-            'redirect' => route('recalls.recalls.index', ['patient' => $patient->id]),
+            'redirect' => guard_route('recalls.recalls.index', ['patient' => $patient->id]),
             'message' => 'Recall updated successfully',
         ]);
     }
 
-    public function destroy(Patient $patient,Recall $recall): RedirectResponse
+    public function destroy($patientId,Recall $recall): RedirectResponse
     {
         $recall->delete();
-
+        $patient = Patient::findOrFail($patientId);
         return redirect()
             ->route('recalls.recalls.index', ['patient' => $patient->id])
             ->with('success', 'Recall deleted successfully.');

@@ -23,6 +23,7 @@ use App\Http\Controllers\Backend\FeeNoteController;
 use App\Http\Controllers\Backend\InsuranceController;
 use App\Http\Controllers\Backend\Master\DropDownController;
 use App\Http\Controllers\Backend\Master\DropDownValueController;
+use App\Http\Controllers\Backend\PasswordChangeController;
 use App\Http\Controllers\Backend\PatientAudioController;
 use App\Http\Controllers\Backend\PatientHistoryController;
 use App\Http\Controllers\Backend\PatientNoteController;
@@ -57,6 +58,9 @@ Route::middleware(['web'])->group(function () {
 });
 
 Route::middleware(['web', 'auth:superadmin'])->group(function () {
+    Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+    Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
+    
     Route::resource('roles', RoleController::class);
     Route::resource('dashboard', DashboardController::class);
     Route::resource('patients', PatientController::class);
@@ -198,6 +202,10 @@ foreach ($roles as $role) {
         ->name("$role.")
         ->middleware(['web', "auth:$role", 'switch.clinic.database'])
         ->group(function () {
+
+    Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+    Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
+         
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
     Route::resource('roles', RoleController::class);
     Route::resource('dashboard', DashboardController::class);

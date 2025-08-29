@@ -10,7 +10,8 @@ use App\Models\Recall;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
-
+use Illuminate\Support\Facades\Route;
+use App\Models\Patient;
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void

@@ -15,8 +15,9 @@ class WaitingListController extends Controller
 {
     use DropdownTrait;
 
-    public function index(Patient $patient)
+    public function index($patientId)
     {
+        $patient = Patient::findOrFail($patientId);
         $clinics = Clinic::orderBy('name')->get();
         extract($this->getCommonDropdowns());
 
@@ -31,9 +32,9 @@ class WaitingListController extends Controller
         return view('patients.dashboard.waiting_lists.index', compact('patient', 'clinics', 'categories','waitingLists'));
     }
 
-    public function create(Patient $patient)
+    public function create($patientId)
     {
-        $patient = Patient::findOrFail($patient->id); // <-- Add this line
+        $patient = Patient::findOrFail($patientId);
         $clinics = Clinic::orderBy('name')->get();
         extract($this->getCommonDropdowns());
 
@@ -53,12 +54,12 @@ class WaitingListController extends Controller
         WaitingList::create($data);
     
         return response()->json([
-            'redirect' => route('waiting-lists.index', ['patient' => $request->patient_id]),
+            'redirect' => guard_route('waiting-lists.index', ['patient' => $request->patient_id]),
             'message' => 'Waiting List created successfully',
         ]);
     }
  
-    public function edit(Patient $patient, $waitingId)
+    public function edit($patientId, $waitingId)
     {
         $waitingList = WaitingList::findOrFail($waitingId);
         $clinics = Clinic::orderBy('name')->get();
@@ -80,17 +81,17 @@ class WaitingListController extends Controller
       $waitingList->update($data);
     
       return response()->json([
-        'redirect' => route('waiting-lists.index', ['patient' => $request->patient_id]),
+        'redirect' => guard_route('waiting-lists.index', ['patient' => $request->patient_id]),
         'message' => 'Waiting List Updated successfully',
     ]);
    }
     
-    public function destroy(Patient $patient,WaitingList $waitingList): RedirectResponse
+    public function destroy($patientId,WaitingList $waitingList): RedirectResponse
     {
         $waitingList->delete();
 
         return redirect()
-            ->route('waiting-lists.index', ['patient' => $patient->id])
+            ->route('waiting-lists.index', ['patient' => $patientId])
             ->with('success', 'WaitingList deleted successfully.');
     }
     

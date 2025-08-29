@@ -50,7 +50,7 @@ class InsuranceController extends Controller
     
         Insurance::create($validated);
         return response()->json([
-            'redirect' => route('insurances.index'),
+            'redirect' => guard_route('insurances.index'),
             'message' => 'insurance created successfully',
         ]);
     }
@@ -61,9 +61,10 @@ class InsuranceController extends Controller
      * @param  \App\insurance  $insurance
      * @return \Illuminate\Http\Response
      */
-    public function show(Insurance $insurance): View
+    public function show($insuranceId): View
     {
         $pageTitle = "Show Insurance";
+        $insurance = Insurance::findOrFail($insuranceId); 
         return view('insurances.show',compact('insurance','pageTitle'));
     }
     
@@ -73,9 +74,10 @@ class InsuranceController extends Controller
      * @param  \App\insurance  $insurance
      * @return \Illuminate\Http\Response
      */
-    public function edit(Insurance $insurance): View
+    public function edit($insuranceId): View
     {
         $pageTitle = "Edit Insurance";
+        $insurance = Insurance::findOrFail($insuranceId); 
         return view('insurances.edit',compact('insurance','pageTitle'));
     }
     
@@ -86,14 +88,14 @@ class InsuranceController extends Controller
      * @param  \App\insurance  $insurance
      * @return \Illuminate\Http\Response
      */
-    public function update(InsuranceRequest $request, Insurance $insurance): JsonResponse
+    public function update(InsuranceRequest $request, $insuranceId): JsonResponse
     {
         $validated = $request->validated();
-    
+        $insurance = Insurance::findOrFail($insuranceId); 
         $insurance->update($validated);
     
         return response()->json([
-            'redirect' => route('insurances.index'),
+            'redirect' => guard_route('insurances.index'),
             'message' => 'Insurance updated successfully',
         ]);
     }
@@ -104,11 +106,11 @@ class InsuranceController extends Controller
      * @param  \App\Insurance  $insurance
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Insurance $insurance): RedirectResponse
+    public function destroy($insuranceId): RedirectResponse
     {
         $insurance->delete();
     
-        return redirect()->route('insurances.index')
+        return redirect()->guard_route('insurances.index')
                         ->with('success','Insurance deleted successfully');
     }
 }

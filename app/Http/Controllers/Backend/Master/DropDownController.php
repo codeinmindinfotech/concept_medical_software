@@ -65,7 +65,7 @@ class DropDownController extends Controller
             ],
             'name' => 'required|string']);
         Dropdown::create($request->all());
-        return redirect()->route('dropdowns.index')
+        return redirect()->guard_route('dropdowns.index')
                         ->with('success','DropDown created successfully.');
     }
     
@@ -107,7 +107,7 @@ class DropDownController extends Controller
         ]);
         $dropdown->update($request->only('name'));
     
-        return redirect()->route('dropdowns.index')
+        return redirect()->guard_route('dropdowns.index')
                         ->with('success','dropdown updated successfully');
     }
     
@@ -121,7 +121,7 @@ class DropDownController extends Controller
     {
         $dropdown->delete();
     
-        return redirect()->route('dropdowns.index')
+        return redirect()->guard_route('dropdowns.index')
                         ->with('success','dropdown deleted successfully');
     }
 }

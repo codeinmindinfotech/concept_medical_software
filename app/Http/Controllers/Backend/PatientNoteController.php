@@ -12,8 +12,9 @@ use Illuminate\View\View;
 
 class PatientNoteController extends Controller
 {
-    public function index(Request $request, Patient $patient): View|string
+    public function index(Request $request, $patientId): View|string
     {
+        $patient = Patient::findOrFail($patientId);
         $notes = $patient->notes()->latest()->get();
         if ($request->ajax()) {
             return view('patients.notes.list', compact('patient', 'notes'))->render();
@@ -21,16 +22,18 @@ class PatientNoteController extends Controller
         return view('patients.notes.index', compact('patient', 'notes'));
     }
 
-    public function create(Patient $patient): View
+    public function create($patientId): View
     {
+        $patient = Patient::findOrFail($patientId);
         return view('patients.notes.create', [
             'patient' => $patient,
             'note' => null,
         ]);
     }
 
-    public function store(Request $request, Patient $patient): JsonResponse
+    public function store(Request $request, $patientId): JsonResponse
     {
+        $patient = Patient::findOrFail($patientId);
         $data = $request->validate([
             'method' => 'required|in:phone message,note',
             'notes' => 'nullable|string',
@@ -43,18 +46,24 @@ class PatientNoteController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.notes.index', $patient->id),
+            'redirect' => guard_route('patients.notes.index', $patient->id),
             'message' => 'Note added successfully',
         ]);
     }
 
-    public function edit(Patient $patient, PatientNote $note): View
+    public function edit($patientId, $noteId): View
     {
+        
+        $patient = Patient::findOrFail($patientId);
+        $note = PatientNote::findOrFail($noteId);
         return view('patients.notes.edit', compact('patient', 'note'));
     }
 
-    public function update(Request $request, Patient $patient, PatientNote $note): JsonResponse
+    public function update(Request $request, $patientId, $noteId): JsonResponse
     {
+        $patient = Patient::findOrFail($patientId);
+        $note = PatientNote::findOrFail($noteId);
+
         $data = $request->validate([
             'method' => 'required|in:phone message,note',
             'notes' => 'nullable|string',
@@ -67,7 +76,7 @@ class PatientNoteController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.notes.index', $patient->id),
+            'redirect' => guard_route('patients.notes.index', $patient->id),
             'message' => 'Note updated successfully',
         ]);
     }
@@ -76,7 +85,7 @@ class PatientNoteController extends Controller
     {
         PatientNote::destroy($noteId);
     
-        return redirect()->route('patients.notes.index', $patientId)
+        return redirect()->guard_route('patients.notes.index', $patientId)
                         ->with('success','Note deleted successfully');
     }
 

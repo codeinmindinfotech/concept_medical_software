@@ -12,8 +12,9 @@ use Illuminate\View\View;
 
 class PatientHistoryController extends Controller
 {
-    public function index(Request $request, Patient $patient): View|string
+    public function index(Request $request, $patientId): View|string
     {
+        $patient = Patient::findOrFail($patientId);
         $historys = $patient->histories()->latest()->get();//->get();
         if ($request->ajax()) {
             return view('patients.history.list', compact('patient', 'historys'))->render();
@@ -21,16 +22,18 @@ class PatientHistoryController extends Controller
         return view('patients.history.index', compact('patient', 'historys'));
     }
 
-    public function create(Patient $patient): View
+    public function create($patientId): View
     {
+        $patient = Patient::findOrFail($patientId);
         return view('patients.history.create', [
             'patient' => $patient,
             'history' => null,
         ]);
     }
 
-    public function store(Request $request, Patient $patient): JsonResponse
+    public function store(Request $request, $patientId): JsonResponse
     {
+        $patient = Patient::findOrFail($patientId);
         $data = $request->validate([
             'history_notes' => 'nullable|string',
         ]);
@@ -40,18 +43,22 @@ class PatientHistoryController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.history.index', $patient->id),
+            'redirect' => guard_route('patients.history.index', $patient->id),
             'message' => 'History Notes added successfully',
         ]);
     }
 
-    public function edit(Patient $patient, PatientHistory $history): View
+    public function edit($patientId, $historyId): View
     {
+        $patient = Patient::findOrFail($patientId);
+        $history = PatientHistory::findOrFail($historyId);
         return view('patients.history.edit', compact('patient', 'history'));
     }
 
-    public function update(Request $request, Patient $patient, PatientHistory $history): JsonResponse
+    public function update(Request $request, $patientId, $historyId): JsonResponse
     {
+        $patient = Patient::findOrFail($patientId);
+        $history = PatientHistory::findOrFail($historyId);
         $data = $request->validate([
             'history_notes' => 'nullable|string',
         ]);
@@ -61,7 +68,7 @@ class PatientHistoryController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.history.index', $patient->id),
+            'redirect' => guard_route('patients.history.index', $patient->id),
             'message' => 'Note updated successfully',
         ]);
     }
@@ -70,7 +77,7 @@ class PatientHistoryController extends Controller
     {
         PatientHistory::destroy($noteId);
     
-        return redirect()->route('patients.history.index', $patientId)
+        return redirect()->guard_route('patients.history.index', $patientId)
                         ->with('success','Note deleted successfully');
     }
 }

@@ -108,39 +108,42 @@ class ClinicController extends Controller
 
         
         return response()->json([
-            'redirect' => route('clinics.index'),
+            'redirect' => guard_route('clinics.index'),
             'message' => 'Clinic created successfully, and clinic database initialized.',
         ]);
     }
 
-    public function edit(Clinic $clinic): View
+    public function edit($clinicId): View
     {
+        $clinic = Clinic::findOrFail($clinicId);
         $pageTitle = "Edit Clinic";
         return view('clinics.edit', compact('clinic', 'pageTitle'));
     }
 
-    public function update(ClinicRequest $request, Clinic $clinic): JsonResponse
+    public function update(ClinicRequest $request, $clinicId): JsonResponse
     {
         $data = $this->extractDayFields($request);
+        $clinic = Clinic::findOrFail($clinicId);
         $clinic->update($data);
 
         return response()->json([
-            'redirect' => route('clinics.index'),
+            'redirect' => guard_route('clinics.index'),
             'message' => 'Clinic updated successfully',
         ]);
     }
 
-    public function show(Clinic $clinic): View
+    public function show($clinicId): View
     {
         $pageTitle = "Show Clinic";
         return view('clinics.show', compact('clinic', 'pageTitle'));
     }
 
-    public function destroy(Clinic $clinic): RedirectResponse
+    public function destroy($clinicId): RedirectResponse
     {
+        $clinic = Clinic::findOrFail($clinicId);
         $clinic->delete();
 
-        return redirect()->route('clinics.index')->with('success', 'Clinic deleted successfully.');
+        return redirect()->guard_route('clinics.index')->with('success', 'Clinic deleted successfully.');
     }
 
     protected function extractDayFields(Request $request): array

@@ -71,7 +71,7 @@ class DropDownValueController extends Controller
             'value' => $request->value,
         ]);
     
-        return redirect()->route('dropdownvalues.index',$dropdownId)
+        return redirect()->guard_route('dropdownvalues.index',$dropdownId)
                         ->with('success','DropDownValue created successfully.');
     }
     
@@ -104,7 +104,7 @@ class DropDownValueController extends Controller
         $value = DropDownValue::findOrFail($id);
         $value->update(['value' => $request->value]);
 
-        return redirect()->route('dropdownvalues.index', $value->drop_down_id)
+        return redirect()->guard_route('dropdownvalues.index', $value->drop_down_id)
                         ->with('success','dropdown updated successfully');
     }
     

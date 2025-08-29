@@ -12,8 +12,9 @@ use Illuminate\Http\Request;
 
 class SmsController extends Controller
 {
-    public function index(Patient $patient)
+    public function index($patientId)
     {
+        $patient = Patient::findOrFail($patientId);
         $templates = SmsDefaultMessage::all(); 
         return view('patients.dashboard.sms.index', compact('templates','patient'));
     }
@@ -37,7 +38,7 @@ class SmsController extends Controller
             ]);
 
             return response()->json([
-                'redirect' => route('sms.index', ['patient' => $request->patient_id]),
+                'redirect' => guard_route('sms.index', ['patient' => $request->patient_id]),
                 'message' => 'SMS created successfully',
             ]);
         }
@@ -60,7 +61,7 @@ class SmsController extends Controller
         ))->delay($scheduledAt);
 
         return response()->json([
-            'redirect' => route('sms.index', ['patient' => $request->patient_id]),
+            'redirect' => guard_route('sms.index', ['patient' => $request->patient_id]),
             'message' => 'SMS created successfully',
         ]);
     }

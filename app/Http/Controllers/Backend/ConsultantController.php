@@ -44,25 +44,27 @@ class ConsultantController extends Controller
         $consultant->insurances()->sync($request->input('insurance_id', []));
 
         return response()->json([
-            'redirect' => route('consultants.index'),
+            'redirect' => guard_route('consultants.index'),
             'message' => 'Consultant created successfully',
         ]);
     }
 
-    public function show(Consultant $consultant): View
+    public function show($consultantId): View
     {
+        $consultant = Consultant::findOrFail($consultantId);
         $pageTitle = "Show Consultant";
         return view('consultants.show', compact('consultant', 'pageTitle'));
     }
 
-    public function edit(Consultant $consultant): View
+    public function edit($consultantId): View
     {
+        $consultant = Consultant::findOrFail($consultantId);
         $pageTitle = "Edit Consultant";
         $insurances = Insurance::all();
         return view('consultants.edit', compact('consultant', 'pageTitle', 'insurances'));
     }
 
-    public function update(ConsultantRequest $request, Consultant $consultant): JsonResponse
+    public function update(ConsultantRequest $request, $consultantId): JsonResponse
     {
         $data = $request->validated();
 
@@ -75,19 +77,21 @@ class ConsultantController extends Controller
             unset($data['image']);
         }
 
+        $consultant = Consultant::findOrFail($consultantId);
         $consultant->update($data);
         $consultant->insurances()->sync($request->input('insurance_id', []));
 
         return response()->json([
-            'redirect' => route('consultants.index'),
+            'redirect' => guard_route('consultants.index'),
             'message' => 'Consultant updated successfully',
         ]);
     }
 
-    public function destroy(Consultant $consultant): RedirectResponse
+    public function destroy($consultantId): RedirectResponse
     {
+        $consultant = Consultant::findOrFail($consultantId);
         $consultant->delete();
 
-        return redirect()->route('consultants.index')->with('success', 'Consultant deleted successfully');
+        return redirect()->guard_route('consultants.index')->with('success', 'Consultant deleted successfully');
     }
 }

@@ -32,6 +32,21 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         
+        // Logout all guards before logging in a new user
+        foreach (['superadmin', 'clinic', 'doctor', 'patient'] as $guard) {
+            if (Auth::guard($guard)->check()) {
+                Auth::guard($guard)->logout();
+                session()->forget([
+                    'clinic_id',
+                    'clinic_name',
+                    'clinic_code',
+                    'user_email',
+                    'user_type',
+                    'auth_guard',
+                ]);
+            }
+        }
+
         $request->validate([
             'login_type' => 'required|in:superadmin,clinic,doctor,patient',
             'email' => 'required|email',

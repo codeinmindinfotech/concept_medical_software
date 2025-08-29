@@ -9,8 +9,9 @@ use Illuminate\Http\JsonResponse;
 
 class CommunicationController extends Controller
 {
-    public function index(Patient $patient)
+    public function index($patientId)
     {
+        $patient = Patient::findOrFail($patientId);
         $communications = $patient->communication() 
             ->where('received', false)
             ->latest()
@@ -21,8 +22,9 @@ class CommunicationController extends Controller
         }
         return view('patients.dashboard.communications.index', compact('patient', 'communications'));
     }
-    public function markAsReceived(Communication $communication): JsonResponse
+    public function markAsReceived($communicationId): JsonResponse
     {
+        $communication = Communication::findOrFail($communicationId);
         $communication->update(['received' => true]);
 
         return response()->json(['success' => true]);

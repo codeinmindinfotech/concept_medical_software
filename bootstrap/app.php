@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
+    ->withProviders([
+
+    ])
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

@@ -18,8 +18,9 @@ class TaskController extends Controller
 {
     use DropdownTrait;
 
-    public function index(Patient $patient)
+    public function index($patientId)
     {
+        $patient = Patient::findOrFail($patientId);
         $tasks = Task::with(['creator', 'owner', 'category', 'status','followups'])->where('patient_id', $patient->id)->paginate(10);
         $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
@@ -28,10 +29,9 @@ class TaskController extends Controller
         return view('patients.dashboard.tasks.index', compact('patient', 'tasks', 'users', 'taskcategories', 'statuses'));
     }
 
-    public function create(Patient $patient)
+    public function create($patientId)
     {
-        $patient = Patient::findOrFail($patient->id); // <-- Add this line
-
+        $patient = Patient::findOrFail($patientId);
         $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
@@ -58,13 +58,14 @@ class TaskController extends Controller
 
         Task::create($request->all());
         return response()->json([
-            'redirect' => route('tasks.tasks.index', ['patient' => $request->patient_id]),
+            'redirect' => guard_route('tasks.tasks.index', ['patient' => $request->patient_id]),
             'message' => 'Task created successfully',
         ]);
     }
 
-    public function edit(Patient $patient, $taskId)
+    public function edit($patientId, $taskId)
     {
+        $patient = Patient::findOrFail($patientId);
         $task = Task::with(['creator', 'owner', 'category', 'status'])->findOrFail($taskId);
         $users = User::all();
         $statuses = $this->getDropdownOptions('STATUS');
@@ -74,7 +75,7 @@ class TaskController extends Controller
         return view('patients.dashboard.tasks.edit', compact('patient','task', 'users', 'statuses', 'taskCategories'));
     }
 
-    public function update(Request $request, Patient $patient, $taskId): JsonResponse
+    public function update(Request $request, $patientId, $taskId): JsonResponse
     {
         $request->validate([
             'subject' => 'required|string|max:255',
@@ -91,16 +92,16 @@ class TaskController extends Controller
         $task->update($request->all());
 
         return response()->json([
-            'redirect' => route('tasks.tasks.index', ['patient' => $patient->id]),
+            'redirect' => guard_route('tasks.tasks.index', ['patient' => $patientId]),
             'message' => 'Task updated successfully',
         ]);
     }
-    public function destroy(Patient $patient,Task $task): RedirectResponse
+    public function destroy($patientId,Task $task): RedirectResponse
     {
         $task->delete();
 
         return redirect()
-            ->route('tasks.tasks.index', ['patient' => $patient->id])
+            ->route('tasks.tasks.index', ['patient' => $patientId])
             ->with('success', 'Task deleted successfully.');
     }
 

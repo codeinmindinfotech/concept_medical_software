@@ -6,7 +6,7 @@ use App\Helpers\AuthHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Recall;
-use App\Models\Patient; // Assuming you have a Patient model
+use App\Models\Patient; 
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 

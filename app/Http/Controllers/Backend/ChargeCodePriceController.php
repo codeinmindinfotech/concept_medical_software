@@ -30,8 +30,9 @@ class ChargeCodePriceController extends Controller
         return view('chargecodes.chargecodeprices.index', compact('insurances'));
     }
 
-    public function showAdjustPrices(Insurance $insurance)
+    public function showAdjustPrices($insuranceId)
     {
+        $insurance = Insurance::findOrFail($insuranceId);
         $chargePrices = ChargeCode::with(['insurancePrices' => function ($query) use ($insurance) {
             $query->where('insurance_id', $insurance->id);
         }])->orderBy('id')->get();
@@ -39,7 +40,7 @@ class ChargeCodePriceController extends Controller
         return view('chargecodes.chargecodeprices.adjust_prices', compact('insurance','chargePrices'));
     }
 
-    public function processAdjustPrices(Request $request, Insurance $insurance)
+    public function processAdjustPrices(Request $request, $insuranceId)
     {
         $request->validate([
             'percentage' => 'nullable|numeric|between:-100,100',
@@ -49,7 +50,7 @@ class ChargeCodePriceController extends Controller
     
         $percentage = $request->percentage;
         $chargeCodeIds = $request->charge_code_ids ?? [];
-
+        $insurance = Insurance::findOrFail($insuranceId);
         foreach ($chargeCodeIds as $chargeCodeId) {
             $inputPrice = $request->updated_prices[$chargeCodeId] ?? null;
     
@@ -72,7 +73,7 @@ class ChargeCodePriceController extends Controller
         }
     
 
-        return redirect()->route('chargecodeprices.adjust-prices', $insurance->id)
+        return redirect()->guard_route('chargecodeprices.adjust-prices', $insurance->id)
                         ->with('success', 'Prices updated successfully.');
     }
 

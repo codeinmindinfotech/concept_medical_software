@@ -48,7 +48,7 @@ class PlannerController extends Controller
         ]);
     }
 
-    public function reschedule(Request $request, Appointment $appointment)
+    public function reschedule(Request $request, $appointmentId)
     {
         $request->validate([
             'clinic_id' => 'required|exists:clinics,id',
@@ -62,6 +62,7 @@ class PlannerController extends Controller
         $latestStart = $date->copy()->setTime(23, 45); // Last possible start time
         $end = $start->copy()->addMinutes($duration);
 
+        $appointment = Appointment::findOrFail($appointmentId);
         while (
             Appointment::where('clinic_id', $request->clinic_id)
                 ->where('id', '!=', $appointment->id) // Skip the current appointment

@@ -68,27 +68,29 @@ class ChargeCodeController extends Controller
         }
 
         return response()->json([
-            'redirect' => route('chargecodes.index'),
+            'redirect' => guard_route('chargecodes.index'),
             'message' => 'Charge Code created successfully',
         ]);
     }
 
-    public function show(ChargeCode $chargecode): View
+    public function show($chargecodeId): View
     {
+        $chargecode = ChargeCode::findOrFail($chargecodeId);
         $insurances = Insurance::all();
         $groupTypes = $this->getDropdownOptions('CHARGE_GROUP_TYPE');
 
         return view('chargecodes.show',compact('chargecode','insurances','groupTypes'));
     }
 
-    public function edit(ChargeCode $chargecode): View
+    public function edit($chargecodeId): View
     {
+        $chargecode = ChargeCode::findOrFail($chargecodeId);
         $insurances = Insurance::all();
         $groupTypes = $this->getDropdownOptions('CHARGE_GROUP_TYPE');
         return view('chargecodes.edit',compact('chargecode', 'insurances', 'groupTypes'));
     }
 
-    public function update(Request $request, ChargeCode $chargecode): JsonResponse
+    public function update(Request $request, $chargecodeId): JsonResponse
     {
         $request->validate([
             'code' => 'required|string|max:255',
@@ -100,6 +102,7 @@ class ChargeCodeController extends Controller
             'insurance_prices.*' => 'nullable|numeric|min:0',
         ]);
 
+        $chargecode = ChargeCode::findOrFail($chargecodeId);
         $chargecode->update([
             'code' => $request->code,
             'chargeGroupType' => $request->chargeGroupType,
@@ -125,16 +128,17 @@ class ChargeCodeController extends Controller
             );
         }
         return response()->json([
-            'redirect' => route('chargecodes.index'),
+            'redirect' => guard_route('chargecodes.index'),
             'message' => 'Charge Code updated successfully',
         ]);
     }
 
-    public function destroy(ChargeCode $chargecode): RedirectResponse
+    public function destroy($chargecodeId): RedirectResponse
     {
+        $chargecode = ChargeCode::findOrFail($chargecodeId);
         $chargecode->delete();
     
-        return redirect()->route('chargecodes.index')
+        return redirect()->guard_route('chargecodes.index')
                         ->with('success','chargecode deleted successfully');
     }
 }

@@ -97,38 +97,20 @@
                 </li>
             </ul>
         </li>
-
-
-
-
-        @php
-        $guard = null;
-        if (Auth::guard('doctor')->check()) {
-            $guard = 'doctor';
-        } elseif (Auth::guard('patient')->check()) {
-            $guard = 'patient';
-        } elseif (Auth::guard('clinic')->check()) {
-            $guard = 'clinic';
-        } else {
-            $guard = 'web'; // superadmin or default user
-        }
-    
-        $logoutRoute = match($guard) {
-            // 'doctor' => guard_route('doctor.logout'),
-            // 'patient' => guard_route('patient.logout'),
-            // 'clinic' => guard_route('clinic.logout'),
-            default => guard_route('logout'),
-        };
+    @php
+        $logoutRoute = guard_route('logout');
     @endphp
-    
-    
-    
         <!-- Existing User Dropdown -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-user fa-fw"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li>
+                    <a class="dropdown-item" href="{{ guard_route('password.change') }}">
+                        {{ __('Change Password') }}
+                    </a>
+                </li>
                 <li>
                     <hr class="dropdown-divider" />
                 </li>
@@ -140,14 +122,6 @@
                         @csrf
                     </form>
                 </li>
-                {{-- <li>
-                    <a class="dropdown-item" href="{{ guard_route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        {{ __('Logout') }}
-                    </a>
-                    <form id="logout-form" action="{{ guard_route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
-                </li> --}}
             </ul>
         </li>
     </ul>

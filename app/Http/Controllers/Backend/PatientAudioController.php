@@ -34,8 +34,9 @@ class PatientAudioController extends Controller
         return back()->with('success', 'Audio uploaded!')->with('audio_path', Storage::url($path));
     }
     
-    public function index(Request $request, Patient $patient): View|string
+    public function index(Request $request, $patientId): View|string
     {
+        $patient = Patient::findOrFail($patientId);
         $audios = $patient->audio()->latest()->get();
         if ($request->ajax()) {
             return view('patients.audio.list', compact('patient', 'audios'))->render();
@@ -43,20 +44,22 @@ class PatientAudioController extends Controller
         return view('patients.audio.index', compact('patient', 'audios'));
     }
 
-    public function create(Patient $patient): View
+    public function create($patientId): View
     {
+        $patient = Patient::findOrFail($patientId);
         return view('patients.audio.create', [
             'patient' => $patient
         ]);
     }
 
-    public function store(Request $request, Patient $patient)
+    public function store(Request $request, $patientId)
     {
         // Validate incoming file (audio types & max size 10MB)
         $data = $request->validate([
             'file_path' => 'required|file|mimes:mp3,wav,m4a,aac,ogg,webm|max:10240',
         ]);
     
+        $patient = Patient::findOrFail($patientId);
         if ($request->hasFile('file_path')) {
             $file = $request->file('file_path');
     
@@ -124,8 +127,7 @@ class PatientAudioController extends Controller
                 if (file_exists($fullWavPath)) unlink($fullWavPath);
                 if (file_exists($txtPath)) unlink($txtPath);
     
-                return redirect()
-                    ->route('patients.audio.index', $patient->id)
+                return redirect()->guard_route('patients.audio.index', $patient->id)
                     ->with('success', 'Audio uploaded and transcribed successfully!');
             } catch (\Throwable $e) {
                 return back()->withErrors(['transcription_error' => 'Transcription failed: ' . $e->getMessage()]);
@@ -149,7 +151,7 @@ class PatientAudioController extends Controller
         $audio->delete();
 
     
-        return redirect()->route('patients.audio.index', $patientId)
+        return redirect()->guard_route('patients.audio.index', $patientId)
                         ->with('success','Audio Recording deleted successfully');
     }
 }

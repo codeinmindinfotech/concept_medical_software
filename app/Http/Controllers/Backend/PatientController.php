@@ -15,7 +15,7 @@ use App\Traits\DropdownTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 
-class PatientController extends BaseController
+class PatientController extends Controller
 { 
     use DropdownTrait;
 
@@ -109,7 +109,7 @@ class PatientController extends BaseController
         $patient = Patient::create($validated);
      
         return response()->json([
-            'redirect' => $this->routeWithGuard('patients.index'),
+            'redirect' => guard_route('patients.index'),
             'message' => 'Patient created successfully',
         ]);
     }
@@ -167,7 +167,7 @@ class PatientController extends BaseController
         $patient->update($validated);
         
         return response()->json([
-            'redirect' => $this->routeWithGuard('patients.index'),
+            'redirect' => guard_route('patients.index'),
             'message' => 'Patient updated successfully',
         ]);
     }
@@ -182,7 +182,7 @@ class PatientController extends BaseController
     {
         $patient->delete();
     
-        return redirect()->$this->routeWithGuard('patients.index')
+        return redirect()->guard_route('patients.index')
                         ->with('success','Patient deleted successfully');
     }
 

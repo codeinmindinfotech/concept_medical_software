@@ -127,7 +127,7 @@
             }
         });
         document.addEventListener('DOMContentLoaded', function() {
-            flatpickr("#datepicker", {
+            flatpickr(".flatpickr", {
                 dateFormat: "Y-m-d",
                 //maxDate: "today", // only allow past dates
                 allowInput: true, // also allow manual input
