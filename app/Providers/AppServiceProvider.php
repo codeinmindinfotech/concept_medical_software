@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Helpers\AuthHelper;
-use App\Models\Clinic;
+use App\Models\Company;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Recall;
@@ -24,13 +24,13 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('backend.theme.header', function ($view) {
-            if (AuthHelper::isRole('clinic') || AuthHelper::isRole('doctor') || AuthHelper::isRole('patient')) {
-                $clinicCode = session('clinic_code');
+            if ((AuthHelper::isRole('clinic') || AuthHelper::isRole('doctor') || AuthHelper::isRole('patient') || AuthHelper::isRole('manager')) && session('company_name')) {
+                $companyName = session('company_name');
 
-                if ($clinicCode) {
-                    $clinic = Clinic::where('code', $clinicCode)->first(); // use code instead of ID
-                    if ($clinic) {
-                        switchToClinicDatabase($clinic);
+                if ($companyName) {
+                    $company = Company::where('name', $companyName)->first(); // use code instead of ID
+                    if ($company) {
+                        switchToCompanyDatabase($company);
                     }
                 }
             }

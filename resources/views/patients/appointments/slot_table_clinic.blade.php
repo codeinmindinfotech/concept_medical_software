@@ -12,7 +12,7 @@
                 $user = auth()->user();
                 
                 $isSuperAdmin = (AuthHelper::isRole('superadmin') && $flag == 1) || (AuthHelper::isRole('clinic') && $flag == 1);
-                $isPatientUserEditingOwnAppointment = AuthHelper::isRole('patient') && $appointment->patient_id === $user->userable_id;
+                $isPatientUserEditingOwnAppointment = AuthHelper::isRole('patient') && $appointment->patient_id === $user->id;
                 $isCurrentPatient = AuthHelper::isRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id;
 
                 $type = strtolower($appointment->appointmentType->value ?? '');

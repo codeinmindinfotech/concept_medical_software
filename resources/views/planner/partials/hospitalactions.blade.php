@@ -9,7 +9,7 @@
         @php
             $user = auth()->user();
             $isSuperAdmin =(AuthHelper::isRole('superadmin') || AuthHelper::isRole('clinic')) ;
-            $isPatient = (AuthHelper::isRole('patient') && $appointment->patient_id === $user->userable_id);
+            $isPatient = (AuthHelper::isRole('patient') && $appointment->patient_id === $user->id);
         @endphp
         @if($isPatient || $isSuperAdmin)
         <li>

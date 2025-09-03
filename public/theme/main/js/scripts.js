@@ -99,21 +99,3 @@ function initDataTable(selector, options = {}) {
       });
     }
   }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const loginType = document.getElementById('login_type');
-    const clinicField = document.getElementById('clinic_id_container');
-
-    if (!loginType || !clinicField) {
-        return;
-    }
-
-    function toggleClinicField() {
-        const selected = loginType.value;
-        clinicField.style.display = (selected === 'clinic' || selected === 'doctor' || selected === 'patient') ? 'block' : 'none';
-    }
-
-    loginType.addEventListener('change', toggleClinicField);
-    toggleClinicField(); // Initial load
-});
-

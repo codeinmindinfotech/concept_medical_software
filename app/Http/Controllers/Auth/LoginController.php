@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Clinic;
 use App\Helpers\DatabaseSwitcher;
 
 class LoginController extends Controller
@@ -25,126 +24,81 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        $clinics = Clinic::all(); // Or use `->pluck('name', 'id')` for dropdowns
-        return view('auth.login', compact('clinics'));
+        // $clinics = Clinic::all(); // Or use `->pluck('name', 'id')` for dropdowns
+        return view('auth.login');
     }
 
     public function login(Request $request)
     {
-        
-        // Logout all guards before logging in a new user
+        // Logout from all guards
         foreach (['superadmin', 'clinic', 'doctor', 'patient'] as $guard) {
             if (Auth::guard($guard)->check()) {
                 Auth::guard($guard)->logout();
-                session()->forget([
-                    'clinic_id',
-                    'clinic_name',
-                    'clinic_code',
-                    'user_email',
-                    'user_type',
-                    'auth_guard',
-                ]);
             }
         }
+        session()->flush();
 
+        // Validate input
         $request->validate([
-            'login_type' => 'required|in:superadmin,clinic,doctor,patient',
             'email' => 'required|email',
             'password' => 'required|string',
-            'clinic_id' => 'required_if:login_type,clinic,doctor,patient',
-        ], [
-            'clinic_id.required_if' => 'Please select a clinic.',
+            'companyName' => 'required|string',
         ]);
 
-        $type = $request->login_type;
         $credentials = $request->only('email', 'password');
+        $companyName = $request->companyName;
+
         \Log::info("Login attempt", [
-            'type' => $type,
+            'companyName' => $companyName,
             'email' => $request->email,
         ]);
 
-        // SUPERADMIN LOGIN
-        if ($type === 'superadmin') {
-            if (Auth::guard('superadmin')->attempt($credentials, $request->filled('remember'))) {
-                \Log::info('Superadmin login successful');
-                return redirect()->intended("/dashboard");
-            } else {
-                \Log::warning('Superadmin login failed');
-                return back()->withErrors(['email' => 'Invalid superadmin credentials'])->withInput();
-            }
-        }
-       
-        // DOCTOR or PATIENT LOGIN (Tenant DB)
-        $clinic = Clinic::where('id', $request->clinic_id)->first();
+        // Step 1: Lookup company from main DB
+        $company = \App\Models\Company::where('name', $companyName)->first();
 
-        if (!$clinic) {
-            \Log::error('Clinic not found: ' . $request->clinic_id);
-            return back()->withErrors(['clinic_name' => 'Clinic not found'])->withInput();
+        if (!$company) {
+            \Log::error("Company not found: $companyName");
+            return back()->withErrors(['companyName' => 'Company not found'])->withInput();
         }
 
-        \Log::info('Switching to clinic DB: ' . $clinic->db_name);
-        switchToClinicDatabase($clinic);
+        // Step 2: Switch to company DB
+        try {
+            switchToCompanyDatabase($company);
+        } catch (\Throwable $e) {
+            \Log::error("DB Switch failed for $companyName: " . $e->getMessage());
+            return back()->withErrors(['companyName' => 'Could not connect to company database.'])->withInput();
+        }
 
-        // Determine which table to check
-        $table = match ($type) {
-            'clinic' => 'clinics',
-            'doctor' => 'doctors',
-            'patient' => 'patients',
-        };
+        // Step 3: Attempt logins in order of priority
+        $guardAttempts = [
+            'superadmin' => '/manager/dashboard',
+            'clinic'     => '/clinic/dashboard',
+            'doctor'     => '/doctor/dashboard',
+            'patient'    => '/patient/dashboard',
+        ];
 
-        $user = DB::table($table)->where('email', $request->email)->first();
-        $db_clinic = DB::table('clinics')->where('code', $clinic->code)->first();
+        foreach ($guardAttempts as $guard => $redirectPath) {
+            if (Auth::guard($guard)->attempt($credentials, $request->filled('remember'))) {
+                $user = Auth::guard($guard)->user();
 
-        // CLINIC LOGIN
-        if ($type === 'clinic') {
-            \Log::info('Attempting clinic login');
-  
-            if (Auth::guard('clinic')->attempt($credentials, $request->filled('remember'))) {
                 session([
-                    'clinic_id' => $db_clinic->id,
-                    'clinic_name' => $db_clinic->name,
-                    'clinic_code' => $db_clinic->code,
-                    'user_email' => $db_clinic->email,
-                    'user_type' => $type,
-                    'auth_guard' => $type
+                    'user_id'       => $user->id,
+                    'user_name'     => $user->name ?? ($user->first_name . ' ' . $user->last_name),
+                    'company_name'  => $company->name,
+                    'user_email'    => $user->email,
+                    'user_type'     => $guard,
+                    'auth_guard'    => $guard,
                 ]);
-                \Log::info('Clinic login successful');
-                \Log::info('Clinic ID from session:', ['clinic_id' => session('clinic_code')]);
 
-                return redirect()->intended("/{$type}/dashboard");
-            } else {
-                \Log::warning('Clinic login failed');
-                return back()->withErrors(['email' => 'Invalid clinic credentials'])->withInput();
+                \Log::info(ucfirst($guard) . ' login successful');
+                return redirect()->intended($redirectPath);
             }
         }
 
-        if (in_array($type, ['doctor', 'patient'])) {
-            \Log::info("Attempting {$type} login");
-        
-            if (Auth::guard($type)->attempt($credentials, $request->filled('remember'))) {
-                session([
-                    'clinic_id' => $db_clinic->id,
-                    'clinic_name' => $db_clinic->name,
-                    'clinic_code' => $db_clinic->code,
-                    'user_email' => $user->email,
-                    'user_type' => $type,
-                    'auth_guard' => $type
-                ]);
-        
-                \Log::info(ucfirst($type) . ' login successful');
-        
-                return redirect()->intended("/{$type}/dashboard");
-            }
-        
-            \Log::warning("{$type} login failed");
-            return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
-        }
-        
-
-        \Log::warning("{$type} login failed");
+        // Final fallback
+        \Log::warning('Login failed for all guards');
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
     }
-
 
     public function logout(Request $request)
     {
@@ -153,9 +107,9 @@ class LoginController extends Controller
         Auth::guard($guard)->logout();
 
         $request->session()->forget([
-            'clinic_id',
-            'clinic_name',
-            'clinic_code',
+            'user_id',
+            'user_name',
+            'company_name',
             'user_email',
             'user_type',
             'auth_guard',

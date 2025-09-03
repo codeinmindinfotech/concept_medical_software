@@ -15,21 +15,11 @@
                     <td>{{ ucfirst($role->name) }}</td>
                     <td>{{ $role->guard_name }}</td>
                     <td>
-                        @php
-                            $rolePerms = DB::table('role_permissions')
-                                ->join('permissions', 'permissions.id', '=', 'role_permissions.permission_id')
-                                ->where('role_permissions.role', $role->name)
-                                ->where('role_permissions.guard_name', $role->guard_name)
-                                ->pluck('permissions.name')
-                                ->toArray();
-                        @endphp
-
-                        @if(count($rolePerms))
-                            {!! implode(' ', array_map(fn($perm) => '<span class="badge bg-primary">' . e($perm) . '</span>', $rolePerms)) !!}
+                        @if($role->permissions->isNotEmpty())
+                            {!! $role->permissions->map(fn($perm) => '<span class="badge bg-primary">' . e($perm->name) . '</span>')->implode(' ') !!}
                         @else
                             <span class="text-muted">No permissions</span>
                         @endif
-
                     </td>
                     <td>
                         <a class="btn btn-sm btn-info" href="{{ guard_route('roles.edit', $role->id) }}">

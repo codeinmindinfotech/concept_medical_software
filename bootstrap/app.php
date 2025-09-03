@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\SwitchClinicDatabase;
+use App\Http\Middleware\SwitchCompanyDatabase;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'switch.clinic.database' => SwitchClinicDatabase::class,
+            'switch.company.database' => SwitchCompanyDatabase::class,
             'check.role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })

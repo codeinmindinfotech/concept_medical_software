@@ -10,13 +10,11 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-    protected $guard_name = 'web'; 
+    protected $guard_name = 'superadmin'; 
     protected $fillable = [
         'name',
         'email',
-        'password',
-        'userable_id',
-        'userable_type',
+        'password'
     ];
 
     protected $hidden = [

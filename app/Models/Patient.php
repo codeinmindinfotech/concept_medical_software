@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Patient extends ClinicAuthenticatable
+class Patient extends Authenticatable
 {
     use HasFactory;
     protected $guard_name = 'patient'; 

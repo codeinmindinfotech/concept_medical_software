@@ -99,7 +99,7 @@ if (!function_exists('guard_route')) {
     {
         $guard = getCurrentGuard();
         $prefix = ($guard && $guard !== 'superadmin') ? $guard . '.' : '';
-
+        // $prefix = ($guard) ? $guard . '.' : '';
         // Auto-wrap single ID into array if needed
         if (!is_array($params)) {
             $params = [$params];
@@ -109,17 +109,17 @@ if (!function_exists('guard_route')) {
     }
 }
 
-if (!function_exists('switchToClinicDatabase')) {
-    function switchToClinicDatabase($clinic)
+if (!function_exists('switchToCompanyDatabase')) {
+    function switchToCompanyDatabase($company)
     {
 
         $connection = [
             'driver'    => 'mysql',
-            'host'      => $clinic->db_host ?? '127.0.0.1',
-            'port'      => $clinic->db_port ?? '3306',
-            'database'  => $clinic->db_database,
-            'username'  => $clinic->db_username,
-            'password'  => $clinic->db_password,
+            'host'      => $company->db_host ?? '127.0.0.1',
+            'port'      => $company->db_port ?? '3306',
+            'database'  => $company->db_database,
+            'username'  => $company->db_username,
+            'password'  => $company->db_password,
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix'    => '',
@@ -134,8 +134,8 @@ if (!function_exists('switchToClinicDatabase')) {
         DB::purge('mysql');
         DB::reconnect('mysql');
 
-        session(['clinic_db_connection' => 'mysql']); 
-        \Log::info('Clinic DB connection set in session:', ['connection' => session('clinic_db_connection')]);
+        session(['company_db_connection' => 'mysql']); 
+        \Log::info('Clinic DB connection set in session:', ['connection' => session('company_db_connection')]);
         \Log::info('Current DB in use: ' . DB::connection()->getDatabaseName());
         $currentDb = DB::connection('mysql')->getDatabaseName();
 
@@ -144,9 +144,10 @@ if (!function_exists('switchToClinicDatabase')) {
 
         try {
             DB::connection('mysql')->getPdo();
-            \Log::info('Successfully connected to clinic DB');
+
+            \Log::info('-----Successfully connected to company DB');
         } catch (\Exception $e) {
-            \Log::error('Failed to connect to clinic DB: ' . $e->getMessage());
+            \Log::error('Failed to connect to company DB: ' . $e->getMessage());
         }
     }
 }
@@ -154,22 +155,35 @@ if (!function_exists('switchToClinicDatabase')) {
 if (!function_exists('user_can')) {
     function user_can(string $permission): bool
     {
-        $guard = getCurrentGuard(); // returns 'clinic', 'doctor', etc.
-        $user = getLoggedInUser();  // your auth helper
+        static $permissionsCache = [];
+
+        $guard = getCurrentGuard();
+        $user = getLoggedInUser();
 
         if (!$guard || !$user) return false;
 
-        $permissions = cache()->remember("permissions_{$guard}_{$user->id}", 3600, function () use ($guard) {
-            return \DB::table('role_permissions')
-                ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
-                ->where('role_permissions.role', $guard)
-                ->where('role_permissions.guard_name', $guard)
-                ->pluck('permissions.name')
-                ->toArray();
-        });
+        // Use role ID as cache key
+        $cacheKey = "role_{$guard}";
 
-        return in_array($permission, $permissions);
+        if (!isset($permissionsCache[$cacheKey])) {
+            $role = \DB::table('roles')
+                ->where('guard_name', $guard)
+                ->first();
+
+            if (!$role) return false;
+
+            $roleId = $role->id;
+
+            $permissionsCache[$cacheKey] = cache()->remember("permissions_role_{$roleId}", 3600, function () use ($roleId) {
+                return \DB::table('role_permissions')
+                    ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
+                    ->where('role_permissions.role_id', $roleId)
+                    ->pluck('permissions.name')
+                    ->toArray();
+            });
+        }
+
+        return in_array($permission, $permissionsCache[$cacheKey]);
     }
 }
-
 

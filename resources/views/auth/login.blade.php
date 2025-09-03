@@ -8,46 +8,34 @@
                 <h3 class="text-center font-weight-light my-4">Login</h3>
             </div>
             <div class="card-body">
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
-
-                    {{-- Login Type Dropdown --}}
                     <div class="form-floating mb-3">
-                        <select name="login_type" id="login_type" class="form-select" required>
-                            <option value="">-- Select Login Type --</option>
-                            <option value="superadmin" {{ old('login_type') == 'superadmin' ? 'selected' : '' }}>Superadmin</option>
-                            <option value="clinic" {{ old('login_type') == 'clinic' ? 'selected' : '' }}>Clinic</option>
-                            <option value="doctor" {{ old('login_type') == 'doctor' ? 'selected' : '' }}>Doctor</option>
-                            <option value="patient" {{ old('login_type') == 'patient' ? 'selected' : '' }}>Patient</option>
-                        </select>
-                        <label for="login_type">Login As</label>
-                    </div>
-                    {{-- Clinic Selection Dropdown (shown only if login_type is 'clinic') --}}
-                    <div class="form-floating mb-3" id="clinic_id_container" style="display:none;">
-                        <select name="clinic_id" id="clinic_id" class="form-select @error('clinic_id') is-invalid @enderror">
-                            <option value="">-- Select Clinic --</option>
-                            @foreach ($clinics as $clinic)
-                                <option value="{{ $clinic->id }}" {{ old('clinic_id') == $clinic->id ? 'selected' : '' }}>
-                                    {{ $clinic->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <label for="clinic_id">Clinic</label>
+                        <input
+                            type="text"
+                            id="companyName"
+                            name="companyName"
+                            class="form-control @error('companyName') is-invalid @enderror"
+                            value="{{ old('companyName') }}"
+                        >
+                        <label for="companyName">Company Name</label>
                     
-                        @error('clinic_id')
-                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                        @error('companyName')
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    
+                    
                     
 
 

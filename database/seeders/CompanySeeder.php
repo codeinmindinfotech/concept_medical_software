@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class ClinicSeeder extends Seeder
+class CompanySeeder extends Seeder
 {
     /**
      * Seed the application's database.
@@ -15,7 +15,7 @@ class ClinicSeeder extends Seeder
             DropDownSeeder::class,
             PermissionSeeder::class,
             SmsDefaultMessagesSeeder::class,
-            // RoleSeeder::class,
+            CreateAdminUserSeeder::class
         ]);
     }
 }

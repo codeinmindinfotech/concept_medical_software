@@ -13,10 +13,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             DropDownSeeder::class,
-            PermissionTableSeeder::class,
+            PermissionSeeder::class,
             CreateAdminUserSeeder::class, 
             SmsDefaultMessagesSeeder::class,
-            RoleSeeder::class,
         ]);
     }
 }

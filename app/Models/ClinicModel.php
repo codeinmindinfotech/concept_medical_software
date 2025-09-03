@@ -8,6 +8,6 @@ class ClinicModel extends Model
 {
     public function getConnectionName()
     {
-        return session('clinic_db_connection', config('database.default'));
+        return session('company_db_connection', config('database.default'));
     }
 }

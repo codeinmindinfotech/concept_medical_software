@@ -28,6 +28,6 @@ class PatientPolicy
     //         return true;
     //     }
 
-    //     return $user->hasRole('patient') && $user->userable_id === $patient->id;
+    //     return $user->hasRole('patient') && $user->id === $patient->id;
     // }
 }

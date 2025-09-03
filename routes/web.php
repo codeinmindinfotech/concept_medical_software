@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Auth\ClinicLoginController;
 use App\Http\Controllers\Auth\DoctorLoginController;
 use App\Http\Controllers\Auth\LoginController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Backend\ChargeCodeController;
 use App\Http\Controllers\Backend\ChargeCodePriceController;
 use App\Http\Controllers\Backend\ClinicController;
 use App\Http\Controllers\Backend\CommunicationController;
+use App\Http\Controllers\Backend\CompanyController;
 use App\Http\Controllers\Backend\WaitingListController;
 use App\Http\Controllers\Backend\ConsultantController;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +45,10 @@ Route::get('/', function () {
 Auth::routes();
 Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth:superadmin,clinic,doctor,patient');
 
+// Superadmin-only login (main DB, no company name)
+Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login.form');
+Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');
+
 Route::middleware(['web'])->group(function () {
     Route::resource('patients', PatientController::class);
     Route::get('/check-session', function () {
@@ -60,7 +66,8 @@ Route::middleware(['web'])->group(function () {
 Route::middleware(['web', 'auth:superadmin'])->group(function () {
     Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
     Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
-    
+
+    Route::resource('companies', CompanyController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('dashboard', DashboardController::class);
     Route::resource('patients', PatientController::class);
@@ -83,7 +90,7 @@ Route::middleware(['web', 'auth:superadmin'])->group(function () {
 
     // dropdown  parent
     Route::resource('dropdowns', DropDownController::class);
-    
+
     // dropdown  parent child
     Route::get('/dropdownvalues/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
     Route::get('/dropdownvalues/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
@@ -136,32 +143,34 @@ Route::middleware(['web', 'auth:superadmin'])->group(function () {
 
     Route::prefix('patients/{patient}')->group(function () {
         Route::resource('waiting-lists', WaitingListController::class)
-            ->names('waiting-lists') 
+            ->names('waiting-lists')
             ->except(['show']);
     });
 
     Route::prefix('patients/{patient}')->group(function () {
         Route::resource('fee-notes', FeeNoteController::class)
-            ->names('fee-notes') 
+            ->names('fee-notes')
             ->except(['show']);
     });
 
     Route::prefix('patients/{patient}')->group(function () {
         Route::resource('sms', SmsController::class)
-            ->names('sms') 
-            ->except(['show','create','update','edit']);
+            ->names('sms')
+            ->except(['show', 'create', 'update', 'edit']);
     });
 
     Route::prefix('patients/{patient}')->group(function () {
         Route::resource('communications', CommunicationController::class)
-        ->names('communications');
+            ->names('communications');
     });
-    Route::post('/communications/{communication}/received', 
-        [CommunicationController::class, 'markAsReceived'])
+    Route::post(
+        '/communications/{communication}/received',
+        [CommunicationController::class, 'markAsReceived']
+    )
         ->name('communications.received');
 
-    
-    
+
+
     Route::prefix('patients/{patient}/audio')->group(function () {
         Route::get('/', [PatientAudioController::class, 'index'])->name('patients.audio.index');
         Route::get('/create', [PatientAudioController::class, 'create'])->name('patients.audio.create');
@@ -189,428 +198,157 @@ Route::middleware(['web', 'auth:superadmin'])->group(function () {
 
     Route::post('/appointments/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
 
-    
+
     Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
     Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
     Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
-
 });
 
-$roles = ['clinic', 'doctor', 'patient'];
+$roles = ['clinic', 'doctor', 'patient','manager'];
 foreach ($roles as $role) {
     Route::prefix($role)
         ->name("$role.")
-        ->middleware(['web', "auth:$role", 'switch.clinic.database'])
+        ->middleware(['web', "auth:$role", 'switch.company.database'])
         ->group(function () {
 
-    Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-    Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
-         
-    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-    Route::resource('roles', RoleController::class);
-    Route::resource('dashboard', DashboardController::class);
-    Route::resource('patients', PatientController::class);
-    Route::resource('users', UserController::class);
-    Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
+            Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+            Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
 
-    Route::resource('doctors', DoctorController::class);
-    Route::resource('insurances', InsuranceController::class);
-    Route::resource('consultants', ConsultantController::class);
-    Route::resource('clinics', ClinicController::class);
-    Route::resource('chargecodes', ChargeCodeController::class);
-    Route::resource('chargecodeprices', ChargeCodePriceController::class);
-    Route::prefix('patients/{patient}/tasks/{task}/followups')->name('followups.')->group(function () {
-        Route::post('/{followup?}', [TaskFollowupController::class, 'storeOrUpdate'])->name('storeOrUpdate');
-        Route::delete('/{followup}', [TaskFollowupController::class, 'destroy'])->name('destroy');
-    });
+            Route::resource('companies', CompanyController::class);
+            Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+            Route::resource('roles', RoleController::class);
+            Route::resource('dashboard', DashboardController::class);
+            Route::resource('patients', PatientController::class);
+            Route::resource('users', UserController::class);
+            Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
-    Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
-    Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
+            Route::resource('doctors', DoctorController::class);
+            Route::resource('insurances', InsuranceController::class);
+            Route::resource('consultants', ConsultantController::class);
+            Route::resource('clinics', ClinicController::class);
+            Route::resource('chargecodes', ChargeCodeController::class);
+            Route::resource('chargecodeprices', ChargeCodePriceController::class);
+            Route::prefix('patients/{patient}/tasks/{task}/followups')->name('followups.')->group(function () {
+                Route::post('/{followup?}', [TaskFollowupController::class, 'storeOrUpdate'])->name('storeOrUpdate');
+                Route::delete('/{followup}', [TaskFollowupController::class, 'destroy'])->name('destroy');
+            });
 
-    // dropdown  parent
-    Route::resource('dropdowns', DropDownController::class);
-    
-    // dropdown  parent child
-    Route::get('/dropdownvalues/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
-    Route::get('/dropdownvalues/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
-    Route::post('/dropdownvalues/store/{dropDownId}', [DropDownValueController::class, 'store'])->name('dropdownvalues.store');
-    Route::get('/dropdownvalues/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
-    Route::put('/dropdownvalues/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
+            Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
+            Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
 
-    Route::prefix('patients/{patient}/notes')->group(function () {
-        Route::get('/', [PatientNoteController::class, 'index'])->name('patients.notes.index');
-        Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
-        Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
-        Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
-        Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
-        Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
-        Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
-    });
+            // dropdown  parent
+            Route::resource('dropdowns', DropDownController::class);
 
-    Route::prefix('patients/{patient}/physical')->group(function () {
-        Route::get('/', [PatientPhysicalController::class, 'index'])->name('patients.physical.index');
-        Route::get('/create', [PatientPhysicalController::class, 'create'])->name('patients.physical.create');
-        Route::post('/', [PatientPhysicalController::class, 'store'])->name('patients.physical.store');
-        Route::get('/{physical}/edit', [PatientPhysicalController::class, 'edit'])->name('patients.physical.edit');
-        Route::put('/{physical}', [PatientPhysicalController::class, 'update'])->name('patients.physical.update');
-        Route::delete('/{physical}', [PatientPhysicalController::class, 'destroy'])->name('patients.physical.destroy');
-    });
+            // dropdown  parent child
+            Route::get('/dropdownvalues/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
+            Route::get('/dropdownvalues/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
+            Route::post('/dropdownvalues/store/{dropDownId}', [DropDownValueController::class, 'store'])->name('dropdownvalues.store');
+            Route::get('/dropdownvalues/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
+            Route::put('/dropdownvalues/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
 
-    Route::prefix('patients/{patient}/history')->group(function () {
-        Route::get('/', [PatientHistoryController::class, 'index'])->name('patients.history.index');
-        Route::get('/create', [PatientHistoryController::class, 'create'])->name('patients.history.create');
-        Route::post('/', [PatientHistoryController::class, 'store'])->name('patients.history.store');
-        Route::get('/{history}/edit', [PatientHistoryController::class, 'edit'])->name('patients.history.edit');
-        Route::put('/{history}', [PatientHistoryController::class, 'update'])->name('patients.history.update');
-        Route::delete('/{history}', [PatientHistoryController::class, 'destroy'])->name('patients.history.destroy');
-    });
-    Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
+            Route::prefix('patients/{patient}/notes')->group(function () {
+                Route::get('/', [PatientNoteController::class, 'index'])->name('patients.notes.index');
+                Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
+                Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
+                Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
+                Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
+                Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
+                Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
+            });
 
-    Route::prefix('patients/{patient}')->name('tasks.')->group(function () {
-        Route::resource('tasks', TaskController::class)->except(['show']);
-    });
+            Route::prefix('patients/{patient}/physical')->group(function () {
+                Route::get('/', [PatientPhysicalController::class, 'index'])->name('patients.physical.index');
+                Route::get('/create', [PatientPhysicalController::class, 'create'])->name('patients.physical.create');
+                Route::post('/', [PatientPhysicalController::class, 'store'])->name('patients.physical.store');
+                Route::get('/{physical}/edit', [PatientPhysicalController::class, 'edit'])->name('patients.physical.edit');
+                Route::put('/{physical}', [PatientPhysicalController::class, 'update'])->name('patients.physical.update');
+                Route::delete('/{physical}', [PatientPhysicalController::class, 'destroy'])->name('patients.physical.destroy');
+            });
 
-    Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
-    Route::post('/appointments/{appointment}/reschedule', [PlannerController::class, 'reschedule'])->name('appointments.reschedule');
+            Route::prefix('patients/{patient}/history')->group(function () {
+                Route::get('/', [PatientHistoryController::class, 'index'])->name('patients.history.index');
+                Route::get('/create', [PatientHistoryController::class, 'create'])->name('patients.history.create');
+                Route::post('/', [PatientHistoryController::class, 'store'])->name('patients.history.store');
+                Route::get('/{history}/edit', [PatientHistoryController::class, 'edit'])->name('patients.history.edit');
+                Route::put('/{history}', [PatientHistoryController::class, 'update'])->name('patients.history.update');
+                Route::delete('/{history}', [PatientHistoryController::class, 'destroy'])->name('patients.history.destroy');
+            });
+            Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
+
+            Route::prefix('patients/{patient}')->name('tasks.')->group(function () {
+                Route::resource('tasks', TaskController::class)->except(['show']);
+            });
+
+            Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
+            Route::post('/appointments/{appointment}/reschedule', [PlannerController::class, 'reschedule'])->name('appointments.reschedule');
 
 
-    Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
+            Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 
-    Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
-        Route::resource('recalls', RecallController::class)->except(['show']);
-    });
+            Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
+                Route::resource('recalls', RecallController::class)->except(['show']);
+            });
 
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('waiting-lists', WaitingListController::class)
-            ->names('waiting-lists') 
-            ->except(['show']);
-    });
+            Route::prefix('patients/{patient}')->group(function () {
+                Route::resource('waiting-lists', WaitingListController::class)
+                    ->names('waiting-lists')
+                    ->except(['show']);
+            });
 
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('fee-notes', FeeNoteController::class)
-            ->names('fee-notes') 
-            ->except(['show']);
-    });
+            Route::prefix('patients/{patient}')->group(function () {
+                Route::resource('fee-notes', FeeNoteController::class)
+                    ->names('fee-notes')
+                    ->except(['show']);
+            });
 
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('sms', SmsController::class)
-            ->names('sms') 
-            ->except(['show','create','update','edit']);
-    });
+            Route::prefix('patients/{patient}')->group(function () {
+                Route::resource('sms', SmsController::class)
+                    ->names('sms')
+                    ->except(['show', 'create', 'update', 'edit']);
+            });
 
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('communications', CommunicationController::class)
-        ->names('communications');
-    });
-    Route::post('/communications/{communication}/received', 
-        [CommunicationController::class, 'markAsReceived'])
-        ->name('communications.received');
+            Route::prefix('patients/{patient}')->group(function () {
+                Route::resource('communications', CommunicationController::class)
+                    ->names('communications');
+            });
+            Route::post(
+                '/communications/{communication}/received',
+                [CommunicationController::class, 'markAsReceived']
+            )
+                ->name('communications.received');
 
-    
-    
-    Route::prefix('patients/{patient}/audio')->group(function () {
-        Route::get('/', [PatientAudioController::class, 'index'])->name('patients.audio.index');
-        Route::get('/create', [PatientAudioController::class, 'create'])->name('patients.audio.create');
-        Route::post('/', [PatientAudioController::class, 'store'])->name('patients.audio.store');
-        Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
-    });
 
-    Route::prefix('appointments')->group(function () {
-        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule')->defaults('flag', 1);
-        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('appointments.byDateGlobal')->defaults('flag', 1);
-        Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('appointments.calendarEvents')->defaults('flag', 1);
-        Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal')->defaults('flag', 1);
-        Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal')->defaults('flag', 1);
-    });
 
-    Route::prefix('patients/{patient}/appointments')->group(function () {
-        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
-        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
-        Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store')->defaults('flag', 0);
-        Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy')->defaults('flag', 0);
-        Route::post('/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('patients.appointments.updateStatus')->defaults('flag', 0);
-        Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('patients.appointments.calendarEvents')->defaults('flag', 0);
-        Route::post('/hospital-appointments', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.store')->defaults('flag', 0);
-    });
+            Route::prefix('patients/{patient}/audio')->group(function () {
+                Route::get('/', [PatientAudioController::class, 'index'])->name('patients.audio.index');
+                Route::get('/create', [PatientAudioController::class, 'create'])->name('patients.audio.create');
+                Route::post('/', [PatientAudioController::class, 'store'])->name('patients.audio.store');
+                Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
+            });
 
-    Route::post('/appointments/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
+            Route::prefix('appointments')->group(function () {
+                Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule')->defaults('flag', 1);
+                Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('appointments.byDateGlobal')->defaults('flag', 1);
+                Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('appointments.calendarEvents')->defaults('flag', 1);
+                Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal')->defaults('flag', 1);
+                Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal')->defaults('flag', 1);
+            });
 
-    
-    Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
-    Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
-    Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
+            Route::prefix('patients/{patient}/appointments')->group(function () {
+                Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
+                Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
+                Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store')->defaults('flag', 0);
+                Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy')->defaults('flag', 0);
+                Route::post('/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('patients.appointments.updateStatus')->defaults('flag', 0);
+                Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('patients.appointments.calendarEvents')->defaults('flag', 0);
+                Route::post('/hospital-appointments', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.store')->defaults('flag', 0);
+            });
 
-});
+            Route::post('/appointments/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
+
+
+            Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
+            Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
+            Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
+        });
 }
-
-Route::prefix('doctor')->name('doctor.')->middleware(['web', 'auth:doctor' , 'switch.clinic.database'], function() {
-    Route::resource('dashboard', DashboardController::class);
-    Route::resource('roles', RoleController::class);
-    Route::resource('users', UserController::class);
-    Route::resource('patients', PatientController::class);
-    Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
-
-    Route::resource('doctors', DoctorController::class);
-    Route::resource('insurances', InsuranceController::class);
-    Route::resource('consultants', ConsultantController::class);
-    Route::resource('clinics', ClinicController::class);
-    Route::resource('chargecodes', ChargeCodeController::class);
-    Route::resource('chargecodeprices', ChargeCodePriceController::class);
-    Route::prefix('patients/{patient}/tasks/{task}/followups')->name('followups.')->group(function () {
-        Route::post('/{followup?}', [TaskFollowupController::class, 'storeOrUpdate'])->name('storeOrUpdate');
-        Route::delete('/{followup}', [TaskFollowupController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
-    Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
-
-    // dropdown  parent
-    Route::resource('dropdowns', DropDownController::class);
-    
-    // dropdown  parent child
-    Route::get('/dropdownvalues/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
-    Route::get('/dropdownvalues/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
-    Route::post('/dropdownvalues/store/{dropDownId}', [DropDownValueController::class, 'store'])->name('dropdownvalues.store');
-    Route::get('/dropdownvalues/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
-    Route::put('/dropdownvalues/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
-
-    Route::prefix('patients/{patient}/notes')->group(function () {
-        Route::get('/', [PatientNoteController::class, 'index'])->name('patients.notes.index');
-        Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
-        Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
-        Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
-        Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
-        Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
-        Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
-    });
-
-    Route::prefix('patients/{patient}/physical')->group(function () {
-        Route::get('/', [PatientPhysicalController::class, 'index'])->name('patients.physical.index');
-        Route::get('/create', [PatientPhysicalController::class, 'create'])->name('patients.physical.create');
-        Route::post('/', [PatientPhysicalController::class, 'store'])->name('patients.physical.store');
-        Route::get('/{physical}/edit', [PatientPhysicalController::class, 'edit'])->name('patients.physical.edit');
-        Route::put('/{physical}', [PatientPhysicalController::class, 'update'])->name('patients.physical.update');
-        Route::delete('/{physical}', [PatientPhysicalController::class, 'destroy'])->name('patients.physical.destroy');
-    });
-
-    Route::prefix('patients/{patient}/history')->group(function () {
-        Route::get('/', [PatientHistoryController::class, 'index'])->name('patients.history.index');
-        Route::get('/create', [PatientHistoryController::class, 'create'])->name('patients.history.create');
-        Route::post('/', [PatientHistoryController::class, 'store'])->name('patients.history.store');
-        Route::get('/{history}/edit', [PatientHistoryController::class, 'edit'])->name('patients.history.edit');
-        Route::put('/{history}', [PatientHistoryController::class, 'update'])->name('patients.history.update');
-        Route::delete('/{history}', [PatientHistoryController::class, 'destroy'])->name('patients.history.destroy');
-    });
-    Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
-
-    Route::prefix('patients/{patient}')->name('tasks.')->group(function () {
-        Route::resource('tasks', TaskController::class)->except(['show']);
-    });
-
-    Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
-    Route::post('/appointments/{appointment}/reschedule', [PlannerController::class, 'reschedule'])->name('appointments.reschedule');
-
-
-    Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
-
-    Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
-        Route::resource('recalls', RecallController::class)->except(['show']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('waiting-lists', WaitingListController::class)
-            ->names('waiting-lists') 
-            ->except(['show']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('fee-notes', FeeNoteController::class)
-            ->names('fee-notes') 
-            ->except(['show']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('sms', SmsController::class)
-            ->names('sms') 
-            ->except(['show','create','update','edit']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('communications', CommunicationController::class)
-        ->names('communications');
-    });
-    Route::post('/communications/{communication}/received', 
-        [CommunicationController::class, 'markAsReceived'])
-        ->name('communications.received');
-
-    
-    
-    Route::prefix('patients/{patient}/audio')->group(function () {
-        Route::get('/', [PatientAudioController::class, 'index'])->name('patients.audio.index');
-        Route::get('/create', [PatientAudioController::class, 'create'])->name('patients.audio.create');
-        Route::post('/', [PatientAudioController::class, 'store'])->name('patients.audio.store');
-        Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
-    });
-
-    Route::prefix('appointments')->group(function () {
-        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule')->defaults('flag', 1);
-        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('appointments.byDateGlobal')->defaults('flag', 1);
-        Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('appointments.calendarEvents')->defaults('flag', 1);
-        Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal')->defaults('flag', 1);
-        Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal')->defaults('flag', 1);
-    });
-
-    Route::prefix('patients/{patient}/appointments')->group(function () {
-        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
-        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
-        Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store')->defaults('flag', 0);
-        Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy')->defaults('flag', 0);
-        Route::post('/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('patients.appointments.updateStatus')->defaults('flag', 0);
-        Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('patients.appointments.calendarEvents')->defaults('flag', 0);
-        Route::post('/hospital-appointments', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.store')->defaults('flag', 0);
-    });
-
-    Route::post('/appointments/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
-
-    
-    Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
-    Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
-    Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
-   
-});
-
-Route::middleware(['web', 'auth:patient', 'switch.clinic.database'], function() {
-    Route::resource('dashboard', DashboardController::class);
-    Route::resource('roles', RoleController::class);
-    Route::resource('users', UserController::class);
-    Route::resource('patients', PatientController::class);
-    Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
-
-    Route::resource('doctors', DoctorController::class);
-    Route::resource('insurances', InsuranceController::class);
-    Route::resource('consultants', ConsultantController::class);
-    Route::resource('clinics', ClinicController::class);
-    Route::resource('chargecodes', ChargeCodeController::class);
-    Route::resource('chargecodeprices', ChargeCodePriceController::class);
-    Route::prefix('patients/{patient}/tasks/{task}/followups')->name('followups.')->group(function () {
-        Route::post('/{followup?}', [TaskFollowupController::class, 'storeOrUpdate'])->name('storeOrUpdate');
-        Route::delete('/{followup}', [TaskFollowupController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
-    Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
-
-    // dropdown  parent
-    Route::resource('dropdowns', DropDownController::class);
-    
-    // dropdown  parent child
-    Route::get('/dropdownvalues/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
-    Route::get('/dropdownvalues/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
-    Route::post('/dropdownvalues/store/{dropDownId}', [DropDownValueController::class, 'store'])->name('dropdownvalues.store');
-    Route::get('/dropdownvalues/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
-    Route::put('/dropdownvalues/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
-
-    Route::prefix('patients/{patient}/notes')->group(function () {
-        Route::get('/', [PatientNoteController::class, 'index'])->name('patients.notes.index');
-        Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
-        Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
-        Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
-        Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
-        Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
-        Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
-    });
-
-    Route::prefix('patients/{patient}/physical')->group(function () {
-        Route::get('/', [PatientPhysicalController::class, 'index'])->name('patients.physical.index');
-        Route::get('/create', [PatientPhysicalController::class, 'create'])->name('patients.physical.create');
-        Route::post('/', [PatientPhysicalController::class, 'store'])->name('patients.physical.store');
-        Route::get('/{physical}/edit', [PatientPhysicalController::class, 'edit'])->name('patients.physical.edit');
-        Route::put('/{physical}', [PatientPhysicalController::class, 'update'])->name('patients.physical.update');
-        Route::delete('/{physical}', [PatientPhysicalController::class, 'destroy'])->name('patients.physical.destroy');
-    });
-
-    Route::prefix('patients/{patient}/history')->group(function () {
-        Route::get('/', [PatientHistoryController::class, 'index'])->name('patients.history.index');
-        Route::get('/create', [PatientHistoryController::class, 'create'])->name('patients.history.create');
-        Route::post('/', [PatientHistoryController::class, 'store'])->name('patients.history.store');
-        Route::get('/{history}/edit', [PatientHistoryController::class, 'edit'])->name('patients.history.edit');
-        Route::put('/{history}', [PatientHistoryController::class, 'update'])->name('patients.history.update');
-        Route::delete('/{history}', [PatientHistoryController::class, 'destroy'])->name('patients.history.destroy');
-    });
-    Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
-
-    Route::prefix('patients/{patient}')->name('tasks.')->group(function () {
-        Route::resource('tasks', TaskController::class)->except(['show']);
-    });
-
-    Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
-    Route::post('/appointments/{appointment}/reschedule', [PlannerController::class, 'reschedule'])->name('appointments.reschedule');
-
-
-    Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
-
-    Route::prefix('patients/{patient}')->name('recalls.')->group(function () {
-        Route::resource('recalls', RecallController::class)->except(['show']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('waiting-lists', WaitingListController::class)
-            ->names('waiting-lists') 
-            ->except(['show']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('fee-notes', FeeNoteController::class)
-            ->names('fee-notes') 
-            ->except(['show']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('sms', SmsController::class)
-            ->names('sms') 
-            ->except(['show','create','update','edit']);
-    });
-
-    Route::prefix('patients/{patient}')->group(function () {
-        Route::resource('communications', CommunicationController::class)
-        ->names('communications');
-    });
-    Route::post('/communications/{communication}/received', 
-        [CommunicationController::class, 'markAsReceived'])
-        ->name('communications.received');
-
-    
-    
-    Route::prefix('patients/{patient}/audio')->group(function () {
-        Route::get('/', [PatientAudioController::class, 'index'])->name('patients.audio.index');
-        Route::get('/create', [PatientAudioController::class, 'create'])->name('patients.audio.create');
-        Route::post('/', [PatientAudioController::class, 'store'])->name('patients.audio.store');
-        Route::delete('/{audio}', [PatientAudioController::class, 'destroy'])->name('patients.audio.destroy');
-    });
-
-    Route::prefix('appointments')->group(function () {
-        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule')->defaults('flag', 1);
-        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('appointments.byDateGlobal')->defaults('flag', 1);
-        Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('appointments.calendarEvents')->defaults('flag', 1);
-        Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal')->defaults('flag', 1);
-        Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal')->defaults('flag', 1);
-    });
-
-    Route::prefix('patients/{patient}/appointments')->group(function () {
-        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
-        Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
-        Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store')->defaults('flag', 0);
-        Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy')->defaults('flag', 0);
-        Route::post('/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('patients.appointments.updateStatus')->defaults('flag', 0);
-        Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('patients.appointments.calendarEvents')->defaults('flag', 0);
-        Route::post('/hospital-appointments', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.store')->defaults('flag', 0);
-    });
-
-    Route::post('/appointments/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
-
-    
-    Route::get('/recalls/notifications', [RecallNotificationController::class, 'index'])->name('recalls.notifications');
-    Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
-    Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
-   
-});

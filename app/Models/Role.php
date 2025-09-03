@@ -8,12 +8,16 @@ class Role extends Model
 {
     protected $fillable = ['name', 'guard_name'];
 
-    /**
-     * Permissions associated with the role.
-     */
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class, 'role_permissions', 'role', 'permission_id', 'name', 'id')
-            ->withTimestamps();
+        return $this->belongsToMany(
+            Permission::class,
+            'role_permissions',
+            'role_id',        // FK on pivot table for Role
+            'permission_id',  // FK on pivot table for Permission
+            'id',             // Local key on Role model
+            'id'              // Local key on Permission model
+        )->withTimestamps();
     }
+
 }

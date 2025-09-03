@@ -2,14 +2,9 @@
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         @guest
         @else
-        {{-- @php
-            $user = getLoggedInUser();
-            $guard = getCurrentGuard();
-        @endphp --}}
         <div class="sb-sidenav-menu">
             <div class="nav">
 
-                {{-- Dashboard --}}
                 <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ guard_route('dashboard.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
                     <span>Dashboard</span>
@@ -95,9 +90,16 @@
                         </a>
                         @endusercan
 
+                        @usercan('company-list')
+                        <a class="nav-link {{ Request::is('companies*') ? 'active' : '' }}" href="{{ guard_route('companies.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                            <span>Company</span>
+                        </a>
+                        @endusercan
+
                         @usercan('role-list')
                         <a class="nav-link {{ Request::is('roles*') ? 'active' : '' }}" href="{{ guard_route('roles.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-shield"></i></div>
                             <span>Roles</span>
                         </a>
                         @endusercan

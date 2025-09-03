@@ -22,7 +22,7 @@ class AppointmentController extends Controller
         // $this->authorize('viewAny', Appointment::class);
         $user = auth()->user();
         if (AuthHelper::isRole('patient')) {
-            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+            $patients = Patient::with('title')->where('id', $user->id)->paginate(1);
         } else {
             $patients = Patient::with(['title', 'preferredContact'])->get();
         }
