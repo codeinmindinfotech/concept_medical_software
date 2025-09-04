@@ -114,9 +114,14 @@
 
 
         <div class="sb-sidenav-footer">
+@php
+    $user = getLoggedInUser();
+@endphp
+
+
             <div class="small">Logged in as:</div>
-            {{ Auth::user()->name }}
-        </div>
+            Welcome, {{ user_name() }}
+            </div>
         @endguest
     </nav>
 </div>

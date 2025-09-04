@@ -125,7 +125,7 @@ class UserController extends Controller
     
         // $user->assignRole($request->input('roles'));
     
-        return redirect()->guard_route('users.index')
+        return redirect(guard_route('users.index'))
                         ->with('success','User updated successfully');
     }
     

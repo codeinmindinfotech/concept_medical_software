@@ -189,15 +189,24 @@ if (!function_exists('user_can')) {
         return in_array($permission, $permissionsCache[$cacheKey]);
     }
 }
+
 if (!function_exists('globalNotificationRecipients')) {
     function globalNotificationRecipients(): array
     {
         return array_map('trim', explode(',', env('GLOBAL_NOTIFICATION_EMAIL')));
     }
 }
+
 if (!function_exists('is_company_user')) {
     function is_company_user(): bool
     {
         return session('is_company_user', false);
+    }
+}
+
+if (!function_exists('user_name')) {
+    function user_name(): string
+    {
+        return session('user_name');
     }
 }
