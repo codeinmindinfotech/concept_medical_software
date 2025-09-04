@@ -43,25 +43,12 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth:superadmin,clinic,doctor,patient');
+Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth:manager,clinic,doctor,patient');
 
 // Superadmin-only login (main DB, no company name)
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login.form');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');
-
-Route::middleware(['web'])->group(function () {
-    Route::resource('patients', PatientController::class);
-    Route::get('/check-session', function () {
-        $isAuthenticated = Auth::guard('clinic')->check();
-        Log::info('Check session route - is clinic authenticated?', ['authenticated' => $isAuthenticated]);
-
-        return response()->json([
-            'authenticated' => $isAuthenticated,
-            'user' => Auth::guard('clinic')->user(),
-            'session' => session()->all(),
-        ]);
-    });
-});
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['web', 'auth:superadmin'])->group(function () {
     Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');

@@ -32,6 +32,7 @@ class AuthController extends Controller
                 'user_email'  => $user->email,
                 'user_type'   => 'superadmin',
                 'auth_guard'  => 'superadmin',
+                'is_company_user' => false
             ]);
 
             return redirect()->intended('/dashboard'); // or /admin/dashboard
@@ -39,4 +40,26 @@ class AuthController extends Controller
 
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
     }
+
+    public function logout(Request $request)
+    {
+        $guard = session('auth_guard', 'superadmin'); // default to superadmin if not set
+
+        Auth::guard($guard)->logout();
+
+        $request->session()->forget([
+            'user_id',
+            'user_name',
+            'user_email',
+            'user_type',
+            'auth_guard',
+            'is_company_user'
+        ]);
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('admin/login'); // or wherever you want to redirect after logout
+    }
+
 }

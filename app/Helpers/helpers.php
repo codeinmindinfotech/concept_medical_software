@@ -71,7 +71,7 @@ if (!function_exists('asset_url')) {
 if (!function_exists('getLoggedInUser')) {
     function getLoggedInUser()
     {
-        foreach (['superadmin', 'clinic', 'doctor', 'patient'] as $guard) {
+        foreach (['superadmin', 'clinic', 'doctor', 'patient','manager'] as $guard) {
             if (Auth::guard($guard)->check()) {
                 return Auth::guard($guard)->user();
             }
@@ -84,7 +84,7 @@ if (!function_exists('getLoggedInUser')) {
 if (!function_exists('getCurrentGuard')) {
     function getCurrentGuard()
     {
-        foreach (['superadmin', 'clinic', 'doctor', 'patient'] as $guard) {
+        foreach (['superadmin', 'clinic', 'doctor', 'patient','manager'] as $guard) {
             if (Auth::guard($guard)->check()) {
                 return $guard;
             }
@@ -99,8 +99,7 @@ if (!function_exists('guard_route')) {
     {
         $guard = getCurrentGuard();
         $prefix = ($guard && $guard !== 'superadmin') ? $guard . '.' : '';
-        // $prefix = ($guard) ? $guard . '.' : '';
-        // Auto-wrap single ID into array if needed
+    
         if (!is_array($params)) {
             $params = [$params];
         }
@@ -153,7 +152,7 @@ if (!function_exists('switchToCompanyDatabase')) {
 }
 
 if (!function_exists('user_can')) {
-    function user_can(string $permission): bool
+    function user_can(string $permission, bool $checkSuperAdmin = false): bool
     {
         static $permissionsCache = [];
 
@@ -162,6 +161,10 @@ if (!function_exists('user_can')) {
 
         if (!$guard || !$user) return false;
 
+        // If superadmin check enabled, and user is superadmin, allow
+        if ($checkSuperAdmin  && $guard === 'superadmin') {
+            return true;
+        }
         // Use role ID as cache key
         $cacheKey = "role_{$guard}";
 
@@ -186,4 +189,15 @@ if (!function_exists('user_can')) {
         return in_array($permission, $permissionsCache[$cacheKey]);
     }
 }
-
+if (!function_exists('globalNotificationRecipients')) {
+    function globalNotificationRecipients(): array
+    {
+        return array_map('trim', explode(',', env('GLOBAL_NOTIFICATION_EMAIL')));
+    }
+}
+if (!function_exists('is_company_user')) {
+    function is_company_user(): bool
+    {
+        return session('is_company_user', false);
+    }
+}

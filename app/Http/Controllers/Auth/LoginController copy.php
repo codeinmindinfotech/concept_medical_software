@@ -43,6 +43,7 @@ class LoginController extends Controller
                     'user_email',
                     'user_type',
                     'auth_guard',
+                    'is_company_user'
                 ]);
             }
         }

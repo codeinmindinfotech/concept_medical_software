@@ -25,6 +25,11 @@ return [
             'provider' => 'users', // superadmin
         ],
 
+        'manager' => [
+            'driver' => 'session',
+            'provider' => 'users', // superadmin
+        ],
+
         'clinic' => [
             'driver' => 'session',
             'provider' => 'clinics',

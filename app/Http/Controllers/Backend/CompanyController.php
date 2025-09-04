@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Company;
+use App\Mail\CompanyCreatedMail; // ✅ Add this
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
 
 class CompanyController extends Controller
 {
@@ -96,6 +98,10 @@ class CompanyController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            $recipients = globalNotificationRecipients();
+
+            Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
 
             return response()->json([
                 'redirect' => guard_route('companies.index'),

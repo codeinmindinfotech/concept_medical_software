@@ -71,7 +71,7 @@ class LoginController extends Controller
 
         // Step 3: Attempt logins in order of priority
         $guardAttempts = [
-            'superadmin' => '/manager/dashboard',
+            'manager' => '/manager/dashboard',
             'clinic'     => '/clinic/dashboard',
             'doctor'     => '/doctor/dashboard',
             'patient'    => '/patient/dashboard',
@@ -88,6 +88,7 @@ class LoginController extends Controller
                     'user_email'    => $user->email,
                     'user_type'     => $guard,
                     'auth_guard'    => $guard,
+                    'is_company_user' => in_array($guard, ['manager', 'clinic', 'doctor', 'patient']),
                 ]);
 
                 \Log::info(ucfirst($guard) . ' login successful');
@@ -113,6 +114,7 @@ class LoginController extends Controller
             'user_email',
             'user_type',
             'auth_guard',
+            'is_company_user'
         ]);
         $request->session()->invalidate();
         $request->session()->regenerateToken();

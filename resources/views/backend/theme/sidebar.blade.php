@@ -90,11 +90,13 @@
                         </a>
                         @endusercan
 
-                        @usercan('company-list')
-                        <a class="nav-link {{ Request::is('companies*') ? 'active' : '' }}" href="{{ guard_route('companies.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                            <span>Company</span>
-                        </a>
+                        @usercan('company-list', true) 
+                            @if (!is_company_user())
+                                <a class="nav-link {{ Request::is('companies*') ? 'active' : '' }}" href="{{ guard_route('companies.index') }}">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                                    <span>Company</span>
+                                </a>
+                            @endif
                         @endusercan
 
                         @usercan('role-list')
