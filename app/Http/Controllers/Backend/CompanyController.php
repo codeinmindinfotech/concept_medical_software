@@ -99,9 +99,9 @@ class CompanyController extends Controller
                 'updated_at' => now(),
             ]);
 
-            $recipients = globalNotificationRecipients();
+            // $recipients = globalNotificationRecipients();
 
-            Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
+            // Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
 
             return response()->json([
                 'redirect' => guard_route('companies.index'),

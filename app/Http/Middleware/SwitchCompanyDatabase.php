@@ -1,31 +1,44 @@
 <?php
-
 namespace App\Http\Middleware;
 
-use App\Models\Company;
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use App\Models\Company;
 
 class SwitchCompanyDatabase
 {
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, Closure $next)
     {
-         $companyName = session('company_name');
+        
+        
+        \Log::info('Before switch', ['connection' => DB::connection()->getDatabaseName()]);
 
-        if ($companyName) {
-            $company = Company::where('name', $companyName)->first(); // use code instead of ID
-            if ($company) {
-                switchToCompanyDatabase($company);
-            }
+        // dd(11);
+        \Log::info('SwitchCompanyDatabase middleware ran.');
+
+        $tenantConfig = session('tenant_db_config');
+        if ($tenantConfig) {
+            
+            Config::set('database.connections.tenant', $tenantConfig);
+
+            Config::set('database.default', 'tenant');
+
+            DB::purge('tenant');
+            DB::reconnect('tenant');
+
+            \Log::info('Tenant DB connection set in middleware.', ['tenant_db' => $tenantConfig['database']]);
+        } else {
+            Config::set('database.default', 'mysql');  // ✅ use 'mysql' not 'sql'
+            DB::purge('mysql');
+            DB::reconnect('mysql');
+            \Log::warning('Tenant DB config missing in session');
         }
 
-        // Log the user and guard info for debugging
-        \Log::info('Middleware user check:', [
-            'guard' => $guard ?? 'default',
-            'user' => $company ? $company->toArray() : null,
-        ]);
         return $next($request);
     }
+
+
+
+
 }

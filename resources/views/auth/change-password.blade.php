@@ -34,6 +34,11 @@
                 @csrf
                 <div class="row">
                     <div class="mb-3">
+                        <label>Name <span class="txt-error">*</span></label>
+                        <input type="text" class="form-control" value="{{ user_name() }}" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
                         <label>New Password <span class="txt-error">*</span></label>
                         <input type="password" name="new_password" class="form-control" >
                         @error('new_password') <span class="text-danger">{{ $message }}</span> @enderror

@@ -19,14 +19,26 @@ class AppServiceProvider extends ServiceProvider
     }
 
     public function boot() {
+
         Blade::if('usercan', function ($permission) {
             return user_can($permission);
         });
 
         View::composer('backend.theme.header', function ($view) {
+            $guard = session('auth_guard');
+
+// if (in_array($guard, ['clinic', 'doctor', 'patient', 'manager']) && session('company_name')) {
+//     $company = Company::where('name', session('company_name'))->first();
+//     if ($company) {
+//         echo "dddddddd";
+//         switchToCompanyDatabase($company);
+
+        
+//     }
+// }
+
             if ((AuthHelper::isRole('clinic') || AuthHelper::isRole('doctor') || AuthHelper::isRole('patient') || AuthHelper::isRole('manager')) && session('company_name')) {
                 $companyName = session('company_name');
-
                 if ($companyName) {
                     $company = Company::where('name', $companyName)->first(); // use code instead of ID
                     if ($company) {
@@ -35,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
             $user = AuthHelper::user();
-
+            // $user =getLoggedInUser();
             // === Recall Data ===
             $currentMonth = now()->month;
             $currentYear = now()->year;

@@ -111,44 +111,94 @@ if (!function_exists('guard_route')) {
 if (!function_exists('switchToCompanyDatabase')) {
     function switchToCompanyDatabase($company)
     {
+        if (!$company->db_database || !$company->db_username) {
+            throw new \Exception('Tenant DB credentials missing');
+        }
+    
+        \Log::info('Company DB info:', [
+            'db_host' => $company->db_host,
+            'db_port' => $company->db_port,
+            'db_database' => $company->db_database,
+            'db_username' => $company->db_username,
+            'db_password' => $company->db_password,
+        ]);
 
         $connection = [
-            'driver'    => 'mysql',
-            'host'      => $company->db_host ?? '127.0.0.1',
-            'port'      => $company->db_port ?? '3306',
-            'database'  => $company->db_database,
-            'username'  => $company->db_username,
-            'password'  => $company->db_password,
-            'charset'   => 'utf8mb4',
+            'driver' => 'mysql',
+            'host' => $company->db_host ?? '127.0.0.1',
+            'port' => $company->db_port ?? '3306',
+            'database' => $company->db_database,
+            'username' => $company->db_username,
+            'password' => $company->db_password,
+            'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix'    => '',
-            'strict'    => true,
-            'engine'    => null,
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
         ];
+       
+        Config::set('database.connections.tenant', $connection);
+        
+        // Store tenant DB config in session for middleware
+        session(['tenant_db_config' => $connection]);
+        session(['company_db_connection' => 'tenant']);
 
-        \Log::info('Switching DB connection to:', $connection);
-
-        Config::set('database.connections.mysql', $connection);
-
-        DB::purge('mysql');
-        DB::reconnect('mysql');
-
-        session(['company_db_connection' => 'mysql']); 
-        \Log::info('Clinic DB connection set in session:', ['connection' => session('company_db_connection')]);
-        \Log::info('Current DB in use: ' . DB::connection()->getDatabaseName());
-        $currentDb = DB::connection('mysql')->getDatabaseName();
-
-        \Log::info('Current DB in usennnn: ' . $currentDb);
-
-
-        try {
-            DB::connection('mysql')->getPdo();
-
-            \Log::info('-----Successfully connected to company DB');
-        } catch (\Exception $e) {
-            \Log::error('Failed to connect to company DB: ' . $e->getMessage());
-        }
+        // Optionally: reconnect so Laravel uses the new config immediately
+        \DB::purge('tenant');
+        \DB::reconnect('tenant');
+        
     }
+
+
+
+
+    // function switchToCompanyDatabase($company)
+    // {
+    //     Config::set('database.connections.tenant', [
+    //         'driver' => 'mysql',
+    //         'host' => $company->db_host ?? '127.0.0.1',
+    //         'port' => $company->db_port ?? '3306',
+    //         'database' => $company->db_database,
+    //         'username' => $company->db_username,
+    //         'password' => $company->db_password,
+    //         'charset' => 'utf8mb4',
+    //         'collation' => 'utf8mb4_unicode_ci',
+    //         'prefix' => '',
+    //         'strict' => true,
+    //         'engine' => null,
+    //     ]);
+
+    //     DB::purge('tenant');
+    //     DB::reconnect('tenant');
+    //     \Log::info('Tenant DB Config:', config('database.connections.tenant'));
+
+        
+    //     // DB::purge('tenant');
+    //     // DB::reconnect('tenant');
+    //     session(['company_db_connection' => 'tenant']);
+    //     Config::set('database.default', 'tenant');  // Optional but recommended
+    //     DB::purge('default');   // purge default too if it uses different connection
+    //     DB::reconnect('default');
+
+    //     // Config::set('database.connections.mysql', $connection);
+    //     // DB::purge('mysql');
+    //     // DB::reconnect('mysql');
+    //     // session(['company_db_connection' => 'mysql']); 
+        
+    //     \Log::info('Clinic DB connection set in session:', ['connection' => session('company_db_connection')]);
+    //     \Log::info('Current DB in use: ' . DB::connection()->getDatabaseName());
+    //     // $currentDb = DB::connection('mysql')->getDatabaseName();
+
+    //     // \Log::info('Current DB in usennnn: ' . $currentDb);
+
+
+    //     try {
+    //         DB::connection('tenant')->getPdo();
+    //         \Log::info('-----Successfully connected to company DB');
+    //     } catch (\Exception $e) {
+    //         \Log::error('Failed to connect to company DB: ' . $e->getMessage());
+    //     }
+    // }
 }
 
 if (!function_exists('user_can')) {

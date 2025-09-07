@@ -58,4 +58,9 @@ class Doctor extends Authenticatable
     {
         return $this->hasMany(Patient::class);
     }
+
+    public function getConnectionName()
+    {
+        return session('company_db_connection', 'mysql');
+    }
 }

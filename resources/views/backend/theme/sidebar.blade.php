@@ -114,11 +114,6 @@
 
 
         <div class="sb-sidenav-footer">
-@php
-    $user = getLoggedInUser();
-@endphp
-
-
             <div class="small">Logged in as:</div>
             Welcome, {{ user_name() }}
             </div>

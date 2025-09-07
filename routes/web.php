@@ -36,7 +36,9 @@ use App\Http\Controllers\Backend\RecallNotificationController;
 use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
-use App\Models\Patient;
+use Illuminate\Support\Facades\DB;
+use App\Models\Company;
+use Illuminate\Support\Facades\Config;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -49,6 +51,39 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middl
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login.form');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/test-session', function () {
+    dd(session('company_name'));
+});
+
+
+Route::middleware(['web', 'switch.company.database'])->get('/debug-db', function () {
+    $default = config('database.default');
+    $tenantConfig = config('database.connections.tenant');
+    $currentConnection = DB::connection()->getName();
+    $currentDB = DB::connection()->getDatabaseName();
+
+    return [
+        'default_connection' => $default,
+        'current_connection' => $currentConnection,
+        'current_database' => $currentDB,
+        'tenant_config' => session('tenant_db_config'),
+        'tenant_config1' => $tenantConfig,
+        'session_company_name' => session('company_name'),
+        'session_company_db_connection' => session('company_db_connection'),
+    ];
+});
+Route::get('/check-session', function () {
+    return session('tenant_db_config') ?: 'No tenant config in session';
+});
+
+Route::middleware(['web', 'switch.company.database', 'auth:manager', 'check.role:manager'])
+    ->get('/manager/dashboard1', function () {
+        return [
+            'user' => auth()->guard('manager')->user(),
+            'db' => \DB::connection()->getDatabaseName(),
+        ];
+    });
 
 Route::middleware(['web', 'auth:superadmin'])->group(function () {
     Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
@@ -195,8 +230,12 @@ $roles = ['clinic', 'doctor', 'patient','manager'];
 foreach ($roles as $role) {
     Route::prefix($role)
         ->name("$role.")
-        ->middleware(['web', "auth:$role", 'switch.company.database'])
-        ->group(function () {
+        ->middleware(['web',  'switch.company.database'])//"auth:$role",
+        ->group(function () use ($role){
+
+            // Apply auth for this role
+            Route::middleware(["auth:$role", "check.role:$role"])
+                ->group(function () use ($role) {
 
             Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
             Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
@@ -338,4 +377,6 @@ foreach ($roles as $role) {
             Route::get('/recalls/{id}/email', [RecallNotificationController::class, 'sendEmail'])->name('recalls.email');
             Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
         });
+    });
 }
+

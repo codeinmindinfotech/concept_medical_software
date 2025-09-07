@@ -3,15 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
-class User extends TenantUser
+class Superadmin extends Authenticatable
 {
     use HasFactory, Notifiable;
-    protected $connection = 'tenant';
-    // protected $guard_name = 'superadmin'; 
+    protected $guard_name = 'superadmin'; 
     protected $fillable = [
         'name',
         'email',
@@ -34,8 +34,6 @@ class User extends TenantUser
 
     public function getConnectionName()
     {
-        return session('tenant_db_config') ? 'tenant' : 'mysql';
-
-        // return session('company_db_connection', 'mysql'); // 'mysql' is fallback
+        return session('company_db_connection', 'mysql'); // 'mysql' is fallback
     }
 }

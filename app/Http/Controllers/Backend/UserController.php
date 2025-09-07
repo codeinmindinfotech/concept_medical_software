@@ -59,12 +59,18 @@ class UserController extends Controller
         ]);
     
         $input = $request->all();
+        if(is_company_user()) {
+            $input['role_id'] = 5;
+        }else {
+            $input['role_id'] = 1;
+        }
+        
         $input['password'] = Hash::make($input['password']);
     
         $user = User::create($input);
         // $user->assignRole($request->input('roles'));
     
-        return redirect()->guard_route('users.index')
+        return redirect(guard_route('users.index'))
                         ->with('success','User created successfully');
     }
     
@@ -118,6 +124,11 @@ class UserController extends Controller
         }else{
             $input = Arr::except($input,array('password'));    
         }
+        if(is_company_user()) {
+            $input['role_id'] = 5;
+        }else {
+            $input['role_id'] = 1;
+        }
     
         $user = User::find($id);
         $user->update($input);
@@ -138,7 +149,7 @@ class UserController extends Controller
     public function destroy($id): RedirectResponse
     {
         User::find($id)->delete();
-        return redirect()->guard_route('users.index')
+        return redirect(guard_route('users.index'))
                         ->with('success','User deleted successfully');
     }
 }

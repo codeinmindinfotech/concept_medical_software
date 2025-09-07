@@ -15,13 +15,15 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
         ]);
 
         $credentials = $request->only('email', 'password');
-
+        
         // Use superadmin guard (main DB)
         if (Auth::guard('superadmin')->attempt($credentials, $request->filled('remember'))) {
             $user = Auth::guard('superadmin')->user();
@@ -35,6 +37,8 @@ class AuthController extends Controller
                 'is_company_user' => false
             ]);
 
+            \Log::info(' superadmin login successful');
+                \Log::info($user);
             return redirect()->intended('/dashboard'); // or /admin/dashboard
         }
 

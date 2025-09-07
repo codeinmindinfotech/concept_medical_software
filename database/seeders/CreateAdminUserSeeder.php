@@ -14,12 +14,21 @@ class CreateAdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create or find the admin user
+        $user = User::firstOrCreate(
+            ['email' => 'niru@gmail.com'],
+            [
+                'name' => 'Niru Patel',
+                'password' => bcrypt('123456'),  // default password
+                'role_id'  => 5
+            ]
+        );
+
         $user = User::firstOrCreate(
             ['email' => 'clive.connolly@gmail.com'],
             [
                 'name' => 'Clive Connolly',
-                'password' => bcrypt('123456')  // default password
+                'password' => bcrypt('123456'),  // default password
+                'role_id'  => 5
             ]
         );
 

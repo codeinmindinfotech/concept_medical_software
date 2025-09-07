@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Clinic extends Authenticatable
+class Clinic extends TenantUser
 {
     use SoftDeletes;
     protected $guarded = [];
@@ -21,4 +21,9 @@ class Clinic extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function getConnectionName()
+    {
+        return session('company_db_connection', 'mysql');
+    }
 }

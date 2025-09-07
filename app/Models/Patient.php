@@ -162,4 +162,9 @@ class Patient extends Authenticatable
         $title = $this->title_value;
         return ($title ? $title . ' ' : '') . "{$this->first_name} {$this->surname}";
     }
+
+    public function getConnectionName()
+    {
+        return session('company_db_connection', 'mysql');
+    }
 }

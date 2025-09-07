@@ -34,6 +34,7 @@ class PermissionSeeder extends Seeder
             $modules = [
                 'role', 'user', 'company', 'dropdown', 'doctor',
                 'patient', 'appointment', 'clinic', 'chargecode',
+                'consultant','insurance'
             ];
             $actions = ['list', 'create', 'edit', 'delete'];
 
@@ -80,6 +81,7 @@ class PermissionSeeder extends Seeder
                     'patient-list', 'patient-edit','patient-create', 'patient-delete',
                     'appointment-list', 'appointment-create', 'appointment-edit', 'appointment-delete',
                     'clinic-list', 'clinic-create', 'clinic-edit', 'clinic-delete',
+                    'consultant-list', 'consultant-create', 'consultant-edit', 'consultant-delete',
                     'chargecode-list', 'chargecode-create', 'chargecode-edit', 'chargecode-delete',
                 ],
                 'doctor' => [
