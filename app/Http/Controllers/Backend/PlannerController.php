@@ -18,7 +18,7 @@ class PlannerController extends Controller
         $date = $request->get('date', now()->toDateString());
 
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
-        $procedures = ChargeCode::companyOnly()->all();
+        $procedures = ChargeCode::companyOnly()->get();
         $appointments = Appointment::companyOnly()->with(['patient', 'appointmentType','appointmentStatus','procedure'])
             ->whereDate('start_time', $date);
 
