@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('patient_physicals', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable(); 
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->text('physical_notes')->nullable();
             $table->timestamps();

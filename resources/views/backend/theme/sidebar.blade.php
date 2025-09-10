@@ -10,30 +10,21 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
                     <span>Dashboard</span>
                 </a>
+                
                 <a class="nav-link {{ Request::is('patients*') ? 'active' : '' }}" href="{{ route('patients.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-procedures"></i></div>
                     <span>Patients</span>
                 </a>
-
                 
-                    <a class="nav-link {{ Request::is('planner*') ? 'active' : '' }}" href="{{ route('planner.index') }}">
-                        <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
-                        <span>Planner</span>
-                    </a>
-                
-                    <a class="nav-link {{ Request::is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.schedule') }}">
-                        <div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>
-                        <span>Diary</span> 
-                    </a>
-                
-
-               
-                
-
-                {{-- <a class="nav-link {{ Request::is('audios*') ? 'active' : '' }}" href="{{ route('audios.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-microphone"></i></div>
-                    <span>Audio Recording</span>
-                </a> --}}
+                <a class="nav-link {{ Request::is('planner*') ? 'active' : '' }}" href="{{ route('planner.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <span>Planner</span>
+                </a>
+            
+                <a class="nav-link {{ Request::is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.schedule') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>
+                    <span>Diary</span> 
+                </a>
 
                 {{-- Utilities Collapsible Section --}}   
                 @php
@@ -57,54 +48,43 @@
                             <i class="fas fa-user me-2"></i> Users
                         </a>
         
-                        @if(auth()->user()->can('role-list'))
                         <a class="nav-link {{ Request::is('roles*') ? 'active fw-bold text-primary' : '' }}"
                            href="{{ route('roles.index') }}">
                             <i class="fas fa-user-shield me-2"></i> Roles
                         </a>
-                        @endif
         
-                        @if(auth()->user()->can('dropdown-list'))
                         <a class="nav-link {{ Request::is('dropdowns*') ? 'active fw-bold text-primary' : '' }}"
                            href="{{ route('dropdowns.index') }}">
                             <i class="fas fa-list-ul me-2"></i> Dropdowns
                         </a>
-                        @endif
 
-                        @can('viewAny', App\Models\Doctor::class)
                         <a class="nav-link {{ Request::is('doctors*') ? 'active' : '' }}" href="{{ route('doctors.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
                             <span>Doctors</span>
                         </a>
-                        @endcan
                 
-                        @can('viewAny', App\Models\Consultant::class)
                         <a class="nav-link {{ Request::is('consultants*') ? 'active' : '' }}" href="{{ route('consultants.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-stethoscope"></i></div>
                             <span>Consultants</span>
                         </a>
-                        @endcan
-                       
-                        @if(auth()->user()->can('insurance-list'))
+                        <a class="nav-link {{ Request::is('companies*') ? 'active' : '' }}" href="{{ route('companies.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                            <span>Company</span>
+                        </a>
+
                         <a class="nav-link {{ Request::is('insurances*') ? 'active' : '' }}" href="{{ route('insurances.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-medical"></i></div>
                             <span>Insurance</span>
                         </a>
-                        @endif
-                
-                        @can('viewAny', App\Models\ChargeCode::class)
                         <a class="nav-link {{ Request::is('chargecodes*') ? 'active' : '' }}" href="{{ route('chargecodes.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
                             <span>Charge Codes</span>
                         </a>
-                        @endcan
 
-                        @if(auth()->user()->can('clinic-list'))
                         <a class="nav-link {{ Request::is('clinics*') ? 'active' : '' }}" href="{{ route('clinics.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
                             <span>Clinic</span>
                         </a>
-                        @endif
                         
         
                     </div>

@@ -15,7 +15,7 @@ class ConsultantController extends Controller
 {
     public function index(Request $request): View|string
     {
-        $this->authorize('viewAny', Consultant::class);
+        //$this->authorize('viewAny', Consultant::class);
 
         $pageTitle = "Consultants List";
         $consultants = Consultant::latest()->paginate(5);
@@ -29,7 +29,7 @@ class ConsultantController extends Controller
 
     public function create(): View
     {
-        $this->authorize('create', Consultant::class);
+        //$this->authorize('create', Consultant::class);
 
         $pageTitle = "Consultants Create";
         $insurances = Insurance::all();
@@ -38,7 +38,7 @@ class ConsultantController extends Controller
 
     public function store(ConsultantRequest $request): JsonResponse
     {
-        $this->authorize('create', Consultant::class);
+        //$this->authorize('create', Consultant::class);
 
         $data = $request->validated();
 
@@ -57,7 +57,7 @@ class ConsultantController extends Controller
 
     public function show(Consultant $consultant): View
     {
-        $this->authorize('view', $consultant);
+        //$this->authorize('view', $consultant);
 
         $pageTitle = "Show Consultant";
         return view('consultants.show', compact('consultant', 'pageTitle'));
@@ -65,7 +65,7 @@ class ConsultantController extends Controller
 
     public function edit(Consultant $consultant): View
     {
-        $this->authorize('update', $consultant);
+        //$this->authorize('update', $consultant);
 
         $pageTitle = "Edit Consultant";
         $insurances = Insurance::all();
@@ -74,7 +74,7 @@ class ConsultantController extends Controller
 
     public function update(ConsultantRequest $request, Consultant $consultant): JsonResponse
     {
-        $this->authorize('update', $consultant);
+        //$this->authorize('update', $consultant);
 
         $data = $request->validated();
 
@@ -98,7 +98,7 @@ class ConsultantController extends Controller
 
     public function destroy(Consultant $consultant): RedirectResponse
     {
-        $this->authorize('delete', $consultant);
+        //$this->authorize('delete', $consultant);
 
         $consultant->delete();
 

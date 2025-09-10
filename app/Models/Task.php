@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
     protected $fillable = [
+        'company_id',
         'patient_id',
         'task_creator_id',
         'task_owner_id',
@@ -47,5 +48,10 @@ class Task extends Model
     public function followups()
     {
         return $this->hasMany(TaskFollowup::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

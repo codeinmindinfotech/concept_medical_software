@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Recall extends Model
 {
-    protected $fillable = ['patient_id', 'recall_interval', 'recall_date', 'status_id', 'note'];
+    protected $fillable = ['company_id', 'patient_id', 'recall_interval', 'recall_date', 'status_id', 'note'];
 
     public function patient() {
         return $this->belongsTo(Patient::class);
@@ -14,6 +14,11 @@ class Recall extends Model
 
     public function status() {
         return $this->belongsTo(DropDownValue::class, 'status_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
 }

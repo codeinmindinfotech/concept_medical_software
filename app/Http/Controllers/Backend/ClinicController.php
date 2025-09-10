@@ -12,13 +12,13 @@ use Illuminate\Http\JsonResponse;
 
 class ClinicController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:clinic-list|clinic-create|clinic-edit|clinic-delete', ['only' => ['index','show']]);
-        $this->middleware('permission:clinic-create', ['only' => ['create','store']]);
-        $this->middleware('permission:clinic-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:clinic-delete', ['only' => ['destroy']]);
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('permission:clinic-list|clinic-create|clinic-edit|clinic-delete', ['only' => ['index','show']]);
+    //     $this->middleware('permission:clinic-create', ['only' => ['create','store']]);
+    //     $this->middleware('permission:clinic-edit', ['only' => ['edit','update']]);
+    //     $this->middleware('permission:clinic-delete', ['only' => ['destroy']]);
+    // }
 
     public function index(Request $request): View|string
     {
@@ -41,7 +41,8 @@ class ClinicController extends Controller
     public function store(ClinicRequest $request): JsonResponse
     {
         $data = $this->extractDayFields($request);
-        Clinic::create($data);
+        $clinic = Clinic::create($data);
+        assignRoleToGuardedModel($clinic, 'clinic', 'clinic');
         return response()->json([
             'redirect' => route('clinics.index'),
             'message' => 'Clinic created successfully',

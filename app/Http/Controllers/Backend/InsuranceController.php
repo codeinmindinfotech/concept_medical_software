@@ -19,13 +19,13 @@ class InsuranceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
-    {
-         $this->middleware('permission:insurance-list|insurance-create|insurance-edit|insurance-delete', ['only' => ['index','show']]);
-         $this->middleware('permission:insurance-create', ['only' => ['create','store']]);
-         $this->middleware('permission:insurance-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:insurance-delete', ['only' => ['destroy']]);
-    }
+    // function __construct()
+    // {
+    //      $this->middleware('permission:insurance-list|insurance-create|insurance-edit|insurance-delete', ['only' => ['index','show']]);
+    //      $this->middleware('permission:insurance-create', ['only' => ['create','store']]);
+    //      $this->middleware('permission:insurance-edit', ['only' => ['edit','update']]);
+    //      $this->middleware('permission:insurance-delete', ['only' => ['destroy']]);
+    // }
     /**
      * Display a listing of the resource.
      *

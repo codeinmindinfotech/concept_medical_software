@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ChargeCode extends Model
 {
     protected $fillable = [
+        'company_id',
         'chargeGroupType',
         'code',
         'description',

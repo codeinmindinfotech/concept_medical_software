@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Schema::dropIfExists('doctors');
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->string('name')->nullable();
+            $table->string('password')->nullable();
             $table->string('company')->nullable();
             $table->string('salutation')->nullable();
             $table->string('address')->nullable();

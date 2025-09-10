@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\AuthHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\ChargeCode;
@@ -18,7 +19,7 @@ class AppointmentController extends Controller
 
     public function schedulePage(Request $request, ?Patient $patient = null)
     {
-        $this->authorize('viewAny', Appointment::class);
+       // AuthHelper::authorize('viewAny', Appointment::class);
         $user = auth()->user();
         if ($user->hasRole('patient')) {
             $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
@@ -38,7 +39,7 @@ class AppointmentController extends Controller
 
     public function calendarEvents(Request $request, ?Patient $patient = null)
     {
-        $this->authorize('viewAny', Appointment::class);
+       // AuthHelper::authorize('viewAny', Appointment::class);
         $clinicId = $request->input('clinic_id');
         $patientId = $request->input('patient_id');
         $query = Appointment::with(['patient', 'clinic']); // Eager load relations
@@ -69,7 +70,7 @@ class AppointmentController extends Controller
 
     public function getAppointmentsByDate(Request $request, Patient $patient)
     {
-        $this->authorize('viewAny', Appointment::class);
+       // AuthHelper::authorize('viewAny', Appointment::class);
         $flag = $request->route('flag'); 
         try {
             $request->validate([
@@ -167,7 +168,7 @@ class AppointmentController extends Controller
 
     private function getHospitalAppointmentsByDate(Request $request, Patient $patient, Clinic $clinic)
     {
-        $this->authorize('viewAny', Appointment::class);
+       // AuthHelper::authorize('viewAny', Appointment::class);
         $isOpen = 0;
         $flag = $request->route('flag'); 
 
@@ -236,7 +237,7 @@ class AppointmentController extends Controller
 
     public function store(Request $request, Patient $patient)
     {
-        $this->authorize('create', Appointment::class);
+        // $this->authorize('create', Appointment::class);
         $flag = $request->route('flag'); 
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
@@ -326,7 +327,7 @@ class AppointmentController extends Controller
 
     public function storeHospitalAppointment(Request $request, Patient $patient)
     {
-        $this->authorize('create', Appointment::class);
+        // $this->authorize('create', Appointment::class);
         $flag = $request->route('flag'); 
         $validator = Validator::make($request->all(), [
             'clinic_id' => 'required|exists:clinics,id',
@@ -410,7 +411,7 @@ class AppointmentController extends Controller
 
     public function destroy(Patient $patient, Appointment $appointment)
     {
-        $this->authorize('delete', $appointment);
+        // $this->authorize('delete', $appointment);
         try {
             if ($appointment->patient_id !== $patient->id) {
                 return response()->json([
@@ -435,7 +436,7 @@ class AppointmentController extends Controller
 
     public function updateStatus(Request $request, $patientId, Appointment $appointment)
     {
-        $this->authorize('create', Appointment::class);
+        // $this->authorize('create', Appointment::class);
         $validator = Validator::make($request->all(), [
             'appointment_status' => 'required|exists:drop_down_values,id'
         ]);
@@ -459,7 +460,7 @@ class AppointmentController extends Controller
 
     public function updateSlot(Request $request)
     {
-        $this->authorize('create', Appointment::class);
+        // $this->authorize('create', Appointment::class);
 
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',

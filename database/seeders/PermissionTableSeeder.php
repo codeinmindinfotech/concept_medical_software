@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -18,19 +17,31 @@ class PermissionTableSeeder extends Seeder
             'dropdown',
             'dropdownvalue',
             'doctor',
+            'company',
             'patient',
             'consultant',
             'insurance',
             'clinic',
             'chargecode',
-            'appointment'
+            'appointment',
         ];
 
         $actions = ['list', 'create', 'edit', 'delete'];
 
+        // Define the guards you support
+        $guards = ['web', 'doctor', 'patient', 'clinic'];
+
+        // Generate all permissions for all guards
         foreach ($entities as $entity) {
             foreach ($actions as $action) {
-                Permission::firstOrCreate(['name' => "{$entity}-{$action}"]);
+                $permissionName = "{$entity}-{$action}";
+
+                foreach ($guards as $guard) {
+                    Permission::firstOrCreate([
+                        'name'       => $permissionName,
+                        'guard_name' => $guard,
+                    ]);
+                }
             }
         }
     }

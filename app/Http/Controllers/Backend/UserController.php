@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
 use App\Models\User;
+use App\Rules\UniquePerCompany;
 use Spatie\Permission\Models\Role;
 use DB;
 use Hash;
@@ -42,7 +43,7 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        $roles = Role::pluck('name','name')->all();
+        $roles = Role::where('guard_name', 'web')->pluck('name','name')->all(); //where guard_name =web
 
         return view('users.create',compact('roles'));
     }
@@ -55,9 +56,11 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $companyId = auth()->user()->company_id;
+
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email',
+            'email' => ['required', 'email', new UniquePerCompany('users', 'email', $companyId)],
             'password' => 'required|same:confirm-password',
             'roles' => 'required'
         ]);
@@ -94,7 +97,7 @@ class UserController extends Controller
     public function edit($id): View
     {
         $user = User::find($id);
-        $roles = Role::pluck('name','name')->all();
+        $roles = Role::where('guard_name', 'web')->pluck('name','name')->all();
         $userRole = $user->roles->pluck('name','name')->all();
     
         return view('users.edit',compact('user','roles','userRole'));
@@ -109,9 +112,10 @@ class UserController extends Controller
      */
     public function update(Request $request, $id): RedirectResponse
     {
+        $companyId = auth()->user()->company_id;
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$id,
+            'email' => ['required', 'email', new UniquePerCompany('users', 'email', $companyId, $id)],
             'password' => 'same:confirm-password',
             'roles' => 'required'
         ]);

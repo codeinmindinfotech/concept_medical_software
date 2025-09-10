@@ -10,7 +10,7 @@ class WaitingList extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'clinic_id','visit_date', 'consult_note', 'patient_id', 'category_id'
+        'company_id','clinic_id','visit_date', 'consult_note', 'patient_id', 'category_id'
     ];
 
     public function patient()
@@ -26,6 +26,11 @@ class WaitingList extends Model
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }
 

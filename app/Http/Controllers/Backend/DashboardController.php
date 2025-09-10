@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -16,6 +15,7 @@ class DashboardController extends Controller
      */
     public function index(): View|RedirectResponse
     {
+        $data = getAuthenticatedUserAndCompany();
         $user = auth()->user();
         $patient = $user->hasRole('patient') ? $user->userable : null;
         return view('dashboard.index', compact('patient'));

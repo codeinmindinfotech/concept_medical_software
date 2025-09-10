@@ -15,8 +15,12 @@ return new class extends Migration
             $table->id();
 
             // Basic info
-            $table->string('code')->unique();
+            $table->unsignedBigInteger('company_id')->nullable();             
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
+            $table->string('code'); 
+            $table->unique(['company_id', 'code']);
             $table->string('name');
+            $table->string('password')->nullable();
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('fax')->nullable();

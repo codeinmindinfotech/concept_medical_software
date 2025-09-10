@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Appointment extends Model
 {
     protected $fillable = [
+        'company_id',
         'patient_id',
         'clinic_id',
         'appointment_type',
@@ -49,5 +50,10 @@ class Appointment extends Model
     public function procedure()
     {
         return $this->belongsTo(ChargeCode::class, 'procedure_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

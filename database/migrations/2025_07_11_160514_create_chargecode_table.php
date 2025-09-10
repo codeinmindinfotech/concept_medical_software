@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('charge_codes', function (Blueprint $table) {
             $table->id();
 
-            $table->string('code')->unique();
+            $table->unsignedBigInteger('company_id')->nullable();             
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
+            $table->string('code'); 
+            $table->unique(['company_id', 'code']);
             // Foreign key to drop_down_values (charge group type)
             $table->unsignedBigInteger('chargeGroupType');
             $table->foreign('chargeGroupType')->references('id')->on('drop_down_values')->onDelete('restrict');

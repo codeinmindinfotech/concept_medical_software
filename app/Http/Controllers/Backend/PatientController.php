@@ -7,7 +7,6 @@ use App\Models\Backend\Insurance;
 use App\Models\Consultant;
 use App\Models\Doctor;
 use App\Models\Patient;
-use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -18,16 +17,14 @@ use Illuminate\Http\JsonResponse;
 class PatientController extends Controller
 { 
     use DropdownTrait;
-    protected $userService;
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct(UserService $userService)
+    public function __construct()
     {
-        $this->userService = $userService;            
     }
 
     /**
@@ -111,16 +108,7 @@ class PatientController extends Controller
         $validated['email_consent'] = $request->has('email_consent');
 
         $patient = Patient::create($validated);
-
-        // Create linked user for patient
-        $this->userService->createUserForModel(
-            $patient->first_name . ' ' . $patient->surname,
-            $patient->email,
-            'patient',
-            $patient->id,
-            Patient::class
-        );
-
+        assignRoleToGuardedModel($patient, 'patient', 'patient');
         return response()->json([
             'redirect' => route('patients.index'),
             'message' => 'Patient created successfully',
@@ -178,28 +166,6 @@ class PatientController extends Controller
         // Update the patient
         $patient->update($validated);
         
-        // Sync user details after patient update
-        $user = $this->userService->updateUserForModel(
-            $patient->id,
-            Patient::class,
-            [
-                'name' => $patient->first_name . ' ' . $patient->surname,
-                'email' => $patient->email,
-                'role' => 'patient',
-            ]
-        );
-        
-        // If no linked user found, create one
-        if (!$user) {
-            $this->userService->createUserForModel(
-                $patient->first_name . ' ' . $patient->surname,
-                $patient->email,
-                'patient',
-                $patient->id,
-                Patient::class
-            );
-        }
-
         return response()->json([
             'redirect' => route('patients.index'),
             'message' => 'Patient updated successfully',

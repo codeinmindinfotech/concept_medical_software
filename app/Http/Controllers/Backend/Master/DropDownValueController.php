@@ -16,13 +16,13 @@ class DropDownValueController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
-    {
-         $this->middleware('permission:dropdownvalue-list|dropdownvalue-create|dropdownvalue-edit|dropdownvalue-delete', ['only' => ['index','show']]);
-         $this->middleware('permission:dropdownvalue-create', ['only' => ['create','store']]);
-         $this->middleware('permission:dropdownvalue-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:dropdownvalue-delete', ['only' => ['destroy']]);
-    }
+    // function __construct()
+    // {
+    //      $this->middleware('permission:dropdownvalue-list|dropdownvalue-create|dropdownvalue-edit|dropdownvalue-delete', ['only' => ['index','show']]);
+    //      $this->middleware('permission:dropdownvalue-create', ['only' => ['create','store']]);
+    //      $this->middleware('permission:dropdownvalue-edit', ['only' => ['edit','update']]);
+    //      $this->middleware('permission:dropdownvalue-delete', ['only' => ['destroy']]);
+    // }
     /**
      * Display a listing of the resource.
      *

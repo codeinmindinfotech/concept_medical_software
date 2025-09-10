@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('communications', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();             
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->text('message');
             $table->enum('method', ['sms', 'email']);

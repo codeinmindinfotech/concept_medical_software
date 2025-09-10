@@ -7,17 +7,13 @@ use Illuminate\Support\Facades\View;
 use App\Models\Recall;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        $this->app->singleton(\App\Services\UserService::class);
-    }
-
     public function boot()
     {
-        View::composer('backend.theme.header', function ($view) {
+         View::composer('backend.theme.header', function ($view) {
             $user = Auth::user();
 
             // === Recall Data ===

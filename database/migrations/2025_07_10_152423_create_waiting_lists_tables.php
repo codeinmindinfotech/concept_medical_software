@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('waiting_lists', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();             
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
+
             $table->unsignedBigInteger('clinic_id');
             $table->foreign('clinic_id')->references('id')->on('clinics')->onDelete('cascade');
 

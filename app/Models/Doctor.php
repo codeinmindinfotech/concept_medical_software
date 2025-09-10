@@ -3,20 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
 
-class Doctor extends Model
+class Doctor extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, HasRoles;
   
-    /**
-     * The attributes that are mass assignable.
-     *	
-     * @var array
-     */
+    protected $guard_name = 'doctor'; 
+
     protected $fillable = [
+        'company_id',
+        'password',
         'name',
         'company',
         'salutation',
@@ -50,5 +51,10 @@ class Doctor extends Model
     public function patient()
     {
         return $this->hasMany(Patient::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

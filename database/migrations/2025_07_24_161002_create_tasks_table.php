@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();             
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->foreignId('task_creator_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('task_owner_id')->constrained('users')->onDelete('cascade');

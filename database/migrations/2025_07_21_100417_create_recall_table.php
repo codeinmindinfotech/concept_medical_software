@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('recalls', function (Blueprint $table) {
-            $table->id();            
+            $table->id();   
+            $table->unsignedBigInteger('company_id')->nullable();             
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');           
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->enum('recall_interval', [
                 'Today',

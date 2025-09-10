@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('insurances', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->string('code')->unique(); // Unique insurance code
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
+            $table->string('code'); 
+            $table->unique(['company_id', 'code']);
             $table->string('address')->nullable();
             $table->string('contact_name')->nullable();
             $table->string('contact')->nullable();

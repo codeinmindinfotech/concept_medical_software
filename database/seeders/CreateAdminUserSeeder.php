@@ -23,11 +23,13 @@ class CreateAdminUserSeeder extends Seeder
             ]
         );
 
-        // Create or find the superadmin role
-        $role = Role::firstOrCreate(['name' => 'superadmin']);
+        // Create or find the superadmin role with correct guard
+        $role = Role::firstOrCreate(
+            ['name' => 'superadmin', 'guard_name' => 'web']
+        );
 
-        // Get all permissions
-        $permissions = Permission::pluck('id', 'id')->all();
+        // Get all permissions (web guard only)
+        $permissions = Permission::where('guard_name', 'web')->get();
 
         // Assign all permissions to the role
         $role->syncPermissions($permissions);

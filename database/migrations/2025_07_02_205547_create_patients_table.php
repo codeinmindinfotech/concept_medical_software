@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable(); 
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
             // Original fields
             $table->unsignedBigInteger('title_id')->nullable(); // FK to doctors
             $table->foreign('title_id')->references('id')->on('drop_down_values')->onDelete('cascade');
@@ -20,6 +22,7 @@ return new class extends Migration
             $table->string('surname');
             $table->string('first_name');
             $table->date('dob')->nullable();
+            $table->string('password')->nullable();
 
             $table->unsignedBigInteger('doctor_id')->nullable(); // FK to doctors
             $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('set null');

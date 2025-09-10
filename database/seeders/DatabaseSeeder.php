@@ -12,11 +12,12 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            DropDownSeeder::class,
             PermissionTableSeeder::class,
-            CreateAdminUserSeeder::class, 
-            SmsDefaultMessagesSeeder::class,
-            RoleSeeder::class,
+            RolesTableSeeder::class,
+            DropDownSeeder::class,
+            SmsDefaultMessagesSeeder::class, 
+            RolePermissionSeeder::class, 
+            CreateAdminUserSeeder::class
         ]);
     }
 }

@@ -3,20 +3,19 @@
 namespace App\Models;
 
 use App\Models\Backend\Insurance;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Permission\Traits\HasRoles;
 
-class Patient extends Model
+class Patient extends Authenticatable
 {
-    use HasFactory;
-  
-    /**
-     * The attributes that are mass assignable.
-     *	
-     * @var array
-     */
+    use HasFactory, HasRoles;
+    protected $guard_name = 'patient';
     protected $fillable = [
+        'company_id',
+        'password',
         'consultant_id',
         'title_id',
         'patient_picture',
@@ -98,11 +97,6 @@ class Patient extends Model
         return $this->belongsTo(Insurance::class);
     }
 
-    public function user()
-    {
-        return $this->morphOne(User::class, 'userable');
-    }
-
     public function notes():HasMany
     {
         return $this->hasMany(PatientNote::class);
@@ -152,5 +146,10 @@ class Patient extends Model
     {
         $title = $this->title_value;
         return ($title ? $title . ' ' : '') . "{$this->first_name} {$this->surname}";
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

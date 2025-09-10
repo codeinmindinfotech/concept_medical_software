@@ -8,6 +8,7 @@ class Consultant extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'company_id',
         'code',
         'name',
         'address',
@@ -22,5 +23,10 @@ class Consultant extends Model
     {
         return $this->belongsToMany(Insurance::class)
                     ->withTimestamps();
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

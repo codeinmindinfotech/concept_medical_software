@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('patient_notes', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
             $table->unsignedBigInteger('patient_id');
             $table->enum('method', ['phone message', 'note']);
             $table->text('notes')->nullable();

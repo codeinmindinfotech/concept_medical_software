@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FeeNote extends Model
 {
     protected $fillable = [
+        'company_id',
         'patient_id',
         'clinic_id',
         'consultant_id',
@@ -31,6 +32,11 @@ class FeeNote extends Model
     public function chargecode()
     {
         return $this->belongsTo(chargecode::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
     
 

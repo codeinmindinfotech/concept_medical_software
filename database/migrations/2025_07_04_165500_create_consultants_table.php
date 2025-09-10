@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('consultants', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
+            $table->unsignedBigInteger('company_id')->nullable(); 
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
+            $table->string('code'); 
+            $table->unique(['company_id', 'code']);
             $table->string('name');
             $table->text('address');
             $table->string('phone');

@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('charge_code_prices', function (Blueprint $table) {
             $table->id();
 
+            $table->unsignedBigInteger('company_id')->nullable();             
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');  
+
             $table->decimal('price', 10, 2)->default(0.00);
 
             // Foreign key to chargecode

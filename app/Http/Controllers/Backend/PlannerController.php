@@ -40,12 +40,14 @@ class PlannerController extends Controller
         } else {
             $patients = Patient::with(['title', 'preferredContact'])->get();
         }
+        $patient = null; // Pass blank $patient
 
         return view('planner.index', [
             'appointments' => $appointments,
             'date' => $date,
             'clinics' => Clinic::orderBy('planner_seq', 'asc')->get(),
             'patients' => $patients, 
+            'patient' => $patient, 
             'appointmentTypes' => $appointment_types,
             'diary_status' => $diary_status,
             'procedures' => $procedures

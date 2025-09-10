@@ -64,3 +64,44 @@ if (!function_exists('asset_url')) {
         }
     }
 }
+if (!function_exists('assignRoleToGuardedModel')) {
+    function assignRoleToGuardedModel($model, string $roleName, string $guardName): void
+    {
+        $role = \Spatie\Permission\Models\Role::where('name', $roleName)
+            ->where('guard_name', $guardName)
+            ->first();
+
+        if (!$role) {
+            throw new \Exception("Role '{$roleName}' with guard '{$guardName}' not found.");
+        }
+
+        // Assign role to the model
+        $model->assignRole($role);
+    }
+}
+
+if (! function_exists('getAuthenticatedUserAndCompany')) {
+    function getAuthenticatedUserAndCompany(): array
+    {
+        $guards = array_keys(config('auth.guards'));
+        
+        foreach ($guards as $guard) {
+            if (auth()->guard($guard)->check()) {
+                $user = auth()->guard($guard)->user();
+                $companyId = $user->company_id ?? null; // Assuming your User model has company_id
+                
+                return [
+                    'user' => $user,
+                    'guard' => $guard,
+                    'company_id' => $companyId,
+                ];
+            }
+        }
+        
+        return [
+            'user' => null,
+            'guard' => null,
+            'company_id' => null,
+        ];
+    }
+}
