@@ -7,8 +7,8 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Clinics', 'url' => route('clinics.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Clinics', 'url' =>guard_route('clinics.index')],
             ['label' => 'Show Clinic'],
         ];
     @endphp
@@ -16,7 +16,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Show Clinic',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('clinics.index'),
+        'backUrl' =>guard_route('clinics.index'),
         'isListPage' => false
     ])
 

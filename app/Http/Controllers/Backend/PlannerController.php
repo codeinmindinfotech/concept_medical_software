@@ -18,8 +18,8 @@ class PlannerController extends Controller
         $date = $request->get('date', now()->toDateString());
 
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
-        $procedures = ChargeCode::all();
-        $appointments = Appointment::with(['patient', 'appointmentType','appointmentStatus','procedure'])
+        $procedures = ChargeCode::companyOnly()->all();
+        $appointments = Appointment::companyOnly()->with(['patient', 'appointmentType','appointmentStatus','procedure'])
             ->whereDate('start_time', $date);
 
         if ($request->filled('clinic_id')) {
@@ -36,9 +36,9 @@ class PlannerController extends Controller
         
         $user = auth()->user();
         if ($user->hasRole('patient')) {
-            $patients = Patient::with(['title','preferredContact'])->where('id', $user->userable_id)->paginate(1);
+            $patients = Patient::with(['title','preferredContact'])->companyOnly()->where('id', $user->userable_id)->paginate(1);
         } else {
-            $patients = Patient::with(['title', 'preferredContact'])->get();
+            $patients = Patient::with(['title', 'preferredContact'])->companyOnly()->get();
         }
         $patient = null; // Pass blank $patient
 
@@ -75,6 +75,7 @@ class PlannerController extends Controller
                     $query->whereBetween('start_time', [$start, $end->copy()->subSecond()])
                         ->orWhereBetween('end_time', [$start->copy()->addSecond(), $end]);
                 })
+                ->companyOnly()
                 ->exists()
         ) {
             $start->addMinutes($duration);

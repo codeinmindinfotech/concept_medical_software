@@ -19,7 +19,7 @@ class ChargeCodePriceController extends Controller
     {
         //$this->authorize('viewAny', ChargeCode::class);
         // Admins can search all patients
-        $query = Insurance::latest();
+        $query = Insurance::companyOnly()->latest();
 
         $insurances = $query->get();
 
@@ -33,7 +33,7 @@ class ChargeCodePriceController extends Controller
 
     public function showAdjustPrices(Insurance $insurance)
     {
-        $chargePrices = ChargeCode::with(['insurancePrices' => function ($query) use ($insurance) {
+        $chargePrices = ChargeCode::companyOnly()->with(['insurancePrices' => function ($query) use ($insurance) {
             $query->where('insurance_id', $insurance->id);
         }])->orderBy('id')->get();
         
@@ -83,7 +83,7 @@ class ChargeCodePriceController extends Controller
     {
         //$this->authorize('create', ChargeCode::class);
         return view('chargecodes.create', [
-            'insurances' => Insurance::all(),
+            'insurances' => Insurance::companyOnly()->all(),
             'groupTypes' => $this->getDropdownOptions('CHARGE_GROUP_TYPE')
         ]);
     }

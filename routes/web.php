@@ -32,6 +32,7 @@ use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 use App\Http\Controllers\Auth\SuperadminLoginController;
+use App\Http\Controllers\Backend\PasswordChangeController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -51,6 +52,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('companies', CompanyController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);
+        Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
+
+        
         // dropdown  parent
         Route::resource('dropdowns', DropDownController::class);
 
@@ -184,9 +189,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'showAdjustPrices'])->name('chargecodeprices.adjust-prices');
         Route::post('/chargecodeprices/{insurance}/adjust-prices', [ChargeCodePriceController::class, 'processAdjustPrices'])->name('chargecodeprices.process-adjust-prices');
     });
-    Route::middleware('role:manager')->group(function () {
+    Route::prefix("manager")->name("manager.")->middleware('role:manager')
+        ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::resource('users', UserController::class);
+        Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
 
 
         Route::prefix('patients/{patient}/notes')->group(function () {
@@ -320,6 +328,9 @@ foreach ($roles as $role) {
         ->name("$role.")
         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
         ->group(function () use ($role) {
+            Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+            Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
+
             Route::resource('dashboard', DashboardController::class);
             Route::resource('companies', CompanyController::class);
             Route::resource('roles', RoleController::class);

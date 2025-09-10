@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WaitingList extends Model
 {
-    use SoftDeletes;
+    use BelongsToCompany, SoftDeletes;
 
     protected $fillable = [
         'company_id','clinic_id','visit_date', 'consult_note', 'patient_id', 'category_id'

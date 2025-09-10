@@ -13,7 +13,7 @@ class RolePermissionSeeder extends Seeder
         $rolesPermissions = [
             'superadmin' => [
                 'guard_name' => 'web',
-                'permissions' => Permission::where('guard_name', 'web')->pluck('name')->toArray(), // only web permissions
+                'permissions' => Permission::where('guard_name', 'web')->pluck('name')->toArray(), 
             ],
             'manager' => [
                 'guard_name' => 'web',
@@ -51,7 +51,7 @@ class RolePermissionSeeder extends Seeder
             ]);
 
             foreach ($data['permissions'] as $permName) {
-                $permission = Permission::where('name', $permName)
+                $permission = Permission::where('name1', $permName)
                                         ->where('guard_name', $data['guard_name']) // ✅ ensure correct guard
                                         ->first();
 

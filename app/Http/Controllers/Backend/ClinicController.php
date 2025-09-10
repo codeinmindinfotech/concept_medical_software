@@ -23,7 +23,7 @@ class ClinicController extends Controller
     public function index(Request $request): View|string
     {
         $pageTitle = "Clinics List";
-        $clinics = Clinic::latest()->get();
+        $clinics = Clinic::companyOnly()->latest()->get();
 
         if ($request->ajax()) {
             return view('clinics.list', compact('clinics'))->render();
@@ -44,7 +44,7 @@ class ClinicController extends Controller
         $clinic = Clinic::create($data);
         assignRoleToGuardedModel($clinic, 'clinic', 'clinic');
         return response()->json([
-            'redirect' => route('clinics.index'),
+            'redirect' =>guard_route('clinics.index'),
             'message' => 'Clinic created successfully',
         ]);
     }
@@ -61,7 +61,7 @@ class ClinicController extends Controller
         $clinic->update($data);
 
         return response()->json([
-            'redirect' => route('clinics.index'),
+            'redirect' =>guard_route('clinics.index'),
             'message' => 'Clinic updated successfully',
         ]);
     }

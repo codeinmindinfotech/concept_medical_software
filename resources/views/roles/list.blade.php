@@ -12,13 +12,13 @@
             <td>{{ ++$key }}</td>
             <td>{{ $role->name }}</td>
             <td>
-                <a class="btn btn-info btn-sm" href="{{ route('roles.show',$role->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
+                <a class="btn btn-info btn-sm" href="{{guard_route('roles.show',$role->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
                 @can('role-edit')
-                    <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$role->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                    <a class="btn btn-primary btn-sm" href="{{guard_route('roles.edit',$role->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                 @endcan
 
                 @can('role-delete')
-                <form method="POST" action="{{ route('roles.destroy', $role->id) }}" style="display:inline">
+                <form method="POST" action="{{guard_route('roles.destroy', $role->id) }}" style="display:inline">
                     @csrf
                     @method('DELETE')
 

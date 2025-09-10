@@ -35,7 +35,7 @@
                 >
                     <i class="fa-solid fa-align-left"></i> Transcription
                 </button>
-                <form method="POST" action="{{ route('patients.audio.destroy', [$patient->id, $audio->id]) }}" style="display:inline">
+                <form method="POST" action="{{guard_route('patients.audio.destroy', [$patient->id, $audio->id]) }}" style="display:inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm" title="Delete">

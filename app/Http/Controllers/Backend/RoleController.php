@@ -99,8 +99,10 @@ class RoleController extends Controller
     public function edit($id): View
     {
         $role = Role::find($id);
-        $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
+        $permission = Permission::where('guard_name',$role->guard_name)->get();
+  
+        $rolePermissions = DB::table("role_has_permissions")
+            ->where("role_has_permissions.role_id",$id)
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();
     
@@ -125,12 +127,14 @@ class RoleController extends Controller
         $role->name = $request->input('name');
         $role->save();
 
-        $permissionsID = array_map(
-            function($value) { return (int)$value; },
-            $request->input('permission')
-        );
-    
-        $role->syncPermissions($permissionsID);
+        $inputPermissionIDs = array_map('intval', $request->input('permission'));
+
+        $permissions = Permission::whereIn('id', $inputPermissionIDs)
+            ->where('guard_name', $role->guard_name)
+            ->pluck('name')   // get permission names
+            ->toArray();
+
+        $role->syncPermissions($permissions);
     
         return redirect()->route('roles.index')
                         ->with('success','Role updated successfully');

@@ -18,7 +18,7 @@
             @endif
 
             <table class="table table-hover table-bordered data-table align-middle mb-0" 
-            data-route="{{ route('communications.received', ['communication' => '__ID__']) }}" id="CommunicationTable">
+            data-route="{{guard_route('communications.received', ['communication' => '__ID__']) }}" id="CommunicationTable">
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>

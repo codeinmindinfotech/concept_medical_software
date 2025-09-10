@@ -13,7 +13,7 @@
             <a href="javascript:void(0)" 
                 class="dropdown-item text-success edit-appointment" 
                 data-id="{{ $appointment->id }}"
-                data-action="{{ route('patients.appointments.store', ['patient' => $appointment->patient->id]) }}" 
+                data-action="{{guard_route('patients.appointments.store', ['patient' => $appointment->patient->id]) }}" 
                 data-clinic-id="{{ $appointment->clinic_id }}" 
                 data-dob="{{ format_date($appointment->patient->dob) }}" 
                 data-type="{{ $appointment->appointment_type }}" 
@@ -41,7 +41,7 @@
         <li><hr class="dropdown-divider"></li>
         @endif
         <li>
-            <a class="dropdown-item" target="_blank" href="{{ route('patients.edit', $appointment->patient->id) }}">
+            <a class="dropdown-item" target="_blank" href="{{guard_route('patients.edit', $appointment->patient->id) }}">
                 <i class="fa-solid fa-pen-to-square"></i> Edit Patient
             </a>
         </li>
@@ -49,12 +49,12 @@
             <a class="dropdown-item" href="#"><i class="fas fa-credit-card"></i> Take Payment</a>
         </li>
         <li>
-            <a class="dropdown-item" target="_blank" href="{{ route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+            <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
                 <i class="fas fa-bell"></i> Add Recall
             </a>
         </li>
         <li>
-            <a class="dropdown-item" target="_blank" href="{{ route('sms.index', ['patient' => $appointment->patient->id]) }}">
+            <a class="dropdown-item" target="_blank" href="{{guard_route('sms.index', ['patient' => $appointment->patient->id]) }}">
                 <i class="fas fa-sms"></i> Send SMS
             </a>
         </li>

@@ -2,6 +2,7 @@
 
 namespace App\Models\Backend;
 
+use App\Traits\BelongsToCompany;
 use App\Models\ChargeCode;
 use App\Models\ChargeCodePrice;
 use App\Models\consultant;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Insurance extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToCompany;
   
     /**
      * The attributes that are mass assignable.

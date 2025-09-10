@@ -5,8 +5,8 @@
     
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Companies', 'url' => route('companies.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Companies', 'url' =>guard_route('companies.index')],
             ['label' => 'Create Companies'],
         ];
     @endphp
@@ -14,7 +14,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Create Companies',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('companies.index'),
+        'backUrl' =>guard_route('companies.index'),
         'isListPage' => false
     ])
   
@@ -30,7 +30,7 @@
     </div>
     @endif
 
-    <form action="{{ route('companies.store') }}" method="POST" class="validate-form">
+    <form action="{{guard_route('companies.store') }}" method="POST" class="validate-form">
         @csrf
 
         @include('companies.form')

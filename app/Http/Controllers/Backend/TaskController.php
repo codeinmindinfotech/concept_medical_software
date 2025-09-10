@@ -19,7 +19,7 @@ class TaskController extends Controller
 
     public function index(Patient $patient)
     {
-        $tasks = Task::with(['creator', 'owner', 'category', 'status','followups'])->where('patient_id', $patient->id)->paginate(10);
+        $tasks = Task::companyOnly()->with(['creator', 'owner', 'category', 'status','followups'])->where('patient_id', $patient->id)->paginate(10);
         $users = User::role('superadmin')->get();
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
@@ -57,7 +57,7 @@ class TaskController extends Controller
 
         Task::create($request->all());
         return response()->json([
-            'redirect' => route('tasks.tasks.index', ['patient' => $request->patient_id]),
+            'redirect' =>guard_route('tasks.tasks.index', ['patient' => $request->patient_id]),
             'message' => 'Task created successfully',
         ]);
     }
@@ -90,7 +90,7 @@ class TaskController extends Controller
         $task->update($request->all());
 
         return response()->json([
-            'redirect' => route('tasks.tasks.index', ['patient' => $patient->id]),
+            'redirect' =>guard_route('tasks.tasks.index', ['patient' => $patient->id]),
             'message' => 'Task updated successfully',
         ]);
     }

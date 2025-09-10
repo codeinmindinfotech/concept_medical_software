@@ -20,14 +20,14 @@
             <td>{{ $chargecode->vatrate }}%</td>
             <td>{{ number_format($chargecode->price, 2) }}</td>
             <td>
-                <form action="{{ route('chargecodes.destroy',$chargecode->id) }}" method="POST">
+                <form action="{{guard_route('chargecodes.destroy',$chargecode->id) }}" method="POST">
                     @can('view', $chargecode)
-                        <a class="btn btn-info btn-sm" href="{{ route('chargecodes.show',$chargecode->id) }}" title="Show">
+                        <a class="btn btn-info btn-sm" href="{{guard_route('chargecodes.show',$chargecode->id) }}" title="Show">
                             <i class="fa-solid fa-eye text-white"></i>
                         </a>
                     @endcan
                     @can('update', $chargecode)
-                        <a class="btn btn-primary btn-sm" href="{{ route('chargecodes.edit',$chargecode->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a class="btn btn-primary btn-sm" href="{{guard_route('chargecodes.edit',$chargecode->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                     @endcan
 
 

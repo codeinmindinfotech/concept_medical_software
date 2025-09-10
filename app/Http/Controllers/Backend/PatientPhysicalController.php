@@ -14,7 +14,7 @@ class PatientPhysicalController extends Controller
 {
     public function index(Request $request, Patient $patient): View|string
     {
-        $physicals = $patient->physicalNotes()->latest()->get();
+        $physicals = $patient->physicalNotes()->companyOnly()->latest()->get();
         if ($request->ajax()) {
             return view('patients.physical.list', compact('patient', 'physicals'))->render();
         }
@@ -40,7 +40,7 @@ class PatientPhysicalController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.physical.index', $patient->id),
+            'redirect' =>guard_route('patients.physical.index', $patient->id),
             'message' => 'Physical Notes added successfully',
         ]);
     }
@@ -61,7 +61,7 @@ class PatientPhysicalController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.physical.index', $patient->id),
+            'redirect' =>guard_route('patients.physical.index', $patient->id),
             'message' => 'Note updated successfully',
         ]);
     }

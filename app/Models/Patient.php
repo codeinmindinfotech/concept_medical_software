@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 
 use App\Models\Backend\Insurance;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Patient extends Authenticatable
 {
-    use HasFactory, HasRoles;
+    use BelongsToCompany, HasFactory, HasRoles;
     protected $guard_name = 'patient';
     protected $fillable = [
         'company_id',

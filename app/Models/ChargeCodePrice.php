@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 
 use App\Models\Backend\Insurance;
 use Illuminate\Database\Eloquent\Model;
 
 class ChargeCodePrice extends Model
 {
+    use BelongsToCompany;
     protected $table = 'charge_code_prices';
     
     protected $fillable = [

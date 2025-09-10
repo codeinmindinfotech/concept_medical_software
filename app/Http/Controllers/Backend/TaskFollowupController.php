@@ -18,13 +18,13 @@ class TaskFollowupController extends Controller
         ]);
 
         if ($followupId) {
-            $followup = TaskFollowup::where('task_id', $taskId)->findOrFail($followupId);
+            $followup = TaskFollowup::companyOnly()->where('task_id', $taskId)->findOrFail($followupId);
             $followup->update([
                 'followup_date' => $request->followup_date,
                 'note' => $request->note,
             ]);
             return response()->json([
-                'redirect' => route('tasks.tasks.index', $patientId),
+                'redirect' =>guard_route('tasks.tasks.index', $patientId),
                 'message' => 'Follow-up Updated successfully',
             ]);
         } else {
@@ -35,7 +35,7 @@ class TaskFollowupController extends Controller
             ]);
 
             return response()->json([
-                'redirect' => route('tasks.tasks.index', $patientId),
+                'redirect' =>guard_route('tasks.tasks.index', $patientId),
                 'message' => 'Follow-up created successfully',
             ]);
         }

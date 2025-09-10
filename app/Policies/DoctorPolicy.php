@@ -7,28 +7,29 @@ use App\Models\Doctor;
 
 class DoctorPolicy
 {
-    public function viewAny(User $user)
+    public function view($user, Doctor $doctor)
     {
         return $user->can('doctor-list');
     }
 
-    public function view(User $user, Doctor $doctor)
+    public function viewAny($user)
     {
         return $user->can('doctor-list');
     }
 
-    public function create(User $user)
+    public function create($user)
     {
         return $user->can('doctor-create');
     }
 
-    public function update(User $user, Doctor $doctor)
+    public function update($user, Doctor $doctor)
     {
         return $user->can('doctor-edit');
     }
 
-    public function delete(User $user, Doctor $doctor)
+    public function delete($user, Doctor $doctor)
     {
         return $user->can('doctor-delete');
     }
 }
+

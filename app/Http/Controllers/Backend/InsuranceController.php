@@ -35,7 +35,7 @@ class InsuranceController extends Controller
     {
         $pageTitle = "Insurances List";
 
-        $insurances = Insurance::latest()->paginate(5);
+        $insurances = Insurance::companyOnly()->latest()->paginate(5);
         if ($request->ajax()) {
             return view('insurances.list', compact('insurances'))->render();
         }
@@ -66,7 +66,7 @@ class InsuranceController extends Controller
     
         Insurance::create($validated);
         return response()->json([
-            'redirect' => route('insurances.index'),
+            'redirect' =>guard_route('insurances.index'),
             'message' => 'insurance created successfully',
         ]);
     }
@@ -109,7 +109,7 @@ class InsuranceController extends Controller
         $insurance->update($validated);
     
         return response()->json([
-            'redirect' => route('insurances.index'),
+            'redirect' =>guard_route('insurances.index'),
             'message' => 'Insurance updated successfully',
         ]);
     }

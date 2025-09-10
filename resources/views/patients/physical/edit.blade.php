@@ -4,19 +4,19 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.physical.index', $patient->id)],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Patients', 'url' =>guard_route('patients.physical.index', $patient->id)],
             ['label' => 'Edit Physical Exam'],
         ];
     @endphp
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Edit Physical Exam',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.physical.index', $patient->id),
+        'backUrl' =>guard_route('patients.physical.index', $patient->id),
         'isListPage' => false
     ])
 
-    <form action="{{ route('patients.physical.update',[$patient->id, $physical->id]) }}" method="POST" class="validate-form">
+    <form action="{{guard_route('patients.physical.update',[$patient->id, $physical->id]) }}" method="POST" class="validate-form">
         @csrf
         @method('PUT')
     

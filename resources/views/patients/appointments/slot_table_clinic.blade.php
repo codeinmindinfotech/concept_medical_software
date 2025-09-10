@@ -46,7 +46,7 @@
                         @endif
                         <a target="_blank"
                             class="text-decoration-none text-dark fw-semibold"
-                            href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
+                            href="{{guard_route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
                             {{ $appointment->patient->full_name }}
                         </a>
                     </div>
@@ -99,7 +99,7 @@
                                 <li><hr class="dropdown-divider"></li>
                             @endif
                             <li>
-                                <a class="dropdown-item" target="_blank" href="{{ route('patients.edit', $appointment->patient->id) }}">
+                                <a class="dropdown-item" target="_blank" href="{{guard_route('patients.edit', $appointment->patient->id) }}">
                                     <i class="fa-solid fa-user-pen me-2"></i> Edit Patient
                                 </a>
                             </li>
@@ -109,12 +109,12 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" target="_blank" href="{{ route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+                                <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
                                     <i class="fas fa-bell me-2"></i> Add Recall
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" target="_blank" href="{{ route('sms.index', ['patient' => $appointment->patient->id]) }}">
+                                <a class="dropdown-item" target="_blank" href="{{guard_route('sms.index', ['patient' => $appointment->patient->id]) }}">
                                     <i class="fas fa-sms me-2"></i> Send SMS
                                 </a>
                             </li>

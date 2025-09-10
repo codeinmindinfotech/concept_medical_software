@@ -16,7 +16,7 @@ class RecallController extends Controller
 
     public function index(Patient $patient)
     {
-        $recalls = $patient->recall()->with('status')->latest()->get();
+        $recalls = $patient->recall()->companyOnly()->with('status')->latest()->get();
         $statuses = $this->getDropdownOptions('STATUS');
         if (request()->ajax()) {
             return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
@@ -50,7 +50,7 @@ class RecallController extends Controller
         $patient = Patient::find($patient->id);
 
         return response()->json([
-            'redirect' => route('recalls.recalls.index', ['patient' => $patient]),
+            'redirect' =>guard_route('recalls.recalls.index', ['patient' => $patient]),
             'message' => 'Recall created successfully',
         ]);
     }
@@ -82,7 +82,7 @@ class RecallController extends Controller
         $recall->update($request->all());
 
         return response()->json([
-            'redirect' => route('recalls.recalls.index', ['patient' => $patient->id]),
+            'redirect' =>guard_route('recalls.recalls.index', ['patient' => $patient->id]),
             'message' => 'Recall updated successfully',
         ]);
     }

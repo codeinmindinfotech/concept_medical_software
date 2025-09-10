@@ -37,7 +37,7 @@ class SmsController extends Controller
             ]);
 
             return response()->json([
-                'redirect' => route('sms.index', ['patient' => $request->patient_id]),
+                'redirect' =>guard_route('sms.index', ['patient' => $request->patient_id]),
                 'message' => 'SMS created successfully',
             ]);
         }
@@ -60,7 +60,7 @@ class SmsController extends Controller
         ))->delay($scheduledAt);
 
         return response()->json([
-            'redirect' => route('sms.index', ['patient' => $request->patient_id]),
+            'redirect' =>guard_route('sms.index', ['patient' => $request->patient_id]),
             'message' => 'SMS created successfully',
         ]);
     }

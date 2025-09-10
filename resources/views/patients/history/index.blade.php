@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Patients', 'url' =>guard_route('patients.index')],
             ['label' => 'Patient History List'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Patient History List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.history.create', $patient->id),
+        'backUrl' =>guard_route('patients.history.create', $patient->id),
         'isListPage' => true
     ])
 

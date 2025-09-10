@@ -8,7 +8,7 @@
             <h2>Create New User</h2>
         </div>
         <div class="pull-right">
-            <a class="btn btn-primary btn-sm mb-2" href="{{ route('users.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
+            <a class="btn btn-primary btn-sm mb-2" href="{{guard_route('users.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
         </div>
     </div>
 </div>
@@ -28,7 +28,7 @@
       <h5 class="mb-0">User Information</h5>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ route('users.store') }}">
+        <form method="POST" action="{{guard_route('users.store') }}">
             @csrf
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12">

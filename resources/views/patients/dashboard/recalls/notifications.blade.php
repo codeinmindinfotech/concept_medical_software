@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-    ['label' => 'Patients', 'url' => route('patients.index')],
+    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+    ['label' => 'Patients', 'url' =>guard_route('patients.index')],
     ['label' => 'Recall Notification List'],
     ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Recall Notification List',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('patients.index'),
+    'backUrl' =>guard_route('patients.index'),
     'isListPage' => true
     ])
 
@@ -42,7 +42,7 @@
                 <div class="accordion-item border-0 shadow-sm">
                     <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : '' }}" aria-labelledby="headingSearch" data-bs-parent="#searchAccordion">
                         <div class="accordion-body">
-                            <form method="GET" action="{{ route('recalls.notifications') }}">
+                            <form method="GET" action="{{guard_route('recalls.notifications') }}">
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label for="first_name" class="form-label"><strong>First Name</strong></label>
@@ -89,7 +89,7 @@
                             <button type="submit" class="btn btn-primary me-2">
                                 <i class="fas fa-search me-1"></i> Search
                             </button>
-                            <a href="{{ route('recalls.notifications') }}" class="btn btn-outline-secondary">
+                            <a href="{{guard_route('recalls.notifications') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-sync-alt me-1"></i> Reset
                             </a>
                         </div>
@@ -118,16 +118,16 @@
                         <td>{{ $recall->status->value }}</td>
                         <td>{{ $recall->note }}</td>
                         <td>
-                            <a href="{{ route('patients.show', $recall->patient_id) }}" class="btn btn-info btn-sm me-2" title="View Patient">
+                            <a href="{{guard_route('patients.show', $recall->patient_id) }}" class="btn btn-info btn-sm me-2" title="View Patient">
                                 <i class="fas fa-user"></i> View Patient
                             </a>
-                            <a href="{{ route('recalls.recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn btn-warning btn-sm me-2" title="Edit Recall">
+                            <a href="{{guard_route('recalls.recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn btn-warning btn-sm me-2" title="Edit Recall">
                                 <i class="fas fa-edit"></i> Edit Recall
                             </a>
-                            <a href="{{ route('recalls.email', $recall->id) }}" class="btn btn-primary btn-sm me-2" title="Email">
+                            <a href="{{guard_route('recalls.email', $recall->id) }}" class="btn btn-primary btn-sm me-2" title="Email">
                                 <i class="fas fa-envelope"></i> Email
                             </a>
-                            <a href="{{ route('recalls.sms', $recall->id) }}" class="btn btn-success btn-sm" title="SMS">
+                            <a href="{{guard_route('recalls.sms', $recall->id) }}" class="btn btn-success btn-sm" title="SMS">
                                 <i class="fas fa-sms"></i> SMS
                             </a>
                         </td>

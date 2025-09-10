@@ -5,7 +5,7 @@
   {{-- Back Button --}}
   <div class="row mb-4">
     <div class="col">
-      <a href="{{ route('users.index') }}" class="btn btn-primary">
+      <a href="{{guard_route('users.index') }}" class="btn btn-primary">
          Back to List
       </a>
     </div>

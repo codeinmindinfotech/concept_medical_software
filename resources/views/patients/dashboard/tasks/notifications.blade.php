@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-    ['label' => 'Patients', 'url' => route('patients.index')],
+    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+    ['label' => 'Patients', 'url' =>guard_route('patients.index')],
     ['label' => 'Task Notification List'],
     ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Task Notification List',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('patients.index'),
+    'backUrl' =>guard_route('patients.index'),
     'isListPage' => true
     ])
 
@@ -45,7 +45,7 @@
                     <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : '' }}"
                         aria-labelledby="headingSearch" data-bs-parent="#searchAccordion">
                         <div class="accordion-body">
-                            <form method="GET" action="{{ route('tasks.notifications') }}">
+                            <form method="GET" action="{{guard_route('tasks.notifications') }}">
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label for="first_name" class="form-label"><strong>First Name</strong></label>
@@ -96,7 +96,7 @@
                                     <button type="submit" class="btn btn-primary me-2">
                                         <i class="fas fa-search me-1"></i> Search
                                     </button>
-                                    <a href="{{ route('tasks.notifications') }}" class="btn btn-outline-secondary">
+                                    <a href="{{guard_route('tasks.notifications') }}" class="btn btn-outline-secondary">
                                         <i class="fas fa-sync-alt me-1"></i> Reset
                                     </a>
                                 </div>
@@ -135,12 +135,12 @@
                             <td>{{ $task->status->value ?? 'N/A' }}</td>
                             <td>{{ $task->task }}</td>
                             <td>
-                                <a href="{{ route('patients.show', $task->patient_id) }}"
+                                <a href="{{guard_route('patients.show', $task->patient_id) }}"
                                    class="btn btn-info btn-sm me-2" 
                                    title="View Patient">
                                    <i class="fas fa-user"></i> View Patient
                                 </a>
-                                <a href="{{ route('tasks.tasks.edit', ['patient' => $task->patient_id, 'task' => $task]) }}"
+                                <a href="{{guard_route('tasks.tasks.edit', ['patient' => $task->patient_id, 'task' => $task]) }}"
                                    class="btn btn-warning btn-sm" 
                                    title="Edit Task">
                                    <i class="fas fa-edit"></i> Edit Task

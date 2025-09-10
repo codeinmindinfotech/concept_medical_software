@@ -12,13 +12,13 @@
             <td>{{ $index + 1 }}</td>
             <td>{{ $consultant->code }} </td>
             <td>
-                <form action="{{ route('consultants.destroy',$consultant->id) }}" method="POST">
+                <form action="{{guard_route('consultants.destroy',$consultant->id) }}" method="POST">
                     @can('view', $consultant)
-                        <a class="btn btn-info btn-sm" href="{{ route('consultants.show',$consultant->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
+                        <a class="btn btn-info btn-sm" href="{{guard_route('consultants.show',$consultant->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
                     @endcan
 
                     @can('update', $consultant)
-                        <a class="btn btn-primary btn-sm" href="{{ route('consultants.edit',$consultant->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a class="btn btn-primary btn-sm" href="{{guard_route('consultants.edit',$consultant->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                     @endcan
 
                     @csrf

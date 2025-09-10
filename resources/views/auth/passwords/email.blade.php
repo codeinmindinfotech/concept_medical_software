@@ -14,7 +14,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <form method="POST" action="{{ route('password.email') }}">
+                    <form method="POST" action="{{guard_route('password.email') }}">
                         @csrf
                         <div class="form-floating mb-3">
                             <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
@@ -28,7 +28,7 @@
                         <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                             @if (Route::has('login'))
                                 <div class="small">
-                                    <a href="{{ route('login') }}">Have an account? Go to login</a>
+                                    <a href="{{guard_route('login') }}">Have an account? Go to login</a>
                                 </div>
                             @endif
                             <button type="submit" class="btn btn-primary">
@@ -39,7 +39,7 @@
                 </div>
                 @if (Route::has('register'))
                     <div class="card-footer text-center py-3">
-                        <div class="small"><a href="{{ route('register') }}">Need an account? Sign up!</a></div>
+                        <div class="small"><a href="{{guard_route('register') }}">Need an account? Sign up!</a></div>
                     </div>
                 @endif
             </div>

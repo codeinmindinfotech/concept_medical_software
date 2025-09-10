@@ -38,10 +38,10 @@ class PatientController extends Controller
 
         if ($user->hasRole('patient')) {
             // Restrict to logged-in patient only
-            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+            $patients = Patient::with('title')->companyOnly()->where('id', $user->userable_id)->paginate(1);
         } else {
             // Admins can search all patients
-            $query = Patient::with('title')->latest();
+            $query = Patient::with('title')->companyOnly()->latest();
 
             if ($request->filled('first_name')) {
                 $query->where('first_name', 'like', '%' . $request->first_name . '%');
@@ -110,7 +110,7 @@ class PatientController extends Controller
         $patient = Patient::create($validated);
         assignRoleToGuardedModel($patient, 'patient', 'patient');
         return response()->json([
-            'redirect' => route('patients.index'),
+            'redirect' =>guard_route('patients.index'),
             'message' => 'Patient created successfully',
         ]);
     }
@@ -167,7 +167,7 @@ class PatientController extends Controller
         $patient->update($validated);
         
         return response()->json([
-            'redirect' => route('patients.index'),
+            'redirect' =>guard_route('patients.index'),
             'message' => 'Patient updated successfully',
         ]);
     }

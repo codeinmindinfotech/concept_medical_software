@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-    ['label' => 'Patients', 'url' => route('audios.index')],
+    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+    ['label' => 'Patients', 'url' =>guard_route('audios.index')],
     ['label' => 'Audio Recording List'],
     ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Audio Recording List',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' => route('audios.index'),
+    'backUrl' =>guard_route('audios.index'),
     'isListPage' => false
     ])
 
@@ -39,7 +39,7 @@
             <i class="fas fa-microphone"></i> Audio Recording Management
         </div>
         <div class="card-body">
-            <form id="audioForm" method="POST" action="{{ route('audios.update',$audio->id) }}" enctype="multipart/form-data" class="mb-4">
+            <form id="audioForm" method="POST" action="{{guard_route('audios.update',$audio->id) }}" enctype="multipart/form-data" class="mb-4">
                 @csrf
                 @method('PUT')
 

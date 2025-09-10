@@ -14,7 +14,7 @@ class PatientNoteController extends Controller
 {
     public function index(Request $request, Patient $patient): View|string
     {
-        $notes = $patient->notes()->latest()->get();
+        $notes = $patient->notes()->companyOnly()->latest()->get();
         if ($request->ajax()) {
             return view('patients.notes.list', compact('patient', 'notes'))->render();
         }
@@ -43,7 +43,7 @@ class PatientNoteController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.notes.index', $patient->id),
+            'redirect' =>guard_route('patients.notes.index', $patient->id),
             'message' => 'Note added successfully',
         ]);
     }
@@ -67,7 +67,7 @@ class PatientNoteController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.notes.index', $patient->id),
+            'redirect' =>guard_route('patients.notes.index', $patient->id),
             'message' => 'Note updated successfully',
         ]);
     }

@@ -22,18 +22,18 @@ class AppointmentController extends Controller
        // AuthHelper::authorize('viewAny', Appointment::class);
         $user = auth()->user();
         if ($user->hasRole('patient')) {
-            $patients = Patient::with('title')->where('id', $user->userable_id)->paginate(1);
+            $patients = Patient::companyOnly()->with('title')->where('id', $user->userable_id)->paginate(1);
         } else {
-            $patients = Patient::with(['title', 'preferredContact'])->get();
+            $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
         }
         
-        $clinics = Clinic::all()->map(function ($clinic) {
+        $clinics = Clinic::companyOnly()->get()->map(function ($clinic) {
             $clinic->color = '#'.substr(md5($clinic->id), 0, 6); // assign hex color
             return $clinic;
         });
         $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
-        $procedures = ChargeCode::all();
+        $procedures = ChargeCode::companyOnly()->get();
         return view('patients.appointments.patient-schedule', compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));
     }
 
@@ -42,7 +42,7 @@ class AppointmentController extends Controller
        // AuthHelper::authorize('viewAny', Appointment::class);
         $clinicId = $request->input('clinic_id');
         $patientId = $request->input('patient_id');
-        $query = Appointment::with(['patient', 'clinic']); // Eager load relations
+        $query = Appointment::companyOnly()->with(['patient', 'clinic']); // Eager load relations
 
         if (isset($patientId)) {
             $query->where('patient_id', $patientId);
@@ -78,7 +78,7 @@ class AppointmentController extends Controller
                 'date' => 'required|date',
             ]);
 
-            $appointmentsQuery = Appointment::with('appointmentType', 'patient','appointmentStatus')
+            $appointmentsQuery = Appointment::companyOnly()->with('appointmentType', 'patient','appointmentStatus')
                 ->whereDate('appointment_date', $request->date);
 
             if ($request->filled('patientSelect')) {
@@ -89,7 +89,7 @@ class AppointmentController extends Controller
 
             if ($request->filled('clinic_id')) {
                 $appointmentsQuery->where('clinic_id', $request->clinic_id);
-                $clinic = Clinic::findOrFail($request->clinic_id);
+                $clinic = Clinic::companyOnly()->findOrFail($request->clinic_id);
 
                 // Check clinic type and route accordingly
                 if (strtolower($clinic->clinic_type) === 'hospital') {
@@ -179,7 +179,7 @@ class AppointmentController extends Controller
             ]);
         }
         
-        $hospitalAppointmentsQuery = Appointment::with(['patient', 'appointmentType','appointmentStatus','procedure'])
+        $hospitalAppointmentsQuery = Appointment::companyOnly()->with(['patient', 'appointmentType','appointmentStatus','procedure'])
             ->where('clinic_id', $clinic->id)
             ->whereDate('appointment_date', $request->date);
 
@@ -195,7 +195,7 @@ class AppointmentController extends Controller
         $date = Carbon::parse($request->date);
         $dayField = strtolower($date->format('D')); 
 
-        $clinic = Clinic::findOrFail($request->clinic_id);
+        $clinic = Clinic::companyOnly()->findOrFail($request->clinic_id);
 
         $isOpen = $clinic->{$dayField}; 
 
@@ -467,14 +467,14 @@ class AppointmentController extends Controller
             'new_time' => 'required|date_format:H:i',
         ]);
 
-        $appointment = Appointment::findOrFail($request->appointment_id);
+        $appointment = Appointment::companyOnly()->findOrFail($request->appointment_id);
 
         $date = Carbon::parse($appointment->appointment_date);
 
         $newStart = $date->copy()->setTimeFromTimeString($request->new_time)->setSeconds(0);
         $newEnd = $newStart->copy()->addMinutes(15); // End cleanly at next 15 min mark
 
-        $isSlotTaken = Appointment::where('appointment_date', $appointment->appointment_date)
+        $isSlotTaken = Appointment::companyOnly()->where('appointment_date', $appointment->appointment_date)
             ->where('id', '!=', $appointment->id)
             ->where('clinic_id', '=', $appointment->clinic_id)
             ->where(function ($query) use ($newStart, $newEnd) {

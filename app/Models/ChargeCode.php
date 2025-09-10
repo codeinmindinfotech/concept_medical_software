@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class ChargeCode extends Model
 {
+    use BelongsToCompany;
     protected $fillable = [
         'company_id',
         'chargeGroupType',
@@ -31,5 +33,10 @@ class ChargeCode extends Model
     public function prices()
     {
         return $this->hasMany(ChargeCodePrice::class, 'charge_code_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

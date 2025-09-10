@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
@@ -11,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use BelongsToCompany, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
         'company_id',

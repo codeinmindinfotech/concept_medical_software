@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('patients.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Patients', 'url' =>guard_route('patients.index')],
             ['label' => 'Patients List'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Patients List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patients.create'),
+        'backUrl' =>guard_route('patients.create'),
         'isListPage' => true
     ])
 
@@ -43,7 +43,7 @@
                     <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : '' }}" aria-labelledby="headingSearch"
                          data-bs-parent="#searchAccordion">
                         <div class="accordion-body">
-                            <form method="GET" action="{{ route('patients.index') }}">
+                            <form method="GET" action="{{guard_route('patients.index') }}">
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label for="first_name" class="form-label">First Name</label>
@@ -87,7 +87,7 @@
                                     <button type="submit" class="btn btn-primary me-2">
                                         <i class="fas fa-search me-1"></i> Search
                                     </button>
-                                    <a href="{{ route('patients.index') }}" class="btn btn-outline-secondary">
+                                    <a href="{{guard_route('patients.index') }}" class="btn btn-outline-secondary">
                                         <i class="fas fa-sync-alt me-1"></i> Reset
                                     </a>
                                 </div>

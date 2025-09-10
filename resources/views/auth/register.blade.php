@@ -7,7 +7,7 @@
             <div class="card shadow-lg border-0 rounded-lg mt-5">
                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Account</h3></div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{guard_route('register') }}">
                         @csrf
                         <div class="form-floating mb-3">
                             <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
@@ -58,7 +58,7 @@
                 <div class="card-footer text-center py-3">
                 @if (Route::has('login'))
                     <div class="small">
-                        <a href="{{ route('login') }}">Have an account? Go to login</a>
+                        <a href="{{guard_route('login') }}">Have an account? Go to login</a>
                     </div>
                 @endif
                 </div>

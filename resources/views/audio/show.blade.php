@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Patients', 'url' => route('audios.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Patients', 'url' =>guard_route('audios.index')],
             ['label' => 'Audio Recording Details'],
         ];
     @endphp
@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Audio Recording Details',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('audios.index'),
+        'backUrl' =>guard_route('audios.index'),
         'isListPage' => false
     ])
 
@@ -70,7 +70,7 @@
                     </div>
 
                     <div class="text-end">
-                        <a href="{{ route('audios.index') }}" class="btn btn-outline-primary btn-lg shadow-sm">
+                        <a href="{{guard_route('audios.index') }}" class="btn btn-outline-primary btn-lg shadow-sm">
                             <i class="fas fa-arrow-left me-2"></i> Back to List
                         </a>
                     </div>

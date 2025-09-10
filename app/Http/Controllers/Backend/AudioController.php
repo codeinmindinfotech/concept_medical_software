@@ -15,7 +15,7 @@ class AudioController extends Controller
 { 
     public function index(Request $request): View|string
     {
-        $audios = PatientAudioFile::with('patient','doctor')->latest()->get();
+        $audios = PatientAudioFile::companyOnly()->with('patient','doctor')->latest()->get();
         if ($request->ajax()) {
             return view('audio.list', compact('audios'))->render();
         } 

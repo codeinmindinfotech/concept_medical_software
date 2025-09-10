@@ -5,8 +5,8 @@
 
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => route('dashboard.index')],
-            ['label' => 'Charge Codes', 'url' => route('chargecodeprices.index')],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Charge Codes', 'url' =>guard_route('chargecodeprices.index')],
             ['label' => 'Adjust Prices'],
         ];
     @endphp
@@ -14,7 +14,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Adjust Prices',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('chargecodeprices.index'),
+        'backUrl' =>guard_route('chargecodeprices.index'),
         'isListPage' => false
     ])
 
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('chargecodeprices.adjust-prices', $insurance->id) }}">
+    <form method="POST" action="{{guard_route('chargecodeprices.adjust-prices', $insurance->id) }}">
         @csrf
 
         <div class="card mb-4 border-success">

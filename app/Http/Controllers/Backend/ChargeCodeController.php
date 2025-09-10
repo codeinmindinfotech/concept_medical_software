@@ -18,7 +18,7 @@ class ChargeCodeController extends Controller
     public function index(Request $request): View|string
     {
         //$this->authorize('viewAny', ChargeCode::class);
-        $chargecodes = ChargeCode::with('chargeGroup')->latest()->get();
+        $chargecodes = ChargeCode::companyOnly()->with('chargeGroup')->latest()->get();
 
         if ($request->ajax()) {
             return view('chargecodes.list', compact('chargecodes'))->render();
@@ -70,7 +70,7 @@ class ChargeCodeController extends Controller
         }
 
         return response()->json([
-            'redirect' => route('chargecodes.index'),
+            'redirect' =>guard_route('chargecodes.index'),
             'message' => 'Charge Code created successfully',
         ]);
     }
@@ -135,7 +135,7 @@ class ChargeCodeController extends Controller
             );
         }
         return response()->json([
-            'redirect' => route('chargecodes.index'),
+            'redirect' =>guard_route('chargecodes.index'),
             'message' => 'Charge Code updated successfully',
         ]);
     }

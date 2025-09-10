@@ -6,27 +6,27 @@ use App\Models\Consultant;
 
 class ConsultantPolicy
 {
-    public function viewAny(User $user): bool
+    public function view($user, Consultant $consultant)
     {
         return $user->can('consultant-list');
     }
 
-    public function view(User $user, Consultant $consultant): bool
+    public function viewAny($user)
     {
         return $user->can('consultant-list');
     }
 
-    public function create(User $user): bool
+    public function create($user)
     {
         return $user->can('consultant-create');
     }
 
-    public function update(User $user, Consultant $consultant): bool
+    public function update($user, Consultant $consultant)
     {
         return $user->can('consultant-edit');
     }
 
-    public function delete(User $user, Consultant $consultant): bool
+    public function delete($user, Consultant $consultant)
     {
         return $user->can('consultant-delete');
     }

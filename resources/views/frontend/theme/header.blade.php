@@ -98,15 +98,15 @@
 
         {{-- @guest
             @if (Route::has('login'))
-                <a class="cta-btn d-none d-sm-block" href="{{ route('login') }}">{{ __('Login') }}</a>
+                <a class="cta-btn d-none d-sm-block" href="{{guard_route('login') }}">{{ __('Login') }}</a>
             @endif
 
             @if (Route::has('register'))
-                <a class="cta-btn d-none d-sm-block" href="{{ route('register') }}">{{ __('Register') }}</a>
+                <a class="cta-btn d-none d-sm-block" href="{{guard_route('register') }}">{{ __('Register') }}</a>
             @endif
         @else
             @if (Route::has('users.index'))
-                <a class="cta-btn d-none d-sm-block" href="{{ route('users.index') }}">View Dashboard</a>
+                <a class="cta-btn d-none d-sm-block" href="{{guard_route('users.index') }}">View Dashboard</a>
             @endif
         @endguest --}}
         </div>

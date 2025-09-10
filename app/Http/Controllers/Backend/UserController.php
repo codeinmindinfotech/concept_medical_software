@@ -25,9 +25,9 @@ class UserController extends Controller
         $user = auth()->user();
 
         if ($user->hasRole('patient')) {
-            $data = User::where('id', $user->id)->latest()->paginate(5);
+            $data = User::companyOnly()->where('id', $user->id)->latest()->paginate(5);
         } else {
-            $data = User::latest()->paginate(5);
+            $data = User::companyOnly()->latest()->paginate(5);
         }
 
         if ($request->ajax()) {

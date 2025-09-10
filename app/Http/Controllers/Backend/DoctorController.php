@@ -28,8 +28,8 @@ class DoctorController extends Controller
      */
     public function index(Request $request): View|string
     {
-        //$this->authorize('viewAny', Doctor::class);
-        $doctors = Doctor::latest()->get();
+        $this->authorize('viewAny', Doctor::class);
+        $doctors = Doctor::companyOnly()->latest()->get();
         if ($request->ajax()) {
             return view('doctors.list', compact('doctors'))->render();
         } 
@@ -44,7 +44,7 @@ class DoctorController extends Controller
      */
     public function create(): View
     {
-        //$this->authorize('create', Doctor::class);
+        $this->authorize('create', Doctor::class);
         extract($this->getCommonDropdowns());
         return view('doctors.create',compact('contactTypes','paymentMethods'));
     }
@@ -57,12 +57,12 @@ class DoctorController extends Controller
      */
     public function store(DoctorRequest $request): JsonResponse
     {
-        //$this->authorize('create', Doctor::class);
+        $this->authorize('create', Doctor::class);
         $validated = $request->validated();
         $doctor = Doctor::create($validated);
         assignRoleToGuardedModel($doctor, 'doctor', 'doctor');
         return response()->json([
-            'redirect' => route('doctors.index'),
+            'redirect' =>guard_route('doctors.index'),
             'message' => 'Doctor created successfully',
         ]);
     }
@@ -75,7 +75,7 @@ class DoctorController extends Controller
      */
     public function show(Doctor $doctor): View
     {
-        //$this->authorize('view', $doctor);
+        $this->authorize('view', $doctor);
         return view('doctors.show',compact('doctor'));
     }
     
@@ -87,7 +87,7 @@ class DoctorController extends Controller
      */
     public function edit(Doctor $doctor): View
     {
-        //$this->authorize('update', $doctor);
+        $this->authorize('update', $doctor);
         extract($this->getCommonDropdowns());
         return view('doctors.edit',compact('doctor','contactTypes','paymentMethods'));
     }
@@ -101,11 +101,11 @@ class DoctorController extends Controller
      */
     public function update(DoctorRequest $request, Doctor $doctor): JsonResponse 
     {
-        //$this->authorize('update', $doctor);
+        $this->authorize('update', $doctor);
         $validated = $request->validated();
         $doctor->update($validated);
         return response()->json([
-            'redirect' => route('doctors.index'),
+            'redirect' =>guard_route('doctors.index'),
             'message' => 'Doctor updated successfully',
         ]);
     }
@@ -118,7 +118,7 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor): RedirectResponse
     {
-        //$this->authorize('delete', $doctor);
+        $this->authorize('delete', $doctor);
         $doctor->delete();
     
         return redirect()->route('doctors.index')

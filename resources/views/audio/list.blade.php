@@ -28,12 +28,12 @@
             </td>
             <td>{{ format_date($audio->created_at) }}</td>
             <td>
-                <a class="btn btn-info btn-sm" href="{{ route('audios.show',$audio->id) }}" title="Show">
+                <a class="btn btn-info btn-sm" href="{{guard_route('audios.show',$audio->id) }}" title="Show">
                     <i class="fa-solid fa-eye text-white"></i>
                 </a>
-                <a class="btn btn-primary btn-sm" href="{{ route('audios.edit',$audio->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                <a class="btn btn-primary btn-sm" href="{{guard_route('audios.edit',$audio->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
 
-                <form method="POST" action="{{ route('audios.destroy', [$audio->id]) }}" style="display:inline">
+                <form method="POST" action="{{guard_route('audios.destroy', [$audio->id]) }}" style="display:inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm" title="Delete">

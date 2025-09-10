@@ -6,7 +6,7 @@
         <div class="card shadow-lg border-0 rounded-lg mt-5">
             <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
             <div class="card-body">
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{guard_route('login') }}">
                     @csrf
                     <div class="form-floating mb-3">
                         <input id="company" type="text" class="form-control @error('company') is-invalid @enderror" 
@@ -49,7 +49,7 @@
                         </button>
 
                         @if (Route::has('password.request'))
-                            <a class="btn btn-link" href="{{ route('password.request') }}">
+                            <a class="btn btn-link" href="{{guard_route('password.request') }}">
                                 {{ __('Forgot Your Password?') }}
                             </a>
                         @endif
@@ -60,7 +60,7 @@
             
             @if (Route::has('register'))
                 <div class="card-footer text-center py-3">
-                    <div class="small"><a href="{{ route('register') }}">Need an account? Sign up!</a></div>
+                    <div class="small"><a href="{{guard_route('register') }}">Need an account? Sign up!</a></div>
                 </div>
             @endif
         </div>

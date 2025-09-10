@@ -15,10 +15,10 @@ class ConsultantController extends Controller
 {
     public function index(Request $request): View|string
     {
-        //$this->authorize('viewAny', Consultant::class);
+        $this->authorize('viewAny', Consultant::class);
 
         $pageTitle = "Consultants List";
-        $consultants = Consultant::latest()->paginate(5);
+        $consultants = Consultant::companyOnly()->latest()->paginate(5);
 
         if ($request->ajax()) {
             return view('consultants.list', compact('consultants'))->render();
@@ -29,16 +29,16 @@ class ConsultantController extends Controller
 
     public function create(): View
     {
-        //$this->authorize('create', Consultant::class);
+        $this->authorize('create', Consultant::class);
 
         $pageTitle = "Consultants Create";
-        $insurances = Insurance::all();
+        $insurances = Insurance::companyOnly()->all();
         return view('consultants.create', compact('pageTitle', 'insurances'));
     }
 
     public function store(ConsultantRequest $request): JsonResponse
     {
-        //$this->authorize('create', Consultant::class);
+        $this->authorize('create', Consultant::class);
 
         $data = $request->validated();
 
@@ -50,14 +50,14 @@ class ConsultantController extends Controller
         $consultant->insurances()->sync($request->input('insurance_id', []));
 
         return response()->json([
-            'redirect' => route('consultants.index'),
+            'redirect' =>guard_route('consultants.index'),
             'message' => 'Consultant created successfully',
         ]);
     }
 
     public function show(Consultant $consultant): View
     {
-        //$this->authorize('view', $consultant);
+        $this->authorize('view', $consultant);
 
         $pageTitle = "Show Consultant";
         return view('consultants.show', compact('consultant', 'pageTitle'));
@@ -65,10 +65,10 @@ class ConsultantController extends Controller
 
     public function edit(Consultant $consultant): View
     {
-        //$this->authorize('update', $consultant);
+        $this->authorize('update', $consultant);
 
         $pageTitle = "Edit Consultant";
-        $insurances = Insurance::all();
+        $insurances = Insurance::companyOnly()->all();
         return view('consultants.edit', compact('consultant', 'pageTitle', 'insurances'));
     }
 
@@ -91,14 +91,14 @@ class ConsultantController extends Controller
         $consultant->insurances()->sync($request->input('insurance_id', []));
 
         return response()->json([
-            'redirect' => route('consultants.index'),
+            'redirect' =>guard_route('consultants.index'),
             'message' => 'Consultant updated successfully',
         ]);
     }
 
     public function destroy(Consultant $consultant): RedirectResponse
     {
-        //$this->authorize('delete', $consultant);
+        $this->authorize('delete', $consultant);
 
         $consultant->delete();
 

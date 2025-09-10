@@ -23,13 +23,13 @@
         <td class="fw-bold text-primary">{{ format_time($appointment->start_time??'') }}</td>
         <td>
             <a target="_blank"
-            class="text-decoration-none text-dark fw-semibold" href="{{ route('chargecodes.show',$appointment->procedure->id) }}">
+            class="text-decoration-none text-dark fw-semibold" href="{{guard_route('chargecodes.show',$appointment->procedure->id) }}">
                 {{ $appointment->procedure->code ?? '-' }}
             </a>
         </td>
         <td>
             <a target="_blank"
-            class="text-decoration-none text-dark fw-semibold" href="{{ route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
+            class="text-decoration-none text-dark fw-semibold" href="{{guard_route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
                 <div class="align-items-center gap-2 d-flex">
                     @if ($appointment->patient->patient_picture)
                         <img src="{{ asset('storage/' . $appointment->patient->patient_picture) }}"
@@ -97,7 +97,7 @@
                     @endif
                     <li>
                         <a class="dropdown-item" target="_blank" rel="noopener noreferrer"
-                        href="{{ route('patients.edit', $appointment->patient->id) }}">
+                        href="{{guard_route('patients.edit', $appointment->patient->id) }}">
                             <i class="fa-solid fa-pen-to-square"></i> Edit Patient
                         </a>
                     </li>
@@ -108,13 +108,13 @@
                     </li>
                     <li>
                         <a class="dropdown-item" target="_blank" rel="noopener noreferrer"
-                        href="{{ route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+                        href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
                             <i class="fas fa-bell"></i> Add Recall
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" target="_blank" rel="noopener noreferrer"
-                        href="{{ route('sms.index', ['patient' => $appointment->patient->id]) }}">
+                        href="{{guard_route('sms.index', ['patient' => $appointment->patient->id]) }}">
                             <i class="fas fa-sms"></i> Send SMS
                         </a>
                     </li>

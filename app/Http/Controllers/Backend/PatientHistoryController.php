@@ -14,7 +14,7 @@ class PatientHistoryController extends Controller
 {
     public function index(Request $request, Patient $patient): View|string
     {
-        $historys = $patient->histories()->latest()->get();//->get();
+        $historys = $patient->histories()->companyOnly()->latest()->get();//->get();
         if ($request->ajax()) {
             return view('patients.history.list', compact('patient', 'historys'))->render();
         }
@@ -40,7 +40,7 @@ class PatientHistoryController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.history.index', $patient->id),
+            'redirect' =>guard_route('patients.history.index', $patient->id),
             'message' => 'History Notes added successfully',
         ]);
     }
@@ -61,7 +61,7 @@ class PatientHistoryController extends Controller
         ]);
 
         return response()->json([
-            'redirect' => route('patients.history.index', $patient->id),
+            'redirect' =>guard_route('patients.history.index', $patient->id),
             'message' => 'Note updated successfully',
         ]);
     }

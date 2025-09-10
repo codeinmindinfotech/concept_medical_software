@@ -35,7 +35,7 @@
 
                 @forelse($recallsThisMonth as $recall)
                 <li>
-                    <a class="dropdown-item" href="{{ route('recalls.notifications') }}">
+                    <a class="dropdown-item" href="{{guard_route('recalls.notifications') }}">
                         <i class="fas fa-user me-2"></i>
                         Patient #{{ $recall->patient_id }} – {{ \Carbon\Carbon::parse($recall->recall_date)->format('d M Y') }}
                     </a>
@@ -49,7 +49,7 @@
                 </li>
 
                 <li>
-                    <a class="dropdown-item text-center text-primary fw-bold" href="{{ route('recalls.notifications') }}">
+                    <a class="dropdown-item text-center text-primary fw-bold" href="{{guard_route('recalls.notifications') }}">
                         <i class="fas fa-folder-open me-2"></i> View All Recalls
                     </a>
                 </li>
@@ -77,7 +77,7 @@
 
                 @forelse($upcomingTasks as $task)
                 <li>
-                    <a class="dropdown-item" href="{{ route('tasks.tasks.edit', ['patient' => $task->patient_id, 'task' => $task->id]) }}">
+                    <a class="dropdown-item" href="{{guard_route('tasks.tasks.edit', ['patient' => $task->patient_id, 'task' => $task->id]) }}">
                         <i class="fas fa-file-alt me-2"></i>
                         {{ $task->subject }} – {{ \Carbon\Carbon::parse($task->end_date)->format('d M Y') }}
                     </a>
@@ -91,7 +91,7 @@
                 </li>
 
                 <li>
-                    <a class="dropdown-item text-center text-primary fw-bold" href="{{ route('tasks.notifications') }}">
+                    <a class="dropdown-item text-center text-primary fw-bold" href="{{guard_route('tasks.notifications') }}">
                         <i class="fas fa-folder-open me-2"></i> View All Tasks
                     </a>
                 </li>
@@ -109,13 +109,18 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                 <li>
+                    <a class="dropdown-item" href="{{ guard_route('password.change') }}">
+                        {{ __('Change Password') }}
+                    </a>
+                </li>
+                <li>
                     <hr class="dropdown-divider" />
                 </li>
                 <li>
-                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <a class="dropdown-item" href="{{guard_route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         {{ __('Logout') }}
                     </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    <form id="logout-form" action="{{guard_route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>
                 </li>

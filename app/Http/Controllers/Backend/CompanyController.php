@@ -43,7 +43,7 @@ class CompanyController extends Controller
             // Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
 
             return response()->json([
-                'redirect' => route('companies.index'),
+                'redirect' =>guard_route('companies.index'),
                 'message' => 'Company created successfully',
             ]);
 
@@ -83,7 +83,7 @@ class CompanyController extends Controller
         $company->update($data);
 
         return response()->json([
-            'redirect' => route('companies.index'),
+            'redirect' =>guard_route('companies.index'),
             'message' => 'Company updated successfully',
         ]);
     }

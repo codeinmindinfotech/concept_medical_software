@@ -11,7 +11,7 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Task Management
             </h5>
-            <a href="{{ route('tasks.tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('tasks.tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> New Task
             </a>
         </div>
@@ -47,10 +47,10 @@
                             <td>{{ format_date($task->end_date) }}</td>
                             <td>
                                 <div class="d-flex justify-content-end gap-1">
-                                    <a href="{{ route('tasks.tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" class="btn btn-sm btn-warning">
+                                    <a href="{{guard_route('tasks.tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" class="btn btn-sm btn-warning">
                                         <i class="fa fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('tasks.tasks.destroy', ['patient' => $patient, 'task' => $task->id]) }}" method="POST" class="m-0" onsubmit="return confirm('Are you sure to delete this Tasks?');">
+                                    <form action="{{guard_route('tasks.tasks.destroy', ['patient' => $patient, 'task' => $task->id]) }}" method="POST" class="m-0" onsubmit="return confirm('Are you sure to delete this Tasks?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
@@ -125,8 +125,8 @@ return [
 'id' => $followup->id,
 'date' => \Carbon\Carbon::parse($followup->followup_date)->format('Y-m-d'),
 'note' => $followup->note,
-'editUrl' => route('followups.storeOrUpdate', [$patient->id, $task->id, $followup->id]),
-'deleteUrl' => route('followups.destroy', [$patient->id, $task->id, $followup->id]),
+'editUrl' =>guard_route('followups.storeOrUpdate', [$patient->id, $task->id, $followup->id]),
+'deleteUrl' =>guard_route('followups.destroy', [$patient->id, $task->id, $followup->id]),
 ];
 })->toArray()
 ];

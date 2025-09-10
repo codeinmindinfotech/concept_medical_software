@@ -32,18 +32,18 @@
                 <td>{{ $clinic->planner_seq }}</td>
                 <td>
                     <div class="btn-group" role="group" aria-label="Clinic Actions">
-                        <a href="{{ route('clinics.show', $clinic->id) }}" class="btn btn-info btn-sm" title="View">
+                        <a href="{{guard_route('clinics.show', $clinic->id) }}" class="btn btn-info btn-sm" title="View">
                             <i class="fa-solid fa-eye text-white"></i>
                         </a>
 
                         @can('clinic-edit')
-                            <a href="{{ route('clinics.edit', $clinic->id) }}" class="btn btn-primary btn-sm" title="Edit">
+                            <a href="{{guard_route('clinics.edit', $clinic->id) }}" class="btn btn-primary btn-sm" title="Edit">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                         @endcan
 
                         @can('clinic-delete')
-                            <form action="{{ route('clinics.destroy', $clinic->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this clinic?');">
+                            <form action="{{guard_route('clinics.destroy', $clinic->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this clinic?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" title="Delete">

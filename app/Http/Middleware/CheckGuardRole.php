@@ -12,7 +12,7 @@ class CheckGuardRole
     public function handle($request, Closure $next)
     {
         $guard = request()->segment(1); // Assuming the route prefix is the guard (e.g., /doctor/dashboard)
-        if (!in_array($guard, ['doctor', 'clinic', 'patient', 'manager'])) {
+        if (!in_array($guard, ['doctor', 'clinic', 'patient', 'web'])) {
             abort(403, 'Unauthorized guard.');
         }
 

@@ -31,9 +31,9 @@
                 @endif
                 </td>
                 <td>
-                    <a class="btn btn-info btn-sm" href="{{ route('users.show',$user->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
-                    <a class="btn btn-primary btn-sm" href="{{ route('users.edit',$user->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                    <form method="POST" action="{{ route('users.destroy', $user->id) }}" style="display:inline">
+                    <a class="btn btn-info btn-sm" href="{{guard_route('users.show',$user->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
+                    <a class="btn btn-primary btn-sm" href="{{guard_route('users.edit',$user->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                    <form method="POST" action="{{guard_route('users.destroy', $user->id) }}" style="display:inline">
                         @csrf
                         @method('DELETE')
 

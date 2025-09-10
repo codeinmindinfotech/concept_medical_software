@@ -12,11 +12,11 @@
             <td>{{ $index + 1 }}</td>
             <td>{{ $company->name }} </td>
             <td>
-                        {{-- <a class="btn btn-info btn-sm" href="{{ route('companies.show',$company->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a> --}}
+                        {{-- <a class="btn btn-info btn-sm" href="{{guard_route('companies.show',$company->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a> --}}
 
-                        <a class="btn btn-primary btn-sm" href="{{ route('companies.edit',$company->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a class="btn btn-primary btn-sm" href="{{guard_route('companies.edit',$company->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
 
-                    <form action="{{ route('companies.destroy', $company->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this company? This will also delete the associated database.');">
+                    <form action="{{guard_route('companies.destroy', $company->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this company? This will also delete the associated database.');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm" title="Delete">

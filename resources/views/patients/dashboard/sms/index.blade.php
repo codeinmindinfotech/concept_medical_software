@@ -9,7 +9,7 @@
     @if(session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-    <form action="{{ route('sms.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
+    <form action="{{guard_route('sms.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
     @csrf
     <div class="card mb-4 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -71,7 +71,7 @@
                 <button type="submit" name="send_option" value="schedule" class="btn btn-primary">
                     <i class="fas fa-clock me-1"></i> Schedule Message
                 </button>
-                <a href="{{ route('sms.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{guard_route('sms.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
             </div>
             
     </form>

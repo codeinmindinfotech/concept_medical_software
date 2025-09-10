@@ -19,11 +19,11 @@ class FeeNoteController extends Controller
 
     public function index(Patient $patient)
     {
-        $consultants = Consultant::all(); 
-        $chargecodes = ChargeCode::all();
-        $feeNotes = $patient->FeeNoteList()->latest()->get();
+        $consultants = Consultant::companyOnly()->all(); 
+        $chargecodes = ChargeCode::companyOnly()->all();
+        $feeNotes = $patient->FeeNoteList()->companyOnly()->latest()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
-        $clinics = Clinic::orderBy('name')->get();
+        $clinics = Clinic::companyOnly()->orderBy('name')->get();
 
         if (request()->ajax()) {
             return view('patients.dashboard.fee_notes.index', compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
@@ -33,11 +33,11 @@ class FeeNoteController extends Controller
 
     public function create(Patient $patient)
     {
-        $patient = Patient::findOrFail($patient->id); 
-        $consultants = Consultant::all(); 
-        $chargecodes = ChargeCode::all();
+        $patient = Patient::companyOnly()->findOrFail($patient->id); 
+        $consultants = Consultant::companyOnly()->all(); 
+        $chargecodes = ChargeCode::companyOnly()->all();
         $narrative = $this->getDropdownOptions('NARRATIVE');
-        $clinics = Clinic::orderBy('name')->get();
+        $clinics = Clinic::companyOnly()->orderBy('name')->get();
         return view('patients.dashboard.fee_notes.create', compact('consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
     }
 
@@ -63,23 +63,23 @@ class FeeNoteController extends Controller
             $data + $request->only(['comment', 'narrative', 'admission_date', 'discharge_date'])
         );
 
-        $feeNotes = FeeNote::where('patient_id', $request->patient_id)->latest()->get();
+        $feeNotes = FeeNote::companyOnly()->where('patient_id', $request->patient_id)->latest()->get();
         $patient = Patient::find($request->patient_id);
 
         return response()->json([
-            'redirect' => route('fee-notes.index', ['patient' => $patient]),
+            'redirect' =>guard_route('fee-notes.index', ['patient' => $patient]),
             'message' => 'feeNotes created successfully',
         ]);
     }
 
     public function edit(Patient $patient, $feeNoteId)
     {
-        $feeNote = FeeNote::findOrFail($feeNoteId);
-        $patient = Patient::findOrFail($patient->id); 
-        $consultants = Consultant::all(); 
-        $chargecodes = ChargeCode::all();
+        $feeNote = FeeNote::companyOnly()->findOrFail($feeNoteId);
+        $patient = Patient::companyOnly()->findOrFail($patient->id); 
+        $consultants = Consultant::companyOnly()->all(); 
+        $chargecodes = ChargeCode::companyOnly()->all();
         $narrative = $this->getDropdownOptions('NARRATIVE');
-        $clinics = Clinic::orderBy('name')->get();
+        $clinics = Clinic::companyOnly()->orderBy('name')->get();
         return view('patients.dashboard.fee_notes.edit', compact('feeNote','consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
     }
 
@@ -101,7 +101,7 @@ class FeeNoteController extends Controller
             $data + $request->only(['comment', 'narrative', 'admission_date', 'discharge_date'])
         );
         return response()->json([
-            'redirect' => route('fee-notes.index', ['patient' => $patient]),
+            'redirect' =>guard_route('fee-notes.index', ['patient' => $patient]),
             'message' => 'feeNotes updated successfully',
         ]);
     }

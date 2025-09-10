@@ -1,23 +1,17 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 if (!function_exists('format_date')) {
-    /**
-     * Format a date string or Carbon instance to 'd M Y' or return a default value.
-     *
-     * @param  string|\DateTimeInterface|null  $date
-     * @param  string  $format
-     * @param  string  $default
-     * @return string
-     */
     function format_date($date, $format = 'd M Y', $default = '-')
     {
         if (!$date) {
             return $default;
         }
 
-        // If it's a Carbon or DateTime instance, format directly
         if ($date instanceof \DateTimeInterface) {
             return Carbon::instance($date)->format($format);
         }
@@ -31,14 +25,6 @@ if (!function_exists('format_date')) {
 }
 
 if (! function_exists('format_time')) {
-    /**
-     * Format a time string or Carbon instance.
-     *
-     * @param  \DateTimeInterface|string|null  $time
-     * @param  string  $format
-     * @param  string  $default
-     * @return string
-     */
     function format_time($time, $format = 'H:i', $default = '-')
     {
         if (!$time) return $default;
@@ -64,6 +50,7 @@ if (!function_exists('asset_url')) {
         }
     }
 }
+
 if (!function_exists('assignRoleToGuardedModel')) {
     function assignRoleToGuardedModel($model, string $roleName, string $guardName): void
     {
@@ -105,3 +92,105 @@ if (! function_exists('getAuthenticatedUserAndCompany')) {
         ];
     }
 }
+
+if (!function_exists('getCurrentGuard')) {
+    function getCurrentGuard(): ?string
+    {
+        $guards = ['web', 'clinic', 'doctor', 'patient'];
+
+        foreach ($guards as $guard) {
+            if (Auth::guard($guard)->check()) {
+                return $guard;
+            }
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('current_user')) {
+    function current_user()
+    {
+        $guard = getCurrentGuard();
+        return $guard ? Auth::guard($guard)->user() : null;
+    }
+}
+
+if (!function_exists('has_role')) {
+    function has_role($role): bool
+    {
+        $user = current_user();
+        return $user && $user->hasRole($role);
+    }
+}
+
+if (!function_exists('has_permission')) {
+    function has_permission($permission): bool
+    {
+        $user = current_user();
+        return $user && $user->can($permission);
+    }
+}
+
+if (!function_exists('guard_route')) {
+    function guard_route(string $baseRoute, $params = []): string
+    {
+        $guard = getCurrentGuard();
+        $user = current_user();
+
+        // Special logic for web guard
+        if ($guard === 'web') {
+            if ($user && $user->hasRole('superadmin')) {
+                return route($baseRoute, $params); // e.g. 'dashboard'
+            }
+
+            if ($user && $user->hasRole('manager')) {
+                $prefixedRoute = 'manager' . '.' . $baseRoute; // e.g. clinic.dashboard
+
+                if (Route::has($prefixedRoute)) {
+                    return route($prefixedRoute, $params);
+                }
+            }
+        }
+
+        // For other guards, use guard-prefixed route
+        if ($guard) {
+            $prefixedRoute = $guard . '.' . $baseRoute; // e.g. clinic.dashboard
+
+            if (Route::has($prefixedRoute)) {
+                return route($prefixedRoute, $params);
+            }
+        }
+
+        // Default fallback
+        return route($baseRoute, $params);
+    }
+}
+
+if (!function_exists('user_name')) {
+    function user_name(): string
+    {
+        $user = current_user(); 
+
+        return $user?->name ?? 'Guest';
+    }
+}
+
+if (!function_exists('current_company_id')) {
+    function current_company_id(): ?int
+    {
+        $user = current_user();
+        $guard = getCurrentGuard();
+
+        if (!$user) {
+            return null;
+        }
+
+        if ($guard === 'web' && $user->hasRole('superadmin')) {
+            return null;
+        }
+
+        return $user->company_id ?? null;
+    }
+}
+

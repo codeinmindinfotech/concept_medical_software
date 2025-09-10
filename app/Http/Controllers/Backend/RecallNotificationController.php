@@ -15,7 +15,7 @@ class RecallNotificationController extends Controller
     {
         $user = auth()->user();
 
-        $query = Recall::with('patient','status')->latest();
+        $query = Recall::companyOnly()->with('patient','status')->latest();
         
         if ($user->hasRole('patient')) {
             $query->where('patient_id', $user->userable_id);

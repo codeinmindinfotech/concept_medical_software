@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Recall extends Model
 {
+    use BelongsToCompany;
     protected $fillable = ['company_id', 'patient_id', 'recall_interval', 'recall_date', 'status_id', 'note'];
 
     public function patient() {

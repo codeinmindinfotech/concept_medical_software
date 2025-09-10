@@ -36,7 +36,7 @@ class PatientAudioController extends Controller
     
     public function index(Request $request, Patient $patient): View|string
     {
-        $audios = $patient->audio()->latest()->get();
+        $audios = $patient->audio()->companyOnly()->latest()->get();
         if ($request->ajax()) {
             return view('patients.audio.list', compact('patient', 'audios'))->render();
         }
