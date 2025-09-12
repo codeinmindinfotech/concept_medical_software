@@ -1,33 +1,38 @@
-<?php 
+<?php
+
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Consultant;
 
 class ConsultantPolicy
 {
-    public function view($user, Consultant $consultant)
-    {
-        return $user->can('consultant-list');
-    }
-
     public function viewAny($user)
     {
-        return $user->can('consultant-list');
+        $authUser = current_user();
+        return $authUser && $authUser->can('consultant-list');
+    }
+
+    public function view($user, Consultant $consultant)
+    {
+        $authUser = current_user();
+        return $authUser && $authUser->can('consultant-list');
     }
 
     public function create($user)
     {
-        return $user->can('consultant-create');
+        $authUser = current_user();
+        return $authUser && $authUser->can('consultant-create');
     }
 
     public function update($user, Consultant $consultant)
     {
-        return $user->can('consultant-edit');
+        $authUser = current_user();
+        return $authUser && $authUser->can('consultant-edit');
     }
 
     public function delete($user, Consultant $consultant)
     {
-        return $user->can('consultant-delete');
+        $authUser = current_user();
+        return $authUser && $authUser->can('consultant-delete');
     }
 }

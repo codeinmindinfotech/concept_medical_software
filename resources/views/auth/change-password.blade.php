@@ -30,7 +30,7 @@
             <h5 class="mb-0">Change Password</h5>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{guard_route('password.update') }}" class="validate-form" >
+            <form method="POST" action="{{guard_route('password.user.update') }}" class="validate-form" >
                 @csrf
                 <div class="row">
                     <div class="mb-3">

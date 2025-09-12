@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Patients List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' =>guard_route('patients.create'),
+        'backUrl' => guard_route('patients.create'),
         'isListPage' => true
     ])
 

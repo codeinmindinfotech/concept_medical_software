@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Backend\AppointmentController;
 use App\Http\Controllers\Backend\AudioController;
 use App\Http\Controllers\Backend\ChargeCodeController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 use App\Http\Controllers\Auth\SuperadminLoginController;
+use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
 
 Route::get('/', function () {
@@ -39,6 +41,10 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
 
 Route::prefix('superadmin')->group(function () {
     Route::get('login', [SuperadminLoginController::class, 'showLoginForm'])->name('superadmin.login');
@@ -48,12 +54,14 @@ Route::prefix('superadmin')->group(function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::middleware('role:superadmin')->group(function () {
+        Route::resource('configurations', ConfigurationController::class)->except(['show']);
+
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::resource('companies', CompanyController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
+        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
 
         
         // dropdown  parent
@@ -191,10 +199,12 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::prefix("manager")->name("manager.")->middleware('role:manager')
         ->group(function () {
+        Route::resource('configurations', ConfigurationController::class)->except(['show']);
+
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::resource('users', UserController::class);
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
+        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
 
 
         Route::prefix('patients/{patient}/notes')->group(function () {
@@ -328,8 +338,10 @@ foreach ($roles as $role) {
         ->name("$role.")
         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
         ->group(function () use ($role) {
+            Route::resource('configurations', ConfigurationController::class)->except(['show']);
+
             Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-            Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.update');
+            Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
 
             Route::resource('dashboard', DashboardController::class);
             Route::resource('companies', CompanyController::class);

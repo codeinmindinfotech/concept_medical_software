@@ -15,17 +15,14 @@
                 <td>{{ $patients->firstItem() + $index }}</td>
                 <td>
                     <div class="align-items-center gap-2 d-flex">
-                    @if ($patient->patient_picture)
-                        <img src="{{ asset('storage/' . $patient->patient_picture) }}"
-                             alt="Patient Picture"
-                             class="rounded-circle"
-                             width="40" height="40">
-                    @else
+                        @if ($patient->patient_picture)
+                        <img src="{{ asset('storage/' . $patient->patient_picture) }}" alt="Patient Picture" class="rounded-circle" width="40" height="40">
+                        @else
                         <div class="rounded-circle bg-secondary d-inline-block text-white text-center" style="width: 40px; height: 40px; line-height: 40px;">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                    @endif
-                    {{ $patient->full_name }}
+                        @endif
+                        {{ $patient->full_name }}
                     </div>
                 </td>
                 <td>{{ $patient->address ?? '-' }}</td>
@@ -36,6 +33,8 @@
                         <a href="{{guard_route('patients.show', $patient->id) }}" class="btn btn-sm btn-info" title="View Details">
                             <i class="fa-solid fa-eye text-white"></i>
                         </a>
+                        @endcan
+                        @can('update', $patient)
                         <a href="{{guard_route('patients.notes.index', $patient->id) }}" class="btn btn-sm btn-success" title="Notes">
                             <i class="fa-solid fa-notes-medical"></i>
                         </a>
@@ -70,13 +69,13 @@
                             <i class="fas fa-calendar-check"></i>
                         </a>
                         @endcan
-                
+
                         @can('update', $patient)
                         <a href="{{guard_route('patients.edit', $patient->id) }}" class="btn btn-sm btn-primary" title="Edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
                         @endcan
-                
+
                         @can('delete', $patient)
                         <form action="{{guard_route('patients.destroy', $patient->id) }}" method="POST" class="m-0" onsubmit="return confirm('Are you sure to delete this patient?');">
                             @csrf
@@ -86,6 +85,7 @@
                             </button>
                         </form>
                         @endcan
+
                     </div>
                 </td>
             </tr>

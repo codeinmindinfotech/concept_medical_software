@@ -9,16 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Password;
+
 
 class ClinicController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:clinic-list|clinic-create|clinic-edit|clinic-delete', ['only' => ['index','show']]);
-    //     $this->middleware('permission:clinic-create', ['only' => ['create','store']]);
-    //     $this->middleware('permission:clinic-edit', ['only' => ['edit','update']]);
-    //     $this->middleware('permission:clinic-delete', ['only' => ['destroy']]);
-    // }
+    public function __construct()
+    {
+        $this->middleware('permission:clinic-list|clinic-create|clinic-edit|clinic-delete', ['only' => ['index','show']]);
+        $this->middleware('permission:clinic-create', ['only' => ['create','store']]);
+        $this->middleware('permission:clinic-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:clinic-delete', ['only' => ['destroy']]);
+    }
 
     public function index(Request $request): View|string
     {
@@ -43,8 +45,24 @@ class ClinicController extends Controller
         $data = $this->extractDayFields($request);
         $clinic = Clinic::create($data);
         assignRoleToGuardedModel($clinic, 'clinic', 'clinic');
+
+        $brokerManager = app('auth.password');
+        $brokerManager->setCompanyId($clinic->company_id);
+        $brokerManager->setType('clinic');
+
+        $broker = $brokerManager->broker('clinics');
+        $status = $broker->sendResetLink([
+            'email' => $clinic->email,
+        ]);
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => 'Failed to send password reset link',
+            ], 500);
+        }
+
         return response()->json([
-            'redirect' =>guard_route('clinics.index'),
+            'redirect' => guard_route('clinics.index'),
             'message' => 'Clinic created successfully',
         ]);
     }

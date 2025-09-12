@@ -1,33 +1,38 @@
-<?php 
+<?php
 
 namespace App\Policies;
 
 use App\Models\Patient;
-use App\Models\User;
 
 class PatientPolicy
 {
-    public function view(User $user, Patient $patient): bool
+    public function viewAny($user)
     {
-        return $this->isOwnerOrAdmin($user, $patient);
+        $authUser = current_user();
+        return $authUser && $authUser->can('patient-list');
     }
 
-    public function update(User $user, Patient $patient): bool
+    public function view($user, Patient $patient)
     {
-        return $this->isOwnerOrAdmin($user, $patient);
+        $authUser = current_user();
+        return $authUser && $authUser->can('patient-list');
     }
 
-    public function delete(User $user, Patient $patient): bool
+    public function create($user)
     {
-        return $user->hasRole(['admin', 'superadmin']);
+        $authUser = current_user();
+        return $authUser && $authUser->can('patient-create');
     }
 
-    protected function isOwnerOrAdmin(User $user, Patient $patient): bool
+    public function update($user, Patient $patient)
     {
-        if ($user->hasRole(['admin', 'superadmin'])) {
-            return true;
-        }
+        $authUser = current_user();
+        return $authUser && $authUser->can('patient-edit');
+    }
 
-        return $user->hasRole('patient') && $user->userable_id === $patient->id;
+    public function delete($user, Patient $patient)
+    {
+        $authUser = current_user();
+        return $authUser && $authUser->can('patient-delete');
     }
 }

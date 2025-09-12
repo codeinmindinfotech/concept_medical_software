@@ -34,14 +34,16 @@ class SuperadminLoginController extends Controller
             ['email' => $request->email, 'password' => $request->password],
             $request->filled('remember')
         )) {
-            // Auth::guard('web')->login($user);
-            \Log::info('Logged in guard:', ['guard' => 'web']);
-            return redirect()->intended(route('dashboard.index'));
+            $user = Auth::guard('web')->user();
 
-            // return redirect()->intended('/dashboard'); // Superadmin dashboard
-        } else{
-            dd(111);
-        }
+            if (!$user->hasRole('superadmin')) {
+                Auth::guard('web')->logout(); 
+                return back()->withErrors([
+                    'email' => 'Access denied. You are not a super-admin.',
+                ]);
+            }
+            return redirect()->intended('/dashboard'); 
+        } 
 
         return back()->withErrors([
             'email' => 'Invalid credentials.',

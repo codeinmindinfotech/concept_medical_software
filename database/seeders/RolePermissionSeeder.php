@@ -51,7 +51,7 @@ class RolePermissionSeeder extends Seeder
             ]);
 
             foreach ($data['permissions'] as $permName) {
-                $permission = Permission::where('name1', $permName)
+                $permission = Permission::where('name', $permName)
                                         ->where('guard_name', $data['guard_name']) // ✅ ensure correct guard
                                         ->first();
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Company;
-use App\Mail\CompanyCreatedMail; // ✅ Add this
+use App\Mail\CompanyCreatedMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -32,6 +32,7 @@ class CompanyController extends Controller
                 'unique:companies,name',
                 'regex:/^[A-Za-z0-9_]+$/',
             ],
+            'email' => 'nullable|email|max:255|unique:companies,email',
         ]);
         
 
@@ -39,8 +40,8 @@ class CompanyController extends Controller
             $data = $request->all();
             $company = Company::create($data);           
            
-            // $recipients = globalNotificationRecipients();
-            // Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
+            $recipients = globalNotificationRecipients();
+            Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
 
             return response()->json([
                 'redirect' =>guard_route('companies.index'),
@@ -77,6 +78,7 @@ class CompanyController extends Controller
                 'unique:companies,name,'. $id,
                 'regex:/^[A-Za-z0-9_]+$/',
             ],
+            'email' => 'nullable|email|max:255|unique:companies,email,'. $id,
         ]);
 
         $company = Company::findOrFail($id);

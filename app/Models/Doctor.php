@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
 
 class Doctor extends Authenticatable
 {
-    use BelongsToCompany, HasFactory, HasRoles;
+    use BelongsToCompany, HasFactory, HasRoles, Notifiable;
   
     protected $guard_name = 'doctor'; 
 
@@ -57,5 +58,10 @@ class Doctor extends Authenticatable
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ClinicResetPasswordNotification($token, $this->company_id, $this->guard_name));
     }
 }

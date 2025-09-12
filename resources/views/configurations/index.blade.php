@@ -4,18 +4,19 @@
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
-            ['label' => 'Clinics List'],
+            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+            ['label' => 'Configurations', 'url' =>guard_route('configurations.index')],
+            ['label' => 'Configurations List'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Clinics List',
+        'pageTitle' => 'Configurations List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => guard_route('clinics.create'),
+        'backUrl' =>guard_route('configurations.create'),
         'isListPage' => true
     ])
-    
+
     @session('success')
         <div class="alert alert-success" role="alert"> 
             {{ $value }}
@@ -24,11 +25,11 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            Clinics Management
+            Configurations Management
         </div>
         <div class="card-body">
-            <div id="clinics-list" data-pagination-container>
-                @include('clinics.list', ['clinics' => $clinics])
+            <div id="configurations-list" data-pagination-container>
+                @include('configurations.list', ['configs' => $configs])
             </div>
         </div> 
     </div>
@@ -36,7 +37,7 @@
 @endsection
 @push('scripts')
 <script>
-    $('#ClinicTable').DataTable({
+    $('#ConfigurationTable').DataTable({
      paging: true,
      searching: true,
      ordering: true,
@@ -45,7 +46,7 @@
      pageLength: 10,
      columnDefs: [
        {
-         targets: 6, // column index for "Start Date" (0-based)
+         targets: 3, // column index for "Start Date" (0-based)
          orderable: false   // Disable sorting
        }
      ]

@@ -171,8 +171,7 @@ if (!function_exists('user_name')) {
     function user_name(): string
     {
         $user = current_user(); 
-
-        return $user?->name ?? 'Guest';
+        return $user?->name ?? $user?->full_name;
     }
 }
 
@@ -193,4 +192,43 @@ if (!function_exists('current_company_id')) {
         return $user->company_id ?? null;
     }
 }
+
+if (!function_exists('is_guard_route')) {
+    function is_guard_route(string $path): bool
+    {
+        $user = current_user();
+        $guard = getCurrentGuard(); // 'web', 'doctor', etc.
+
+        $prefix = '';
+
+        if ($guard === 'web') {
+            if ($user?->hasRole('manager')) {
+                $prefix = 'manager/';
+            }
+            // superadmin gets no prefix
+        } elseif ($guard) {
+            $prefix = $guard . '/';
+        }
+
+        return \Illuminate\Support\Facades\Request::is($prefix . $path . '*');
+    }
+}
+
+if (!function_exists('globalNotificationRecipients')) {
+    function globalNotificationRecipients(): array
+    {
+        $emails = \App\Models\Configuration::getValue('global_notification_emails', '');
+
+        // Assuming emails stored as comma separated
+        $emails = explode(',', $emails);
+
+        // Trim each email and filter empty
+        $emails = array_filter(array_map('trim', $emails));
+
+        return $emails;
+    }
+}
+
+
+
 

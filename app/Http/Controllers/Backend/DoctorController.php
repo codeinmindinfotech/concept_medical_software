@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\DoctorRequest;
 use App\Traits\DropdownTrait;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Password;
 
 class DoctorController extends Controller
 { 
@@ -29,7 +30,14 @@ class DoctorController extends Controller
     public function index(Request $request): View|string
     {
         $this->authorize('viewAny', Doctor::class);
-        $doctors = Doctor::companyOnly()->latest()->get();
+        $query = Doctor::companyOnly();
+
+        if (has_role('doctor')) {
+            $user = auth()->user();
+            $query = $query->where('id', $user->id);
+        }
+
+        $doctors = $query->latest()->get();
         if ($request->ajax()) {
             return view('doctors.list', compact('doctors'))->render();
         } 
@@ -61,9 +69,15 @@ class DoctorController extends Controller
         $validated = $request->validated();
         $doctor = Doctor::create($validated);
         assignRoleToGuardedModel($doctor, 'doctor', 'doctor');
+
+        // Send password reset email via doctor password broker
+        Password::broker('doctors')->sendResetLink([
+            'email' => $doctor->email,
+        ]);
+
         return response()->json([
             'redirect' =>guard_route('doctors.index'),
-            'message' => 'Doctor created successfully',
+            'message' => 'Doctor created successfully. A password reset link has been sent.',
         ]);
     }
     

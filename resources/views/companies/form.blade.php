@@ -13,6 +13,14 @@
                             value="{{ old('name', $company->name ?? '') }}" maxlength="255">
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
+
+                    <div class="col-md-6">
+                        <label for="email" class="form-label"><strong>Email <span class="text-danger">*</span></strong></label>
+                        <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror"
+                               value="{{ old('email', $company->email ?? '') }}" maxlength="255" required>
+                        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    
                 </div>
             </div>
         </div>

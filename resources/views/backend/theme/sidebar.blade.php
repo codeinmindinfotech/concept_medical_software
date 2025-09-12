@@ -4,33 +4,48 @@
         @else
         <div class="sb-sidenav-menu">
             <div class="nav">
-        
+               
                 {{-- Dashboard --}}
-                <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ guard_route('dashboard.index') }}">
+                <a class="nav-link {{ is_guard_route('dashboard') ? 'active' : '' }}" href="{{ guard_route('dashboard.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
                     <span>Dashboard</span>
                 </a>
+                @if (has_permission('patient-list'))
+                    <a class="nav-link {{ is_guard_route('patients') ? 'active' : '' }}" href="{{ guard_route('patients.index') }}">
+                        <div class="sb-nav-link-icon"><i class="fas fa-procedures"></i></div>
+                        <span>Patients</span>
+                    </a>
+                @endif
                 
-                <a class="nav-link {{ Request::is('patients*') ? 'active' : '' }}" href="{{ guard_route('patients.index') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-procedures"></i></div>
-                    <span>Patients</span>
-                </a>
-                
-                <a class="nav-link {{ Request::is('planner*') ? 'active' : '' }}" href="{{ guard_route('planner.index') }}">
+                <a class="nav-link {{ is_guard_route('planner*') ? 'active' : '' }}" href="{{ guard_route('planner.index') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
                     <span>Planner</span>
                 </a>
             
-                <a class="nav-link {{ Request::is('appointments*') ? 'active' : '' }}" href="{{ guard_route('appointments.schedule') }}">
+                <a class="nav-link {{ is_guard_route('appointments*') ? 'active' : '' }}" href="{{ guard_route('appointments.schedule') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>
                     <span>Diary</span> 
                 </a>
 
                 {{-- Utilities Collapsible Section --}}   
                 @php
-                    $isUtilitiesOpen = Request::is('/users*') || Request::is('/roles*') || Request::is('/dropdowns*') || Request::is('/clinics*') || Request::is('/doctors*') || Request::is('consultants*') || Request::is('insurances*')  || Request::is('chargecodes*') ;
-                @endphp
-        
+                    $isUtilitiesOpen = is_guard_route('/configurations*')  || is_guard_route('/users*') || is_guard_route('/roles*') || is_guard_route('/dropdowns*') || is_guard_route('/clinics*') || is_guard_route('/doctors*') || is_guard_route('consultants*') || is_guard_route('insurances*')  || is_guard_route('chargecodes*') ;
+               // Check if user has at least one permission for utilities
+                    $hasUtilityPermissions = 
+                        has_permission('user-list') ||
+                        has_permission('role-list') ||
+                        has_permission('dropdown-list') ||
+                        has_permission('clinic-list') ||
+                        has_permission('doctor-list') ||
+                        has_permission('consultant-list') ||
+                        has_permission('insurance-list') ||
+                        has_permission('configuration-list') ||
+                        has_permission('chargecode-list');
+
+                    // Only show the section if either condition is true
+                    $showUtilities = $isUtilitiesOpen || $hasUtilityPermissions;
+               @endphp
+        @if ($showUtilities)
                 <a class="nav-link d-flex justify-content-between align-items-center {{ $isUtilitiesOpen ? '' : 'collapsed' }}"
                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseUtilities"
                    aria-expanded="{{ $isUtilitiesOpen ? 'true' : 'false' }}" aria-controls="collapseUtilities">
@@ -44,63 +59,85 @@
                 <div id="collapseUtilities" class="collapse {{ $isUtilitiesOpen ? 'show' : '' }}">
                     <div class="collapse-inner py-2 rounded-2 border-start border-3 border-primary ps-3">
                         @if (has_role('superadmin'))
-                            <a class="nav-link {{ Request::is('users*') ? 'active fw-bold text-primary' : '' }}"
+                            <a class="nav-link {{ is_guard_route('users*') ? 'active fw-bold text-primary' : '' }}"
                             href="{{ guard_route('users.index') }}">
                                 <i class="fas fa-user me-2"></i> Users
                             </a>
                         
-                        <a class="nav-link {{ Request::is('roles*') ? 'active fw-bold text-primary' : '' }}"
+                        <a class="nav-link {{ is_guard_route('roles*') ? 'active fw-bold text-primary' : '' }}"
                            href="{{ guard_route('roles.index') }}">
                             <i class="fas fa-user-shield me-2"></i> Roles
                         </a>
         
-                        <a class="nav-link {{ Request::is('dropdowns*') ? 'active fw-bold text-primary' : '' }}"
+                        <a class="nav-link {{ is_guard_route('dropdowns*') ? 'active fw-bold text-primary' : '' }}"
                            href="{{ guard_route('dropdowns.index') }}">
                             <i class="fas fa-list-ul me-2"></i> Dropdowns
                         </a>
                         @endif
+                        
+                        @if (has_permission('configuration-list'))
+                            <a class="nav-link {{ is_guard_route('configurations*') ? 'active' : '' }}" href="{{ guard_route('configurations.index') }}">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-cogs"></i> {{-- Gear icon for Configuration --}}
+                                </div>
+                                <span>Configuration</span>
+                            </a>
+                        @endif
+
 
                         @if (has_permission('doctor-list'))
-                            <a class="nav-link {{ Request::is('doctors*') ? 'active' : '' }}" href="{{ guard_route('doctors.index') }}">
+                            <a class="nav-link {{ is_guard_route('doctors*') ? 'active' : '' }}" href="{{ guard_route('doctors.index') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
                                 <span>Doctors</span>
                             </a>
                         @endif
                 
-                        <a class="nav-link {{ Request::is('consultants*') ? 'active' : '' }}" href="{{ guard_route('consultants.index') }}">
+                        @if (has_permission('consultant-list'))
+                        <a class="nav-link {{ is_guard_route('consultants*') ? 'active' : '' }}" href="{{ guard_route('consultants.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-stethoscope"></i></div>
                             <span>Consultants</span>
                         </a>
-                        <a class="nav-link {{ Request::is('companies*') ? 'active' : '' }}" href="{{ guard_route('companies.index') }}">
+                        @endif
+
+                        @if (has_permission('company-list'))
+                        <a class="nav-link {{ is_guard_route('companies*') ? 'active' : '' }}" href="{{ guard_route('companies.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
                             <span>Company</span>
                         </a>
+                        @endif
 
-                        <a class="nav-link {{ Request::is('insurances*') ? 'active' : '' }}" href="{{ guard_route('insurances.index') }}">
+                        @if (has_permission('insurance-list'))
+                        <a class="nav-link {{ is_guard_route('insurances*') ? 'active' : '' }}" href="{{ guard_route('insurances.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-medical"></i></div>
                             <span>Insurance</span>
                         </a>
-                        <a class="nav-link {{ Request::is('chargecodes*') ? 'active' : '' }}" href="{{ guard_route('chargecodes.index') }}">
+                        @endif
+
+                        @if (has_permission('chargecode-list'))
+                        <a class="nav-link {{ is_guard_route('chargecodes*') ? 'active' : '' }}" href="{{ guard_route('chargecodes.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
                             <span>Charge Codes</span>
                         </a>
+                        @endif
 
-                        <a class="nav-link {{ Request::is('clinics*') ? 'active' : '' }}" href="{{ guard_route('clinics.index') }}">
+                        @if (has_permission('clinic-list'))
+                        <a class="nav-link {{ is_guard_route('clinics*') ? 'active' : '' }}" href="{{ guard_route('clinics.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
                             <span>Clinic</span>
                         </a>
+                        @endif
                         
         
                     </div>
                 </div>
-        
+        @endif
             </div>
         </div>
         
         
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>
-            {{ Auth::user()->name }}
+                {{ Auth::user()->name ?? Auth::user()->full_name }}
         </div>
         @endguest
     </nav>

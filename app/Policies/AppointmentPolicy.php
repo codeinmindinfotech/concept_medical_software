@@ -1,32 +1,38 @@
-<?php 
+<?php
+
+namespace App\Policies;
 
 use App\Models\Appointment;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class AppointmentPolicy
 {
-    public function viewAny(Authenticatable $user)
+    public function viewAny($user)
     {
-        return $user->can('appointment-list');
+        $authUser = current_user();
+        return $authUser && $authUser->can('appointment-list');
     }
 
-    public function view(Authenticatable $user, Appointment $appointment)
+    public function view($user, Appointment $appointment)
     {
-        return $user->can('appointment-list');
+        $authUser = current_user();
+        return $authUser && $authUser->can('appointment-list');
     }
 
-    public function create(Authenticatable $user)
+    public function create($user)
     {
-        return $user->can('appointment-create');
+        $authUser = current_user();
+        return $authUser && $authUser->can('appointment-create');
     }
 
-    public function update(Authenticatable $user, Appointment $appointment)
+    public function update($user, Appointment $appointment)
     {
-        return $user->can('appointment-edit');
+        $authUser = current_user();
+        return $authUser && $authUser->can('appointment-edit');
     }
 
-    public function delete(Authenticatable $user, Appointment $appointment)
+    public function delete($user, Appointment $appointment)
     {
-        return $user->can('appointment-delete');
+        $authUser = current_user();
+        return $authUser && $authUser->can('appointment-delete');
     }
 }

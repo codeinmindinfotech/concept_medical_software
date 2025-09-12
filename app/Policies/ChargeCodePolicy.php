@@ -3,32 +3,36 @@
 namespace App\Policies;
 
 use App\Models\ChargeCode;
-use App\Models\User;
 
 class ChargeCodePolicy
 {
-    public function viewAny(User $user)
+    public function viewAny($user)
     {
-        return $user->can('chargecode-list');
+        $authUser = current_user();
+        return $authUser && $authUser->can('chargecode-list');
     }
 
-    public function view(User $user, ChargeCode $chargecode)
+    public function view($user, ChargeCode $chargecode)
     {
-        return $user->can('chargecode-list');
+        $authUser = current_user();
+        return $authUser && $authUser->can('chargecode-list');
     }
 
-    public function create(User $user)
+    public function create($user)
     {
-        return $user->can('chargecode-create');
+        $authUser = current_user();
+        return $authUser && $authUser->can('chargecode-create');
     }
 
-    public function update(User $user, ChargeCode $chargecode)
+    public function update($user, ChargeCode $chargecode)
     {
-        return $user->can('chargecode-edit');
+        $authUser = current_user();
+        return $authUser && $authUser->can('chargecode-edit');
     }
 
-    public function delete(User $user, ChargeCode $chargecode)
+    public function delete($user, ChargeCode $chargecode)
     {
-        return $user->can('chargecode-delete');
+        $authUser = current_user();
+        return $authUser && $authUser->can('chargecode-delete');
     }
 }

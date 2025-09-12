@@ -112,8 +112,9 @@ class TaskController extends Controller
 
         $query = Task::with(['creator', 'owner', 'category', 'status','followups'])->latest();
         
-        if ($user->hasRole('patient')) {
-            $query->where('patient_id', $user->userable_id);
+        if (has_role('patient')) {
+            $user = auth()->user();
+            $query->where('patient_id', $user->id);
         }
 
         // $defaulting = !$request->filled('from') && !$request->filled('to') && !$request->filled('recall_filter');

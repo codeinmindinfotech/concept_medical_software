@@ -1,35 +1,38 @@
-<?php 
+<?php
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Doctor;
 
 class DoctorPolicy
 {
-    public function view($user, Doctor $doctor)
-    {
-        return $user->can('doctor-list');
-    }
-
     public function viewAny($user)
     {
-        return $user->can('doctor-list');
+        $authUser = current_user();
+        return $authUser && $authUser->can('doctor-list');
+    }
+
+    public function view($user, Doctor $doctor)
+    {
+        $authUser = current_user();
+        return $authUser && $authUser->can('doctor-list');
     }
 
     public function create($user)
     {
-        return $user->can('doctor-create');
+        $authUser = current_user();
+        return $authUser && $authUser->can('doctor-create');
     }
 
     public function update($user, Doctor $doctor)
     {
-        return $user->can('doctor-edit');
+        $authUser = current_user();
+        return $authUser && $authUser->can('doctor-edit');
     }
 
     public function delete($user, Doctor $doctor)
     {
-        return $user->can('doctor-delete');
+        $authUser = current_user();
+        return $authUser && $authUser->can('doctor-delete');
     }
 }
-

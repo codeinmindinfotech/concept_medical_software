@@ -1,6 +1,14 @@
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="index.html">Medical Management</a>
+@php
+    $user = current_user(); // or Auth::user(), depending on your setup
+    $companyName = 'Medical Management';
+
+    if ($user && $user->company_id && $user->company) {
+        $companyName = $user->company->name;
+    }
+@endphp
+    <a class="navbar-brand ps-3" href="/">{{ucfirst($companyName)}}</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar Search-->

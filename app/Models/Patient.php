@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Models\Role;
 
 class Patient extends Authenticatable
 {
-    use BelongsToCompany, HasFactory, HasRoles;
+    use BelongsToCompany, HasFactory, HasRoles, Notifiable;
     protected $guard_name = 'patient';
     protected $fillable = [
         'company_id',
@@ -153,4 +155,10 @@ class Patient extends Authenticatable
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ClinicResetPasswordNotification($token, $this->company_id, $this->guard_name));
+    }
+
 }

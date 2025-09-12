@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use App\Traits\DropdownTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Password;
+
 
 class PatientController extends Controller
 { 
@@ -34,11 +36,10 @@ class PatientController extends Controller
      */
     public function index(Request $request): View|string
     {
-        $user = auth()->user();
-
-        if ($user->hasRole('patient')) {
-            // Restrict to logged-in patient only
-            $patients = Patient::with('title')->companyOnly()->where('id', $user->userable_id)->paginate(1);
+        $this->authorize('viewAny',  Patient::class);
+        if (has_role('patient')) {
+            $user = auth()->user();
+            $patients = Patient::with('title')->companyOnly()->where('id', $user->id)->paginate(1);
         } else {
             // Admins can search all patients
             $query = Patient::with('title')->companyOnly()->latest();
@@ -85,11 +86,12 @@ class PatientController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create',  Patient::class);
         $pageTitle = "Patients Create";
         extract($this->getCommonDropdowns());
-        $doctors = Doctor::orderBy('name')->get(); 
-        $consultants = Consultant::orderBy('name')->get(); 
-        $insurances = Insurance::orderBy('code')->get(); 
+        $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
+        $consultants = Consultant::companyOnly()->orderBy('name')->get(); 
+        $insurances = Insurance::companyOnly()->orderBy('code')->get(); 
         return view('patients.create', compact('pageTitle','titles','insurances','consultants', 'preferredContact','doctors'));
     }
     
@@ -101,6 +103,7 @@ class PatientController extends Controller
      */
     public function store(PatientRequest $request): JsonResponse
     {
+        $this->authorize('create', Patient::class);
         $validated = $request->validated();
     
         $validated['rip'] = $request->has('rip');
@@ -109,6 +112,12 @@ class PatientController extends Controller
 
         $patient = Patient::create($validated);
         assignRoleToGuardedModel($patient, 'patient', 'patient');
+
+        // Send password reset email via doctor password broker
+        Password::broker('patients')->sendResetLink([
+            'email' => $patient->email,
+        ]);
+
         return response()->json([
             'redirect' =>guard_route('patients.index'),
             'message' => 'Patient created successfully',
@@ -123,7 +132,7 @@ class PatientController extends Controller
      */
     public function show(Patient $patient): View
     {
-        $this->authorize('view', $patient);
+        $this->authorize('viewAny', $patient);
         $pageTitle = "Show Patient";
         return view('patients.show',compact('patient','pageTitle'));
     }
@@ -139,9 +148,9 @@ class PatientController extends Controller
         $this->authorize('update', $patient);
         $pageTitle = "Edit Patient";
         extract($this->getCommonDropdowns());
-        $doctors = Doctor::orderBy('name')->get(); 
-        $insurances = Insurance::orderBy('code')->get();
-        $consultants = Consultant::orderBy('name')->get();
+        $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
+        $insurances = Insurance::companyOnly()->orderBy('code')->get();
+        $consultants = Consultant::companyOnly()->orderBy('name')->get();
         return view('patients.edit',compact('patient','pageTitle','titles','consultants','insurances', 'preferredContact','doctors'));
     }
     
@@ -165,6 +174,7 @@ class PatientController extends Controller
 
         // Update the patient
         $patient->update($validated);
+        assignRoleToGuardedModel($patient, 'patient', 'patient');
         
         return response()->json([
             'redirect' =>guard_route('patients.index'),
@@ -209,12 +219,10 @@ class PatientController extends Controller
                 }
             }
 
-            // 📸 Store the new picture (retain original extension)
             $ext = strtolower($file->getClientOriginalExtension());
             $filename = "picture_{$patient->id}." . $ext;
             $path = $file->storeAs('patient_pictures', $filename, 'public');
 
-            // 💾 Save path to database
             $patient->patient_picture = $path;
             $patient->save();
         }

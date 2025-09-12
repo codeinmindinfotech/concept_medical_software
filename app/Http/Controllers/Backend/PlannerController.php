@@ -34,9 +34,10 @@ class PlannerController extends Controller
 
         $appointment_types = $this->getDropdownOptions('APPOINTMENT_TYPE');
         
-        $user = auth()->user();
-        if ($user->hasRole('patient')) {
-            $patients = Patient::with(['title','preferredContact'])->companyOnly()->where('id', $user->userable_id)->paginate(1);
+        
+        if (has_role('patient')) {
+            $user = auth()->user();
+            $patients = Patient::with(['title','preferredContact'])->companyOnly()->where('id', $user->id)->paginate(1);
         } else {
             $patients = Patient::with(['title', 'preferredContact'])->companyOnly()->get();
         }

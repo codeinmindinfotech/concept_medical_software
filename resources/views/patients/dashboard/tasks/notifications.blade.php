@@ -13,7 +13,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Task Notification List',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('patients.index'),
+    'backUrl' => guard_route('patients.index'),
     'isListPage' => true
     ])
 

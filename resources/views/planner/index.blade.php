@@ -14,7 +14,7 @@
     @include('backend.theme.breadcrumb', [
     'pageTitle' => 'Scheduled Appointment List',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('patients.create'),
+    'backUrl' => guard_route('patients.create'),
     'isListPage' => true
     ])
 

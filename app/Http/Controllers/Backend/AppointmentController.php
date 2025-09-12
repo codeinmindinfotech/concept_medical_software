@@ -19,10 +19,10 @@ class AppointmentController extends Controller
 
     public function schedulePage(Request $request, ?Patient $patient = null)
     {
-       // AuthHelper::authorize('viewAny', Appointment::class);
-        $user = auth()->user();
-        if ($user->hasRole('patient')) {
-            $patients = Patient::companyOnly()->with('title')->where('id', $user->userable_id)->paginate(1);
+        // $this->authorize('viewAny', Appointment::class);
+        if (has_role('patient')) {
+            $user = auth()->user();
+            $patients = Patient::companyOnly()->with('title')->where('id', $user->id)->paginate(1);
         } else {
             $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
         }
@@ -38,8 +38,8 @@ class AppointmentController extends Controller
     }
 
     public function calendarEvents(Request $request, ?Patient $patient = null)
-    {
-       // AuthHelper::authorize('viewAny', Appointment::class);
+    { 
+        // $this->authorize('viewAny', Appointment::class);
         $clinicId = $request->input('clinic_id');
         $patientId = $request->input('patient_id');
         $query = Appointment::companyOnly()->with(['patient', 'clinic']); // Eager load relations
@@ -70,7 +70,7 @@ class AppointmentController extends Controller
 
     public function getAppointmentsByDate(Request $request, Patient $patient)
     {
-       // AuthHelper::authorize('viewAny', Appointment::class);
+        // $this->authorize('viewAny', Appointment::class);
         $flag = $request->route('flag'); 
         try {
             $request->validate([
@@ -168,7 +168,7 @@ class AppointmentController extends Controller
 
     private function getHospitalAppointmentsByDate(Request $request, Patient $patient, Clinic $clinic)
     {
-       // AuthHelper::authorize('viewAny', Appointment::class);
+        // $this->authorize('viewAny', Appointment::class);
         $isOpen = 0;
         $flag = $request->route('flag'); 
 

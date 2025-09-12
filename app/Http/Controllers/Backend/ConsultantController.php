@@ -32,7 +32,7 @@ class ConsultantController extends Controller
         $this->authorize('create', Consultant::class);
 
         $pageTitle = "Consultants Create";
-        $insurances = Insurance::companyOnly()->all();
+        $insurances = Insurance::companyOnly()->get();
         return view('consultants.create', compact('pageTitle', 'insurances'));
     }
 
@@ -68,7 +68,7 @@ class ConsultantController extends Controller
         $this->authorize('update', $consultant);
 
         $pageTitle = "Edit Consultant";
-        $insurances = Insurance::companyOnly()->all();
+        $insurances = Insurance::companyOnly()->get();
         return view('consultants.edit', compact('consultant', 'pageTitle', 'insurances'));
     }
 
