@@ -14,7 +14,7 @@
 
     <ul>
         <li><strong>Company Name:</strong> {{ $company->name }}</li>
-        <li><strong>Email:</strong> clive.connolly@gmail.com</li>
+        <li><strong>Email:</strong> {{ $company->email }}</li>
         <li><strong>Password:</strong> 123456</li>
     </ul>
 

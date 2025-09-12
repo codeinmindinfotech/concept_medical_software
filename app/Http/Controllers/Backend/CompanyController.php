@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Mail\CompanyCreatedMail;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
@@ -40,6 +44,31 @@ class CompanyController extends Controller
             $data = $request->all();
             $company = Company::create($data);           
            
+            // 2. Create or find the admin user (and associate company)
+            $user = User::firstOrCreate(
+                ['email' => $company->email], // company_email
+                [
+                    'name' => $company->name,
+                    'password' => Hash::make('123456'), // default password
+                    'company_id' => $company->id // assumes user has company_id field
+                ]
+            );
+
+            // 3. Create or find the "manager" role for the 'web' guard
+            $role = Role::firstOrCreate(
+                ['name' => 'manager', 'guard_name' => 'web']
+            );
+
+            // 4. Sync all 'web' permissions to the manager role
+            $permissions = Permission::where('guard_name', 'web')->get();
+            $role->syncPermissions($permissions);
+
+            // 5. Assign role to user if not already assigned
+            if (!$user->hasRole($role->name)) {
+                $user->assignRole($role->name);
+            }
+
+
             $recipients = globalNotificationRecipients();
             Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
 

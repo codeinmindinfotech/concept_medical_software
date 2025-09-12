@@ -47,7 +47,6 @@ class ResetPasswordController extends Controller
 
     public function reset(Request $request)
     {
-
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
@@ -63,7 +62,6 @@ class ResetPasswordController extends Controller
         $type = $type ?: 'user';
 
         
-
         // Dynamically determine which model to use based on 'type'
         $modelClass = match ($type) {
             'clinic' => Clinic::class,
@@ -83,13 +81,14 @@ class ResetPasswordController extends Controller
         ]);
         $query = $modelClass::where('email', $email);
         
+        $userCandidate = $modelClass::where('email', $email)->first();
+
         if (
             (in_array($type, ['clinic', 'doctor', 'patient']) && $companyId) ||
-            ($type === 'user' && $companyId && $modelClass::where('email', $email)->where('role', 'manager')->exists())
+            ($type === 'user' && $companyId && $userCandidate && $userCandidate->hasRole('manager'))
         ) {
             $query->where('company_id', $companyId);
         }
-        
 
         $user = $query->first();
         
@@ -114,9 +113,9 @@ class ResetPasswordController extends Controller
                 event(new PasswordReset($user));
             }
         );
-        
+        dd($status);
         if ($status == Password::PASSWORD_RESET) {
-            if ($type === 'user' && $user->role === 'superadmin') {
+            if ($type === 'user' && $user->hasRole('superadmin')) {
                 return redirect()->to('/superadmin/login')->with('status', __($status));
             }
 

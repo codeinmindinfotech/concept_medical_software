@@ -35,7 +35,7 @@ class ForgotPasswordController extends Controller
         if (!$company) {
             return back()->withErrors(['company' => 'Company not found']);
         }
-
+        $tableName= '';
         $guards = [
             'web' => \App\Models\User::class,
             'doctor' => \App\Models\Doctor::class,
@@ -48,8 +48,30 @@ class ForgotPasswordController extends Controller
                         ->where('company_id', $company->id)
                         ->first();
 
+            if ($guard === 'web') {
+                $type = 'user';
+                $tableName = 'users';
+            } else {
+                $type = $guard; // fallback type
+                $tableName = $guard."s";
+            }
+                     
             if ($user) {
-                $status = Password::sendResetLink(['email' => $request->email]);
+
+                $brokerManager = app('auth.password');
+                $brokerManager->setCompanyId($user->company_id);
+                $brokerManager->setType($type);
+        
+                $broker = $brokerManager->broker($tableName);
+                $status = $broker->sendResetLink([
+                    'email' => $user->email,
+                ]);
+        
+                if ($status !== Password::RESET_LINK_SENT) {
+                    return response()->json([
+                        'message' => 'Failed to send password reset link',
+                    ], 500);
+                } 
 
                 return $status === Password::RESET_LINK_SENT
                     ? back()->with('status', __($status))

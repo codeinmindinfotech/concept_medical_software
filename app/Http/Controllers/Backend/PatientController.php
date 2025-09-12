@@ -113,10 +113,20 @@ class PatientController extends Controller
         $patient = Patient::create($validated);
         assignRoleToGuardedModel($patient, 'patient', 'patient');
 
-        // Send password reset email via doctor password broker
-        Password::broker('patients')->sendResetLink([
+        $brokerManager = app('auth.password');
+        $brokerManager->setCompanyId($patient->company_id);
+        $brokerManager->setType('patient');
+
+        $broker = $brokerManager->broker('patients');
+        $status = $broker->sendResetLink([
             'email' => $patient->email,
         ]);
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => 'Failed to send password reset link',
+            ], 500);
+        }
 
         return response()->json([
             'redirect' =>guard_route('patients.index'),

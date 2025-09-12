@@ -58,11 +58,11 @@
                 </form>
             </div>
             
-            @if (Route::has('register'))
+            {{-- @if (Route::has('register'))
                 <div class="card-footer text-center py-3">
                     <div class="small"><a href="{{guard_route('register') }}">Need an account? Sign up!</a></div>
                 </div>
-            @endif
+            @endif --}}
         </div>
     </div>
 </div>
