@@ -8,8 +8,6 @@
                 <div class="card-header">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
-                    <p style="color:red">DEBUG TOKEN: {{ $token }}</p>
-
                     <form method="POST" action="{{guard_route('password.update') }}"  class="validate-form">
                         @csrf
 

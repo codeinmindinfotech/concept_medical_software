@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Backend\AppointmentController;
@@ -41,10 +42,11 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('password.reset');
-Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::post('/custom-password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('custom.password.email');
 
 Route::prefix('superadmin')->group(function () {
     Route::get('login', [SuperadminLoginController::class, 'showLoginForm'])->name('superadmin.login');

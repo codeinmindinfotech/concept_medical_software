@@ -113,7 +113,6 @@ class ResetPasswordController extends Controller
                 event(new PasswordReset($user));
             }
         );
-        dd($status);
         if ($status == Password::PASSWORD_RESET) {
             if ($type === 'user' && $user->hasRole('superadmin')) {
                 return redirect()->to('/superadmin/login')->with('status', __($status));

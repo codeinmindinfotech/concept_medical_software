@@ -14,7 +14,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <form method="POST" action="{{guard_route('password.email') }}">
+                    <form method="POST" action="{{guard_route('custom.password.email') }}">
                         @csrf
                         <div class="form-floating mb-3">
                             <input id="company" type="text" name="company" class="form-control @error('company') is-invalid @enderror"

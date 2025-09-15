@@ -48,6 +48,7 @@ class CustomDatabaseTokenRepository extends DatabaseTokenRepository
         DB::table($this->table)
             ->where('email', $user->getEmailForPasswordReset())
             ->where('company_id', $this->companyId)
+            ->where('type', $this->type)
             ->delete();
     }
 
@@ -56,6 +57,7 @@ class CustomDatabaseTokenRepository extends DatabaseTokenRepository
         $record = (array) DB::table($this->table)
             ->where('email', $user->getEmailForPasswordReset())
             ->where('company_id', $this->companyId)
+            ->where('type', $this->type)
             ->first();
 
         return $record &&
@@ -68,6 +70,7 @@ class CustomDatabaseTokenRepository extends DatabaseTokenRepository
         DB::table($this->table)
             ->where('email', $user->getEmailForPasswordReset())
             ->where('company_id', $this->companyId)
+            ->where('type', $this->type)
             ->delete();
     }
 }
