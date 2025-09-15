@@ -70,8 +70,15 @@ class CompanyController extends Controller
 
 
             $recipients = globalNotificationRecipients();
-            Mail::to($recipients)->cc($recipients)->send(new CompanyCreatedMail($company));
-
+            if (!empty($recipients) && filter_var($company->email, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
+            } else {
+                \Log::error('Invalid recipients or company email', [
+                    'to' => $company->email,
+                    'cc' => $recipients
+                ]);
+            }
+            
             return response()->json([
                 'redirect' =>guard_route('companies.index'),
                 'message' => 'Company created successfully',
