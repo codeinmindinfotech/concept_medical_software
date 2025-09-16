@@ -8,9 +8,13 @@
         @foreach($appointmentsForSlot as $appointment)
             @php
                 $user = auth()->user();
-                $isSuperAdmin = $user->hasRole('superadmin') && $flag == 1;
-                $isPatientUserEditingOwnAppointment = $user->hasRole('patient') && $appointment->patient_id === $user->userable_id;
-                $isCurrentPatient = $user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id;
+                $isSuperAdmin =(($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
+                $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
+                $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && $appointment->patient->id === $patient->id);
+        
+                // $isSuperAdmin = ($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1;
+                // $isPatientUserEditingOwnAppointment = $user->hasRole('patient') && $appointment->patient_id === $user->userable_id;
+                // $isCurrentPatient = $user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id;
 
                 $type = strtolower($appointment->appointmentType->value ?? '');
                 $rowClass =  $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' ;
@@ -27,7 +31,7 @@
                     ondragover="onDragOver(event)"
                 @endif
             >
-                <td class="fw-bold text-primary">{{ $time }}</td>
+                <td class="fw-bold text-primary">{{ $time }}{{$user->hasRole('manager')}}</td>
                 <td>
                     <span class="badge {{ $rowClass }} text-dark px-3">
                         {{ $appointment->appointmentType->value ?? '-' }}

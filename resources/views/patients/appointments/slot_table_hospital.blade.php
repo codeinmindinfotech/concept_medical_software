@@ -15,9 +15,9 @@
             ? 'appointment-' . str_replace(' ', '_', strtolower($appointment->appointmentType->value))
             : 'appointment-default';
             $user = auth()->user();
-            $isSuperAdmin =( $user->hasRole('superadmin') && $flag == 1);
-            $isPatientUserEditingOwnAppointment = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id);
-            $isCurrentPatient = ($user->hasRole('superadmin') && isset($patient) && $appointment->patient->id === $patient->id);
+            $isSuperAdmin =(($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
+            $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
+            $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && $appointment->patient->id === $patient->id);
         @endphp
      <tr class="align-middle">
         <td class="fw-bold text-primary">{{ format_time($appointment->start_time??'') }}</td>

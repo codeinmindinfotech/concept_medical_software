@@ -22,7 +22,7 @@
                             </div>
                         @else 
                             <div class="col-md-6">
-                                <label class="form-label">Select Patientv</label>
+                                <label class="form-label">Select Patient</label>
                                 <select class="form-select select2" id="patient-id" name="patient_id" style="width:100%">
                                     <option value="">-- Select Patient --</option>
                                     @foreach ($patients as $p)

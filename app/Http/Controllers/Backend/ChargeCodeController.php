@@ -79,7 +79,7 @@ class ChargeCodeController extends Controller
      *
      * @param  \App\doctor  $doctor
      * @return \Illuminate\Http\Response
-     */
+    */
     public function show(ChargeCode $chargecode): View
     {
         $this->authorize('view', $chargecode);
