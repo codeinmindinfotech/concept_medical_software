@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\DoctorRequest;
+use App\Services\PasswordResetService;
 use App\Traits\DropdownTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Password;
@@ -63,17 +64,22 @@ class DoctorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(DoctorRequest $request): JsonResponse
+    public function store(DoctorRequest $request, PasswordResetService $resetService): JsonResponse
     {
         $this->authorize('create', Doctor::class);
         $validated = $request->validated();
         $doctor = Doctor::create($validated);
         assignRoleToGuardedModel($doctor, 'doctor', 'doctor');
 
-        // Send password reset email via doctor password broker
-        Password::broker('doctors')->sendResetLink([
-            'email' => $doctor->email,
-        ]);
+        if ($doctor) {
+            try {
+                $resetService->sendResetLink($doctor, 'doctor', 'doctors');
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+        }
 
         return response()->json([
             'redirect' =>guard_route('doctors.index'),

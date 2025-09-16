@@ -28,7 +28,12 @@ class ConfigurationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'key' => 'required|string|unique:configurations,key',
+            'key' => [
+                'required',
+                'unique:configurations,key',
+                'regex:/^[A-Za-z0-9_]+$/',
+            ],
+            // 'key' => 'required|string|unique:configurations,key',
             'value' => 'nullable|string',
         ]);
 
@@ -46,7 +51,12 @@ class ConfigurationController extends Controller
     public function update(Request $request, Configuration $configuration)
     {
         $request->validate([
-            'key' => 'required|string|unique:configurations,key,' . $configuration->id,
+            'key' => [
+                'required',
+                'unique:configurations,key,'. $configuration->id,
+                'regex:/^[A-Za-z0-9_]+$/',
+            ],
+            // 'key' => 'required|string|unique:configurations,key,' . $configuration->id,
             'value' => 'nullable|string',
         ]);
 

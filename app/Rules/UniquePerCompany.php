@@ -31,8 +31,14 @@ class UniquePerCompany implements Rule
     public function passes($attribute, $value)
     {
         $query = DB::table($this->table)
-            ->where($this->column, $value)
-            ->where('company_id', $this->companyId);
+        ->where($this->column, $value);
+
+        if ($this->companyId !== null) {
+            $query->where('company_id', $this->companyId);
+        } else {
+            // Global uniqueness when company_id is null (e.g. superadmin)
+            $query->whereNull('company_id');
+        }
 
         // Exclude a given record id (for updates)
         if ($this->ignoreId) {

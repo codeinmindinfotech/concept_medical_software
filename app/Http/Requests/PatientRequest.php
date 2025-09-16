@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\UniquePerCompany;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,8 @@ class PatientRequest extends FormRequest
     public function rules(): array
     {
         $patientId = $this->route('patient')?->id;
+        $companyId = $this->user()->company_id; 
+        
         return [
             'consultant_id'         => 'required|exists:consultants,id',
             'title_id'              => 'required|exists:drop_down_values,id',
@@ -26,8 +29,14 @@ class PatientRequest extends FormRequest
             'other_doctor_id'       => 'nullable|exists:doctors,id',
             'solicitor_doctor_id'   => 'nullable|exists:doctors,id',
             'gender'                => 'required|in:Male,Female,Other',
-            'email'                 => ['required','email:rfc,dns','max:255',
-                                         Rule::unique('patients','email')->ignore($patientId)],
+            // 'email'                 => ['required','email:rfc,dns','max:255',
+                                        //  Rule::unique('patients','email')->ignore($patientId)],
+            'email'                 => [
+                                        'required',
+                                        'email:rfc,dns',
+                                        'max:255',
+                                        new UniquePerCompany('patients', 'email', $companyId, $patientId),
+                                    ],                             
             'phone'                 => ['required', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'address'               => 'required|string|max:255',
             'emergency_contact'     => 'nullable|string|max:255',

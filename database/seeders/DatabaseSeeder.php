@@ -17,7 +17,8 @@ class DatabaseSeeder extends Seeder
             DropDownSeeder::class,
             SmsDefaultMessagesSeeder::class, 
             RolePermissionSeeder::class, 
-            CreateAdminUserSeeder::class
+            ConfigTableSeeder::class,
+            CreateAdminUserSeeder::class,
         ]);
     }
 }

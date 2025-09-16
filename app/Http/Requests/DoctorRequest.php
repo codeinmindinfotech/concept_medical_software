@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\UniquePerCompany;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DoctorRequest extends FormRequest
@@ -13,6 +14,8 @@ class DoctorRequest extends FormRequest
      */
     public function rules(): array
     {
+        $doctorId = $this->route('doctor')?->id;
+        $companyId = $this->user()?->company_id;
         return [
             'name'              => ['required', 'string', 'max:255'],
             'company'           => ['nullable', 'string', 'max:255'],
@@ -22,7 +25,12 @@ class DoctorRequest extends FormRequest
             'mobile'            => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'phone'             => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'fax'               => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
-            'email'             => ['required', 'email:rfc,dns', 'max:255'],
+            'email'             => [
+                                    'required',
+                                    'email:rfc,dns',
+                                    'max:255',
+                                    new UniquePerCompany('doctors', 'email', $companyId, $doctorId),
+                                ], 
             'contact'           => ['nullable', 'string', 'max:255'],
             'contact_type_id'   => ['nullable', 'exists:drop_down_values,id'],
             'payment_method_id' => ['nullable', 'exists:drop_down_values,id'],

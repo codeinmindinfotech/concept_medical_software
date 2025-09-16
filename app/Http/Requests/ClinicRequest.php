@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\UniquePerCompany;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -30,14 +31,19 @@ class ClinicRequest extends FormRequest
     public function rules(): array
     {
         $clinicId = $this->route('clinic')?->id;
+        $companyId = $this->user()?->company_id;
         $rules = [
             'code'         => 'required|string|unique:clinics,code,' . $clinicId,
             'name'         => 'required|string|max:255',
             'address'      => 'nullable|string',
             'phone'        => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'fax'          => 'nullable|string|max:20',
-            'email'        => ['required','email:rfc,dns','max:255',
-                                Rule::unique('clinics','email')->ignore($clinicId)],
+            'email'        => [
+                                'required',
+                                'email:rfc,dns',
+                                'max:255',
+                                new UniquePerCompany('clinics', 'email', $companyId, $clinicId),
+                            ],
             'mrn'          => 'nullable|string|max:50',
             'planner_seq'  => 'required|string|max:50',
             'clinic_type'  => 'required|in:clinic,hospital',

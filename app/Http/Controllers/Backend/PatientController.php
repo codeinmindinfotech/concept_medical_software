@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Traits\DropdownTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
+use App\Services\PasswordResetService;
 use Illuminate\Support\Facades\Password;
 
 
@@ -101,7 +102,7 @@ class PatientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(PatientRequest $request): JsonResponse
+    public function store(PatientRequest $request , PasswordResetService $resetService): JsonResponse
     {
         $this->authorize('create', Patient::class);
         $validated = $request->validated();
@@ -113,25 +114,22 @@ class PatientController extends Controller
         $patient = Patient::create($validated);
         assignRoleToGuardedModel($patient, 'patient', 'patient');
 
-        $brokerManager = app('auth.password');
-        $brokerManager->setCompanyId($patient->company_id);
-        $brokerManager->setType('patient');
-
-        $broker = $brokerManager->broker('patients');
-        $status = $broker->sendResetLink([
-            'email' => $patient->email,
-        ]);
-
-        if ($status !== Password::RESET_LINK_SENT) {
-            return response()->json([
-                'message' => 'Failed to send password reset link',
-            ], 500);
+        if ($patient) {
+            try {
+                $resetService->sendResetLink($patient, 'patient', 'patients');     
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         }
 
         return response()->json([
             'redirect' =>guard_route('patients.index'),
-            'message' => 'Patient created successfully',
+            'message' => 'Patient created successfully. A password reset link has been sent.',
         ]);
+
+        
     }
     
     /**

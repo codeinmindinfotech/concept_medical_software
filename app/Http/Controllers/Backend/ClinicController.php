@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClinicRequest;
 use App\Models\Clinic;
+use App\Services\PasswordResetService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -40,30 +41,25 @@ class ClinicController extends Controller
         return view('clinics.create', compact('pageTitle'));
     }
 
-    public function store(ClinicRequest $request): JsonResponse
+    public function store(ClinicRequest $request, PasswordResetService $resetService): JsonResponse
     {
         $data = $this->extractDayFields($request);
         $clinic = Clinic::create($data);
         assignRoleToGuardedModel($clinic, 'clinic', 'clinic');
 
-        $brokerManager = app('auth.password');
-        $brokerManager->setCompanyId($clinic->company_id);
-        $brokerManager->setType('clinic');
-
-        $broker = $brokerManager->broker('clinics');
-        $status = $broker->sendResetLink([
-            'email' => $clinic->email,
-        ]);
-
-        if ($status !== Password::RESET_LINK_SENT) {
-            return response()->json([
-                'message' => 'Failed to send password reset link',
-            ], 500);
+        if ($clinic) {
+            try {
+                $resetService->sendResetLink($clinic, 'clinic', 'clinics');     
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         }
 
         return response()->json([
             'redirect' => guard_route('clinics.index'),
-            'message' => 'Clinic created successfully',
+            'message' => 'Clinic created successfully. A password reset link has been sent.',
         ]);
     }
 
