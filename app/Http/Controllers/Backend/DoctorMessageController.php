@@ -14,19 +14,19 @@ class DoctorMessageController extends Controller
 {
     public function showForm()
     {
-        $options = array(
-            'cluster' => 'us3',
-            'useTLS' => true
-          );
-          $pusher = new Pusher(
-            '31acd5cb2f1e0b8edb56',
-            '8575d690d2029f07b51d',
-            '2052310',
-            $options
-          );
+        // $options = array(
+        //     'cluster' => 'us3',
+        //     'useTLS' => true
+        //   );
+        //   $pusher = new Pusher(
+        //     '31acd5cb2f1e0b8edb56',
+        //     '8575d690d2029f07b51d',
+        //     '2052310',
+        //     $options
+        //   );
         
-          $data['message'] = 'hello world niru';
-          $pusher->trigger('my-channel', 'my-event', $data);
+        //   $data['message'] = 'hello world niru';
+        //   $pusher->trigger('my-channel', 'my-event', $data);
 
         $patients = Patient::where('company_id', auth('doctor')->user()->company_id)->get();
         $clinics = Clinic::where('company_id', auth('doctor')->user()->company_id)->get();

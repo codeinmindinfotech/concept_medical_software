@@ -9,6 +9,7 @@
             @php
                 $user = auth()->user();
                 $isSuperAdmin =(($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
+                $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
                 $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && $appointment->patient->id === $patient->id);
  
                 $type = strtolower($appointment->appointmentType->value ?? '');
