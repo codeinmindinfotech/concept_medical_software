@@ -54,8 +54,6 @@ class DoctorMessageController extends Controller
                 $recipientModel->notify($notification);
 
                 $latestNotification = $recipientModel->notifications()->latest()->first();
-                // event(new MessageSent($latestNotification, $patient->id, $patient));
-
                 event(new MessageSent($latestNotification, $recipientModel->id, $recipientModel));
 
             }

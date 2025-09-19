@@ -2,22 +2,37 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Clinic;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use App\Notifications\GeneralNotification;
 use Illuminate\Notifications\DatabaseNotification;
 
 
 class NotificationController extends Controller
 {
+    public function index(Request $request)
+    {
+        $user = current_user(); // Or use your current_user() helper
+
+        $notifications = $user->notifications()->latest()->paginate(10);
+        if ($request->ajax()) {
+            return view('notifications.list', compact('notifications'))->render();
+        }
+
+        return view('notifications.index',compact('notifications'));
+
+    }
+
     public function showForm()
     {
         return view('notifications.send'); // Path: resources/views/notifications/send.blade.php
     }
-
 
     public function sendToCompany(Request $request)
     {
@@ -36,28 +51,58 @@ class NotificationController extends Controller
 
         $notification = new GeneralNotification($message, $user->name, $companyId);
 
-        // Notify users in the company
-        Doctor::where('company_id', $companyId)->each(fn($d) => $d->notify($notification));
-        Patient::where('company_id', $companyId)->each(fn($p) => $p->notify($notification));
-        Clinic::where('company_id', $companyId)->each(fn($c) => $c->notify($notification));
+        // Notify doctors
+        foreach ([Doctor::class, Patient::class, Clinic::class, User::class] as $model) {
+            $model::where('company_id', $companyId)->each(function ($recipient) use ($notification) {
+                $recipient->notify($notification);
+        
+                $latestNotification = $recipient->notifications()->latest()->first();
+                event(new MessageSent($latestNotification, $recipient->id, $recipient));
+            });
+        }
+        
 
         return redirect()->back()->with('success', 'Notification sent successfully!');
     }
 
-    public function markAllAsRead(Request $request)
-    {
-        $guards = ['doctor', 'patient', 'clinic', 'web'];
 
-        foreach ($guards as $guard) {
-            if (auth($guard)->check()) {
-                auth($guard)->user()->unreadNotifications->markAsRead();
-                return response()->json(['status' => 'marked as read']);
-            }
+    public function markAsRead(Request $request)
+    {
+        //     $user = $request->user();
+        $user = current_user();
+
+        $request->validate([
+            'ids' => 'nullable|array',
+            'ids.*' => 'string', 
+        ]);
+
+        if ($request->filled('ids')) {
+            $user->notifications()
+                ->whereIn('id', $request->ids)
+                ->whereNull('read_at')
+                ->get()
+                ->each
+                ->markAsRead();
+
+            // $user->notifications()->whereIn('id', $request->ids)->update(['read_at' => now()]);
+        } else {
+            // Mark all unread notifications as read
+            $user->unreadNotifications()->update(['read_at' => now()]);
         }
 
-        return response()->json(['status' => 'unauthenticated'], 401);
+        return response()->json(['success' => true]);
     }
 
+    public function markAllAsRead(Request $request): JsonResponse
+    {
+        $user = current_user();
+        $user->unreadNotifications->markAsRead();
+
+        return response()->json([
+            'redirect' =>guard_route('notifications.index'),
+            'message' => 'Notifications mark as read successfully',
+        ]);
+    }
 }
 
 

@@ -24,57 +24,28 @@
     <!-- Navbar-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
-          <a
-            class="nav-link position-relative"
-            href="#"
-            id="notificationDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <!-- Bell Icon (Bootstrap Icons) -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="currentColor"
-              class="bi bi-bell"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M8 16a2 2 0 0 0 1.985-1.75H6.015A2 2 0 0 0 8 16zm.104-14.805a1 1 0 0 0-2.208 0c-.622.163-1.453.74-1.925 1.358C3.41 3.665 3 5.021 3 6c0 1.098-.004 1.805-.68 2.474-.355.4-.757.94-.956 1.626C1.087 10.613 1 11.038 1 11.5a1.5 1.5 0 0 0 3 0c0-.462-.087-.888-.364-1.4-.199-.686-.601-1.225-.956-1.626C2.004 7.805 2 7.098 2 6c0-.98.41-2.336 1.071-3.247a5.266 5.266 0 0 1 1.033-1.243z"
-              />
-            </svg>
-  
-            <!-- Notification Count Badge -->
-            <span
-              id="notification-count"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              style="display: none;"
-            >
-              0
-            </span>
-          </a>
-  
-          <ul
-            class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="notificationDropdown"
-            style="min-width: 300px;"
-            id="notification-list"
-          >
-            <li class="dropdown-item text-muted">No notifications</li>
-            <hr class="dropdown-divider" />
-            <!-- New notifications will be injected here -->
-          </ul>
+            <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell"></i>
+
+                <span id="notification-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                    0
+                </span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow p-0" aria-labelledby="notificationDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                <li class="px-3 py-2 border-bottom fw-bold">Notifications</li>
+                <ul id="notification-list" class="list-unstyled mb-0">
+                    <li class="text-muted text-center py-3">No notifications</li>
+                </ul>
+                <hr class="dropdown-divider my-0">
+                <li><a class="dropdown-item text-center small text-muted" href="{{ guard_route("notifications.index") }}">View All</a></li>
+            </ul>
         </li>
-      
-  
+        
         <!-- Notification Dropdown -->
-        @php
+        {{-- @php
             $notifications = getCurrentUserNotifications();
         @endphp
 
-        <!-- Header Notification Icon -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
             data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
@@ -97,7 +68,7 @@
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-center" href="{{ guard_route('notifications.markAllAsRead') }}">Mark all as read</a></li>
             </ul>
-        </li>
+        </li> --}}
 
         <li class="nav-item dropdown me-3">
             <a class="nav-link dropdown-toggle position-relative" href="#" id="recallsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

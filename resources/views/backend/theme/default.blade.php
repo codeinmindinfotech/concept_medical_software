@@ -129,17 +129,6 @@
             }
         });
         document.addEventListener('DOMContentLoaded', function() {
-            // flatpickr("#datepicker", {
-            //     dateFormat: "Y-m-d",
-            //     maxDate: "today",
-            //     allowInput: true,
-            //     clickOpens: false // prevent auto open on input
-            // });
-
-            // document.getElementById('dobTrigger').addEventListener('click', function () {
-            //     document.querySelector('#datepicker')._flatpickr.open();
-            // });
-
             flatpickr("#datepicker", {
                 dateFormat: "Y-m-d"
                 , maxDate: "today", // only allow past dates
@@ -192,63 +181,15 @@ foreach ($guards as $guard) {
 @if ($user)
 <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Replace with your own Pusher config and user info
-        const pusher = new Pusher('{{ config("broadcasting.connections.pusher.key") }}', 
-        {
-            cluster: '{{ config("broadcasting.connections.pusher.options.cluster") }}',
-            authEndpoint: '/broadcasting/auth', // Laravel default endpoint for private channels
-            encrypted: true,
-            // encrypted: location.protocol === 'https:',
-
-            auth: {
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // CSRF token for Laravel
-                }
-            }
-        });
-
-        // Change these to your user guard & ID accordingly (from Laravel backend)
-        const userType = '{{ strtolower(class_basename(auth()->user())) }}'; // e.g. 'patient', 'doctor'
-        const userId = '{{ auth()->id() }}';
-
-        // Subscribe to private channel for this user
-        const channelName = `private-${userType}.${userId}`;
-        const channel = pusher.subscribe(channelName);
-        Pusher.logToConsole= true;
-        console.log('New channel name:', channelName);
-        channel.bind('notification.received', function (data) {
-            console.log('New notification received:', data);
-            const notificationList = document.getElementById('notification-list');
-            const countBadge = document.getElementById('notification-count');
-
-            // Remove "No notifications" if present
-            const noNotifElem = notificationList.querySelector('.text-muted');
-            if (noNotifElem) {
-                noNotifElem.parentElement.remove();
-            }
-
-            // Create new notification item
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = '#'; // Or link to notification page
-            a.classList.add('dropdown-item');
-            a.innerHTML = `${data.data.message ?? 'New message'} <br><small class="text-muted">Just now</small>`;
-            li.appendChild(a);
-
-            // Add to top of list (before the divider)
-            const divider = notificationList.querySelector('hr.dropdown-divider');
-            notificationList.insertBefore(li, divider);
-
-            // Update count badge
-            let count = parseInt(countBadge.textContent) || 0;
-            count++;
-            countBadge.textContent = count;
-            countBadge.style.display = 'inline-block'; // make sure it's visible
-        });
-        console.log('notification:', channelName);
-    });
+    window.NotificationConfig = {
+        pusherKey: "{{ config('broadcasting.connections.pusher.key') }}",
+        pusherCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
+        csrfToken: "{{ csrf_token() }}",
+        channelName: "private-{{ strtolower(class_basename(auth()->user())) }}.{{ auth()->id() }}",
+        markReadUrl: "{{ guard_route('notifications.markRead') }}"
+    };
 </script>
+<script src="{{ asset('theme/main/js/notification.js') }}"></script>
 @endif
 </body>
 </html>

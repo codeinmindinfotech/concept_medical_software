@@ -12,15 +12,10 @@ use Illuminate\Support\Facades\Config;
 use App\Auth\CustomPasswordBrokerManager;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use App\Auth\CustomDatabaseTokenRepository; 
+use Illuminate\Pagination\Paginator;
+
 class AppServiceProvider extends ServiceProvider
 {
-
-    // public function register()
-    // {
-    //     $this->app->extend('auth.password', function ($service, $app) {
-    //         return new \App\Auth\CustomPasswordBrokerManager($app);
-    //     });
-    // }
 
     public function register()
     {
@@ -49,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
     
     public function boot()
     {
+        Paginator::useBootstrapFive(); // 👈 This is the key line
+
+        
          View::composer('backend.theme.header', function ($view) {
             $user = Auth::user();
 

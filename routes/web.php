@@ -61,9 +61,12 @@ Route::prefix('superadmin')->group(function () {
 
 Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])->middleware('auth.multi');
 
+
 Route::group(['middleware' => ['auth']], function () {
     Route::middleware('role:superadmin')->group(function () {
-        Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
         Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
         Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
@@ -213,9 +216,10 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::prefix("manager")->name("manager.")->middleware('role:manager')
         ->group(function () {
-            Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
-
-        Route::post('/notifications/read', [NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    
         Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
         Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
 
@@ -358,10 +362,10 @@ foreach ($roles as $role) {
         ->name("$role.")
         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
         ->group(function () use ($role) {
-            Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
-
-            Route::post('/notifications/read', [NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');
-
+            Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+            Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+            Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    
             // Add doctor-specific routes only in doctor group
             if ($role === 'doctor') {
                 Route::get('/send-notification', [DoctorMessageController::class, 'showForm'])->name('notification.form');

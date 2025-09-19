@@ -105,28 +105,26 @@
 @endsection
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
-    });
-</script>
-
-<script>
+    
     $('#PatientTable').DataTable({
-     paging: true,
-     searching: false,
-     ordering: true,
-     info: true,
-     lengthChange: true,
-     pageLength: 10,
-     columnDefs: [
-       {
-         targets: 4, // column index for "Start Date" (0-based)
-         orderable: false   // Disable sorting
-       }
-     ]
+        paging: true,
+        searching: false,
+        ordering: true,
+        info: true,
+        lengthChange: true,
+        pageLength: 10,
+        columnDefs: [
+        {
+            targets: 4, // column index for "Start Date" (0-based)
+            orderable: false   // Disable sorting
+        }
+        ]
    });
+});
 </script>
 @endpush

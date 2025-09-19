@@ -11270,3 +11270,14 @@ input.error:focus, select.error:focus, textarea.error:focus {
   border-left: 4px solid #0d6efd; /* Optional: visual highlight */
   border-radius: 0 0.35rem 0.35rem 0; /* Rounded right edge */
 }
+
+
+#notification-list li.unread .dropdown-item {
+  background-color: #f0f8ff; /* Light blue */
+  font-weight: 600;
+}
+
+#notification-list li.read .dropdown-item {
+  background-color: #fff;
+  font-weight: normal;
+}
