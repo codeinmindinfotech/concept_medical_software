@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\Clinic;
+
 use App\Notifications\DoctorMessageNotification;
 use Pusher\Pusher;
 
