@@ -35,7 +35,12 @@ use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 use App\Http\Controllers\Auth\SuperadminLoginController;
 use App\Http\Controllers\Backend\ConfigurationController;
+use App\Http\Controllers\Backend\DoctorMessageController;
+use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
+use App\Http\Controllers\BroadcastController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -54,8 +59,15 @@ Route::prefix('superadmin')->group(function () {
     Route::post('logout', [SuperadminLoginController::class, 'logout'])->name('superadmin.logout');
 });
 
+Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])->middleware('auth.multi');
+
 Route::group(['middleware' => ['auth']], function () {
     Route::middleware('role:superadmin')->group(function () {
+        Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
+        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
+        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
+
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -201,6 +213,12 @@ Route::group(['middleware' => ['auth']], function () {
     });
     Route::prefix("manager")->name("manager.")->middleware('role:manager')
         ->group(function () {
+            Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
+        Route::post('/notifications/read', [NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');
+        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
+        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
+
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -340,6 +358,16 @@ foreach ($roles as $role) {
         ->name("$role.")
         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
         ->group(function () use ($role) {
+            Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
+            Route::post('/notifications/read', [NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');
+
+            // Add doctor-specific routes only in doctor group
+            if ($role === 'doctor') {
+                Route::get('/send-notification', [DoctorMessageController::class, 'showForm'])->name('notification.form');
+                Route::post('/send-notification', [DoctorMessageController::class, 'send'])->name('notification.send');
+            }
+
             Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
             Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');

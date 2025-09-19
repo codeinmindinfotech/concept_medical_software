@@ -4,9 +4,14 @@
     </button>
     <ul class="dropdown-menu" style="z-index: 1055;">
         @php
-            $user = auth()->user();
-            $isSuperAdmin =($user->hasRole('superadmin'));
-            $isPatient = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id);
+        $user = auth()->user();
+                $isSuperAdmin =(($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
+                $isPatient = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
+                // $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && $appointment->patient->id === $patient->id);
+        
+            // $user = auth()->user();
+            // $isSuperAdmin =($user->hasRole('superadmin'));
+            // $isPatient = ($user->hasRole('patient') && $appointment->patient_id === $user->userable_id);
         @endphp
         @if($isPatient || $isSuperAdmin)
         <li>

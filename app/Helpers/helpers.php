@@ -229,6 +229,18 @@ if (!function_exists('globalNotificationRecipients')) {
     }
 }
 
+function getCurrentUserNotifications()
+{
+    foreach (['doctor', 'patient', 'clinic', 'web'] as $guard) {
+        if (auth($guard)->check()) {
+            return auth($guard)->user()->unreadNotifications;
+        }
+    }
+
+    return collect(); // empty if unauthenticated
+}
+
+
 
 
 

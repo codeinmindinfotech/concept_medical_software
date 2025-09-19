@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'check.guard.role' => \App\Http\Middleware\CheckGuardRole::class,
+            'auth.multi' => \App\Http\Middleware\MultiGuardAuthenticate::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

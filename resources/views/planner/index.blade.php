@@ -405,8 +405,9 @@
 
     function updateAppointmentTimeAndClinic(appointmentId, clinicId, hour, end_time, procedureId, appointment_type) {
         const date = "{{ $date }}"; // Blade variable
+        const baseUrl = @json(guard_route('appointments.reschedule', ['appointment' => '__APPOINTMENT_ID__']));
+        const url = baseUrl.replace('__APPOINTMENT_ID__', appointmentId); // Replace placeholder
 
-        const url = `/appointments/${appointmentId}/reschedule`; // Adjust to your route
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         fetch(url, {
