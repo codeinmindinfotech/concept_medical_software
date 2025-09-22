@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\App;
+
 
 class CompanyController extends Controller
 {
@@ -71,7 +73,9 @@ class CompanyController extends Controller
 
             $recipients = globalNotificationRecipients();
             if (!empty($recipients) && filter_var($company->email, FILTER_VALIDATE_EMAIL)) {
-                Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
+                if (App::environment('local')) {
+                    Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
+                }
             } else {
                 \Log::error('Invalid recipients or company email', [
                     'to' => $company->email,
