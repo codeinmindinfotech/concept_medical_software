@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
         pusherCluster,
         csrfToken,
         channelName,
+        unreadUrl,
     } = window.NotificationConfig;
 
     const notificationList = document.getElementById('notification-list');
@@ -87,42 +88,151 @@ document.addEventListener('DOMContentLoaded', function () {
     // Update timestamps every 30 seconds
     setInterval(updateRelativeTimes, 30 * 1000);
     updateRelativeTimes();
+
+    // Load existing unread notifications on page load
+    fetch(unreadUrl, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!Array.isArray(data) || data.length === 0) return;
+
+        countBadge.textContent = data.length;
+        countBadge.style.display = 'inline-block';
+
+        const divider = notificationList.querySelector('hr.dropdown-divider');
+        const noNotifElem = notificationList.querySelector('.text-muted');
+        if (noNotifElem) noNotifElem.remove();
+
+        data.forEach(notification => {
+            const li = document.createElement('li');
+            li.setAttribute('data-notification-id', notification.id);
+            li.classList.add('unread');
+
+            const a = document.createElement('a');
+            a.href = notification.data.url || '#';
+            a.classList.add('dropdown-item', 'd-flex', 'justify-content-between', 'align-items-start', 'flex-column');
+            a.innerHTML = `
+                <div>${notification.data.message ?? 'New message'}</div>
+                <small class="text-muted mt-1" data-timestamp="${notification.created_at}">Just now</small>
+            `;
+
+            li.appendChild(a);
+            notificationList.insertBefore(li, divider);
+        });
+
+        updateRelativeTimes();
+    })
+    .catch(err => {
+        console.error('❌ Failed to load unread notifications:', err);
+    });
+
+
 });
 
 // Mark as read on dropdown open
-document.getElementById('notificationDropdown').addEventListener('show.bs.dropdown', function () {
+// document.getElementById('notificationDropdown').addEventListener('show.bs.dropdown', function () {
+//     const {
+//         csrfToken,
+//         markReadUrl
+//     } = window.NotificationConfig;
+
+//     const unreadNotificationIds = Array.from(document.querySelectorAll('#notification-list li.unread[data-notification-id]'))
+//         .map(li => li.getAttribute('data-notification-id'));
+
+//     if (unreadNotificationIds.length === 0) return;
+
+//     fetch(markReadUrl, {
+//         method: 'POST',
+//         headers: {
+//             'X-CSRF-TOKEN': csrfToken,
+//             'Content-Type': 'application/json',
+//             'Accept': 'application/json',
+//         },
+//         body: JSON.stringify({ ids: unreadNotificationIds }),
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         if (data.success) {
+//             const countBadge = document.getElementById('notification-count');
+//             countBadge.style.display = 'none';
+//             countBadge.textContent = '0';
+
+//             unreadNotificationIds.forEach(id => {
+//                 const item = document.querySelector(`#notification-list li[data-notification-id="${id}"]`);
+//                 if (item) item.classList.remove('unread');
+//                 item?.classList.add('read');
+//             });
+//         }
+//     })
+//     .catch(console.error);
+// });
+
+document.addEventListener('DOMContentLoaded', function () {
     const {
         csrfToken,
         markReadUrl
     } = window.NotificationConfig;
 
-    const unreadNotificationIds = Array.from(document.querySelectorAll('#notification-list li.unread[data-notification-id]'))
-        .map(li => li.getAttribute('data-notification-id'));
+    const notificationList = document.getElementById('notification-list');
+    const countBadge = document.getElementById('notification-count');
 
-    if (unreadNotificationIds.length === 0) return;
+    if (!notificationList) return;
 
-    fetch(markReadUrl, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-        body: JSON.stringify({ ids: unreadNotificationIds }),
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            const countBadge = document.getElementById('notification-count');
-            countBadge.style.display = 'none';
-            countBadge.textContent = '0';
+    notificationList.addEventListener('click', function (e) {
+        const li = e.target.closest('li[data-notification-id]');
+        if (!li || !li.classList.contains('unread')) return;
 
-            unreadNotificationIds.forEach(id => {
-                const item = document.querySelector(`#notification-list li[data-notification-id="${id}"]`);
-                if (item) item.classList.remove('unread');
-                item?.classList.add('read');
-            });
-        }
-    })
-    .catch(console.error);
+        const notificationId = li.getAttribute('data-notification-id');
+        const link = li.querySelector('a');
+        const href = link?.getAttribute('href') || '#';
+
+        // Prevent default navigation
+        e.preventDefault();
+
+        // Mark as read
+        fetch(markReadUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ id: notificationId }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI
+                li.classList.remove('unread');
+                li.classList.add('read');
+
+                let count = parseInt(countBadge.textContent) || 0;
+                count = Math.max(0, count - 1);
+                countBadge.textContent = count;
+                if (count === 0) countBadge.style.display = 'none';
+
+                // Redirect after marking as read
+                if (href && href !== '#') {
+                    window.location.href = href;
+                }
+            } else {
+                // If failed, still navigate
+                if (href && href !== '#') {
+                    window.location.href = href;
+                }
+            }
+        })
+        .catch(err => {
+            console.error('❌ Failed to mark as read:', err);
+            if (href && href !== '#') {
+                window.location.href = href;
+            }
+        });
+    });
 });

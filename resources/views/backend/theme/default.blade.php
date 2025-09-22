@@ -186,7 +186,8 @@ foreach ($guards as $guard) {
         pusherCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
         csrfToken: "{{ csrf_token() }}",
         channelName: "private-{{ strtolower(class_basename(auth()->user())) }}.{{ auth()->id() }}",
-        markReadUrl: "{{ guard_route('notifications.markRead') }}"
+        markReadUrl: "{{ guard_route('notifications.markRead') }}",
+        unreadUrl: "{{ guard_route('notifications.unread') }}"
     };
 </script>
 <script src="{{ asset('theme/main/js/notification.js') }}"></script>

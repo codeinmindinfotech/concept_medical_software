@@ -66,14 +66,40 @@ class NotificationController extends Controller
     }
 
 
+    // public function markAsRead(Request $request)
+    // {
+    //     $user = current_user();
+
+    //     $request->validate([
+    //         'ids' => 'nullable|array',
+    //         'ids.*' => 'string', 
+    //     ]);
+
+    //     if ($request->filled('ids')) {
+    //         $user->notifications()
+    //             ->whereIn('id', $request->ids)
+    //             ->whereNull('read_at')
+    //             ->get()
+    //             ->each
+    //             ->markAsRead();
+
+    //         // $user->notifications()->whereIn('id', $request->ids)->update(['read_at' => now()]);
+    //     } else {
+    //         // Mark all unread notifications as read
+    //         $user->unreadNotifications()->update(['read_at' => now()]);
+    //     }
+
+    //     return response()->json(['success' => true]);
+    // }
+
     public function markAsRead(Request $request)
     {
-        //     $user = $request->user();
         $user = current_user();
 
         $request->validate([
             'ids' => 'nullable|array',
-            'ids.*' => 'string', 
+            'ids.*' => 'string',
+            'id' => 'nullable|string',
         ]);
 
         if ($request->filled('ids')) {
@@ -83,10 +109,12 @@ class NotificationController extends Controller
                 ->get()
                 ->each
                 ->markAsRead();
-
-            // $user->notifications()->whereIn('id', $request->ids)->update(['read_at' => now()]);
+        } elseif ($request->filled('id')) {
+            $notification = $user->notifications()->where('id', $request->id)->first();
+            if ($notification && is_null($notification->read_at)) {
+                $notification->markAsRead();
+            }
         } else {
-            // Mark all unread notifications as read
             $user->unreadNotifications()->update(['read_at' => now()]);
         }
 
@@ -103,6 +131,31 @@ class NotificationController extends Controller
             'message' => 'Notifications mark as read successfully',
         ]);
     }
+
+    public function unread()
+    {
+        $user = current_user(); // ✅ CORRECT
+        return $user->unreadNotifications()->take(10)->get();
+    }
+
+    public function markSingleAsRead(Request $request)
+    {
+        $user = current_user();
+
+        $request->validate([
+            'id' => 'required|string|exists:notifications,id',
+        ]);
+
+        $notification = $user->notifications()->where('id', $request->id)->first();
+
+        if ($notification && is_null($notification->read_at)) {
+            $notification->markAsRead();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+
 }
 
 

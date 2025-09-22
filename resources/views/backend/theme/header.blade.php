@@ -40,35 +40,6 @@
                 <li><a class="dropdown-item text-center small text-muted" href="{{ guard_route("notifications.index") }}">View All</a></li>
             </ul>
         </li>
-        
-        <!-- Notification Dropdown -->
-        {{-- @php
-            $notifications = getCurrentUserNotifications();
-        @endphp
-
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-            data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
-                🔔 
-                @if($notifications->count())
-                    <span class="badge bg-warning text-dark">{{ $notifications->count() }}</span>
-                @endif
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                @forelse($notifications as $notification)
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            {{ $notification->data['message'] ?? 'New message' }} <br>
-                            <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
-                        </a>
-                    </li>
-                @empty
-                    <li><span class="dropdown-item text-muted">No notifications</span></li>
-                @endforelse
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-center" href="{{ guard_route('notifications.markAllAsRead') }}">Mark all as read</a></li>
-            </ul>
-        </li> --}}
 
         <li class="nav-item dropdown me-3">
             <a class="nav-link dropdown-toggle position-relative" href="#" id="recallsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

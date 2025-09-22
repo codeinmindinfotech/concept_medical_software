@@ -67,7 +67,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
-
+        Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
+        
         Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
         Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
 
@@ -219,7 +220,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
-    
+        Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
+
         Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
         Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
 
@@ -365,7 +367,8 @@ foreach ($roles as $role) {
             Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
             Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
             Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
-    
+            Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
+
             // Add doctor-specific routes only in doctor group
             if ($role === 'doctor') {
                 Route::get('/send-notification', [DoctorMessageController::class, 'showForm'])->name('notification.form');
