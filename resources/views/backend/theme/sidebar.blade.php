@@ -29,7 +29,7 @@
 
                 {{-- Utilities Collapsible Section --}}   
                 @php
-                    $isUtilitiesOpen = is_guard_route('/configurations*')  || is_guard_route('/users*') || is_guard_route('/roles*') || is_guard_route('/dropdowns*') || is_guard_route('/clinics*') || is_guard_route('/doctors*') || is_guard_route('consultants*') || is_guard_route('insurances*')  || is_guard_route('chargecodes*') ;
+                    $isUtilitiesOpen = is_guard_route('/send-notification*')  || is_guard_route('/configurations*')  || is_guard_route('/users*') || is_guard_route('/roles*') || is_guard_route('/dropdowns*') || is_guard_route('/clinics*') || is_guard_route('/doctors*') || is_guard_route('consultants*') || is_guard_route('insurances*')  || is_guard_route('chargecodes*') ;
                // Check if user has at least one permission for utilities
                     $hasUtilityPermissions = 
                         has_permission('user-list') ||
@@ -75,21 +75,21 @@
                         </a>
                         @endif
                         @if (has_role('superadmin') || (has_role('manager')))
-                            <a class="nav-link {{ is_guard_route('notifications*') ? 'active fw-bold text-primary' : '' }}"
+                            <a class="nav-link {{ is_guard_route('send-notification*') ? 'active fw-bold text-primary' : '' }}"
                                 href="{{ guard_route('notifications.form') }}">
-                                <i class="fas fa-list-ul me-2"></i> Send Notification
+                                <i class="fas fa-bell me-2"></i> Send Notification
                             </a>
                         @endif
                         @if(getCurrentGuard() == 'doctor')
                             <a class="nav-link {{ is_guard_route('notification*') ? 'active fw-bold text-primary' : '' }}"
                                     href="{{ guard_route('notification.form') }}">
-                                <i class="fas fa-list-ul me-2"></i> Send Notification
+                                <i class="fas fa-bell me-2"></i> Send Notification
                             </a>
                         @endif
                         @if (has_permission('configuration-list'))
                             <a class="nav-link {{ is_guard_route('configurations*') ? 'active' : '' }}" href="{{ guard_route('configurations.index') }}">
                                 <div class="sb-nav-link-icon">
-                                    <i class="fas fa-cogs"></i> {{-- Gear icon for Configuration --}}
+                                    <i class="fas fa-cogs"></i> 
                                 </div>
                                 <span>Configuration</span>
                             </a>

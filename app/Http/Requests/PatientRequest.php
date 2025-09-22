@@ -16,8 +16,8 @@ class PatientRequest extends FormRequest
     public function rules(): array
     {
         $patientId = $this->route('patient')?->id;
-        $companyId = $this->user()->company_id; 
-        
+        $companyId = $this->user()?->company_id; 
+
         return [
             'consultant_id'         => 'required|exists:consultants,id',
             'title_id'              => 'required|exists:drop_down_values,id',
