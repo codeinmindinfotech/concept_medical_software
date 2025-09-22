@@ -14,7 +14,7 @@
         @if (has_role('superadmin'))
             <div class="mb-3">
                 <label for="company_id" class="form-label">Select Company:</label>
-                <select name="company_id" id="company_id" class="form-select" required>
+                <select name="company_id" id="company_id" class="select2" required>
                     <option value="">-- Select Company --</option>
                     @foreach(\App\Models\Company::all() as $company)
                         <option value="{{ $company->id }}">{{ $company->name }}</option>
