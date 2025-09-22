@@ -32,7 +32,7 @@
                     $isUtilitiesOpen = is_guard_route('/send-notification*')  || is_guard_route('/configurations*')  || is_guard_route('/users*') || is_guard_route('/roles*') || is_guard_route('/dropdowns*') || is_guard_route('/clinics*') || is_guard_route('/doctors*') || is_guard_route('consultants*') || is_guard_route('insurances*')  || is_guard_route('chargecodes*') ;
                // Check if user has at least one permission for utilities
                     $hasUtilityPermissions = 
-                        has_permission('user-list') ||
+                        // has_permission('user-list') ||
                         has_permission('role-list') ||
                         has_permission('dropdown-list') ||
                         has_permission('clinic-list') ||
@@ -43,12 +43,12 @@
                         has_permission('chargecode-list');
 
                     // Only show the section if either condition is true
-                    $showUtilities = $isUtilitiesOpen || $hasUtilityPermissions;
+                     $showUtilities = $isUtilitiesOpen || $hasUtilityPermissions;
                @endphp
         @if ($showUtilities)
                 <a class="nav-link d-flex justify-content-between align-items-center {{ $isUtilitiesOpen ? '' : 'collapsed' }}"
                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseUtilities"
-                   aria-expanded="{{ $isUtilitiesOpen ? 'true' : 'false' }}" aria-controls="collapseUtilities">
+                   aria-expanded="{{ $showUtilities ? 'true' : 'false' }}" aria-controls="collapseUtilities">
                     <div class="d-flex align-items-center">
                         <div class="sb-nav-link-icon"><i class="fas fa-tools"></i></div>
                         <span>Utilities</span>
@@ -56,7 +56,7 @@
                     <i class="fas fa-chevron-down"></i>
                 </a>
         
-                <div id="collapseUtilities" class="collapse {{ $isUtilitiesOpen ? 'show' : '' }}">
+                <div id="collapseUtilities" class="collapse {{ $showUtilities ? 'show' : '' }}">
                     <div class="collapse-inner py-2 rounded-2 border-start border-3 border-primary ps-3">
                         @if (has_role('superadmin'))
                             <a class="nav-link {{ is_guard_route('users*') ? 'active fw-bold text-primary' : '' }}"
