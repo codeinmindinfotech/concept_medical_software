@@ -37,7 +37,9 @@
                     <li class="text-muted text-center py-3">No notifications</li>
                 </ul>
                 <hr class="dropdown-divider my-0">
-                <li><a class="dropdown-item text-center small text-muted" href="{{ guard_route("notifications.index") }}">View All</a></li>
+                <a class="dropdown-item text-center text-primary fw-bold" href="{{guard_route('notifications.index') }}">
+                    <i class="fas fa-bell me-2"></i> View All 
+                </a>
             </ul>
         </li>
 
