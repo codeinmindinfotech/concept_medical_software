@@ -30,6 +30,11 @@ php artisan generate:permissions {{doctor}}
 
 {{doctor}} controller name for create permission
 
+# Command
+for run Event on queue
+php artisan queue:work
+
+
 # use Trait to get value from dropdown
 $methods = $this->getDropdownOptions('CONTACT_METHODS');
 

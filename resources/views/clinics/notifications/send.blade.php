@@ -6,22 +6,22 @@
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
     ['label' => 'Notifications', 'url' =>guard_route('notifications.index')],
-    ['label' => 'Send Notification to Patients or Clinics'],
+    ['label' => 'Send Notification to Patients or Doctors'],
     ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Send Notification to Patients or Clinics',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('notifications.index'),
-    'isListPage' => false
+        'pageTitle' => 'Send Notification to Patients or Doctors',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' =>guard_route('notifications.index'),
+        'isListPage' => false
     ])
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('doctor.notification.send') }}" method="POST">
+    <form action="{{ route('clinic.clinic.notification.send') }}" method="POST">
         @csrf
         <div class="mb-3">
             <label for="patient_id" class="form-label">Select Recipients:<span class="txt-error">*</span></label>
@@ -37,14 +37,14 @@
         </div>
 
         <div class="mb-3">
-            <label for="clinic_id" class="form-label">Select Clinics:</label>
-            <select name="recipients[]" id="clinic_id" class="select2" multiple required>
-                <option value="">-- Select Clinics --</option>
-                @foreach($clinics as $clinic)
-                    <option value="clinic-{{ $clinic->id }}">{{ $clinic->code }} - {{ $clinic->name }}</option>
+            <label for="doctor_id" class="form-label">Select Doctors:</label>
+            <select name="recipients[]" id="doctor_id" class="select2" multiple required>
+                <option value="">-- Select Doctors --</option>
+                @foreach($doctors as $doctor)
+                    <option value="doctor-{{ $doctor->id }}">{{ $doctor->name }}</option>
                 @endforeach
             </select>
-            @error('clinic_id')
+            @error('doctor_id')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>

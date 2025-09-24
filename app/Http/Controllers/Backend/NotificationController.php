@@ -12,7 +12,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use App\Notifications\GeneralNotification;
 use Illuminate\Notifications\DatabaseNotification;
-
+use Illuminate\Support\Facades\Mail;
 
 class NotificationController extends Controller
 {
@@ -37,12 +37,17 @@ class NotificationController extends Controller
     public function sendToCompany(Request $request)
     {
         $user = auth('web')->user(); // SuperAdmin or Manager
-
+        // $request->validate([
+        //     'message' => 'required|string|max:1000',
+        //     'company_id' => $user->hasRole('superadmin') ? 'required|exists:companies,id' : '',
+        // ]);
         $request->validate([
             'message' => 'required|string|max:1000',
-            'company_id' => $user->role === 'SuperAdmin' ? 'required|exists:companies,id' : '',
+            'user_ids' => $user->hasRole('superadmin') ?'required|array':'',
+            'user_ids.*' => 'exists:users,id',
+            'company_id' => $user->hasRole('superadmin') ? 'required|exists:companies,id' : '',
         ]);
-
+        
         $companyId = has_role('superadmin')
             ? $request->input('company_id')
             : $user->company_id;
@@ -50,21 +55,37 @@ class NotificationController extends Controller
         $message = $request->input('message');
 
         $notification = new GeneralNotification($message, $user->name, $companyId);
+        if($user->hasRole('superadmin'))
+        {
+            // Notify selected users only
+            $recipientUsers = \App\Models\User::whereIn('id', $request->user_ids)->get();
 
-        // Notify doctors
-        foreach ([Doctor::class, Patient::class, Clinic::class, User::class] as $model) {
-            $model::where('company_id', $companyId)->each(function ($recipient) use ($notification) {
+            foreach ($recipientUsers as $recipient) {
                 $recipient->notify($notification);
-        
+
+                try {
+                    Mail::to($recipient->email)->queue(new \App\Mail\NotificationMail($message));
+                } catch (\Exception $e) {
+                    \Log::error("Email queue failed for {$recipient->email}: " . $e->getMessage());
+                }
+
                 $latestNotification = $recipient->notifications()->latest()->first();
                 event(new MessageSent($latestNotification, $recipient->id, $recipient));
-            });
-        }
-        
+            }
 
+        } else {
+            foreach ([Doctor::class, Patient::class, Clinic::class, User::class] as $model) {
+                $model::where('company_id', $companyId)->each(function ($recipient) use ($notification) {
+                    $recipient->notify($notification);
+            
+                    $latestNotification = $recipient->notifications()->latest()->first();
+                    event(new MessageSent($latestNotification, $recipient->id, $recipient));
+                });
+            }
+        }       
+        
         return redirect()->back()->with('success', 'Notification sent successfully!');
     }
-
 
     // public function markAsRead(Request $request)
     // {

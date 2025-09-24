@@ -146,4 +146,16 @@ class CompanyController extends Controller
         }
     }
 
+    public function getManagers(Company $company)
+    {
+        $managers = $company->users()
+            ->whereHas('roles', function ($query) {
+                $query->where('name', 'manager');
+            })
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json($managers);
+    }
+
 }
