@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class DocumentTemplate extends Model
 {
-    protected $fillable = ['name', 'type', 'template_body'];
+    protected $fillable = ['name', 'type', 'file_path', 'company_id'];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }
 

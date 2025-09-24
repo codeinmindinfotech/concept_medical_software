@@ -34,10 +34,16 @@ class DocumentTemplateController extends Controller
         $request->validate([
             'name' => 'required',
             'type' => 'required|in:letter,form',
-            'template_body' => 'required',
+            'file' => 'required|file|mimes:doc,docx,pdf|max:2048',
         ]);
+        $filePath = $request->file('file')->store('document_templates', 'public');
 
-        DocumentTemplate::create($request->only('name', 'type', 'template_body'));
+        DocumentTemplate::create([
+            'name' => $request->name,
+            'type' => $request->type,
+            'file_path' => $filePath,
+            'company_id' => auth()->user()->company_id ?? null,
+        ]);
 
         return redirect()->route('documents.index')->with('success', 'Template created');
     }
@@ -134,19 +140,30 @@ class DocumentTemplateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, DocumentTemplate $document)
     {
         $request->validate([
             'name' => 'required',
             'type' => 'required|in:letter,form',
-            'template_body' => 'required',
+            'file' => 'nullable|file|mimes:doc,docx,pdf|max:2048',
         ]);
 
-        $template = DocumentTemplate::findOrFail($id);
-        $template->update($request->only('name', 'type', 'template_body'));
+        $data = $request->only('name', 'type');
 
-        return redirect()->route('documents.index')->with('success', 'Template updated');
+        if ($request->hasFile('file')) {
+            // Optionally delete old file
+            if ($document->file_path && \Storage::disk('public')->exists($document->file_path)) {
+                \Storage::disk('public')->delete($document->file_path);
+            }
+
+            $data['file_path'] = $request->file('file')->store('document_templates', 'public');
+        }
+
+        $document->update($data);
+
+        return redirect()->route('documents.index')->with('success', 'Template updated successfully');
     }
+
 
     /**
      * Remove the specified resource from storage.

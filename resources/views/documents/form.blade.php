@@ -27,17 +27,29 @@
             @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
-          <!-- Template Body -->
-          <div class="col-12">
-            <label for="template_body" class="form-label"><strong>Template Body <span class="text-danger">*</span></strong></label>
-            <textarea name="template_body" id="template_body" rows="20"
-              class="form-control font-monospace"
-              style="white-space: pre; font-family: monospace; font-size: 14px;"
-              placeholder="Use Blade syntax like">
-            {{ old('template_body', $template->template_body ?? '') }}</textarea>
-
-            @error('template_body') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          <!-- File Upload -->
+          <div class="mb-3">
+            <label for="file" class="form-label"><strong>Upload File {{ empty($template->file_path) ? '*' : '' }}</strong></label>
+            <input 
+                class="form-control @error('file') is-invalid @enderror" 
+                type="file" 
+                name="file" 
+                id="file" 
+                accept=".doc,.docx,.pdf" 
+                {{ empty($template->file_path) ? 'required' : '' }}
+            >
+            <div class="form-text">Accepted file types: .doc, .docx, .pdf. Max size: 2MB.</div>
+            @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
+
+          <!-- Show Current File (Edit Only) -->
+          @if(!empty($template->file_path))
+            <div class="mb-3">
+              <a href="{{ asset('storage/' . $template->file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                View Current File
+              </a>
+            </div>
+          @endif
 
         </div>
       </div>

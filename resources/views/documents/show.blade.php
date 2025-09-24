@@ -25,8 +25,14 @@
             </div>
             <div class="card-body">
                 <h1>Preview: {{ $template->name }}</h1>
-                <div class="p-4" style="border: 1px solid #ddd; background-color: #fff;">
-                    {!! $rendered !!}
+                <div class="mb-3">
+                    <strong>Type:</strong> {{ ucfirst($template->type) }}
+                </div>
+            
+                <div class="mb-3">
+                    <strong>File:</strong>
+                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ urlencode(asset('storage/' . $template->file_path)) }}"
+                            width="100%" height="600px" frameborder="0"></iframe>
                 </div>
             </div>
         </div>

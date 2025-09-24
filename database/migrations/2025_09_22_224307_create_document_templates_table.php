@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // Template name (e.g. Admission Form)
             $table->enum('type', ['form', 'letter']); // Type of document
-            $table->longText('template_body'); // Blade-style HTML with variables
+            $table->string('file_path');
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->timestamps();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
     }
 
