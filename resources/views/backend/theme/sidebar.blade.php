@@ -73,6 +73,10 @@
                            href="{{ guard_route('dropdowns.index') }}">
                             <i class="fas fa-list-ul me-2"></i> Dropdowns
                         </a>
+                        <a class="nav-link {{ is_guard_route('documents*') ? 'active fw-bold text-primary' : '' }}"
+                           href="{{ guard_route('documents.index') }}">
+                            <i class="fas fa-file-lines me-2"></i> Documents
+                        </a>
                         @endif
                         @if (has_role('superadmin') || has_role('manager'))
                             <a class="nav-link {{ is_guard_route('send-notification*') ? 'active fw-bold text-primary' : '' }}"

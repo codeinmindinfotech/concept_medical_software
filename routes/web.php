@@ -37,6 +37,7 @@ use App\Http\Controllers\Auth\SuperadminLoginController;
 use App\Http\Controllers\Backend\ClinicMessageController;
 use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\DoctorMessageController;
+use App\Http\Controllers\Backend\Master\DocumentTemplateController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
 use App\Http\Controllers\BroadcastController;
@@ -65,6 +66,7 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
 Route::group(['middleware' => ['auth']], function () {
     Route::middleware('role:superadmin')->group(function () {
+        Route::resource('documents', DocumentTemplateController::class);
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
