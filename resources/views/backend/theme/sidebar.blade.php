@@ -74,7 +74,7 @@
                             <i class="fas fa-list-ul me-2"></i> Dropdowns
                         </a>
                         @endif
-                        @if (has_role('superadmin'))
+                        @if (has_role('superadmin') || has_role('manager'))
                             <a class="nav-link {{ is_guard_route('send-notification*') ? 'active fw-bold text-primary' : '' }}"
                                 href="{{ guard_route('notifications.form') }}">
                                 <i class="fas fa-bell me-2"></i> Send Notification
