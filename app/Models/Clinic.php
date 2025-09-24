@@ -29,4 +29,10 @@ class Clinic extends Authenticatable
         $this->notify(new \App\Notifications\ClinicResetPasswordNotification($token, $this->company_id, $this->guard_name));
     }
 
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'clinic_id');
+    }
+
+
 }

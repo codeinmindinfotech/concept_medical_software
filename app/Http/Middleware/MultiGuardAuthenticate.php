@@ -15,8 +15,6 @@ class MultiGuardAuthenticate
 
 public function handle(Request $request, Closure $next)
 {
-    Log::info('MultiGuardAuthenticate middleware triggered.'.getCurrentGuard());
-
     foreach ($this->guards as $guard) {
         if (Auth::guard($guard)->check()) {
             Log::info("Authenticated via guard: $guard");
