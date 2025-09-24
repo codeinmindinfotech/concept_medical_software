@@ -5,7 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-lg-7">
             <div class="card shadow-lg border-0 rounded-lg mt-5">
-                <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Account</h3></div>
+                <div class="card-header"><h3 class="text-center font-weight-light my-4">
+                    <img src="{{ asset('theme/assets/img/logo.png') }}" alt="Company Logo" width="150" style="display: block; margin: 0 auto;">
+                    Create Account</h3></div>
                 <div class="card-body">
                     <form method="POST" action="{{guard_route('register') }}">
                         @csrf

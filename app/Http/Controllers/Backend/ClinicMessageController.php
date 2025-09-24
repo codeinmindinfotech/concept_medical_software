@@ -6,30 +6,28 @@ use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Patient;
-use App\Models\Clinic;
+use App\Models\Doctor;
 
-use App\Notifications\DoctorMessageNotification;
+use App\Notifications\ClinicMessageNotification;
 use Illuminate\Support\Facades\Mail;
 
-class DoctorMessageController extends Controller
+class ClinicMessageController extends Controller
 {
     public function showForm()
     {
-        $user = current_user();
-        $patients = Patient::where('company_id', $user->company_id)
-            ->where(function ($query) use ($user) {
-                $query->where('doctor_id', $user->id)
-                      ->orWhere('referral_doctor_id', $user->id)
-                      ->orWhere('other_doctor_id', $user->id)
-                      ->orWhere('solicitor_doctor_id', $user->id);
-            })
-            ->get();
+        $clinic = auth('clinic')->user();
 
-        $clinics = Clinic::where('company_id', auth('doctor')->user()->company_id)->get();
+        // Get all appointments for this clinic
+        $appointments = $clinic->appointments()->with('patient')->get();
 
-        return view('doctors.notifications.send', compact('patients', 'clinics'));
+        // Extract patients from appointments (unique)
+        $patients = $appointments->pluck('patient')->unique('id')->values();
+
+        // Optional: Get all doctors under same company
+        $doctors = Doctor::where('company_id', $clinic->company_id)->get();
+
+        return view('clinics.notifications.send', compact('patients', 'doctors'));
     }
-
     public function send(Request $request)
     {
         $request->validate([
@@ -38,13 +36,13 @@ class DoctorMessageController extends Controller
             'recipients.*' => 'string',
         ]);
 
-        $doctor = auth('doctor')->user();
+        $clinic = auth('clinic')->user();
         $message = $request->message;
-        $notification = new DoctorMessageNotification($message, $doctor);
+        $notification = new ClinicMessageNotification($message, $clinic);
 
         foreach ($request->recipients as $recipient) {
             [$type, $id] = explode('-', $recipient);
-            $modelClass = $type === 'patient' ? \App\Models\Patient::class : \App\Models\Clinic::class;
+            $modelClass = $type === 'patient' ? \App\Models\Patient::class : \App\Models\Doctor::class;
 
             if ($recipientModel = $modelClass::find($id)) {
                 $recipientModel->notify($notification);

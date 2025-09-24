@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>New Company Created</title>
+    <title>You have a new notification</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
@@ -21,15 +21,10 @@
                     <!-- Body -->
                     <tr>
                         <td style="padding: 30px;">
-                            <h2 style="color: #333333;">New Company Created</h2>
+                            <h2 style="color: #333333;">You have a new notification</h2>
                             <p style="color: #555555; font-size: 16px; line-height: 1.5;">
-                                You are Manager so you can login with:
+                                {{ $body }}
                             </p>
-                            <ul>
-                                <li><strong>Company Name:</strong> {{ $company->name }}</li>
-                                <li><strong>Email:</strong> {{ $company->email }}</li>
-                                <li><strong>Password:</strong> 123456</li>
-                            </ul>
 
                             <p style="margin-top: 20px;">
                                 👉 <a href="{{ url('/login') }}" target="_blank" style="color: #007bff; text-decoration: none;">Login Here</a>

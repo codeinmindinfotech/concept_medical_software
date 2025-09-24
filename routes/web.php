@@ -34,6 +34,7 @@ use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 use App\Http\Controllers\Auth\SuperadminLoginController;
+use App\Http\Controllers\Backend\ClinicMessageController;
 use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\DoctorMessageController;
 use App\Http\Controllers\Backend\NotificationController;
@@ -76,6 +77,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::resource('companies', CompanyController::class);
+        Route::get('/companies/{company}/managers', [CompanyController::class, 'getManagers'])->name('company.manager');
+
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
@@ -373,6 +376,11 @@ foreach ($roles as $role) {
             if ($role === 'doctor') {
                 Route::get('/send-notification', [DoctorMessageController::class, 'showForm'])->name('notification.form');
                 Route::post('/send-notification', [DoctorMessageController::class, 'send'])->name('notification.send');
+            }
+
+            if ($role === 'clinic') {
+                Route::get('/send-clinic-notification', [ClinicMessageController::class, 'showForm'])->name('clinic.notification.form');
+                Route::post('/send-clinic-notification', [ClinicMessageController::class, 'send'])->name('clinic.notification.send');
             }
 
             Route::resource('configurations', ConfigurationController::class)->except(['show']);
