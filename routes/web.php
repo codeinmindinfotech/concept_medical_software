@@ -225,8 +225,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
         Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
 
-        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
-        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
+        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form');
+        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
 
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
 

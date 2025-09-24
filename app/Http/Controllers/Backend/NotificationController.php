@@ -43,7 +43,7 @@ class NotificationController extends Controller
         // ]);
         $request->validate([
             'message' => 'required|string|max:1000',
-            'user_ids' => 'required|array',
+            'user_ids' => $user->hasRole('superadmin') ?'required|array':'',
             'user_ids.*' => 'exists:users,id',
             'company_id' => $user->hasRole('superadmin') ? 'required|exists:companies,id' : '',
         ]);
@@ -55,31 +55,35 @@ class NotificationController extends Controller
         $message = $request->input('message');
 
         $notification = new GeneralNotification($message, $user->name, $companyId);
+        if($user->hasRole('superadmin'))
+        {
+            // Notify selected users only
+            $recipientUsers = \App\Models\User::whereIn('id', $request->user_ids)->get();
 
-        // foreach ([Doctor::class, Patient::class, Clinic::class, User::class] as $model) {
-        //     $model::where('company_id', $companyId)->each(function ($recipient) use ($notification) {
-        //         $recipient->notify($notification);
-        
-        //         $latestNotification = $recipient->notifications()->latest()->first();
-        //         event(new MessageSent($latestNotification, $recipient->id, $recipient));
-        //     });
-        // }
-        
-        // Notify selected users only
-        $recipientUsers = \App\Models\User::whereIn('id', $request->user_ids)->get();
+            foreach ($recipientUsers as $recipient) {
+                $recipient->notify($notification);
 
-        foreach ($recipientUsers as $recipient) {
-            $recipient->notify($notification);
+                try {
+                    Mail::to($recipient->email)->queue(new \App\Mail\NotificationMail($message));
+                } catch (\Exception $e) {
+                    \Log::error("Email queue failed for {$recipient->email}: " . $e->getMessage());
+                }
 
-            try {
-                Mail::to($recipient->email)->queue(new \App\Mail\NotificationMail($message));
-            } catch (\Exception $e) {
-                \Log::error("Email queue failed for {$recipient->email}: " . $e->getMessage());
+                $latestNotification = $recipient->notifications()->latest()->first();
+                event(new MessageSent($latestNotification, $recipient->id, $recipient));
             }
+
+        } else {
+            foreach ([Doctor::class, Patient::class, Clinic::class, User::class] as $model) {
+                $model::where('company_id', $companyId)->each(function ($recipient) use ($notification) {
+                    $recipient->notify($notification);
             
-            $latestNotification = $recipient->notifications()->latest()->first();
-            event(new MessageSent($latestNotification, $recipient->id, $recipient));
-        }
+                    $latestNotification = $recipient->notifications()->latest()->first();
+                    event(new MessageSent($latestNotification, $recipient->id, $recipient));
+                });
+            }
+        }       
+        
         return redirect()->back()->with('success', 'Notification sent successfully!');
     }
 
