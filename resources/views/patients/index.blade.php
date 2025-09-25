@@ -40,7 +40,7 @@
         <div class="card-body">
             <div class="accordion mb-4" id="searchAccordion">
                 <div class="accordion-item border-0 shadow-sm">
-                    <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : '' }}" aria-labelledby="headingSearch"
+                    <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : 'hide' }}" aria-labelledby="headingSearch"
                          data-bs-parent="#searchAccordion">
                         <div class="accordion-body">
                             <form method="GET" action="{{guard_route('patients.index') }}">
@@ -118,12 +118,12 @@ document.addEventListener('DOMContentLoaded', function () {
         info: true,
         lengthChange: true,
         pageLength: 10,
-        columnDefs: [
-        {
-            targets: 4, // column index for "Start Date" (0-based)
-            orderable: false   // Disable sorting
-        }
-        ]
+        // columnDefs: [
+        // {
+        //     targets: 3, // column index for "Start Date" (0-based)
+        //     orderable: false   // Disable sorting
+        // }
+        // ]
    });
 });
 </script>

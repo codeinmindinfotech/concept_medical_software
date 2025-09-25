@@ -1,6 +1,10 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
+@section('tab-navigation')
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
@@ -16,18 +20,13 @@
         'backUrl' =>guard_route('patients.physical.index', $patient->id),
         'isListPage' => false
     ])
+    <form action="{{guard_route('patients.physical.store', $patient->id) }}" method="POST" class="validate-form">
+    @csrf
+    @include('patients.physical.form', [
+        'patient' => $patient,
+        'physical'=> $physical
+        ])
 
-   <form action="{{guard_route('patients.physical.store', $patient->id) }}" method="POST" class="validate-form">
-        @csrf
-        @include('patients.physical.form', [
-                    'patient' => $patient,
-                    'physical'=> $physical
-                    ])
-
-    </form>
+    </form>         
 </div>
 @endsection
-
-@push('scripts')
-    <script src="{{ asset('theme/form-validation.js') }}"></script>
-@endpush

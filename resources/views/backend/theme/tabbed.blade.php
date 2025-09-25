@@ -3,8 +3,7 @@
 @section('content')
 <div class="container-fluid px-4 mt-4">
     <div class="row">
-        
-        <div class="card shadow-sm mb-4">
+        {{-- <div class="card shadow-sm mb-4">
             <div class="card-body d-flex align-items-center">
                 <form id="uploadPatientPictureForm" action="{{guard_route('patients.upload-picture', $patient->id) }}" enctype="multipart/form-data" class="position-relative me-3">
                     @csrf
@@ -32,10 +31,12 @@
                 </a>
                 @endcan
             </div>
-        </div>
+        </div> --}}
         {{-- Sidebar Tabs --}}
         <div class="col-md-3">
-            <div class="nav flex-column nav-pills" id="tab-nav" role="tablist" aria-orientation="vertical">
+            <div class="nav flex-column nav-pills position-sticky" style="top: 80px;" id="tab-nav" role="tablist" aria-orientation="vertical">
+
+            {{-- <div class="nav flex-column nav-pills" id="tab-nav" role="tablist" aria-orientation="vertical"> --}}
                 @yield('tab-navigation')
             </div>
         </div>

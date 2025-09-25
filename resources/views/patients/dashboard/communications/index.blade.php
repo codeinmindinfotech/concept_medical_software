@@ -1,7 +1,7 @@
 @extends('backend.theme.tabbed')
 
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')

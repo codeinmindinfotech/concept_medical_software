@@ -162,7 +162,3 @@
     </form>
 </div></div></div>
 @endsection
-
-@push('scripts')
-    <script src="{{ asset('theme/form-validation.js') }}"></script>
-@endpush

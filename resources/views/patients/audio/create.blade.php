@@ -1,6 +1,10 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
+@section('tab-navigation')
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
@@ -75,8 +79,7 @@
                 <audio id="audioPlayback" controls class="w-100" style="max-height: 80px;"></audio>
             </div>
         </div>
-    </div>
-    
+    </div>     
 </div>
 @endsection
 

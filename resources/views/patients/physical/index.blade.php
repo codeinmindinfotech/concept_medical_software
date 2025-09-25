@@ -1,6 +1,10 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
+@section('tab-navigation')
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
 <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
@@ -22,21 +26,22 @@
             {{ $value }}
         </div>
     @endsession
-    
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-book-open"></i>
-            Patient Physical Exam Management
-        </div>
-        <div class="card-body">
-            <div id="patient-physical-list" data-pagination-container>
-                @include('patients.physical.list', [
-                    'patient' => $patient,
-                    'physicals'=> $physicals
-                    ])
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-book-open"></i>
+                    Patient Physical Exam Management
+                </div>
+                <div class="card-body">
+                    <div id="patient-physical-list" data-pagination-container>
+                        @include('patients.physical.list', [
+                            'patient' => $patient,
+                            'physicals'=> $physicals
+                            ])
+                    </div>
+                </div> 
             </div>
-        </div> 
-    </div>
+              
 </div>
 @endsection
 @push('scripts')

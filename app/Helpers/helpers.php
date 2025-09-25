@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 
 if (!function_exists('format_date')) {
@@ -239,6 +240,21 @@ function getCurrentUserNotifications()
 
     return collect(); // empty if unauthenticated
 }
+
+if (!function_exists('isActive')) {
+    function isActive($pattern) {
+        return Str::is($pattern, request()->route()->getName());
+    }
+}
+
+if (!function_exists('btnClass')) {
+    function btnClass($pattern, $color) {
+        return isActive($pattern)
+            ? "btn btn-sm w-100 text-start text-white btn-$color fw-semibold shadow-sm"
+            : "btn btn-sm w-100 text-start btn-outline-$color";
+    }
+}
+
 
 
 

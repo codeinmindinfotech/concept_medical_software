@@ -206,6 +206,13 @@ class PatientController extends Controller
                         ->with('success','Patient deleted successfully');
     }
 
+    public function UploadPictureForm(Patient $patient): View
+    {
+        $this->authorize('update', $patient);
+    
+        return view('patients.upload',compact('patient'));
+    }
+
     public function uploadPicture(Request $request)
     {
         $request->validate([
