@@ -5,7 +5,6 @@
 @endsection
 
 @section('tab-content')
-    <div class="container-fluid px-4">
         @php
         $breadcrumbs = [
         ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -419,7 +418,6 @@
                 </div>
                 @endif
             </div>
-    </div>
     </div>
 @endsection
 @push('scripts')

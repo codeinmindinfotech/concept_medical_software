@@ -226,67 +226,8 @@
       </div>
     </div>
   </div>
-
-  {{-- ▶ Emergency & Medical Info --}}
   <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header">
-        <h5 class="card-title mb-0"><strong>Emergency & Medical Information</strong></h5>
-      </div>
-      <div class="card-body">
-        <div class="mb-3">
-          <label for="emergency_contact" class="form-label"><strong>Emergency Contact</strong></label>
-          <input id="emergency_contact" name="emergency_contact" type="text"
-            class="form-control @error('emergency_contact') is-invalid @enderror"
-            value="{{ old('emergency_contact', $patient->emergency_contact ?? '') }}">
-          @error('emergency_contact') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-          <label for="medical_history" class="form-label"><strong>Medical History / Notes</strong></label>
-          <textarea id="medical_history" name="medical_history"
-            class="form-control @error('medical_history') is-invalid @enderror"
-            rows="3">{{ old('medical_history', $patient->medical_history ?? '') }}</textarea>
-          @error('medical_history') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-          <label for="referral_reason" class="form-label"><strong>Referral Reason</strong></label>
-          <textarea id="referral_reason" name="referral_reason"
-            class="form-control @error('referral_reason') is-invalid @enderror"
-            rows="2">{{ old('referral_reason', $patient->referral_reason ?? '') }}</textarea>
-          @error('referral_reason') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-          <label for="symptoms" class="form-label"><strong>Symptoms</strong></label>
-          <textarea id="symptoms" name="symptoms" class="form-control @error('symptoms') is-invalid @enderror"
-            rows="2">{{ old('symptoms', $patient->symptoms ?? '') }}</textarea>
-          @error('symptoms') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-          <label for="patient_needs" class="form-label"><strong>Patient Needs</strong></label>
-          <textarea id="patient_needs" name="patient_needs"
-            class="form-control @error('patient_needs') is-invalid @enderror"
-            rows="2">{{ old('patient_needs', $patient->patient_needs ?? '') }}</textarea>
-          @error('patient_needs') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-          <label for="allergies" class="form-label"><strong>Allergies</strong></label>
-          <textarea id="allergies" name="allergies" class="form-control @error('allergies') is-invalid @enderror"
-            rows="2">{{ old('allergies', $patient->allergies ?? '') }}</textarea>
-          @error('allergies') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-          <label for="diagnosis" class="form-label"><strong>Diagnosis</strong></label>
-          <textarea id="diagnosis" name="diagnosis" class="form-control @error('diagnosis') is-invalid @enderror"
-            rows="2">{{ old('diagnosis', $patient->diagnosis ?? '') }}</textarea>
-          @error('diagnosis') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {{-- ▶ Insurance Information --}}
-  <div class="col-12">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mb-3">
       <div class="card-header">
         <h5 class="card-title mb-0"><strong>Insurance Information</strong></h5>
       </div>
@@ -324,89 +265,207 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    {{-- ▶ Patient Status & Consent --}}
-    <div class="col-6 mt-4">
-      <div class="card shadow-sm">
-        <div class="card-header">
-          <h5 class="card-title mb-0"><strong>Patient Status & Consent</strong></h5>
+  {{-- ▶ Emergency & Medical Info --}}
+  <div class="col-6 ">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header">
+        <h5 class="card-title mb-0"><strong>Emergency & Medical Information</strong></h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="emergency_contact" class="form-label"><strong>Emergency Contact</strong></label>
+          <input id="emergency_contact" name="emergency_contact" type="text"
+            class="form-control @error('emergency_contact') is-invalid @enderror"
+            value="{{ old('emergency_contact', $patient->emergency_contact ?? '') }}">
+          @error('emergency_contact') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
-        <div class="card-body">
-          <div class="row align-items-center g-3">
-            <div class="col-md-4 form-check">
-              <input id="rip" name="rip" type="checkbox" class="form-check-input" value="1" {{ old('rip', $patient->rip ??
-              false) ? 'checked' : '' }}>
-              <label for="rip" class="form-check-label"><strong>RIP</strong></label>
-            </div>
-            <div class="col-md-8">
-              <label for="rip_date" class="form-label"><strong>Date of RIP</strong></label>
-              <div class="input-group">
-                <input id="rip_date" name="rip_date" type="text"
-                  class="form-control flatpickr @error('rip_date') is-invalid @enderror" placeholder="YYYY-MM-DD"
-                  value="{{ old('rip_date', $patient->rip_date ?? '') }}">
-                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                @error('rip_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-              </div>
-            </div>
-            <div class="col-md-4 form-check">
-              <input id="sms_consent" name="sms_consent" type="checkbox" class="form-check-input" value="1" {{
-                old('sms_consent', $patient->sms_consent ?? false) ? 'checked' : '' }}>
-              <label for="sms_consent" class="form-check-label">SMS Consent</label>
-            </div>
-            <div class="col-md-8 form-check">
-              <input id="email_consent" name="email_consent" type="checkbox" class="form-check-input" value="1" {{
-                old('email_consent', $patient->email_consent ?? false) ? 'checked' : '' }}>
-              <label for="email_consent" class="form-check-label">Email Consent</label>
-            </div>
-          </div>
+        <div class="mb-3">
+          <label for="medical_history" class="form-label"><strong>Medical History / Notes</strong></label>
+          <textarea id="medical_history" name="medical_history"
+            class="form-control @error('medical_history') is-invalid @enderror"
+            rows="3">{{ old('medical_history', $patient->medical_history ?? '') }}</textarea>
+          @error('medical_history') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="mb-3">
+          <label for="referral_reason" class="form-label"><strong>Referral Reason</strong></label>
+          <textarea id="referral_reason" name="referral_reason"
+            class="form-control @error('referral_reason') is-invalid @enderror"
+            rows="2">{{ old('referral_reason', $patient->referral_reason ?? '') }}</textarea>
+          @error('referral_reason') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        
+        <div class="mb-3">
+          <label for="symptoms" class="form-label"><strong>Symptoms</strong></label>
+          <textarea id="symptoms" name="symptoms" class="form-control @error('symptoms') is-invalid @enderror"
+            rows="2">{{ old('symptoms', $patient->symptoms ?? '') }}</textarea>
+          @error('symptoms') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="mb-3">
+          <label for="patient_needs" class="form-label"><strong>Patient Needs</strong></label>
+          <textarea id="patient_needs" name="patient_needs"
+            class="form-control @error('patient_needs') is-invalid @enderror"
+            rows="2">{{ old('patient_needs', $patient->patient_needs ?? '') }}</textarea>
+          @error('patient_needs') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="mb-3">
+          <label for="allergies" class="form-label"><strong>Allergies</strong></label>
+          <textarea id="allergies" name="allergies" class="form-control @error('allergies') is-invalid @enderror"
+            rows="2">{{ old('allergies', $patient->allergies ?? '') }}</textarea>
+          @error('allergies') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="mb-3">
+          <label for="diagnosis" class="form-label"><strong>Diagnosis</strong></label>
+          <textarea id="diagnosis" name="diagnosis" class="form-control @error('diagnosis') is-invalid @enderror"
+            rows="2">{{ old('diagnosis', $patient->diagnosis ?? '') }}</textarea>
+          @error('diagnosis') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
       </div>
     </div>
 
-    {{-- ▶ COVID-19 Vaccination Info --}}
-    <div class="col-6 mt-4">
-      <div class="card shadow-sm">
-        <div class="card-header">
-          <h5 class="card-title mb-0"><strong>COVID-19 Vaccination Info</strong></h5>
-        </div>
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="covid_19_vaccination_date" class="form-label"><strong>Vaccination Date</strong></label>
-              <div class="input-group">
-                <input type="date"
-       name="covid_19_vaccination_date"
-       id="covid_19_vaccination_date"
-       class="form-control flatpickr @error('covid_19_vaccination_date') is-invalid @enderror"
-       value="{{ old('covid_19_vaccination_date', optional(optional($patient ?? null)->covid_19_vaccination_date)->format('Y-m-d')) }}">
-<span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                @error('covid_19_vaccination_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-              </div>
-            </div>
-            
-            <div class="col-md-6 form-check mt-4 pt-2">
-              <input id="fully_covid_19_vaccinated" name="fully_covid_19_vaccinated" type="checkbox"
-                class="form-check-input" value="1" {{ old('fully_covid_19_vaccinated', optional(optional($patient ?? null)->fully_covid_19_vaccinated)
-              ?? false) ? 'checked' : '' }}>
-              <label for="fully_covid_19_vaccinated" class="form-check-label"><strong>Fully Vaccinated</strong></label>
-            </div>
-
-            <div class="col-md-12">
-              <label for="covid_19_vaccination_note" class="form-label"><strong>Vaccination Note</strong></label>
-              <textarea name="covid_19_vaccination_note" id="covid_19_vaccination_note"
-                class="form-control @error('covid_19_vaccination_note') is-invalid @enderror" rows="2"
-                placeholder="Any additional information...">
-                {{ old('covid_19_vaccination_note', $patient->covid_19_vaccination_note ?? '') }}
-              </textarea>
-                @error('covid_19_vaccination_note') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-            </div>
-
-            
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
+
+  {{-- ▶ Insurance Information --}}
+  <div class="col-6">
+
+    
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header">
+        <h5 class="card-title mb-0"><strong>Patient Status & Consent</strong></h5>
+      </div>
+      <div class="card-body">
+        <div class="row align-items-center g-3">
+          <div class="col-md-4 form-check">
+            <input id="rip" name="rip" type="checkbox" class="form-check-input" value="1" {{ old('rip', $patient->rip ??
+            false) ? 'checked' : '' }}>
+            <label for="rip" class="form-check-label"><strong>RIP</strong></label>
+          </div>
+          <div class="col-md-8">
+            <label for="rip_date" class="form-label"><strong>Date of RIP</strong></label>
+            <div class="input-group">
+              <input id="rip_date" name="rip_date" type="text"
+                class="form-control flatpickr @error('rip_date') is-invalid @enderror" placeholder="YYYY-MM-DD"
+                value="{{ old('rip_date', $patient->rip_date ?? '') }}">
+              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+              @error('rip_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+            </div>
+          </div>
+          <div class="col-md-4 form-check">
+            <input id="sms_consent" name="sms_consent" type="checkbox" class="form-check-input" value="1" {{
+              old('sms_consent', $patient->sms_consent ?? false) ? 'checked' : '' }}>
+            <label for="sms_consent" class="form-check-label">SMS Consent</label>
+          </div>
+          <div class="col-md-8 form-check">
+            <input id="email_consent" name="email_consent" type="checkbox" class="form-check-input" value="1" {{
+              old('email_consent', $patient->email_consent ?? false) ? 'checked' : '' }}>
+            <label for="email_consent" class="form-check-label">Email Consent</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header">
+        <h5 class="card-title mb-0"><strong>COVID-19 Vaccination Info</strong></h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="covid_19_vaccination_date" class="form-label"><strong>Vaccination Date</strong></label>
+            <div class="input-group">
+              <input type="date"
+                    name="covid_19_vaccination_date"
+                    id="covid_19_vaccination_date"
+                    class="form-control flatpickr @error('covid_19_vaccination_date') is-invalid @enderror"
+                    value="{{ old('covid_19_vaccination_date', optional(optional($patient ?? null)->covid_19_vaccination_date)->format('Y-m-d')) }}">
+              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+              @error('covid_19_vaccination_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+            </div>
+          </div>
+          
+          <div class="col-md-6 form-check mt-4 pt-2">
+            <input id="fully_covid_19_vaccinated" name="fully_covid_19_vaccinated" type="checkbox"
+              class="form-check-input" value="1" {{ old('fully_covid_19_vaccinated', optional(optional($patient ?? null)->fully_covid_19_vaccinated)
+            ?? false) ? 'checked' : '' }}>
+            <label for="fully_covid_19_vaccinated" class="form-check-label"><strong>Fully Vaccinated</strong></label>
+          </div>
+
+          <div class="col-md-12">
+            <label for="covid_19_vaccination_note" class="form-label"><strong>Vaccination Note</strong></label>
+            <textarea name="covid_19_vaccination_note" id="covid_19_vaccination_note"
+              class="form-control @error('covid_19_vaccination_note') is-invalid @enderror" rows="2"
+              placeholder="Any additional information...">
+              {{ old('covid_19_vaccination_note', $patient->covid_19_vaccination_note ?? '') }}
+            </textarea>
+              @error('covid_19_vaccination_note') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header">
+        <h5 class="card-title mb-0"><strong>Next of Kin Information</strong></h5>
+      </div>
+      <div class="card-body">
+        <div class="row align-items-center g-3">
+
+        <div class="col-md-6">
+          <label for="next_of_kin" class="form-label"><strong>Name</strong></label>
+          <input type="text" name="next_of_kin" id="next_of_kin"
+            class="form-control @error('next_of_kin') is-invalid @enderror"
+            value="{{ old('next_of_kin', $patient->next_of_kin ?? '') }}">
+          @error('next_of_kin') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+  
+        <div class="col-md-6">
+          <label for="relationship" class="form-label"><strong>RelationShip</strong></label>
+          <select id="relationship" name="relationship" class="select2 @error('relationship') is-invalid @enderror" data-placeholder="-- Select --">
+            <option value=""></option>
+            @foreach($relations as $relation)
+            <option value="{{ $relation->id }}" {{ old('relationship', $patient->relationship ?? '') == $relation->id ? 'selected' :
+              '' }}>
+              {{ $relation->value }}
+            </option>
+            @endforeach
+          </select>
+          @error('relationship') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        </div>
+        <div class="col-md-12">
+          <label for="kin_contact_no" class="form-label"><strong>Contact Number</strong></label>
+          <input type="text" name="kin_contact_no" id="kin_contact_no"
+            class="form-control @error('kin_contact_no') is-invalid @enderror"
+            value="{{ old('kin_contact_no', $patient->kin_contact_no ?? '') }}">
+          @error('kin_contact_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="col-md-12">
+          <label for="kin_email" class="form-label"><strong>Email</strong></label>
+          <input type="email" name="kin_email" id="kin_email"
+            class="form-control @error('kin_email') is-invalid @enderror"
+            value="{{ old('kin_email', $patient->kin_email ?? '') }}">
+          @error('kin_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+  
+        <div class="mb-3">
+          <label for="kin_address" class="form-label"><strong>Address</strong></label>
+          <textarea name="kin_address" id="kin_address"
+            class="form-control @error('kin_address') is-invalid @enderror"
+            rows="2">{{ old('kin_address', $patient->kin_address ?? '') }}</textarea>
+          @error('kin_address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+  
+        
+    </div>
+    </div>
+    
+  </div>
+
+
 
   {{-- ▶ Submit Button --}}
   <div class="col-12 text-center mb-5">

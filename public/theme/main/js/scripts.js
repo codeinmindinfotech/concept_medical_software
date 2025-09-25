@@ -7,20 +7,45 @@
 // Scripts
 // 
 
+// window.addEventListener('DOMContentLoaded', event => {
+//   const sidebarToggle = document.body.querySelector('#sidebarToggle');
+//   if (sidebarToggle) {
+//       if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
+//           document.body.classList.add('sb-sidenav-toggled');
+//       }
+
+//       sidebarToggle.addEventListener('click', event => {
+//           event.preventDefault();
+//           document.body.classList.toggle('sb-sidenav-toggled');
+//           localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
+//       });
+//   }
+// });
 window.addEventListener('DOMContentLoaded', event => {
   const sidebarToggle = document.body.querySelector('#sidebarToggle');
-  if (sidebarToggle) {
-      if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-          document.body.classList.add('sb-sidenav-toggled');
-      }
 
-      sidebarToggle.addEventListener('click', event => {
-          event.preventDefault();
-          document.body.classList.toggle('sb-sidenav-toggled');
-          localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-      });
+  if (sidebarToggle) {
+    // Check if user had previously toggled the sidebar open
+    if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
+      document.body.classList.add('sb-sidenav-toggled');
+    }
+
+    // When toggle button is clicked
+    sidebarToggle.addEventListener('click', event => {
+      event.preventDefault();
+
+      // Toggle the class on body
+      document.body.classList.toggle('sb-sidenav-toggled');
+
+      // Save the state to localStorage
+      localStorage.setItem(
+        'sb|sidebar-toggle',
+        document.body.classList.contains('sb-sidenav-toggled')
+      );
+    });
   }
 });
+
 
 
 function initDataTable(selector, options = {}) {

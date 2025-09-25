@@ -5,7 +5,6 @@
 @endsection
 
 @section('tab-content')
-<div class="container-fluid px-4">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -65,5 +64,5 @@
             </form>
         </div>
     </div>
-</div>
+
 @endsection

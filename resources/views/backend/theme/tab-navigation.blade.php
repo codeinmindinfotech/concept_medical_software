@@ -9,8 +9,8 @@
         <strong class="text-dark"><i class="fas fa-user-md me-2"></i>Patient Actions</strong>
     </div>
 
-    <div class="card-body px-3 py-3">
-        <div class="d-grid gap-2">
+    <div class="card-body px-1 py-1">
+        <div class="d-grid gap-1">
 
             @can('view', $patient)
                 <a href="{{ guard_route('patients.show', $patient->id) }}" class="{{ btnClass('patients.show', 'info') }}">
