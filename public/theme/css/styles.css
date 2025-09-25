@@ -11283,8 +11283,8 @@ input.error:focus, select.error:focus, textarea.error:focus {
 }
 
 #notification-list {
-  max-height: 400px;
-  overflow-y: auto;
+  /* max-height: 400px;
+  overflow-y: auto; */
   padding-right: 4px;
 }
 
