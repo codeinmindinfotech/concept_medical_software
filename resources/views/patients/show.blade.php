@@ -147,7 +147,7 @@
                         <div class="card border-start border-primary shadow-sm">
                             <div class="card-header bg-light">
                                 <h5 class="card-title mb-0">
-                                    <i class="fas fa-briefcase-medical me-2 text-primary"></i>Next Of Kin Info
+                                    <i class="fas fa-user-friends me-2 text-primary"></i>Next Of Kin Info
                                 </h5>
                             </div>
                             <div class="card-body">
