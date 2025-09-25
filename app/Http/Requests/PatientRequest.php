@@ -57,7 +57,12 @@ class PatientRequest extends FormRequest
             'email_consent'         => 'nullable|boolean',
             'covid_19_vaccination_date' => 'nullable|date',
             'covid_19_vaccination_note' => 'nullable|string',
-            'fully_covid_19_vaccinated' => 'nullable|boolean'
+            'fully_covid_19_vaccinated' => 'nullable|boolean',
+            'next_of_kin' => 'nullable|string',
+            'kin_contact_no' => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
+            'kin_address' => 'nullable|string',
+            'relationship' => 'nullable|exists:drop_down_values,id',
+            'kin_email' => ['nullable','email:rfc,dns']
         ];
     }
 }
