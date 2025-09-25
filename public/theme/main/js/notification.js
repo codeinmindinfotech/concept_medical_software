@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <i class="fas fa-bell text-primary"></i>
                 <span class="notification-text">${data.data.message ?? 'New message'}</span>
             </div>
-            <small class="text-muted" data-timestamp="${new Date().toISOString()}">Just now</small>
+            <small class="text-muted mt-2" data-timestamp="${new Date().toISOString()}">Just now</small>
         `;
     
         li.appendChild(a);
@@ -181,10 +181,10 @@ document.addEventListener('DOMContentLoaded', function () {
             a.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'p-3', 'rounded', 'text-decoration-none');
             a.innerHTML = `
                 <div class="d-flex align-items-center gap-2">
-                    <i class="fas fa-bell text-primary"></i>
+                    <i class="fas fa-bell text-secondary"></i>
                     <span class="notification-text">${notification.data.message ?? 'New message'}</span>
                 </div>
-                <small class="text-muted" data-timestamp="${notification.created_at}">${formatTimeAgo(notification.created_at)}</small>
+                <small class="text-muted mt-2" data-timestamp="${notification.created_at}">${formatTimeAgo(notification.created_at)}</small>
             `;
     
             li.appendChild(a);
