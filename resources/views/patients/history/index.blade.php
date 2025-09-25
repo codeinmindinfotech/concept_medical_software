@@ -1,43 +1,46 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
-<div class="container-fluid px-4">
-    @php
-        $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-            ['label' => 'Patients', 'url' =>guard_route('patients.index')],
-            ['label' => 'Patient History List'],
-        ];
-    @endphp
+@section('tab-navigation')
+@include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
 
-    @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Patient History List',
-        'breadcrumbs' => $breadcrumbs,
-        'backUrl' =>guard_route('patients.history.create', $patient->id),
-        'isListPage' => true
-    ])
+@section('tab-content')
+@php
+$breadcrumbs = [
+['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+['label' => 'Patients', 'url' =>guard_route('patients.index')],
+['label' => 'Patient History List'],
+];
+@endphp
 
-    @session('success')
-        <div class="alert alert-success" role="alert"> 
-            {{ $value }}
+@include('backend.theme.breadcrumb', [
+'pageTitle' => 'Patient History List',
+'breadcrumbs' => $breadcrumbs,
+'backUrl' =>guard_route('patients.history.create', $patient->id),
+'isListPage' => true
+])
+
+@session('success')
+<div class="alert alert-success" role="alert">
+    {{ $value }}
+</div>
+@endsession
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-history"></i>
+        Patient History Management
+    </div>
+    <div class="card-body">
+        <div id="patient-history-list" data-pagination-container>
+            @include('patients.history.list', [
+            'patient' => $patient,
+            'historys'=> $historys
+            ])
         </div>
-    @endsession
-    
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-history"></i>
-            Patient History Management
-        </div>
-        <div class="card-body">
-            <div id="patient-history-list" data-pagination-container>
-                @include('patients.history.list', [
-                    'patient' => $patient,
-                    'historys'=> $historys
-                    ])
-            </div>
-        </div> 
     </div>
 </div>
+
 @endsection
 @push('scripts')
 <script>
@@ -51,4 +54,3 @@
     });
 </script>
 @endpush
-

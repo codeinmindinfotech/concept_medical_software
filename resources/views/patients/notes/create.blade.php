@@ -1,7 +1,10 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
-<div class="container-fluid px-4">
+@section('tab-navigation')
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -17,7 +20,7 @@
         'isListPage' => false
     ])
 
-   <form action="{{guard_route('patients.notes.store', $patient->id) }}" method="POST" class="validate-form">
+    <form action="{{guard_route('patients.notes.store', $patient->id) }}" method="POST" class="validate-form">
         @csrf
         @include('patients.notes.form', [
                     'patient' => $patient,
@@ -25,9 +28,4 @@
                     ])
 
     </form>
-</div>
 @endsection
-
-@push('scripts')
-    <script src="{{ asset('theme/form-validation.js') }}"></script>
-@endpush

@@ -1,7 +1,10 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
-<div class="container-fluid px-4">
+@section('tab-navigation')
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -75,9 +78,7 @@
                 <audio id="audioPlayback" controls class="w-100" style="max-height: 80px;"></audio>
             </div>
         </div>
-    </div>
-    
-</div>
+    </div>     
 @endsection
 
 @push('scripts')

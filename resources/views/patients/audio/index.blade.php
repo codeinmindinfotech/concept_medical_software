@@ -1,7 +1,10 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
-<div class="container-fluid px-4">
+@section('tab-navigation')
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -22,7 +25,6 @@
             {{ $value }}
         </div>
     @endsession
-    
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-notes-medical me-1"></i>
@@ -36,8 +38,8 @@
                     ])
             </div>
         </div> 
-    </div>
-</div>
+    </div>    
+
 
 <x-transcription-modal :title="''" :transcription="''" />
 

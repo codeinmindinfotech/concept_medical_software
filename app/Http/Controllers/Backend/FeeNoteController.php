@@ -19,8 +19,8 @@ class FeeNoteController extends Controller
 
     public function index(Patient $patient)
     {
-        $consultants = Consultant::companyOnly()->all(); 
-        $chargecodes = ChargeCode::companyOnly()->all();
+        $consultants = Consultant::companyOnly()->get(); 
+        $chargecodes = ChargeCode::companyOnly()->get();
         $feeNotes = $patient->FeeNoteList()->companyOnly()->latest()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::companyOnly()->orderBy('name')->get();

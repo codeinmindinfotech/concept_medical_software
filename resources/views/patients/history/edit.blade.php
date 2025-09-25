@@ -1,7 +1,10 @@
-@extends('backend.theme.default')
+@extends('backend.theme.tabbed')
 
-@section('content')
-<div class="container-fluid px-4">
+@section('tab-navigation')
+    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -15,7 +18,6 @@
         'backUrl' =>guard_route('patients.history.index', $patient->id),
         'isListPage' => false
     ])
-
     <form action="{{guard_route('patients.history.update',[$patient->id, $history->id]) }}" method="POST" class="validate-form">
         @csrf
         @method('PUT')
@@ -25,9 +27,5 @@
                     'history'=> $history
                     ])
 
-    </form>
-</div>
+    </form>      
 @endsection
-@push('scripts')
-    <script src="{{ asset('theme/form-validation.js') }}"></script>
-@endpush
