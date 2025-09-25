@@ -11281,3 +11281,40 @@ input.error:focus, select.error:focus, textarea.error:focus {
   background-color: #fff;
   font-weight: normal;
 }
+
+#notification-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.notification-item {
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item a {
+  color: #212529;
+  background-color: #f8f9fa;
+}
+
+.notification-item a:hover {
+  background-color: #e9ecef;
+}
+
+.notification-item.unread a {
+  font-weight: 600;
+  background-color: #eef6ff;
+}
+
+.notification-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
