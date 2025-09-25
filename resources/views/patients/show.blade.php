@@ -118,7 +118,7 @@
                     </div>
 
                     {{-- ▶ Emergency & Medical Info --}}
-                    <div class="col-12">
+                    <div class="col-8">
                         <div class="card border-start border-danger shadow-sm">
                             <div class="card-header bg-light">
                                 <h5 class="card-title mb-0">
@@ -143,7 +143,29 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="col-4">
+                        <div class="card border-start border-primary shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-briefcase-medical me-2 text-primary"></i>Next Of Kin Info
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                @foreach ([
+                                'Next Of Kin' => $patient->next_of_kin,
+                                'Contact No' => $patient->kin_contact_no,
+                                'Email' => $patient->kin_address,
+                                'Address' => $patient->kin_email,
+                                'Relation' => $patient->relationship,
+                                ] as $label => $value)
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>{{ $label }}</strong></label>
+                                    <p class="mb-0 text-muted">{{ $value ?? '-' }}</p>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                     {{-- ▶ Insurance Information --}}
                     <div class="col-12">
                         <div class="card border-start border-warning shadow-sm">
@@ -153,9 +175,9 @@
                                 </h5>
                             </div>
                             <div class="card-body row g-3">
-                                <x-show-field label="Insurance Provider" :value="$patient->insurance->code ?? '-'" />
-                                <x-show-field label="Insurance Plan" :value="$patient->insurance_plan" />
-                                <x-show-field label="Policy Number" :value="$patient->policy_no" />
+                                <x-show-field label="Insurance Provider" :value="$patient->insurance->code ?? '-'" col="4"/>
+                                <x-show-field label="Insurance Plan" :value="$patient->insurance_plan" col="4"/>
+                                <x-show-field label="Policy Number" :value="$patient->policy_no" col="4"/>
                             </div>
                         </div>
                     </div>
