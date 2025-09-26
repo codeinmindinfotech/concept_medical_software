@@ -34,10 +34,13 @@ use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 use App\Http\Controllers\Auth\SuperadminLoginController;
+use App\Http\Controllers\Backend\ClinicMessageController;
 use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\DoctorMessageController;
+use App\Http\Controllers\Backend\Master\DocumentTemplateController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
+use App\Http\Controllers\Backend\PatientDocumentController;
 use App\Http\Controllers\BroadcastController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
@@ -64,11 +67,18 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
 Route::group(['middleware' => ['auth']], function () {
     Route::middleware('role:superadmin')->group(function () {
+        Route::resource('documents', DocumentTemplateController::class);
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markRead');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
         Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
         
+
+        Route::get('/editor/{filename}', [PatientDocumentController::class, 'edit'])->name('editor');
+        Route::get('/download/{filename}', [PatientDocumentController::class, 'download'])->name('documents.download');
+        Route::post('/onlyoffice/callback', [PatientDocumentController::class, 'callback'])->name('onlyoffice.callback');
+
+
         Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
         Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
 
@@ -76,6 +86,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::resource('companies', CompanyController::class);
+        Route::get('/companies/{company}/managers', [CompanyController::class, 'getManagers'])->name('company.manager');
+
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
@@ -198,6 +210,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
 
         Route::resource('patients', PatientController::class);
+        Route::get('patients/{patient}/upload-picture', [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
         Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
         Route::resource('doctors', DoctorController::class);
@@ -222,8 +235,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
         Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
 
-        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
-        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
+        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form');
+        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
 
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
@@ -339,6 +352,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
 
         Route::resource('patients', PatientController::class);
+
+        Route::get('patients/{patient}/upload-picture', [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
         Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
         Route::resource('doctors', DoctorController::class);
@@ -375,6 +390,11 @@ foreach ($roles as $role) {
                 Route::post('/send-notification', [DoctorMessageController::class, 'send'])->name('notification.send');
             }
 
+            if ($role === 'clinic') {
+                Route::get('/send-clinic-notification', [ClinicMessageController::class, 'showForm'])->name('clinic.notification.form');
+                Route::post('/send-clinic-notification', [ClinicMessageController::class, 'send'])->name('clinic.notification.send');
+            }
+
             Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
             Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
@@ -385,6 +405,8 @@ foreach ($roles as $role) {
             Route::resource('roles', RoleController::class);
             Route::resource('users', UserController::class);
             Route::resource('patients', PatientController::class);
+
+            Route::get('patients/{patient}/upload-picture', [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
             Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
             Route::resource('doctors', DoctorController::class);

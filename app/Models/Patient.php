@@ -49,7 +49,12 @@ class Patient extends Authenticatable
         'email_consent',
         'covid_19_vaccination_date',
         'covid_19_vaccination_note',
-        'fully_covid_19_vaccinated'
+        'fully_covid_19_vaccinated',
+        'next_of_kin',
+        'kin_contact_no',
+        'kin_address',
+        'relationship',
+        'kin_email'
     ];
 
     protected $casts = [

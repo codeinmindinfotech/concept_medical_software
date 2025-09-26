@@ -73,8 +73,12 @@
                            href="{{ guard_route('dropdowns.index') }}">
                             <i class="fas fa-list-ul me-2"></i> Dropdowns
                         </a>
+                        <a class="nav-link {{ is_guard_route('documents*') ? 'active fw-bold text-primary' : '' }}"
+                           href="{{ guard_route('documents.index') }}">
+                            <i class="fas fa-file-lines me-2"></i> Documents
+                        </a>
                         @endif
-                        @if (has_role('superadmin') || (has_role('manager')))
+                        @if (has_role('superadmin') || has_role('manager'))
                             <a class="nav-link {{ is_guard_route('send-notification*') ? 'active fw-bold text-primary' : '' }}"
                                 href="{{ guard_route('notifications.form') }}">
                                 <i class="fas fa-bell me-2"></i> Send Notification
@@ -83,6 +87,12 @@
                         @if(getCurrentGuard() == 'doctor')
                             <a class="nav-link {{ is_guard_route('notification*') ? 'active fw-bold text-primary' : '' }}"
                                     href="{{ guard_route('notification.form') }}">
+                                <i class="fas fa-bell me-2"></i> Send Notification
+                            </a>
+                        @endif
+                        @if(getCurrentGuard() == 'clinic')
+                            <a class="nav-link {{ is_guard_route('clinic.notification*') ? 'active fw-bold text-primary' : '' }}"
+                                    href="{{ guard_route('clinic.notification.form') }}">
                                 <i class="fas fa-bell me-2"></i> Send Notification
                             </a>
                         @endif

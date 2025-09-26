@@ -2,13 +2,15 @@
     <!-- Navbar Brand-->
 @php
     $user = current_user(); // or Auth::user(), depending on your setup
-    $companyName = 'Medical Management';
+    $companyName = 'Concept Medical';
 
     if ($user && $user->company_id && $user->company) {
         $companyName = $user->company->name;
     }
 @endphp
-    <a class="navbar-brand ps-3" href="/">{{ucfirst($companyName)}}</a>
+    <a class="navbar-brand ps-3" href="/">
+        <img src="{{ asset('theme/assets/img/logor.png') }}" alt="{{ucfirst($companyName)}}" width="150">
+    </a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar Search-->
@@ -26,20 +28,28 @@
         <li class="nav-item dropdown">
             <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-bell"></i>
-
                 <span id="notification-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
                     0
                 </span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow p-0" aria-labelledby="notificationDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
-                <li class="px-3 py-2 border-bottom fw-bold">Notifications</li>
+        
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 p-0" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                <li class="px-3 py-2 border-bottom fw-bold bg-light">Notifications</li>
+        
                 <ul id="notification-list" class="list-unstyled mb-0">
                     <li class="text-muted text-center py-3">No notifications</li>
                 </ul>
+        
                 <hr class="dropdown-divider my-0">
-                <li><a class="dropdown-item text-center small text-muted" href="{{ guard_route("notifications.index") }}">View All</a></li>
+        
+                <li>
+                    <a class="dropdown-item text-center text-primary fw-bold" href="{{ guard_route('notifications.index') }}">
+                        <i class="fas fa-bell me-2"></i> View All
+                    </a>
+                </li>
             </ul>
         </li>
+        
 
         <li class="nav-item dropdown me-3">
             <a class="nav-link dropdown-toggle position-relative" href="#" id="recallsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

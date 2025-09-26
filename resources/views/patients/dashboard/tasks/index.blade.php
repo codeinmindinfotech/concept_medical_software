@@ -135,8 +135,6 @@ return [
 
 
 @push('scripts')
-<script src="{{ asset('theme/form-validation.js') }}"></script>
-
 <script>
     var tasksFollowups = @json($tasksFollowups);
     $(document).ready(function() {

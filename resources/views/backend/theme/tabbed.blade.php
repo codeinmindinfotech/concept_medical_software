@@ -1,10 +1,15 @@
 @extends('backend.theme.default') 
-
+<style>
+#tab-nav {
+    position: sticky;
+    top: 20px;
+    z-index: 1020; /* above content */
+}
+</style>
 @section('content')
-<div class="container-fluid px-4 mt-4">
+<div class="container-fluid">
     <div class="row">
-        
-        <div class="card shadow-sm mb-4">
+        {{-- <div class="card shadow-sm mb-4">
             <div class="card-body d-flex align-items-center">
                 <form id="uploadPatientPictureForm" action="{{guard_route('patients.upload-picture', $patient->id) }}" enctype="multipart/form-data" class="position-relative me-3">
                     @csrf
@@ -32,20 +37,25 @@
                 </a>
                 @endcan
             </div>
-        </div>
-        {{-- Sidebar Tabs --}}
-        <div class="col-md-3">
-            <div class="nav flex-column nav-pills" id="tab-nav" role="tablist" aria-orientation="vertical">
-                @yield('tab-navigation')
-            </div>
-        </div>
-
+        </div> --}}
+        
         {{-- Tab Content --}}
-        <div class="col-md-9">
+        <div class="col-md-10">
             <div class="tab-content" id="tab-content">
                 @yield('tab-content')
             </div>
         </div>
+
+        {{-- Sidebar Tabs --}}
+        <div class="col-md-2">
+            <div class="nav flex-column nav-pills position-sticky" id="tab-nav"
+                 style="z-index: 1020;top: 20px;"
+                 role="tablist" aria-orientation="vertical">
+                @yield('tab-navigation')
+            </div>
+        </div>
+
+        
     </div>
 </div>
 @endsection

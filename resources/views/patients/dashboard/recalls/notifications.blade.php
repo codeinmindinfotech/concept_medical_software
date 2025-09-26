@@ -31,118 +31,127 @@
                 <i class="fas fa-table me-1"></i> Recall Management
             </div>
             <div>
-                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSearch" aria-expanded="{{ $hasFilters ? 'true' : 'false' }}" aria-controls="collapseSearch">
+                <button class="btn btn-sm btn-primary {{ $hasFilters ? '' : 'collapsed' }}"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapseSearch"
+                        aria-expanded="{{ $hasFilters ? 'true' : 'false' }}"
+                        aria-controls="collapseSearch">
                     <i class="fas fa-filter me-1"></i> Advanced Search
                 </button>
             </div>
         </div>
-
+    
         <div class="card-body">
             <div class="accordion mb-4" id="searchAccordion">
                 <div class="accordion-item border-0 shadow-sm">
-                    <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : '' }}" aria-labelledby="headingSearch" data-bs-parent="#searchAccordion">
+                    <div id="collapseSearch"
+                         class="accordion-collapse collapse {{ $hasFilters ? 'show' : '' }}"
+                         data-bs-parent="#searchAccordion">
                         <div class="accordion-body">
-                            <form method="GET" action="{{guard_route('recalls.notifications') }}">
+                            <form method="GET" action="{{ guard_route('recalls.notifications') }}">
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label for="first_name" class="form-label"><strong>First Name</strong></label>
-                                        <input type="text" name="first_name" id="first_name" class="form-control" placeholder="e.g. John" value="{{ request('first_name') }}">
+                                        <input type="text" name="first_name" id="first_name" class="form-control"
+                                               placeholder="e.g. John" value="{{ request('first_name') }}">
                                     </div>
                                     <div class="col-md-4">
                                         <label for="surname" class="form-label"><strong>Surname</strong></label>
-                                        <input type="text" name="surname" id="surname" class="form-control" placeholder="e.g. Doe" value="{{ request('surname') }}">
+                                        <input type="text" name="surname" id="surname" class="form-control"
+                                               placeholder="e.g. Doe" value="{{ request('surname') }}">
                                     </div>
-                                    {{-- <div class="col-md-4">
-                                        <label for="pin" class="form-label">PIN</label>
-                                        <input type="text" name="pin" id="pin" class="form-control"
-                                            placeholder="e.g. 123456" value="{{ request('pin') }}">
-                                </div> --}}
-                                <div class="col-md-4">
-                                    <label for="recall_filter" class="form-label"><strong>Interval<span class="txt-error">*</span></strong></label>
-                                    <select name="recall_filter" id="recall_filter" class="form-select select2">
-                                        <option value="">-- Select --</option>
-                                        <option value="month">This Month</option>
-                                        <option value="6 weeks">6 weeks</option>
-                                        <option value="2 months">2 months</option>
-                                        <option value="3 months">3 months</option>
-                                        <option value="6 months">6 months</option>
-                                        <option value="1 year">1 year</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="from" class="form-label"><strong>From<span class="txt-error">*</span></strong></label>
-                                    <div class="input-group">
-                                        <input id="from" name="from" type="text" class="form-control flatpickr" placeholder="YYYY-MM-DD" value="{{ request('from') }}">
-                                        <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                                    <div class="col-md-4">
+                                        <label for="recall_filter" class="form-label">
+                                            <strong>Interval <span class="txt-error">*</span></strong>
+                                        </label>
+                                        <select name="recall_filter" id="recall_filter" class="form-select select2">
+                                            <option value="">-- Select --</option>
+                                            <option value="month">This Month</option>
+                                            <option value="6 weeks">6 weeks</option>
+                                            <option value="2 months">2 months</option>
+                                            <option value="3 months">3 months</option>
+                                            <option value="6 months">6 months</option>
+                                            <option value="1 year">1 year</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="from" class="form-label"><strong>From <span class="txt-error">*</span></strong></label>
+                                        <div class="input-group">
+                                            <input id="from" name="from" type="text" class="form-control flatpickr"
+                                                   placeholder="YYYY-MM-DD" value="{{ request('from') }}">
+                                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="to" class="form-label"><strong>To <span class="txt-error">*</span></strong></label>
+                                        <div class="input-group">
+                                            <input id="to" name="to" type="text" class="form-control flatpickr"
+                                                   placeholder="YYYY-MM-DD" value="{{ request('to') }}">
+                                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="to" class="form-label"><strong>To<span class="txt-error">*</span></strong></label>
-                                    <div class="input-group">
-                                        <input id="to" name="to" type="text" class="form-control flatpickr" placeholder="YYYY-MM-DD" value="{{ request('to') }}">
-                                        <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                    </div>
+    
+                                <div class="text-end mt-4">
+                                    <button type="submit" class="btn btn-primary me-2">
+                                        <i class="fas fa-search me-1"></i> Search
+                                    </button>
+                                    <a href="{{ guard_route('recalls.notifications') }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-sync-alt me-1"></i> Reset
+                                    </a>
                                 </div>
+                            </form>
                         </div>
-
-                        <div class="text-end mt-4">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="fas fa-search me-1"></i> Search
-                            </button>
-                            <a href="{{guard_route('recalls.notifications') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-sync-alt me-1"></i> Reset
-                            </a>
-                        </div>
-                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="recall-notification-list" data-pagination-container>
-            <table class="table table-bordered" id="recallNotificationTable">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Patient</th>
-                        <th>Recall Date</th>
-                        <th>Status</th>
-                        <th>Note</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if($recalls->count())
-                    @foreach($recalls as $recall)
-                    <tr>
-                        <td> {{ $recall->patient->first_name }} {{ $recall->patient->surname }} </td>
-                        <td>{{ format_date($recall->recall_date) }}</td>
-                        <td>{{ $recall->status->value }}</td>
-                        <td>{{ $recall->note }}</td>
-                        <td>
-                            <a href="{{guard_route('patients.show', $recall->patient_id) }}" class="btn btn-info btn-sm me-2" title="View Patient">
-                                <i class="fas fa-user"></i> View Patient
-                            </a>
-                            <a href="{{guard_route('recalls.recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn btn-warning btn-sm me-2" title="Edit Recall">
-                                <i class="fas fa-edit"></i> Edit Recall
-                            </a>
-                            <a href="{{guard_route('recalls.email', $recall->id) }}" class="btn btn-primary btn-sm me-2" title="Email">
-                                <i class="fas fa-envelope"></i> Email
-                            </a>
-                            <a href="{{guard_route('recalls.sms', $recall->id) }}" class="btn btn-success btn-sm" title="SMS">
-                                <i class="fas fa-sms"></i> SMS
-                            </a>
-                        </td>
-                        
-                    </tr>
-                    @endforeach
-                    @else
-                    <tr><td colspan="5">No recalls found for this month.</td></tr>
-                    @endif
-                </tbody>
-            </table>
+    
+            <div id="recall-notification-list" data-pagination-container>
+                <table class="table table-bordered" id="recallNotificationTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Patient</th>
+                            <th>Recall Date</th>
+                            <th>Status</th>
+                            <th>Note</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if($recalls->count())
+                            @foreach($recalls as $recall)
+                                <tr>
+                                    <td>{{ $recall->patient->first_name }} {{ $recall->patient->surname }}</td>
+                                    <td>{{ format_date($recall->recall_date) }}</td>
+                                    <td>{{ $recall->status->value }}</td>
+                                    <td>{{ $recall->note }}</td>
+                                    <td>
+                                        <a href="{{ guard_route('patients.show', $recall->patient_id) }}" class="btn btn-info btn-sm me-2">
+                                            <i class="fas fa-user"></i> View Patient
+                                        </a>
+                                        <a href="{{ guard_route('recalls.recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn btn-warning btn-sm me-2">
+                                            <i class="fas fa-edit"></i> Edit Recall
+                                        </a>
+                                        <a href="{{ guard_route('recalls.email', $recall->id) }}" class="btn btn-primary btn-sm me-2">
+                                            <i class="fas fa-envelope"></i> Email
+                                        </a>
+                                        <a href="{{ guard_route('recalls.sms', $recall->id) }}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-sms"></i> SMS
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr><td colspan="5">No recalls found for this month.</td></tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-</div>
+
 @endsection
 @push('scripts')
 <script>

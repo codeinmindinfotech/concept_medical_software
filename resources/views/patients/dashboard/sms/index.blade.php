@@ -83,7 +83,6 @@
 </div>
 @endsection
 @push('scripts')
-<script src="{{ asset('theme/form-validation.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const templateSelect = document.getElementById('sms_template');

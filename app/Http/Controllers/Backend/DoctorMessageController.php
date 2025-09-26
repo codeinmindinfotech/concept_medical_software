@@ -9,27 +9,22 @@ use App\Models\Patient;
 use App\Models\Clinic;
 
 use App\Notifications\DoctorMessageNotification;
-use Pusher\Pusher;
+use Illuminate\Support\Facades\Mail;
 
 class DoctorMessageController extends Controller
 {
     public function showForm()
     {
-        // $options = array(
-        //     'cluster' => 'us3',
-        //     'useTLS' => true
-        //   );
-        //   $pusher = new Pusher(
-        //     '31acd5cb2f1e0b8edb56',
-        //     '8575d690d2029f07b51d',
-        //     '2052310',
-        //     $options
-        //   );
-        
-        //   $data['message'] = 'hello world niru';
-        //   $pusher->trigger('my-channel', 'my-event', $data);
+        $user = current_user();
+        $patients = Patient::where('company_id', $user->company_id)
+            ->where(function ($query) use ($user) {
+                $query->where('doctor_id', $user->id)
+                      ->orWhere('referral_doctor_id', $user->id)
+                      ->orWhere('other_doctor_id', $user->id)
+                      ->orWhere('solicitor_doctor_id', $user->id);
+            })
+            ->get();
 
-        $patients = Patient::where('company_id', auth('doctor')->user()->company_id)->get();
         $clinics = Clinic::where('company_id', auth('doctor')->user()->company_id)->get();
 
         return view('doctors.notifications.send', compact('patients', 'clinics'));
@@ -40,11 +35,12 @@ class DoctorMessageController extends Controller
         $request->validate([
             'message' => 'required|string|max:1000',
             'recipients' => 'required|array',
-            'recipients.*' => 'string', // e.g. patient-1 or clinic-3
+            'recipients.*' => 'string',
         ]);
 
         $doctor = auth('doctor')->user();
-        $notification = new DoctorMessageNotification($request->message, $doctor);
+        $message = $request->message;
+        $notification = new DoctorMessageNotification($message, $doctor);
 
         foreach ($request->recipients as $recipient) {
             [$type, $id] = explode('-', $recipient);
@@ -52,6 +48,12 @@ class DoctorMessageController extends Controller
 
             if ($recipientModel = $modelClass::find($id)) {
                 $recipientModel->notify($notification);
+
+                try {
+                    Mail::to($recipientModel->email)->queue(new \App\Mail\NotificationMail($message));
+                } catch (\Exception $e) {
+                    \Log::error("Email queue failed for {$recipientModel->email}: " . $e->getMessage());
+                }
 
                 $latestNotification = $recipientModel->notifications()->latest()->first();
                 event(new MessageSent($latestNotification, $recipientModel->id, $recipientModel));

@@ -6,6 +6,7 @@
 /public/storage/consultants/
 /public/storage/debugbar/
 /public/storage/patient_pictures/
+/public/storage/document_templates/
 #/storage
 /whisper_env
 

@@ -30,33 +30,89 @@ document.addEventListener('DOMContentLoaded', function () {
 
     channel.bind('notification.received', function (data) {
         console.log('✅ New notification received:', data);
-
+    
+        // Remove "no notifications" message if present
         const noNotifElem = notificationList.querySelector('.text-muted');
-        if (noNotifElem) noNotifElem.remove();
-
+        if (noNotifElem && noNotifElem.innerText.includes('No notifications')) {
+            noNotifElem.remove();
+        }
+    
+        // Create <li> element
         const li = document.createElement('li');
         li.setAttribute('data-notification-id', data.id);
-        li.classList.add('unread');
-
+        li.classList.add('notification-item', 'unread');
+    
+        // Create <a> element
         const a = document.createElement('a');
         a.href = data.data.url || '#';
-        a.classList.add('dropdown-item', 'd-flex', 'justify-content-between', 'align-items-start', 'flex-column');
+        a.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'p-3', 'rounded', 'text-decoration-none');
         a.innerHTML = `
-            <div>${data.data.message ?? 'New message'}</div>
-            <small class="text-muted mt-1" data-timestamp="${new Date().toISOString()}">Just now</small>
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-bell text-primary"></i>
+                <span class="notification-text">${data.data.message ?? 'New message'}</span>
+            </div>
+            <small class="text-muted mt-2" data-timestamp="${new Date().toISOString()}">Just now</small>
         `;
-
+    
         li.appendChild(a);
-
-        const divider = notificationList.querySelector('hr.dropdown-divider');
-        notificationList.insertBefore(li, divider);
-
+    
+        // Insert before the first <li> (or append if list is empty)
+        const firstItem = notificationList.querySelector('li');
+        if (firstItem) {
+            notificationList.insertBefore(li, firstItem);
+        } else {
+            notificationList.appendChild(li);
+        }
+    
+        // Update count badge
         let count = parseInt(countBadge.textContent) || 0;
         count++;
         countBadge.textContent = count;
         countBadge.style.display = 'inline-block';
     });
+    
+    // channel.bind('notification.received', function (data) {
+    //     console.log('✅ New notification received:', data);
 
+    //     const noNotifElem = notificationList.querySelector('.text-muted');
+    //     if (noNotifElem) noNotifElem.remove();
+
+    //     const li = document.createElement('li');
+    //     li.setAttribute('data-notification-id', data.id);
+    //     li.classList.add('unread');
+
+    //     const a = document.createElement('a');
+    //     a.href = data.data.url || '#';
+    //     a.classList.add('dropdown-item', 'd-flex', 'justify-content-between', 'align-items-start', 'flex-column');
+    //     a.innerHTML = `
+    //         <div>${data.data.message ?? 'New message'}</div>
+    //         <small class="text-muted mt-1" data-timestamp="${new Date().toISOString()}">Just now</small>
+    //     `;
+
+    //     li.appendChild(a);
+
+    //     const divider = notificationList.querySelector('hr.dropdown-divider');
+    //     notificationList.insertBefore(li, divider);
+
+    //     let count = parseInt(countBadge.textContent) || 0;
+    //     count++;
+    //     countBadge.textContent = count;
+    //     countBadge.style.display = 'inline-block';
+    // });
+    function formatTimeAgo(dateString) {
+        const now = new Date();
+        const past = new Date(dateString);
+        const seconds = Math.floor((now - past) / 1000);
+    
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)} minute(s) ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)} hour(s) ago`;
+        if (seconds < 604800) return `${Math.floor(seconds / 86400)} day(s) ago`;
+    
+        // fallback: show date in 'MMM DD, YYYY' format
+        return past.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    
     // Format relative time
     function updateRelativeTimes() {
         const elements = document.querySelectorAll('[data-timestamp]');
@@ -101,33 +157,78 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(res => res.json())
     .then(data => {
         if (!Array.isArray(data) || data.length === 0) return;
-
+    
+        // Update count badge
         countBadge.textContent = data.length;
         countBadge.style.display = 'inline-block';
-
-        const divider = notificationList.querySelector('hr.dropdown-divider');
+    
+        // Clean up existing "no notifications" message
         const noNotifElem = notificationList.querySelector('.text-muted');
-        if (noNotifElem) noNotifElem.remove();
-
+        if (noNotifElem && noNotifElem.innerText.includes('No notifications')) {
+            noNotifElem.remove();
+        }
+    
+        // Optional: Clear old notifications (if needed)
+        // notificationList.innerHTML = '';
+    
         data.forEach(notification => {
             const li = document.createElement('li');
             li.setAttribute('data-notification-id', notification.id);
-            li.classList.add('unread');
-
+            li.classList.add('notification-item', 'unread');
+    
             const a = document.createElement('a');
             a.href = notification.data.url || '#';
-            a.classList.add('dropdown-item', 'd-flex', 'justify-content-between', 'align-items-start', 'flex-column');
+            a.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'p-3', 'rounded', 'text-decoration-none');
             a.innerHTML = `
-                <div>${notification.data.message ?? 'New message'}</div>
-                <small class="text-muted mt-1" data-timestamp="${notification.created_at}">Just now</small>
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-bell text-secondary"></i>
+                    <span class="notification-text">${notification.data.message ?? 'New message'}</span>
+                </div>
+                <small class="text-muted mt-2" data-timestamp="${notification.created_at}">${formatTimeAgo(notification.created_at)}</small>
             `;
-
+    
             li.appendChild(a);
-            notificationList.insertBefore(li, divider);
+    
+            const firstItem = notificationList.querySelector('li');
+            if (firstItem) {
+                notificationList.insertBefore(li, firstItem);
+            } else {
+                notificationList.appendChild(li);
+            }
         });
-
-        updateRelativeTimes();
+    
+        updateRelativeTimes(); // optional if you're using timeago updates
     })
+    
+    // .then(data => {
+    //     if (!Array.isArray(data) || data.length === 0) return;
+
+    //     countBadge.textContent = data.length;
+    //     countBadge.style.display = 'inline-block';
+
+    //     const divider = notificationList.querySelector('hr.dropdown-divider');
+    //     const noNotifElem = notificationList.querySelector('.text-muted');
+    //     if (noNotifElem) noNotifElem.remove();
+
+    //     data.forEach(notification => {
+    //         const li = document.createElement('li');
+    //         li.setAttribute('data-notification-id', notification.id);
+    //         li.classList.add('unread');
+
+    //         const a = document.createElement('a');
+    //         a.href = notification.data.url || '#';
+    //         a.classList.add('dropdown-item', 'd-flex', 'justify-content-between', 'align-items-start', 'flex-column');
+    //         a.innerHTML = `
+    //             <div>${notification.data.message ?? 'New message'}</div>
+    //             <small class="text-muted mt-1" data-timestamp="${notification.created_at}">Just now</small>
+    //         `;
+
+    //         li.appendChild(a);
+    //         notificationList.insertBefore(li, divider);
+    //     });
+
+    //     updateRelativeTimes();
+    // })
     .catch(err => {
         console.error('❌ Failed to load unread notifications:', err);
     });
