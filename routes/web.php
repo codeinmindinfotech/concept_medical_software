@@ -210,6 +210,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
 
         Route::resource('patients', PatientController::class);
+        Route::get('patients/{patient}/upload-picture', [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
         Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
         Route::resource('doctors', DoctorController::class);
@@ -351,6 +352,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/recalls/{id}/sms', [RecallNotificationController::class, 'sendSms'])->name('recalls.sms');
 
         Route::resource('patients', PatientController::class);
+
+        Route::get('patients/{patient}/upload-picture', [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
         Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
         Route::resource('doctors', DoctorController::class);
@@ -402,6 +405,8 @@ foreach ($roles as $role) {
             Route::resource('roles', RoleController::class);
             Route::resource('users', UserController::class);
             Route::resource('patients', PatientController::class);
+
+            Route::get('patients/{patient}/upload-picture', [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
             Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
             Route::resource('doctors', DoctorController::class);

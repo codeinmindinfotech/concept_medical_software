@@ -93,7 +93,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $consultants = Consultant::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get(); 
-        return view('patients.create', compact('pageTitle','titles','insurances','consultants', 'preferredContact','doctors'));
+        return view('patients.create', compact('pageTitle','titles','insurances','relations','consultants', 'preferredContact','doctors'));
     }
     
     /**
@@ -125,7 +125,7 @@ class PatientController extends Controller
         }
 
         return response()->json([
-            'redirect' =>guard_route('patients.index'),
+            'redirect' =>guard_route('patients.edit', $patient->id),
             'message' => 'Patient created successfully. A password reset link has been sent.',
         ]);
 
@@ -159,7 +159,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get();
         $consultants = Consultant::companyOnly()->orderBy('name')->get();
-        return view('patients.edit',compact('patient','pageTitle','titles','consultants','insurances', 'preferredContact','doctors'));
+        return view('patients.edit',compact('patient','pageTitle','titles','relations','consultants','insurances', 'preferredContact','doctors'));
     }
     
     /**
@@ -185,7 +185,7 @@ class PatientController extends Controller
         assignRoleToGuardedModel($patient, 'patient', 'patient');
         
         return response()->json([
-            'redirect' =>guard_route('patients.index'),
+            'redirect' =>guard_route('patients.edit', $patient->id),
             'message' => 'Patient updated successfully',
         ]);
     }
@@ -204,6 +204,13 @@ class PatientController extends Controller
     
         return redirect()->route('patients.index')
                         ->with('success','Patient deleted successfully');
+    }
+
+    public function UploadPictureForm(Patient $patient): View
+    {
+        $this->authorize('update', $patient);
+    
+        return view('patients.upload',compact('patient'));
     }
 
     public function uploadPicture(Request $request)

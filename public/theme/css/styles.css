@@ -11281,3 +11281,66 @@ input.error:focus, select.error:focus, textarea.error:focus {
   background-color: #fff;
   font-weight: normal;
 }
+
+#notification-list {
+  /* max-height: 400px;
+  overflow-y: auto; */
+  padding-right: 4px;
+}
+
+.notification-item {
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item a {
+  color: #212529;
+  background-color: #f8f9fa;
+}
+
+.notification-item a:hover {
+  background-color: #e9ecef;
+}
+
+.notification-item.unread a {
+  font-weight: 600;
+  background-color: #eef6ff;
+}
+
+.notification-item .notification-text {
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-word; /* allow breaking long words */
+  white-space: normal;    /* allow line wraps */
+  overflow-wrap: break-word;
+  font-size: 0.95rem;
+}
+
+.notification-item small {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+/* Optional spacing for better visual separation */
+.notification-item a {
+  padding: 12px 16px;
+}
+
+.notification-item a:hover {
+  background-color: #f8f9fa;
+  text-decoration: none;
+}
+
+
+/* On small screens, allow multi-line */
+@media (max-width: 576px) {
+  .notification-text {
+    white-space: normal;     /* allow wrapping */
+    max-width: 150px;
+  }
+}
+
