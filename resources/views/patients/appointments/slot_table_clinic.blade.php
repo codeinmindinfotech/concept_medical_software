@@ -46,7 +46,7 @@
                         @endif
                         <a target="_blank"
                             class="text-decoration-none text-dark fw-semibold"
-                            href="{{guard_route('tasks.tasks.index', ['patient' => $appointment->patient->id]) }}">
+                            href="{{guard_route('patients.show', ['patient' => $appointment->patient->id]) }}">
                             {{ $appointment->patient->full_name }}
                         </a>
                     </div>

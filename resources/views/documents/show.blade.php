@@ -41,10 +41,20 @@
 
 
 </div>
+{{-- <textarea id="editor_1" name="editor_html">{{ $html }}</textarea> --}}
+
+
+
 @endsection
 @push('scripts')
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('editor', {
+        allowedContent: true
+    });
+</script>
 <!-- TinyMCE Script -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+{{-- <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
     tinymce.init({
         selector: 'textarea'
@@ -53,7 +63,7 @@
         , menubar: false
     });
 
-</script>
+</script> --}}
 {{-- <script src="https://cdn.tiny.cloud/1/r4t59mfzsp040hmthbgye6ft2gjndjrlw3iyrzp70ftzalri/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 
 <script>
