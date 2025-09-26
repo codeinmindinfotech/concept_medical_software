@@ -1,6 +1,7 @@
 /node_modules
 /vendor
 .env
+/public/storage/
 /public/storage/audio/
 /public/storage/consultants/
 /public/storage/debugbar/
