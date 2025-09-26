@@ -12,7 +12,7 @@
         </thead>
         <tbody>
             @forelse ($patients as $index => $patient)
-            <tr onclick="window.location='{{ guard_route('patients.edit', $patient->id) }}'" style="cursor: pointer;">
+            <tr onclick="window.location='{{ guard_route('patients.show', $patient->id) }}'" style="cursor: pointer;">
 
                 <td>{{ $patients->firstItem() + $index }}</td>
                 <td>{{ $patient->doctor?->name ?? '' }}</td>

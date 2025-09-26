@@ -40,6 +40,7 @@ use App\Http\Controllers\Backend\DoctorMessageController;
 use App\Http\Controllers\Backend\Master\DocumentTemplateController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
+use App\Http\Controllers\Backend\PatientDocumentController;
 use App\Http\Controllers\BroadcastController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
@@ -72,6 +73,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
         Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
         
+
+        Route::get('/editor/{filename}', [PatientDocumentController::class, 'edit'])->name('editor');
+        Route::get('/download/{filename}', [PatientDocumentController::class, 'download'])->name('documents.download');
+        Route::post('/onlyoffice/callback', [PatientDocumentController::class, 'callback'])->name('onlyoffice.callback');
+
+
         Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
         Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
 

@@ -143,7 +143,7 @@
                                                                 </div>
                                                             @endif
                                                         
-                                                            <a href="{{guard_route('tasks.tasks.index', $appointment->patient_id) }}"
+                                                            <a href="{{guard_route('patients.show', $appointment->patient_id) }}"
                                                                 target="_blank"
                                                                 class="fw-semibold text-dark text-truncate text-decoration-none"
                                                                 title="View Patient Tasks">
