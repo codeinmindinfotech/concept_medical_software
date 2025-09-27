@@ -134,7 +134,7 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="todoDropdown" style="z-index: 1055;">
                                 <li><a class="dropdown-item" onclick="openClinicOverviewCountModal()">Clinic Overview</a></li>
-                                <li><a class="dropdown-item" href="#">Entire Day Report</a></li>
+                                <li><a class="dropdown-item" onclick="openEntireDayReport()">Entire Day Report</a></li>
                                 <li><a class="dropdown-item" href="#">Move Appointment</a></li>
                             </ul>
                         </div>
@@ -458,7 +458,7 @@
         // Fallback to global variables if parameters not provided
         const selectedClinicId = clinicId || selectedClinic;
         const selectedDateValue = date || selectedDate;
-
+        selectedDate = selectedDateValue;
         const patientSelect = document.getElementById('patient-select');
         const selectedPatient = patientSelect ? patientSelect.value : null;
 
@@ -494,42 +494,6 @@
             renderAppointmentStats(data.stats);
         }
     }
-
-    // async function loadSlotsAndAppointments() {
-    //     const patientSelect = document.getElementById('patient-select');
-    //     if (!selectedDate) return;
-    //     const res = await fetch(routes.fetchAppointments, {
-    //         method: 'POST'
-    //         , headers: {
-    //             'Content-Type': 'application/json'
-    //             , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    //         }
-    //         , body: JSON.stringify({
-    //             clinic_id: selectedClinic,
-    //             patientSelect: selectedPatient,
-    //             date: selectedDate
-    //         })
-    //     });
-
-    //     const [year, month, day] = selectedDate.split('-');
-    //     document.getElementById('selected-date-display').innerText =
-    //         `Appointments for ${day}/${month}/${year}`;
-
-    //     const data = await res.json();
-    //     document.getElementById('slot-body').innerHTML = data.html || '<tr><td colspan="7">No data available</td></tr>';
-   
-    //     const manualSlotButton = document.getElementById('manualSlotButton');
-    //     if (data.isOpen) {
-    //         manualSlotButton.style.display = 'flex'; // Or 'block' depending on your layout
-    //     } else {
-    //         manualSlotButton.style.display = 'none';
-    //     }
-
-    //     // Update stats
-    //     if (data.stats) {
-    //         renderAppointmentStats(data.stats);
-    //     }
-    // }
 
     function renderAppointmentStats(data) {
         const container = document.getElementById('appointment-stats-content');
@@ -885,6 +849,17 @@ function openClinicOverviewCountModal() {
     });
 }
 
+function openEntireDayReport() {
+    // const selectedDate = document.getElementById('entire-day-date').value;
+    if (!selectedDate) {
+        alert("Please select a date for the report.");
+        return; // Stop if no date selected
+    }
+    window.open(`/reports/entire-day?date=${selectedDate}`, '_blank');
+
+    // Redirect to the Laravel route with date as query parameter
+    // window.location.href = `/reports/entire-day?date=${selectedDate}`;
+}
 </script>
 
 @endpush
