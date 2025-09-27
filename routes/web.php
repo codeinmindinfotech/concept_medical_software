@@ -41,6 +41,7 @@ use App\Http\Controllers\Backend\Master\DocumentTemplateController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
 use App\Http\Controllers\Backend\PatientDocumentController;
+use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\BroadcastController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
@@ -194,6 +195,9 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+        Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
+        Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
+
 
         Route::prefix('patients/{patient}/appointments')->group(function () {
             Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);

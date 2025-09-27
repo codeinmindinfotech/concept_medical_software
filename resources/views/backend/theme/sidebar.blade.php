@@ -26,132 +26,139 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>
                     <span>Diary</span> 
                 </a>
-
-                {{-- Utilities Collapsible Section --}}   
-                @php
-                    $isUtilitiesOpen = is_guard_route('/send-notification*')  || is_guard_route('/configurations*')  || is_guard_route('/users*') || is_guard_route('/roles*') || is_guard_route('/dropdowns*') || is_guard_route('/clinics*') || is_guard_route('/doctors*') || is_guard_route('consultants*') || is_guard_route('insurances*')  || is_guard_route('chargecodes*') ;
-               // Check if user has at least one permission for utilities
-                    $hasUtilityPermissions = 
-                        // has_permission('user-list') ||
-                        has_permission('role-list') ||
-                        has_permission('dropdown-list') ||
-                        has_permission('clinic-list') ||
-                        has_permission('doctor-list') ||
-                        has_permission('consultant-list') ||
-                        has_permission('insurance-list') ||
-                        has_permission('configuration-list') ||
-                        has_permission('chargecode-list');
-
-                    // Only show the section if either condition is true
-                     $showUtilities = $isUtilitiesOpen || $hasUtilityPermissions;
-               @endphp
-        @if ($showUtilities)
-                <a class="nav-link d-flex justify-content-between align-items-center {{ $isUtilitiesOpen ? '' : 'collapsed' }}"
-                   href="#" data-bs-toggle="collapse" data-bs-target="#collapseUtilities"
-                   aria-expanded="{{ $showUtilities ? 'true' : 'false' }}" aria-controls="collapseUtilities">
-                    <div class="d-flex align-items-center">
-                        <div class="sb-nav-link-icon"><i class="fas fa-tools"></i></div>
-                        <span>Utilities</span>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </a>
-        
-                <div id="collapseUtilities" class="collapse {{ $showUtilities ? 'show' : '' }}">
-                    <div class="collapse-inner py-2 rounded-2 border-start border-3 border-primary ps-3">
-                        @if (has_role('superadmin'))
-                            <a class="nav-link {{ is_guard_route('users*') ? 'active fw-bold text-primary' : '' }}"
-                            href="{{ guard_route('users.index') }}">
-                                <i class="fas fa-user me-2"></i> Users
-                            </a>
-                        
-                        <a class="nav-link {{ is_guard_route('roles*') ? 'active fw-bold text-primary' : '' }}"
-                           href="{{ guard_route('roles.index') }}">
-                            <i class="fas fa-user-shield me-2"></i> Roles
-                        </a>
-        
-                        <a class="nav-link {{ is_guard_route('dropdowns*') ? 'active fw-bold text-primary' : '' }}"
-                           href="{{ guard_route('dropdowns.index') }}">
-                            <i class="fas fa-list-ul me-2"></i> Dropdowns
-                        </a>
-                        <a class="nav-link {{ is_guard_route('documents*') ? 'active fw-bold text-primary' : '' }}"
-                           href="{{ guard_route('documents.index') }}">
-                            <i class="fas fa-file-lines me-2"></i> Documents
-                        </a>
-                        @endif
-                        @if (has_role('superadmin') || has_role('manager'))
-                            <a class="nav-link {{ is_guard_route('send-notification*') ? 'active fw-bold text-primary' : '' }}"
-                                href="{{ guard_route('notifications.form') }}">
-                                <i class="fas fa-bell me-2"></i> Send Notification
-                            </a>
-                        @endif
-                        @if(getCurrentGuard() == 'doctor')
-                            <a class="nav-link {{ is_guard_route('notification*') ? 'active fw-bold text-primary' : '' }}"
-                                    href="{{ guard_route('notification.form') }}">
-                                <i class="fas fa-bell me-2"></i> Send Notification
-                            </a>
-                        @endif
-                        @if(getCurrentGuard() == 'clinic')
-                            <a class="nav-link {{ is_guard_route('clinic.notification*') ? 'active fw-bold text-primary' : '' }}"
-                                    href="{{ guard_route('clinic.notification.form') }}">
-                                <i class="fas fa-bell me-2"></i> Send Notification
-                            </a>
-                        @endif
-                        @if (has_permission('configuration-list'))
-                            <a class="nav-link {{ is_guard_route('configurations*') ? 'active' : '' }}" href="{{ guard_route('configurations.index') }}">
-                                <div class="sb-nav-link-icon">
-                                    <i class="fas fa-cogs"></i> 
-                                </div>
-                                <span>Configuration</span>
-                            </a>
-                        @endif
-
-
-                        @if (has_permission('doctor-list'))
-                            <a class="nav-link {{ is_guard_route('doctors*') ? 'active' : '' }}" href="{{ guard_route('doctors.index') }}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-user-md"></i></div>
-                                <span>Doctors</span>
-                            </a>
-                        @endif
                 
-                        @if (has_permission('consultant-list'))
-                        <a class="nav-link {{ is_guard_route('consultants*') ? 'active' : '' }}" href="{{ guard_route('consultants.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-stethoscope"></i></div>
-                            <span>Consultants</span>
-                        </a>
-                        @endif
+                @php
+                    // Routes & permissions for SETTINGS
+                    $settingsRoutes = ['/users*', '/roles*', '/dropdowns*', '/configurations*'];
+                    $settingsPermissions = ['role-list', 'dropdown-list', 'configuration-list'];
+                    $hasSettingsPermission = collect($settingsPermissions)->contains(fn($perm) => has_permission($perm)) || has_role('superadmin');
+                    $isSettingsOpen = collect($settingsRoutes)->contains(fn($route) => is_guard_route($route));
 
-                        @if (has_permission('company-list'))
-                        <a class="nav-link {{ is_guard_route('companies*') ? 'active' : '' }}" href="{{ guard_route('companies.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                            <span>Company</span>
-                        </a>
-                        @endif
+                    // Routes & permissions for UTILITIES
+                    $utilityRoutes = ['/send-notification*', '/doctors*', '/consultants*', '/companies*', '/insurances*', '/chargecodes*', '/clinics*'];
+                    $utilityPermissions = ['doctor-list', 'consultant-list', 'company-list', 'insurance-list', 'chargecode-list', 'clinic-list'];
+                    $hasUtilitiesPermission = collect($utilityPermissions)->contains(fn($perm) => has_permission($perm)) || has_role('superadmin') || has_role('manager');
+                    $isUtilitiesOpen = collect($utilityRoutes)->contains(fn($route) => is_guard_route($route));
 
-                        @if (has_permission('insurance-list'))
-                        <a class="nav-link {{ is_guard_route('insurances*') ? 'active' : '' }}" href="{{ guard_route('insurances.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-file-medical"></i></div>
-                            <span>Insurance</span>
-                        </a>
-                        @endif
+                    $currentGuard = getCurrentGuard();
+                @endphp
 
-                        @if (has_permission('chargecode-list'))
-                        <a class="nav-link {{ is_guard_route('chargecodes*') ? 'active' : '' }}" href="{{ guard_route('chargecodes.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                            <span>Charge Codes</span>
-                        </a>
-                        @endif
+                @if ($hasSettingsPermission)
+                    <a class="nav-link d-flex justify-content-between align-items-center {{ $isSettingsOpen ? '' : 'collapsed' }}"
+                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseSettings"
+                    aria-expanded="{{ $isSettingsOpen ? 'true' : 'false' }}" aria-controls="collapseSettings">
+                        <div class="d-flex align-items-center">
+                            <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
+                            <span>Settings</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
 
-                        @if (has_permission('clinic-list'))
-                        <a class="nav-link {{ is_guard_route('clinics*') ? 'active' : '' }}" href="{{ guard_route('clinics.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-clinic-medical"></i></div>
-                            <span>Clinic</span>
-                        </a>
-                        @endif
-                        
-        
+                    <div id="collapseSettings" class="collapse {{ $isSettingsOpen ? 'show' : '' }}">
+                        <div class="collapse-inner py-2 border-start border-3 border-primary ps-3">
+                            <x-nav.item icon="fas fa-user" label="Users" route="users.index" role="superadmin" pattern="users*" />
+                            <x-nav.item icon="fas fa-user-shield" label="Roles" route="roles.index" role="superadmin" pattern="roles*" />
+                            <x-nav.item icon="fas fa-list-ul" label="Dropdowns" route="dropdowns.index" role="superadmin" pattern="dropdowns*" />
+                            <x-nav.item icon="fas fa-cogs" label="Configuration" route="configurations.index" permission="configuration-list" pattern="configurations*" />
+                        </div>
                     </div>
-                </div>
-        @endif
+                @endif
+
+
+                @if ($hasUtilitiesPermission)
+                    <a class="nav-link d-flex justify-content-between align-items-center {{ $isUtilitiesOpen ? '' : 'collapsed' }}"
+                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseUtilities"
+                    aria-expanded="{{ $isUtilitiesOpen ? 'true' : 'false' }}" aria-controls="collapseUtilities">
+                        <div class="d-flex align-items-center">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tools"></i></div>
+                            <span>Utilities</span>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+
+                    <div id="collapseUtilities" class="collapse {{ $isUtilitiesOpen ? 'show' : '' }}">
+                        <div class="collapse-inner py-2 border-start border-3 border-primary ps-3">
+
+                            {{-- Notifications (based on guard/role) --}}
+                            @if ($currentGuard === 'doctor')
+                                <x-nav.item icon="fas fa-bell" label="Send Notification" route="notification.form" pattern="notification*" />
+                            @elseif ($currentGuard === 'clinic')
+                                <x-nav.item icon="fas fa-bell" label="Send Notification" route="clinic.notification.form" pattern="clinic.notification*" />
+                            @elseif (has_role('superadmin') || has_role('manager'))
+                                <x-nav.item icon="fas fa-bell" label="Send Notification" route="notifications.form" pattern="send-notification*" />
+                            @endif
+
+                            {{-- Utility items --}}
+                            <x-nav.item icon="fas fa-user-md" label="Doctors" route="doctors.index" permission="doctor-list" pattern="doctors*" />
+                            <x-nav.item icon="fas fa-stethoscope" label="Consultants" route="consultants.index" permission="consultant-list" pattern="consultants*" />
+                            <x-nav.item icon="fas fa-building" label="Company" route="companies.index" permission="company-list" pattern="companies*" />
+                            <x-nav.item icon="fas fa-file-medical" label="Insurance" route="insurances.index" permission="insurance-list" pattern="insurances*" />
+                            <x-nav.item icon="fas fa-file-invoice-dollar" label="Charge Codes" route="chargecodes.index" permission="chargecode-list" pattern="chargecodes*" />
+                            <x-nav.item icon="fas fa-clinic-medical" label="Clinic" route="clinics.index" permission="clinic-list" pattern="clinics*" />
+                        </div>
+                    </div>
+                @endif
+
+
+                {{-- @php
+                    $utilityRoutes = [
+                        '/send-notification*', '/configurations*', '/users*', '/roles*',
+                        '/dropdowns*', '/clinics*', '/doctors*', '/consultants*', '/insurances*', '/chargecodes*'
+                    ];
+
+                    $utilityPermissions = [
+                        'role-list', 'dropdown-list', 'clinic-list', 'doctor-list',
+                        'consultant-list', 'insurance-list', 'configuration-list', 'chargecode-list'
+                    ];
+
+                    $isUtilitiesOpen = collect($utilityRoutes)->contains(fn($route) => is_guard_route($route));
+                    $hasUtilityPermissions = collect($utilityPermissions)->contains(fn($perm) => has_permission($perm)) 
+                                            || has_role('superadmin') || has_role('manager');
+
+                    $showUtilities = $hasUtilityPermissions;
+                    $currentGuard = getCurrentGuard();
+                @endphp
+
+@if ($showUtilities)
+    <a class="nav-link d-flex justify-content-between align-items-center {{ $isUtilitiesOpen ? '' : 'collapsed' }}"
+       href="#" data-bs-toggle="collapse" data-bs-target="#collapseUtilities"
+       aria-expanded="{{ $isUtilitiesOpen ? 'true' : 'false' }}" aria-controls="collapseUtilities">
+        <div class="d-flex align-items-center">
+            <div class="sb-nav-link-icon"><i class="fas fa-tools"></i></div>
+            <span>Utilities</span>
+        </div>
+        <i class="fas fa-chevron-down"></i>
+    </a>
+
+    <div id="collapseUtilities" class="collapse {{ $isUtilitiesOpen ? 'show' : '' }}">
+        <div class="collapse-inner py-2 rounded-2 border-start border-3 border-primary ps-3">
+
+            <x-nav.item icon="fas fa-user" label="Users" route="users.index" role="superadmin" pattern="users*" />
+            <x-nav.item icon="fas fa-user-shield" label="Roles" route="roles.index" role="superadmin" pattern="roles*" />
+            <x-nav.item icon="fas fa-list-ul" label="Dropdowns" route="dropdowns.index" role="superadmin" pattern="dropdowns*" />
+            <x-nav.item icon="fas fa-file-lines" label="Documents" route="documents.index" role="superadmin" pattern="documents*" />
+
+            @if ($currentGuard === 'doctor')
+                <x-nav.item icon="fas fa-bell" label="Send Notification" route="notification.form" pattern="notification*" />
+            @elseif ($currentGuard === 'clinic')
+                <x-nav.item icon="fas fa-bell" label="Send Notification" route="clinic.notification.form" pattern="clinic.notification*" />
+            @elseif (has_role('superadmin') || has_role('manager'))
+                <x-nav.item icon="fas fa-bell" label="Send Notification" route="notifications.form" pattern="send-notification*" />
+            @endif
+
+            <x-nav.item icon="fas fa-cogs" label="Configuration" route="configurations.index" permission="configuration-list" pattern="configurations*" />
+            <x-nav.item icon="fas fa-user-md" label="Doctors" route="doctors.index" permission="doctor-list" pattern="doctors*" />
+            <x-nav.item icon="fas fa-stethoscope" label="Consultants" route="consultants.index" permission="consultant-list" pattern="consultants*" />
+            <x-nav.item icon="fas fa-building" label="Company" route="companies.index" permission="company-list" pattern="companies*" />
+            <x-nav.item icon="fas fa-file-medical" label="Insurance" route="insurances.index" permission="insurance-list" pattern="insurances*" />
+            <x-nav.item icon="fas fa-file-invoice-dollar" label="Charge Codes" route="chargecodes.index" permission="chargecode-list" pattern="chargecodes*" />
+            <x-nav.item icon="fas fa-clinic-medical" label="Clinic" route="clinics.index" permission="clinic-list" pattern="clinics*" />
+
+        </div>
+    </div>
+@endif --}}
+          
+
             </div>
         </div>
         
