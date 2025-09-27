@@ -185,12 +185,15 @@ Route::group(['middleware' => ['auth']], function () {
         });
 
         Route::prefix('appointments')->group(function () {
+            Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 1);
             Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule')->defaults('flag', 1);
             Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('appointments.byDateGlobal')->defaults('flag', 1);
             Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('appointments.calendarEvents')->defaults('flag', 1);
             Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal')->defaults('flag', 1);
             Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal')->defaults('flag', 1);
         });
+
+        Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
 
         Route::prefix('patients/{patient}/appointments')->group(function () {
             Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);

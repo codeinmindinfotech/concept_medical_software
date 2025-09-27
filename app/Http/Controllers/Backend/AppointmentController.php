@@ -11,6 +11,7 @@ use App\Models\Patient;
 use App\Traits\DropdownTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
@@ -505,5 +506,27 @@ class AppointmentController extends Controller
     
     }
 
+    public function clinicOverviewCounts(Request $request)
+    {
 
+        // $selectedDate = $request->input('date');
+        $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
+        $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
+
+            $appointmentCounts = Appointment::select(
+                    'appointments.clinic_id',
+                    'clinics.name as clinic_name',
+                    DB::raw('DATE(appointments.appointment_date) as appointment_date'),
+                    DB::raw('COUNT(*) as appointment_count')
+                )
+                ->join('clinics', 'appointments.clinic_id', '=', 'clinics.id')
+                ->whereBetween('appointments.appointment_date', [$startOfMonth, $endOfMonth])
+                ->companyOnly() 
+                ->groupBy('appointments.clinic_id', 'clinics.name', DB::raw('DATE(appointments.appointment_date)'))
+                ->orderBy('clinics.name')
+                ->orderBy('appointment_date')
+                ->get();
+
+        return view('patients.appointments.clinic_overview_counts', compact('appointmentCounts'))->render();
+    }
 }

@@ -133,7 +133,7 @@
                                 Diary Options
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="todoDropdown" style="z-index: 1055;">
-                                <li><a class="dropdown-item" href="#">Clinic Overview</a></li>
+                                <li><a class="dropdown-item" onclick="openClinicOverviewCountModal()">Clinic Overview</a></li>
                                 <li><a class="dropdown-item" href="#">Entire Day Report</a></li>
                                 <li><a class="dropdown-item" href="#">Move Appointment</a></li>
                             </ul>
@@ -175,6 +175,21 @@
         </div>
     </div>
 </div>
+<!-- Clinic Overview Count Modal -->
+<div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title" id="clinicOverviewCountLabel">Clinic Appointment Count for <span id="clinic-count-date"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="clinic-overview-count-body">
+          <p class="text-muted">Loading data...</p>
+        </div>
+      </div>
+    </div>
+</div>
+
 <!-- Hospital Booking Modal -->
 <x-hospital-appointment-modal
     :clinics="$clinics"
@@ -196,6 +211,9 @@
     :flag="0"
     :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
+
+
+  
 @endsection
 
 
@@ -427,41 +445,91 @@
         });
     }
 
-    async function loadSlotsAndAppointments() {
-        const patientSelect = document.getElementById('patient-select');
-        if (!selectedDate) return;
-        const res = await fetch(routes.fetchAppointments, {
-            method: 'POST'
-            , headers: {
-                'Content-Type': 'application/json'
-                , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    async function loadSlotsAndAppointments(clinicId = null, date = null) {
+
+        const modalElement = document.getElementById('clinicOverviewCountModal');
+        if (modalElement) {
+            const bsModal = bootstrap.Modal.getInstance(modalElement);
+            if (bsModal) {
+                bsModal.hide();
             }
-            , body: JSON.stringify({
-                clinic_id: selectedClinic,
+        }
+
+        // Fallback to global variables if parameters not provided
+        const selectedClinicId = clinicId || selectedClinic;
+        const selectedDateValue = date || selectedDate;
+
+        const patientSelect = document.getElementById('patient-select');
+        const selectedPatient = patientSelect ? patientSelect.value : null;
+
+        if (!selectedClinicId || !selectedDateValue) return;
+
+        const res = await fetch(routes.fetchAppointments, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                clinic_id: selectedClinicId,
                 patientSelect: selectedPatient,
-                date: selectedDate
+                date: selectedDateValue
             })
         });
 
-        const [year, month, day] = selectedDate.split('-');
+        const [year, month, day] = selectedDateValue.split('-');
         document.getElementById('selected-date-display').innerText =
             `Appointments for ${day}/${month}/${year}`;
 
         const data = await res.json();
-        document.getElementById('slot-body').innerHTML = data.html || '<tr><td colspan="7">No data available</td></tr>';
-   
+        document.getElementById('slot-body').innerHTML =
+            data.html || '<tr><td colspan="7">No data available</td></tr>';
+
         const manualSlotButton = document.getElementById('manualSlotButton');
-        if (data.isOpen) {
-            manualSlotButton.style.display = 'flex'; // Or 'block' depending on your layout
-        } else {
-            manualSlotButton.style.display = 'none';
+        if (manualSlotButton) {
+            manualSlotButton.style.display = data.isOpen ? 'flex' : 'none';
         }
 
-        // Update stats
         if (data.stats) {
             renderAppointmentStats(data.stats);
         }
     }
+
+    // async function loadSlotsAndAppointments() {
+    //     const patientSelect = document.getElementById('patient-select');
+    //     if (!selectedDate) return;
+    //     const res = await fetch(routes.fetchAppointments, {
+    //         method: 'POST'
+    //         , headers: {
+    //             'Content-Type': 'application/json'
+    //             , 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    //         }
+    //         , body: JSON.stringify({
+    //             clinic_id: selectedClinic,
+    //             patientSelect: selectedPatient,
+    //             date: selectedDate
+    //         })
+    //     });
+
+    //     const [year, month, day] = selectedDate.split('-');
+    //     document.getElementById('selected-date-display').innerText =
+    //         `Appointments for ${day}/${month}/${year}`;
+
+    //     const data = await res.json();
+    //     document.getElementById('slot-body').innerHTML = data.html || '<tr><td colspan="7">No data available</td></tr>';
+   
+    //     const manualSlotButton = document.getElementById('manualSlotButton');
+    //     if (data.isOpen) {
+    //         manualSlotButton.style.display = 'flex'; // Or 'block' depending on your layout
+    //     } else {
+    //         manualSlotButton.style.display = 'none';
+    //     }
+
+    //     // Update stats
+    //     if (data.stats) {
+    //         renderAppointmentStats(data.stats);
+    //     }
+    // }
 
     function renderAppointmentStats(data) {
         const container = document.getElementById('appointment-stats-content');
@@ -774,6 +842,49 @@
             Swal.fire('Error', data.message || 'Error updating appointment.', 'error');
         });
     }
+
+function openClinicOverviewCountModal() {
+    if (!selectedDate) {
+        Swal.fire('Warning', 'Please select a date first.', 'info');
+        return;
+    }
+
+    const modalBody = document.getElementById('clinic-overview-count-body');
+    modalBody.innerHTML = '<p class="text-muted">Loading data...</p>';
+
+    fetch(`{{ guard_route('appointments.clinicOverviewCounts') }}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+    })
+    .then(res => res.text())
+    .then(html => {
+        modalBody.innerHTML = html;
+
+        const modalElement = document.getElementById('clinicOverviewCountModal');
+        if (!modalElement) {
+            console.error("Modal element not found!");
+            return;
+        }
+
+        // Optional: manually hide it first if it exists
+        const existingModal = bootstrap.Modal.getInstance(modalElement);
+        if (existingModal) {
+            existingModal.hide();
+        }
+
+        // Then show it again
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    })
+    .catch(err => {
+        // console.error(err);
+        modalBody.innerHTML = '<p class="text-danger">Failed to load data.</p>';
+    });
+}
+
 </script>
 
 @endpush
