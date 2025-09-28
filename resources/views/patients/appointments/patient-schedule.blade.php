@@ -2,6 +2,15 @@
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
 <link href="{{ asset('theme/main/css/custom_diary.css') }}" rel="stylesheet">
+<style>
+    #moveFromCalendar, #moveToCalendar {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        background-color: #fdfdfd;
+    }
+</style>
+
 @endpush
 
 @section('content')
@@ -135,7 +144,9 @@
                             <ul class="dropdown-menu" aria-labelledby="todoDropdown" style="z-index: 1055;">
                                 <li><a class="dropdown-item" onclick="openClinicOverviewCountModal()">Clinic Overview</a></li>
                                 <li><a class="dropdown-item" onclick="openEntireDayReport()">Entire Day Report</a></li>
-                                <li><a class="dropdown-item" href="#">Move Appointment</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="openMoveAppointmentModal()">Move Appointment</a>
+                                </li>
                             </ul>
                         </div>
 
@@ -175,6 +186,49 @@
         </div>
     </div>
 </div>
+
+<!-- Move Appointment Modal -->
+<div class="modal fade" id="moveAppointmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Move Appointment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-4">
+            <!-- Left Calendar with Appointments -->
+            <div class="col-md-5">
+              <h6>Select Appointment from</h6>
+              <div id="moveFromCalendar"></div>
+              <div id="fromDateDisplay" class="mt-2 text-muted"></div>
+            </div>
+  
+            <!-- Middle Controls -->
+            <div class="col-md-2 text-center d-flex flex-column justify-content-center align-items-center">
+              <i class="bi bi-arrow-left-right fs-1 mb-3"></i>
+              <textarea id="moveReason" class="form-control mb-3" placeholder="Reason for move"></textarea>
+              <button class="btn btn-primary" onclick="submitMoveAppointment()">Move</button>
+            </div>
+  
+            <!-- Right Calendar to select target date/time slot -->
+            <div class="col-md-5">
+              <h6>Select New Date & Time Slot</h6>
+              <div id="moveToCalendar"></div>
+              <div id="timeSlotsForTarget" class="mt-3">
+                {{-- Time slots will be loaded after user picks target date --}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+  
+ 
+  
+
+ 
 <!-- Clinic Overview Count Modal -->
 <div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -861,5 +915,114 @@ function openEntireDayReport() {
     // window.location.href = `/reports/entire-day?date=${selectedDate}`;
 }
 </script>
+<script>
+    let moveFromCalendar, moveToCalendar;
+    let selectedAppointment = null;
+    let selectedTargetDate = null;
+
+    function openMoveAppointmentModal() {
+        const modal = new bootstrap.Modal(document.getElementById('moveAppointmentModal'));
+        modal.show();
+
+        setTimeout(() => {
+            initMoveAppointmentCalendars();
+        }, 300); // allow modal to open before rendering
+    }
+
+    function initMoveAppointmentCalendars() {
+        const fromEl = document.getElementById('moveFromCalendar');
+        const toEl = document.getElementById('moveToCalendar');
+
+        // Clear any previous calendars
+        if (moveFromCalendar) moveFromCalendar.destroy();
+        if (moveToCalendar) moveToCalendar.destroy();
+
+        // Left Calendar: Show appointments
+        moveFromCalendar = new FullCalendar.Calendar(fromEl, {
+            initialView: 'dayGridMonth',
+            height: 400,
+            events: {
+                url: "{{ guard_route('appointments.calendarEvents') }}",
+                method: 'POST',
+                extraParams: {
+                    _token: '{{ csrf_token() }}',
+                    clinic_id: selectedClinic
+                }
+            },
+            eventClick: function(info) {
+                selectedAppointment = {
+                    id: info.event.id,
+                    title: info.event.title,
+                    date: info.event.startStr
+                };
+                Swal.fire("Selected", `Appointment: ${info.event.title} on ${info.event.startStr}`, "info");
+            }
+        });
+        moveFromCalendar.render();
+
+        // Right Calendar: Select new date
+        moveToCalendar = new FullCalendar.Calendar(toEl, {
+            initialView: 'dayGridMonth',
+            height: 400,
+            dateClick: function(info) {
+                selectedTargetDate = info.dateStr;
+                Swal.fire("Target Date Selected", `Move to: ${info.dateStr}`, "success");
+            }
+        });
+        moveToCalendar.render();
+    }
+
+    function submitMoveAppointment() {
+        if (!selectedAppointment) {
+            Swal.fire("Error", "Please select an appointment to move.", "warning");
+            return;
+        }
+        if (!selectedTargetDate) {
+            Swal.fire("Error", "Please select a new date.", "warning");
+            return;
+        }
+
+        const reason = document.getElementById('moveReason').value;
+        if (!reason.trim()) {
+            Swal.fire("Error", "Please provide a reason for moving the appointment.", "warning");
+            return;
+        }
+
+        fetch("{{ guard_route('appointments.move') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                appointment_id: selectedAppointment.id,
+                new_date: selectedTargetDate,
+                reason: reason
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire("Success", "Appointment moved successfully!", "success");
+                selectedAppointment = null;
+                selectedTargetDate = null;
+                document.getElementById('moveReason').value = '';
+                document.getElementById('moveAppointmentModal').querySelector('.btn-close').click();
+
+                // Reload main calendar
+                refreshCalendarEvents();
+                loadSlotsAndAppointments();
+            } else {
+                Swal.fire("Error", data.message || "Move failed.", "error");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "Server error occurred.", "error");
+        });
+    }
+</script>
+
+    
 
 @endpush

@@ -529,4 +529,102 @@ class AppointmentController extends Controller
 
         return view('patients.appointments.clinic_overview_counts', compact('appointmentCounts'))->render();
     }
+
+    // public function move(Request $request)
+    // {
+    //     $request->validate([
+    //         'appointment_id' => 'required|exists:appointments,id',
+    //         'new_date' => 'required|date',
+    //         'reason' => 'required|string|max:255',
+    //     ]);
+
+    //     $appointment = Appointment::find($request->appointment_id);
+
+    //     $appointment->appointment_date = $request->new_date;
+    //     $appointment->notes = ($appointment->notes ? $appointment->notes . "\n" : '') . "Moved: " . $request->reason;
+    //     $appointment->save();
+
+    //     return response()->json(['success' => true, 'message' => 'Appointment moved.']);
+    // }
+
+    public function availableSlots(Request $request)
+    {
+        $clinicId = $request->clinic_id;
+        $date = $request->date;
+
+        // Example: All slots from 8am to 5pm in 30 minute increments
+        $start = Carbon::parse("$date 08:00");
+        $end   = Carbon::parse("$date 17:00");
+        $interval = 30; // minutes
+
+        $slots = [];
+        for ($time = $start; $time < $end; $time->addMinutes($interval)) {
+        // check if slot free
+            $exists = Appointment::where('clinic_id', $clinicId)
+                    ->where('appointment_date', $date)
+                    ->where('start_time', '<=', $time->format('H:i:s'))
+                    ->where('end_time', '>', $time->format('H:i:s'))
+                    ->exists();
+            if (!$exists) {
+                $slots[] = $time->format('H:i');
+            }
+        }
+
+        return response()->json([
+        'success' => true,
+        'slots' => $slots
+        ]);
+    }
+
+    public function move(Request $request)
+    {
+    $request->validate([
+        'appointment_id' => 'required|integer|exists:appointments,id',
+        'new_date'       => 'required|date',
+        'new_time'       => 'required',
+        'reason'         => 'required|string|max:500',
+    ]);
+
+    $appointment = Appointment::find($request->appointment_id);
+
+    // Optionally check if target slot is free
+    $newStartTime = Carbon::parse($request->new_time);
+    $newEndTime   = $newStartTime->addMinutes($appointment->duration ?? 30); // or get duration
+
+    $conflict = Appointment::where('clinic_id', $appointment->clinic_id)
+                    ->where('appointment_date', $request->new_date)
+                    ->where(function($q) use ($newStartTime, $newEndTime){
+                    $q->whereBetween('start_time', [$newStartTime->format('H:i:s'), $newEndTime->format('H:i:s')])
+                        ->orWhereBetween('end_time', [$newStartTime->format('H:i:s'), $newEndTime->format('H:i:s')])
+                        ->orWhere(function($q2) use ($newStartTime, $newEndTime){
+                        $q2->where('start_time', '<', $newStartTime->format('H:i:s'))
+                            ->where('end_time', '>', $newEndTime->format('H:i:s'));
+                        });
+                    })
+                    ->where('id', '!=', $appointment->id)
+                    ->exists();
+
+    if ($conflict) {
+        return response()->json([
+        'success' => false,
+        'message' => 'Selected time slot is already booked.'
+        ]);
+    }
+
+    // Update appointment
+    $appointment->appointment_date = $request->new_date;
+    $appointment->start_time = $newStartTime;
+    $appointment->end_time   = $newEndTime;
+    // optionally save reason in some field
+    $appointment->move_reason = $request->reason;
+    $appointment->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Appointment moved successfully.'
+    ]);
+    }
+
+
+
 }
