@@ -643,8 +643,9 @@ class AppointmentController extends Controller
                 ->map(function ($appt) {
                     return [
                         'id' => $appt->id,
-                        'title' => $appt->appointment_type,
-                        'time' => \Carbon\Carbon::parse($appt->start_time)->format('h:i A'),
+                        'title' => $appt->appointmentType->value,
+                        'start_time' => \Carbon\Carbon::parse($appt->start_time)->format('h:i A'),
+                        'end_time' => \Carbon\Carbon::parse($appt->end_time)->format('h:i A'),
                     ];
                 });
 

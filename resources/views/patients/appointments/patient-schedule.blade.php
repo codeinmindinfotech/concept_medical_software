@@ -1035,7 +1035,7 @@ function initMoveAppointmentCalendars() {
                 if (data.success && data.appointments.length > 0) {
                     const apptList = data.appointments.map(appt => `
                         <div class="card mb-2 p-2 appointment-item" style="cursor:pointer;" onclick="selectAppointmentToMove(${appt.id}, '${appt.title}', '${selectedDate}')">
-                            <strong>${appt.title}</strong> — ${appt.time}
+                            <strong>${appt.title}</strong>${appt.start_time}   — ${appt.end_time}
                         </div>
                     `).join('');
                     fromDateDisplay.innerHTML = `<div><strong>Appointments on ${selectedDate}:</strong>${apptList}</div>`;
