@@ -16,7 +16,16 @@
     
         {{-- Left: Logo --}}
         <div style="flex: 0 0 auto;">
-            <img src="{{ asset('theme/assets/img/logor.png') }}" alt="Clinic Logo" style="height: 60px;">
+           <?php
+// $path = public_path('theme/assets/img/logor.png');
+// $type = pathinfo($path, PATHINFO_EXTENSION);
+// $data = file_get_contents($path);
+// $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+?>
+{{-- <img src="{{ $base64 }}" alt="Clinic Logo" style="height: 60px; width: auto;">  --}}
+
+            <img src="{{ asset('theme/assets/img/logor.png') }}" alt="Clinic Logo" style="height: 60px; width: auto; max-height: 60px;">
+
         </div>
     
         {{-- Center: Report Title --}}
@@ -53,10 +62,10 @@
                     @foreach ($clinic->appointments as $appointment)
                         <tr>
                             <td>{{ $appointment->patient->full_name ?? 'N/A' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }}</td>
                             <td>{{ $appointment->patient->doctor->name ?? 'N/A' }}</td>
                             <td>{{ $appointment->patient->consultant->name ?? 'N/A' }}</td>
-                            <td>{{ $appointment->notes ?? '-' }}</td>
+                            <td>{{ $appointment->appointment_note ?? '-' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -103,10 +112,16 @@ function exportToWord() {
         "xmlns='http://www.w3.org/TR/REC-html40'>" +
         "<head><title>Entire Day Report</title></head><body>";
     const footer = "</body></html>";
-    const sourceHTML = header + document.querySelector('main').innerHTML + footer;
+
+    // Include both <header> and <main> content
+    const contentHTML = document.querySelector('header').outerHTML + document.querySelector('main').outerHTML;
+
+    const sourceHTML = header + contentHTML + footer;
+
     const blob = new Blob(['\ufeff', sourceHTML], {
         type: 'application/msword'
     });
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -115,6 +130,7 @@ function exportToWord() {
     link.click();
     document.body.removeChild(link);
 }
+
 
 function sendReportEmail() {
     const email = document.getElementById('emailAddress').value;
