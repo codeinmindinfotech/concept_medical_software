@@ -929,49 +929,6 @@ function openEntireDayReport() {
         }, 300); // allow modal to open before rendering
     }
 
-    function initMoveAppointmentCalendars() {
-        const fromEl = document.getElementById('moveFromCalendar');
-        const toEl = document.getElementById('moveToCalendar');
-
-        // Clear any previous calendars
-        if (moveFromCalendar) moveFromCalendar.destroy();
-        if (moveToCalendar) moveToCalendar.destroy();
-
-        // Left Calendar: Show appointments
-        moveFromCalendar = new FullCalendar.Calendar(fromEl, {
-            initialView: 'dayGridMonth',
-            height: 400,
-            events: {
-                url: "{{ guard_route('appointments.calendarEvents') }}",
-                method: 'POST',
-                extraParams: {
-                    _token: '{{ csrf_token() }}',
-                    clinic_id: selectedClinic
-                }
-            },
-            eventClick: function(info) {
-                selectedAppointment = {
-                    id: info.event.id,
-                    title: info.event.title,
-                    date: info.event.startStr
-                };
-                Swal.fire("Selected", `Appointment: ${info.event.title} on ${info.event.startStr}`, "info");
-            }
-        });
-        moveFromCalendar.render();
-
-        // Right Calendar: Select new date
-        moveToCalendar = new FullCalendar.Calendar(toEl, {
-            initialView: 'dayGridMonth',
-            height: 400,
-            dateClick: function(info) {
-                selectedTargetDate = info.dateStr;
-                Swal.fire("Target Date Selected", `Move to: ${info.dateStr}`, "success");
-            }
-        });
-        moveToCalendar.render();
-    }
-
     function submitMoveAppointment() {
         if (!selectedAppointment) {
             Swal.fire("Error", "Please select an appointment to move.", "warning");
@@ -1000,7 +957,24 @@ function openEntireDayReport() {
                 reason: reason
             })
         })
-        .then(res => res.json())
+        .then(async res => {
+            const contentType = res.headers.get("content-type");
+            const responseBody = await res.text(); // get full raw response
+
+            if (!res.ok) {
+                console.error("Server returned error (non-200):", res.status);
+                console.error("Raw response body:", responseBody);
+                throw new Error("Server error: " + res.status);
+            }
+
+            if (contentType && contentType.includes("application/json")) {
+                return JSON.parse(responseBody);
+            } else {
+                console.warn("Expected JSON, but got:", contentType);
+                console.log("Raw response:", responseBody);
+                throw new Error("Unexpected response format");
+            }
+        })
         .then(data => {
             if (data.success) {
                 Swal.fire("Success", "Appointment moved successfully!", "success");
@@ -1009,7 +983,6 @@ function openEntireDayReport() {
                 document.getElementById('moveReason').value = '';
                 document.getElementById('moveAppointmentModal').querySelector('.btn-close').click();
 
-                // Reload main calendar
                 refreshCalendarEvents();
                 loadSlotsAndAppointments();
             } else {
@@ -1017,12 +990,78 @@ function openEntireDayReport() {
             }
         })
         .catch(err => {
-            console.error(err);
+            console.error("Catch block error:", err);
             Swal.fire("Error", "Server error occurred.", "error");
         });
     }
-</script>
+</script> 
+<script>
+function selectAppointmentToMove(id, title, date) {
+    selectedAppointment = { id, title, date };
+    Swal.fire("Appointment Selected", `You selected: ${title} on ${date}`, "info");
+}
 
-    
+function initMoveAppointmentCalendars() {
+    const fromEl = document.getElementById('moveFromCalendar');
+    const toEl = document.getElementById('moveToCalendar');
+    const fromDateDisplay = document.getElementById('fromDateDisplay');
+
+    // Clear previous calendars
+    if (moveFromCalendar) moveFromCalendar.destroy();
+    if (moveToCalendar) moveToCalendar.destroy();
+
+    // LEFT Calendar: Pick date and show appointments list
+    moveFromCalendar = new FullCalendar.Calendar(fromEl, {
+        initialView: 'dayGridMonth',
+        height: 400,
+        dateClick: function(info) {
+            const selectedDate = info.dateStr;
+            selectedAppointment = null;
+            fromDateDisplay.innerHTML = `<div class="text-muted">Loading appointments for <strong>${selectedDate}</strong>...</div>`;
+
+            fetch("{{ guard_route('appointments.forDate') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    date: selectedDate,
+                    clinic_id: selectedClinic
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.appointments.length > 0) {
+                    const apptList = data.appointments.map(appt => `
+                        <div class="card mb-2 p-2 appointment-item" style="cursor:pointer;" onclick="selectAppointmentToMove(${appt.id}, '${appt.title}', '${selectedDate}')">
+                            <strong>${appt.title}</strong> — ${appt.time}
+                        </div>
+                    `).join('');
+                    fromDateDisplay.innerHTML = `<div><strong>Appointments on ${selectedDate}:</strong>${apptList}</div>`;
+                } else {
+                    fromDateDisplay.innerHTML = `<div class="text-muted">No appointments on ${selectedDate}.</div>`;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                fromDateDisplay.innerHTML = `<div class="text-danger">Failed to load appointments.</div>`;
+            });
+        }
+    });
+    moveFromCalendar.render();
+
+    // RIGHT Calendar: pick new target date
+    moveToCalendar = new FullCalendar.Calendar(toEl, {
+        initialView: 'dayGridMonth',
+        height: 400,
+        dateClick: function(info) {
+            selectedTargetDate = info.dateStr;
+            Swal.fire("Target Date Selected", `Move to: ${info.dateStr}`, "success");
+        }
+    });
+    moveToCalendar.render();
+}
+</script>
 
 @endpush

@@ -530,23 +530,6 @@ class AppointmentController extends Controller
         return view('patients.appointments.clinic_overview_counts', compact('appointmentCounts'))->render();
     }
 
-    // public function move(Request $request)
-    // {
-    //     $request->validate([
-    //         'appointment_id' => 'required|exists:appointments,id',
-    //         'new_date' => 'required|date',
-    //         'reason' => 'required|string|max:255',
-    //     ]);
-
-    //     $appointment = Appointment::find($request->appointment_id);
-
-    //     $appointment->appointment_date = $request->new_date;
-    //     $appointment->notes = ($appointment->notes ? $appointment->notes . "\n" : '') . "Moved: " . $request->reason;
-    //     $appointment->save();
-
-    //     return response()->json(['success' => true, 'message' => 'Appointment moved.']);
-    // }
-
     public function availableSlots(Request $request)
     {
         $clinicId = $request->clinic_id;
@@ -564,6 +547,7 @@ class AppointmentController extends Controller
                     ->where('appointment_date', $date)
                     ->where('start_time', '<=', $time->format('H:i:s'))
                     ->where('end_time', '>', $time->format('H:i:s'))
+                    ->companyOnly()
                     ->exists();
             if (!$exists) {
                 $slots[] = $time->format('H:i');
@@ -578,53 +562,104 @@ class AppointmentController extends Controller
 
     public function move(Request $request)
     {
-    $request->validate([
-        'appointment_id' => 'required|integer|exists:appointments,id',
-        'new_date'       => 'required|date',
-        'new_time'       => 'required',
-        'reason'         => 'required|string|max:500',
-    ]);
+        try {
+            $request->validate([
+                'appointment_id' => 'required|integer|exists:appointments,id',
+                'new_date'       => 'required|date',
+                'reason'         => 'required|string|max:500',
+            ]);
 
-    $appointment = Appointment::find($request->appointment_id);
+            $appointment = Appointment::find($request->appointment_id);
 
-    // Optionally check if target slot is free
-    $newStartTime = Carbon::parse($request->new_time);
-    $newEndTime   = $newStartTime->addMinutes($appointment->duration ?? 30); // or get duration
+            // Optionally check if target slot is free
+            $newStartTime = ($appointment->start_time) ? $appointment->start_time : Carbon::parse($appointment->start_time)->format('H:i:s');
+            $newEndTime   = ($appointment->end_time) ? $appointment->end_time : $newStartTime->addMinutes($appointment->duration ?? 30)->format('H:i:s'); // or get duration
+        
+            $conflict = Appointment::where('clinic_id', $appointment->clinic_id)
+                            ->where('appointment_date', $request->new_date)
+                            ->where(function($q) use ($newStartTime, $newEndTime){
+                            $q->whereBetween('start_time', [$newStartTime, $newEndTime])
+                                ->orWhereBetween('end_time', [$newStartTime, $newEndTime])
+                                ->orWhere(function($q2) use ($newStartTime, $newEndTime){
+                                $q2->where('start_time', '<', $newStartTime)
+                                    ->where('end_time', '>', $newEndTime);
+                                });
+                            })
+                            ->companyOnly()
+                            ->where('id', '!=', $appointment->id)
+                            ->exists();
 
-    $conflict = Appointment::where('clinic_id', $appointment->clinic_id)
-                    ->where('appointment_date', $request->new_date)
-                    ->where(function($q) use ($newStartTime, $newEndTime){
-                    $q->whereBetween('start_time', [$newStartTime->format('H:i:s'), $newEndTime->format('H:i:s')])
-                        ->orWhereBetween('end_time', [$newStartTime->format('H:i:s'), $newEndTime->format('H:i:s')])
-                        ->orWhere(function($q2) use ($newStartTime, $newEndTime){
-                        $q2->where('start_time', '<', $newStartTime->format('H:i:s'))
-                            ->where('end_time', '>', $newEndTime->format('H:i:s'));
-                        });
-                    })
-                    ->where('id', '!=', $appointment->id)
-                    ->exists();
+            if ($conflict) {
+                return response()->json([
+                'success' => false,
+                'message' => 'Selected time slot is already booked.'
+                ]);
+            }
 
-    if ($conflict) {
-        return response()->json([
-        'success' => false,
-        'message' => 'Selected time slot is already booked.'
+            // Update appointment
+            $appointment->appointment_date = $request->new_date;
+            $appointment->start_time = $newStartTime;
+            $appointment->end_time   = $newEndTime;
+            $appointment->move_reason = $request->reason;
+            $appointment->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Appointment moved successfully.'
+            ]);
+        } catch (\Throwable $e) {
+            // Log full error for debugging
+            \Log::error('Appointment Move Error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+    
+            // Check if the request expects JSON (like from fetch or axios)
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage() // or custom message
+                ], 500);
+            }
+    
+            // Otherwise fallback (for browsers)
+            return response("Server Error", 500);
+         }    
+    }
+
+    public function getAppointmentsForDate(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date',
+            'clinic_id' => 'required|integer',
         ]);
+
+        try {
+            $appointments = Appointment::whereDate('appointment_date', $request->date)
+                ->where('clinic_id', $request->clinic_id)
+                ->orderBy('start_time')
+                ->companyOnly()
+                ->get()
+                ->map(function ($appt) {
+                    return [
+                        'id' => $appt->id,
+                        'title' => $appt->appointment_type,
+                        'time' => \Carbon\Carbon::parse($appt->start_time)->format('h:i A'),
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'appointments' => $appointments,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch appointments.',
+            ], 500);
+        }
     }
-
-    // Update appointment
-    $appointment->appointment_date = $request->new_date;
-    $appointment->start_time = $newStartTime;
-    $appointment->end_time   = $newEndTime;
-    // optionally save reason in some field
-    $appointment->move_reason = $request->reason;
-    $appointment->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Appointment moved successfully.'
-    ]);
-    }
-
 
 
 }

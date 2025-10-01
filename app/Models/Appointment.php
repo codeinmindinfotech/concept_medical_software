@@ -16,6 +16,7 @@ class Appointment extends Model
         'appointment_date',
         'start_time',
         'end_time',
+        'move_reason',
         'apt_slots',
         'patient_need',
         'appointment_note',
