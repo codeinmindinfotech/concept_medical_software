@@ -562,20 +562,29 @@ class AppointmentController extends Controller
 
     public function move(Request $request)
     {
+        $request->validate([
+            'appointment_ids' => 'required|array|min:1',
+            'appointment_ids.*' => 'integer|exists:appointments,id',
+            'new_date' => 'required|date',
+            'reason' => 'nullable|string|max:255',
+            'clinic_id' => 'required|integer',
+        ]);
+
+        $appointmentIds = $request->appointment_ids;
+        $newDate = $request->new_date;
+        $reason = $request->reason;
+        $clinic_id = $request->clinic_id;
+
         try {
-            $request->validate([
-                'appointment_id' => 'required|integer|exists:appointments,id',
-                'new_date'       => 'required|date',
-                'reason'         => 'required|string|max:500',
-            ]);
+            DB::beginTransaction();
 
-            $appointment = Appointment::find($request->appointment_id);
-
-            // Optionally check if target slot is free
-            $newStartTime = ($appointment->start_time) ? $appointment->start_time : Carbon::parse($appointment->start_time)->format('H:i:s');
-            $newEndTime   = ($appointment->end_time) ? $appointment->end_time : $newStartTime->addMinutes($appointment->duration ?? 30)->format('H:i:s'); // or get duration
-        
-            $conflict = Appointment::where('clinic_id', $appointment->clinic_id)
+            foreach ($appointmentIds as $id) {
+                $appointment = Appointment::find($id);
+                $newStartTime = ($appointment->start_time) ? $appointment->start_time : Carbon::parse($appointment->start_time)->format('H:i:s');
+                $newEndTime   = ($appointment->end_time) ? $appointment->end_time : $newStartTime->addMinutes($appointment->duration ?? 30)->format('H:i:s'); // or get duration
+     
+                    
+                $conflict = Appointment::where('clinic_id', $appointment->clinic_id)
                             ->where('appointment_date', $request->new_date)
                             ->where(function($q) use ($newStartTime, $newEndTime){
                             $q->whereBetween('start_time', [$newStartTime, $newEndTime])
@@ -589,42 +598,37 @@ class AppointmentController extends Controller
                             ->where('id', '!=', $appointment->id)
                             ->exists();
 
-            if ($conflict) {
-                return response()->json([
-                'success' => false,
-                'message' => 'Selected time slot is already booked.'
-                ]);
+                if ($conflict) {
+                    return response()->json([
+                    'success' => false,
+                    'message' => 'Selected time slot is already booked.'
+                    ]);
+                }
+
+                $appointment->clinic_id = $clinic_id;
+                $appointment->appointment_date = $newDate;
+                $appointment->start_time = $newStartTime;
+                $appointment->end_time = $newEndTime;
+                $appointment->move_reason = $reason;
+                $appointment->save();
             }
 
-            // Update appointment
-            $appointment->appointment_date = $request->new_date;
-            $appointment->start_time = $newStartTime;
-            $appointment->end_time   = $newEndTime;
-            $appointment->move_reason = $request->reason;
-            $appointment->save();
+            DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Appointment moved successfully.'
+                'message' => 'Appointments moved successfully.'
             ]);
-        } catch (\Throwable $e) {
-            // Log full error for debugging
-            \Log::error('Appointment Move Error', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-    
-            // Check if the request expects JSON (like from fetch or axios)
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage() // or custom message
-                ], 500);
-            }
-    
-            // Otherwise fallback (for browsers)
-            return response("Server Error", 500);
-         }    
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to move appointments.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function getAppointmentsForDate(Request $request)
