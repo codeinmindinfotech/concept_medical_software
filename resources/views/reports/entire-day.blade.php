@@ -12,20 +12,14 @@
     </style>
 </head>
 <body>
-    <header style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px;">
+    
+    <header 
+    style="display: flex; align-items: center; justify-content: space-between;
+     border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px;">
     
         {{-- Left: Logo --}}
         <div style="flex: 0 0 auto;">
-           <?php
-// $path = public_path('theme/assets/img/logor.png');
-// $type = pathinfo($path, PATHINFO_EXTENSION);
-// $data = file_get_contents($path);
-// $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-?>
-{{-- <img src="{{ $base64 }}" alt="Clinic Logo" style="height: 60px; width: auto;">  --}}
-
-            <img src="{{ asset('theme/assets/img/logor.png') }}" alt="Clinic Logo" style="height: 60px; width: auto; max-height: 60px;">
-
+            <img src="{{ asset('theme/assets/img/logo_doc.jpg') }}" alt="Clinic Logo" >
         </div>
     
         {{-- Center: Report Title --}}
@@ -107,13 +101,37 @@ function exportToExcel() {
 }
 
 function exportToWord() {
-    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
-        "xmlns:w='urn:schemas-microsoft-com:office:word' " +
-        "xmlns='http://www.w3.org/TR/REC-html40'>" +
-        "<head><title>Entire Day Report</title></head><body>";
+    const header = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <title>Entire Day Report</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 12pt;
+                }
+                header {
+                    font-size: 14pt;
+                    font-weight: bold;
+                    text-align: center;
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    border-bottom: 2px solid #000;
+                }
+                main {
+                    font-size: 12pt;
+                    line-height: 1.5;
+                }
+            </style>
+        </head>
+        <body>
+    `;
+
     const footer = "</body></html>";
 
-    // Include both <header> and <main> content
+    // Get header and main content from DOM
     const contentHTML = document.querySelector('header').outerHTML + document.querySelector('main').outerHTML;
 
     const sourceHTML = header + contentHTML + footer;
@@ -125,12 +143,11 @@ function exportToWord() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'entire_day_report_{{ $date }}.doc';
+    link.download = 'entire_day_report.doc'; // You can dynamically inject $date from JS if needed
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
-
 
 function sendReportEmail() {
     const email = document.getElementById('emailAddress').value;

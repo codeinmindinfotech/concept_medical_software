@@ -151,9 +151,8 @@
                             <ul class="dropdown-menu" aria-labelledby="todoDropdown" style="z-index: 1055;">
                                 <li><a class="dropdown-item" onclick="openClinicOverviewCountModal()">Clinic Overview</a></li>
                                 <li><a class="dropdown-item" onclick="openEntireDayReport()">Entire Day Report</a></li>
-                                <li>
-                                    <a class="dropdown-item" href="#" onclick="openMoveAppointmentModal()">Move Appointment</a>
-                                </li>
+                                <li><a class="dropdown-item" href="#" onclick="openMoveAppointmentModal()">Move Appointment</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="openEntireDayReport()">Diary List</a></li>
                             </ul>
                         </div>
 
@@ -791,7 +790,6 @@
         });
     });
 
-
     function openManualBookingModal() {
         const form = document.getElementById('manualBookingForm');
     
@@ -970,11 +968,11 @@
         }
 
         // const selectedSlot = document.querySelector('input[name="timeSlot"]:checked')?.value;
-
         // if (!selectedSlot) {
         //     Swal.fire("Missing Time Slot", "Please select a time slot for the new date.", "warning");
         //     return;
         // }
+
         const toClinicSelect = document.getElementById('toClinic');
         fetch("{{ guard_route('appointments.move') }}", {
             method: "POST",
@@ -1018,14 +1016,14 @@
     }
 
     function deselectAllAppointments() {
-    document.querySelectorAll('input[name="appointment_ids[]"]').forEach(cb => cb.checked = false);
-    updateSelectedAppointments();
+        document.querySelectorAll('input[name="appointment_ids[]"]').forEach(cb => cb.checked = false);
+        updateSelectedAppointments();
     }
 
     function updateSelectedAppointments() {
-    selectedAppointments = Array.from(
-        document.querySelectorAll('input[name="appointment_ids[]"]:checked')
-    ).map(cb => parseInt(cb.value));
+        selectedAppointments = Array.from(
+            document.querySelectorAll('input[name="appointment_ids[]"]:checked')
+        ).map(cb => parseInt(cb.value));
     }
 
     function selectAppointmentToMove(id, title, date) {
@@ -1052,7 +1050,6 @@
         const fromClinicSelect = document.getElementById('fromClinic');
         const toClinicSelect = document.getElementById('toClinic');
 
-        
         // Clear previous calendars
         if (moveFromCalendar) moveFromCalendar.destroy();
         if (moveToCalendar) moveToCalendar.destroy();
