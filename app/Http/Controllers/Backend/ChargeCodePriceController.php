@@ -83,7 +83,7 @@ class ChargeCodePriceController extends Controller
     {
         //$this->authorize('create', ChargeCode::class);
         return view('chargecodes.create', [
-            'insurances' => Insurance::companyOnly()->all(),
+            'insurances' => Insurance::companyOnly()->get(),
             'groupTypes' => $this->getDropdownOptions('CHARGE_GROUP_TYPE')
         ]);
     }

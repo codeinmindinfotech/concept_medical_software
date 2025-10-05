@@ -34,8 +34,8 @@ class FeeNoteController extends Controller
     public function create(Patient $patient)
     {
         $patient = Patient::companyOnly()->findOrFail($patient->id); 
-        $consultants = Consultant::companyOnly()->all(); 
-        $chargecodes = ChargeCode::companyOnly()->all();
+        $consultants = Consultant::companyOnly()->get(); 
+        $chargecodes = ChargeCode::companyOnly()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::companyOnly()->orderBy('name')->get();
         return view('patients.dashboard.fee_notes.create', compact('consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
@@ -76,8 +76,8 @@ class FeeNoteController extends Controller
     {
         $feeNote = FeeNote::companyOnly()->findOrFail($feeNoteId);
         $patient = Patient::companyOnly()->findOrFail($patient->id); 
-        $consultants = Consultant::companyOnly()->all(); 
-        $chargecodes = ChargeCode::companyOnly()->all();
+        $consultants = Consultant::companyOnly()->get(); 
+        $chargecodes = ChargeCode::companyOnly()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::companyOnly()->orderBy('name')->get();
         return view('patients.dashboard.fee_notes.edit', compact('feeNote','consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
