@@ -16,7 +16,7 @@
       </a>
     </div>
     <div class="card-body">
-      <form action="{{guard_route('fee-notes.store', ['patient' => $patient->id]) }}" class="validate-form"
+      <form action="{{guard_route('fee-note.store', ['patient' => $patient->id]) }}" class="validate-form"
         method="POST">
         @csrf
         <input type="hidden" name="patient_id" value="{{ $patient->id ?? '' }}">

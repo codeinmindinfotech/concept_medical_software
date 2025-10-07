@@ -34,6 +34,7 @@ use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 use App\Http\Controllers\Auth\SuperadminLoginController;
+use App\Http\Controllers\Backend\BillingController;
 use App\Http\Controllers\Backend\ClinicMessageController;
 use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\DoctorMessageController;
@@ -94,6 +95,20 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
         Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
 
+        Route::prefix('patients/{patient}')->group(function () {
+            Route::get('/fee-notes', [BillingController::class, 'index'])->name('fee-notes.index');
+            Route::post('/fee-notes/save', [BillingController::class, 'store'])->name('fee-notes.save');
+
+            Route::get('/invoice/preview', [BillingController::class, 'invoicePreview'])->name('invoice.preview');
+            Route::post('/invoice/submit', [BillingController::class, 'submitInvoice'])->name('invoice.submit');
+
+            Route::get('/payment', [BillingController::class, 'paymentPage'])->name('payment.page');
+            Route::post('/payment/save', [BillingController::class, 'savePayment'])->name('payment.save');
+            Route::resource('fee-note', FeeNoteController::class)
+                ->names('fee-note')
+                ->except(['show']);
+        });
+
         
         // dropdown  parent
         Route::resource('dropdowns', DropDownController::class);
@@ -151,12 +166,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::prefix('patients/{patient}')->group(function () {
             Route::resource('waiting-lists', WaitingListController::class)
                 ->names('waiting-lists')
-                ->except(['show']);
-        });
-
-        Route::prefix('patients/{patient}')->group(function () {
-            Route::resource('fee-notes', FeeNoteController::class)
-                ->names('fee-notes')
                 ->except(['show']);
         });
 
@@ -250,6 +259,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
 
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
+
+        Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+        Route::post('/appointments/available-slots', [AppointmentController::class, 'availableSlots'])->name('appointments.availableSlots')->defaults('flag', 0);
+        Route::post('/appointments/move', [AppointmentController::class, 'move'])->name('appointments.move')->defaults('flag', 0);
+        Route::post('/appointments/forDate', [AppointmentController::class, 'getAppointmentsForDate'])->name('appointments.forDate');
+        Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
+        Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::resource('users', UserController::class);
@@ -395,6 +411,17 @@ foreach ($roles as $role) {
             Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
             Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
 
+
+
+            Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+            Route::post('/appointments/available-slots', [AppointmentController::class, 'availableSlots'])->name('appointments.availableSlots')->defaults('flag', 0);
+            Route::post('/appointments/move', [AppointmentController::class, 'move'])->name('appointments.move')->defaults('flag', 0);
+            Route::post('/appointments/forDate', [AppointmentController::class, 'getAppointmentsForDate'])->name('appointments.forDate');
+    
+            Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
+            Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
+
+            
             // Add doctor-specific routes only in doctor group
             if ($role === 'doctor') {
                 Route::get('/send-notification', [DoctorMessageController::class, 'showForm'])->name('notification.form');

@@ -80,7 +80,7 @@ class FeeNoteController extends Controller
         $chargecodes = ChargeCode::companyOnly()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::companyOnly()->orderBy('name')->get();
-        return view('patients.dashboard.fee_notes.edit', compact('feeNote','consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
+        return view('patients.dashboard.fee_note.edit', compact('feeNote','consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
     }
 
     public function update(Request $request, Patient $patient, FeeNote $feeNote): JsonResponse
