@@ -531,96 +531,89 @@ class AppointmentController extends Controller
     }
 
     public function availableSlots(Request $request)
-{
-    $request->validate([
-        'clinic_id' => 'required|integer',
-        'date' => 'required|date',
-    ]);
-
-    try {
-        $clinicId = $request->clinic_id;
-        $date = Carbon::parse($request->date)->format('Y-m-d');
-        $dayOfWeek = strtolower(Carbon::parse($date)->format('D')); // mon, tue, wed, etc.
-
-        $clinic = Clinic::findOrFail($clinicId);
-
-        // Check if clinic is active on that day
-        $isActive = $clinic->{$dayOfWeek}; // 1 or 0
-        if (!$isActive) {
-            return response()->json([
-                'success' => true,
-                'slots' => [],
-                'message' => 'Clinic is closed on this day.'
-            ]);
-        }
-
-        $interval = $clinic->{$dayOfWeek . '_interval'} ?? 30; // default 30 minutes
-        $slots = [];
-
-        // Morning session
-        $morningStart = $clinic->{$dayOfWeek . '_start_am'};
-        $morningEnd   = $clinic->{$dayOfWeek . '_finish_am'};
-
-        if ($morningStart && $morningEnd) {
-            $slots = array_merge($slots, $this->generateTimeSlotsForClinic($date, $morningStart, $morningEnd, $interval, $clinicId));
-        }
-
-        // Afternoon session
-        $afternoonStart = $clinic->{$dayOfWeek . '_start_pm'};
-        $afternoonEnd   = $clinic->{$dayOfWeek . '_finish_pm'};
-
-        if ($afternoonStart && $afternoonEnd) {
-            $slots = array_merge($slots, $this->generateTimeSlotsForClinic($date, $afternoonStart, $afternoonEnd, $interval, $clinicId));
-        }
-
-        return response()->json([
-            'success' => true,
-            'slots' => $slots
+    {
+        $request->validate([
+            'clinic_id' => 'required|integer',
+            'date' => 'required|date',
         ]);
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to fetch available slots.',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
+        try {
+            $clinicId = $request->clinic_id;
+            $date = Carbon::parse($request->date)->format('Y-m-d');
+            $dayOfWeek = strtolower(Carbon::parse($date)->format('D')); // mon, tue, wed, etc.
 
-/**
- * Generate available time slots for a session
- */
-protected function generateTimeSlotsForClinic($date, $startTime, $endTime, $interval, $clinicId)
-{
-    // Ensure start/end are times only
-    $startTime = Carbon::parse($startTime)->format('H:i:s');
-    $endTime   = Carbon::parse($endTime)->format('H:i:s');
+            $clinic = Clinic::findOrFail($clinicId);
 
-    $start = Carbon::parse("$date $startTime");
-    $end   = Carbon::parse("$date $endTime");
+            // Check if clinic is active on that day
+            $isActive = $clinic->{$dayOfWeek}; // 1 or 0
+            if (!$isActive) {
+                return response()->json([
+                    'success' => true,
+                    'slots' => [],
+                    'message' => 'Clinic is closed on this day.'
+                ]);
+            }
 
-    $slots = [];
+            $interval = $clinic->{$dayOfWeek . '_interval'} ?? 30; // default 30 minutes
+            $slots = [];
 
-    for ($time = $start; $time < $end; $time->addMinutes($interval)) {
-        // Check if slot is already booked
-        $exists = Appointment::where('clinic_id', $clinicId)
-            ->where('appointment_date', $date)
-            ->where('start_time', '<=', $time->format('H:i:s'))
-            ->where('end_time', '>', $time->format('H:i:s'))
-            ->companyOnly()
-            ->exists();
+            // Morning session
+            $morningStart = $clinic->{$dayOfWeek . '_start_am'};
+            $morningEnd   = $clinic->{$dayOfWeek . '_finish_am'};
 
-        if (!$exists) {
-            $slots[] = $time->format('H:i');
+            if ($morningStart && $morningEnd) {
+                $slots = array_merge($slots, $this->generateTimeSlotsForClinic($date, $morningStart, $morningEnd, $interval, $clinicId));
+            }
+
+            // Afternoon session
+            $afternoonStart = $clinic->{$dayOfWeek . '_start_pm'};
+            $afternoonEnd   = $clinic->{$dayOfWeek . '_finish_pm'};
+
+            if ($afternoonStart && $afternoonEnd) {
+                $slots = array_merge($slots, $this->generateTimeSlotsForClinic($date, $afternoonStart, $afternoonEnd, $interval, $clinicId));
+            }
+
+            return response()->json([
+                'success' => true,
+                'slots' => $slots
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch available slots.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
-    return $slots;
-}
+    protected function generateTimeSlotsForClinic($date, $startTime, $endTime, $interval, $clinicId)
+    {
+        // Ensure start/end are times only
+        $startTime = Carbon::parse($startTime)->format('H:i:s');
+        $endTime   = Carbon::parse($endTime)->format('H:i:s');
 
+        $start = Carbon::parse("$date $startTime");
+        $end   = Carbon::parse("$date $endTime");
 
+        $slots = [];
 
+        for ($time = $start; $time < $end; $time->addMinutes($interval)) {
+            // Check if slot is already booked
+            $exists = Appointment::where('clinic_id', $clinicId)
+                ->where('appointment_date', $date)
+                ->where('start_time', '<=', $time->format('H:i:s'))
+                ->where('end_time', '>', $time->format('H:i:s'))
+                ->companyOnly()
+                ->exists();
 
+            if (!$exists) {
+                $slots[] = $time->format('H:i');
+            }
+        }
+
+        return $slots;
+    }
 
     public function move(Request $request)
     {
