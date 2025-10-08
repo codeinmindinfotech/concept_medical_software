@@ -31,7 +31,7 @@
                     ondragover="onDragOver(event)"
                 @endif
             >
-                <td class="fw-bold text-primary">{{ $time }}{{$user->hasRole('manager')}}</td>
+                <td class="fw-bold text-primary">{{ $time }}</td>
                 <td>
                     <span class="badge {{ $rowClass }} text-dark px-3">
                         {{ $appointment->appointmentType->value ?? '-' }}

@@ -531,34 +531,96 @@ class AppointmentController extends Controller
     }
 
     public function availableSlots(Request $request)
-    {
+{
+    $request->validate([
+        'clinic_id' => 'required|integer',
+        'date' => 'required|date',
+    ]);
+
+    try {
         $clinicId = $request->clinic_id;
-        $date = $request->date;
+        $date = Carbon::parse($request->date)->format('Y-m-d');
+        $dayOfWeek = strtolower(Carbon::parse($date)->format('D')); // mon, tue, wed, etc.
 
-        // Example: All slots from 8am to 5pm in 30 minute increments
-        $start = Carbon::parse("$date 08:00");
-        $end   = Carbon::parse("$date 17:00");
-        $interval = 30; // minutes
+        $clinic = Clinic::findOrFail($clinicId);
 
+        // Check if clinic is active on that day
+        $isActive = $clinic->{$dayOfWeek}; // 1 or 0
+        if (!$isActive) {
+            return response()->json([
+                'success' => true,
+                'slots' => [],
+                'message' => 'Clinic is closed on this day.'
+            ]);
+        }
+
+        $interval = $clinic->{$dayOfWeek . '_interval'} ?? 30; // default 30 minutes
         $slots = [];
-        for ($time = $start; $time < $end; $time->addMinutes($interval)) {
-        // check if slot free
-            $exists = Appointment::where('clinic_id', $clinicId)
-                    ->where('appointment_date', $date)
-                    ->where('start_time', '<=', $time->format('H:i:s'))
-                    ->where('end_time', '>', $time->format('H:i:s'))
-                    ->companyOnly()
-                    ->exists();
-            if (!$exists) {
-                $slots[] = $time->format('H:i');
-            }
+
+        // Morning session
+        $morningStart = $clinic->{$dayOfWeek . '_start_am'};
+        $morningEnd   = $clinic->{$dayOfWeek . '_finish_am'};
+
+        if ($morningStart && $morningEnd) {
+            $slots = array_merge($slots, $this->generateTimeSlotsForClinic($date, $morningStart, $morningEnd, $interval, $clinicId));
+        }
+
+        // Afternoon session
+        $afternoonStart = $clinic->{$dayOfWeek . '_start_pm'};
+        $afternoonEnd   = $clinic->{$dayOfWeek . '_finish_pm'};
+
+        if ($afternoonStart && $afternoonEnd) {
+            $slots = array_merge($slots, $this->generateTimeSlotsForClinic($date, $afternoonStart, $afternoonEnd, $interval, $clinicId));
         }
 
         return response()->json([
-        'success' => true,
-        'slots' => $slots
+            'success' => true,
+            'slots' => $slots
         ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch available slots.',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
+/**
+ * Generate available time slots for a session
+ */
+protected function generateTimeSlotsForClinic($date, $startTime, $endTime, $interval, $clinicId)
+{
+    // Ensure start/end are times only
+    $startTime = Carbon::parse($startTime)->format('H:i:s');
+    $endTime   = Carbon::parse($endTime)->format('H:i:s');
+
+    $start = Carbon::parse("$date $startTime");
+    $end   = Carbon::parse("$date $endTime");
+
+    $slots = [];
+
+    for ($time = $start; $time < $end; $time->addMinutes($interval)) {
+        // Check if slot is already booked
+        $exists = Appointment::where('clinic_id', $clinicId)
+            ->where('appointment_date', $date)
+            ->where('start_time', '<=', $time->format('H:i:s'))
+            ->where('end_time', '>', $time->format('H:i:s'))
+            ->companyOnly()
+            ->exists();
+
+        if (!$exists) {
+            $slots[] = $time->format('H:i');
+        }
+    }
+
+    return $slots;
+}
+
+
+
+
 
     public function move(Request $request)
     {
@@ -567,46 +629,73 @@ class AppointmentController extends Controller
             'appointment_ids.*' => 'integer|exists:appointments,id',
             'new_date' => 'required|date',
             'reason' => 'nullable|string|max:255',
-            'clinic_id' => 'required|integer',
+            'clinic_id' => 'required|integer|exists:clinics,id',
+            'time_slot' => 'required|string', // e.g. "16:00"
         ]);
-
-        $appointmentIds = $request->appointment_ids;
-        $newDate = $request->new_date;
-        $reason = $request->reason;
-        $clinic_id = $request->clinic_id;
 
         try {
             DB::beginTransaction();
 
+            $appointmentIds = $request->appointment_ids;
+            $newDate = Carbon::parse($request->new_date);
+            $reason = $request->reason;
+            $clinicId = $request->clinic_id;
+            $selectedSlot = $request->time_slot;
+
+            // ✅ Get the clinic and its interval based on weekday
+            $clinic = Clinic::findOrFail($clinicId);
+            $dayName = strtolower($newDate->format('D')); // mon, tue, wed, etc.
+            $intervalColumn = $dayName . '_interval';
+            $isActiveColumn = $dayName; // e.g. mon, tue...
+
+            // Check if clinic is open that day
+            if (!$clinic->$isActiveColumn) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Clinic is closed on " . ucfirst($dayName) . "."
+                ]);
+            }
+
+            // ✅ Determine interval in minutes
+            $interval = $clinic->$intervalColumn ?? 30; // default 30 if null
+
+            // ✅ Compute start/end time
+            $newStart = Carbon::parse($selectedSlot);
+            $newEnd   = $newStart->copy()->addMinutes($interval);
+
+            $newStartTime = $newStart->format('H:i:s');
+            $newEndTime   = $newEnd->format('H:i:s');
+
             foreach ($appointmentIds as $id) {
-                $appointment = Appointment::find($id);
-                $newStartTime = ($appointment->start_time) ? $appointment->start_time : Carbon::parse($appointment->start_time)->format('H:i:s');
-                $newEndTime   = ($appointment->end_time) ? $appointment->end_time : $newStartTime->addMinutes($appointment->duration ?? 30)->format('H:i:s'); // or get duration
-     
-                    
-                $conflict = Appointment::where('clinic_id', $appointment->clinic_id)
-                            ->where('appointment_date', $request->new_date)
-                            ->where(function($q) use ($newStartTime, $newEndTime){
-                            $q->whereBetween('start_time', [$newStartTime, $newEndTime])
-                                ->orWhereBetween('end_time', [$newStartTime, $newEndTime])
-                                ->orWhere(function($q2) use ($newStartTime, $newEndTime){
-                                $q2->where('start_time', '<', $newStartTime)
-                                    ->where('end_time', '>', $newEndTime);
-                                });
-                            })
-                            ->companyOnly()
-                            ->where('id', '!=', $appointment->id)
-                            ->exists();
+                $appointment = Appointment::findOrFail($id);
+
+                // ✅ Conflict check
+                $conflict = Appointment::where('clinic_id', $clinicId)
+                    ->where('appointment_date', $newDate->toDateString())
+                    ->where(function ($q) use ($newStartTime, $newEndTime) {
+                        $q->whereBetween('start_time', [$newStartTime, $newEndTime])
+                        ->orWhereBetween('end_time', [$newStartTime, $newEndTime])
+                        ->orWhere(function ($q2) use ($newStartTime, $newEndTime) {
+                            $q2->where('start_time', '<', $newStartTime)
+                                ->where('end_time', '>', $newEndTime);
+                        });
+                    })
+                    ->companyOnly()
+                    ->where('id', '!=', $appointment->id)
+                    ->exists();
 
                 if ($conflict) {
+                    DB::rollBack();
                     return response()->json([
-                    'success' => false,
-                    'message' => 'Selected time slot is already booked.'
+                        'success' => false,
+                        'message' => 'Selected time slot is already booked.',
                     ]);
                 }
 
-                $appointment->clinic_id = $clinic_id;
-                $appointment->appointment_date = $newDate;
+                // ✅ Update appointment
+                $appointment->clinic_id = $clinicId;
+                $appointment->appointment_date = $newDate->toDateString();
                 $appointment->start_time = $newStartTime;
                 $appointment->end_time = $newEndTime;
                 $appointment->move_reason = $reason;
@@ -639,29 +728,38 @@ class AppointmentController extends Controller
         ]);
 
         try {
-            $appointments = Appointment::whereDate('appointment_date', $request->date)
-                ->where('clinic_id', $request->clinic_id)
-                ->orderBy('start_time')
-                ->companyOnly()
-                ->get()
-                ->map(function ($appt) {
-                    return [
-                        'id' => $appt->id,
-                        'title' => $appt->appointmentType->value,
-                        'start_time' => \Carbon\Carbon::parse($appt->start_time)->format('h:i A'),
-                        'end_time' => \Carbon\Carbon::parse($appt->end_time)->format('h:i A'),
-                    ];
-                });
+            $appointments = Appointment::with([
+                'patient',          // for patient info
+                'appointmentType',  // type
+                'appointmentStatus' // status
+            ])
+            ->whereDate('appointment_date', $request->date)
+            ->where('clinic_id', $request->clinic_id)
+            ->orderBy('start_time')
+            ->companyOnly()
+            ->get();
+
+            // Render Blade partial for each appointment
+            $html = '';
+            foreach ($appointments as $appointment) {
+                $time = \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') . ' - ' . 
+                        \Carbon\Carbon::parse($appointment->end_time)->format('h:i A');
+
+                $rowColor = $appointment->appointmentStatus->value ?? '#0d6efd';
+
+                $html .= view('patients.appointments.appointment_card', compact('appointment', 'time', 'rowColor'))->render();
+            }
 
             return response()->json([
                 'success' => true,
-                'appointments' => $appointments,
+                'appointments_html' => $html
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch appointments.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

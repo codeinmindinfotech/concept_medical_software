@@ -2,22 +2,6 @@
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
 <link href="{{ asset('theme/main/css/custom_diary.css') }}" rel="stylesheet">
-<style>
-    #moveFromCalendar, #moveToCalendar {
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        padding: 10px;
-        background-color: #fdfdfd;
-    }
-    #fromDateDisplay {
-        max-height: 250px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        padding: 10px;
-        background-color: #f8f9fa;
-    }
-</style>
-
 @endpush
 
 @section('content')
@@ -215,59 +199,7 @@
 </div>
 
 <!-- Move Appointment Modal -->
-<div class="modal fade" id="moveAppointmentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Move Appointment</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-4">
-
-            <!-- Left Calendar with Appointments -->
-            <div class="col-md-5">
-              <h6>Select Appointment from</h6>
-              <div id="moveFromCalendar"></div>
-                <select id="fromClinic" class="form-select mb-3">
-                    <option value="">Select Clinic</option>
-                    @foreach ($clinics as $clinic)
-                        <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
-                    @endforeach
-                </select>
-            
-              <div id="fromDateDisplay" class="mt-2 text-muted"></div>
-            </div>
-  
-            <!-- Middle Controls -->
-            <div class="col-md-1 d-flex flex-column justify-content-center align-items-center">
-                <i class="bi bi-arrow-left-right fs-1 mb-3"></i>
-                <textarea id="moveReason" class="form-control mb-3" placeholder="Reason for move"></textarea>
-                
-                <button class="btn btn-outline-primary mb-2" onclick="submitMoveAppointment()">≫</button>
-                <button class="btn btn-outline-secondary" onclick="clearSelections()">≪</button>
-            </div>
-            
-            <!-- Right Calendar to select target date/time slot -->
-            <div class="col-md-5">
-              <h6>Select New Date & Time Slot</h6>
-              <div id="moveToCalendar"></div>
-              <select id="toClinic" class="form-select mb-3">
-                <option value="">Select Clinic</option>
-                @foreach ($clinics as $clinic)
-                    <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
-                @endforeach
-             </select>
-              <div id="timeSlotsForTarget" class="mt-3">
-                {{-- Time slots will be loaded after user picks target date --}}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-</div>
-
+<x-move-appointment-modal :clinics="$clinics" id="moveAppointmentModal" title="Reschedule Appointment" />
  
 <!-- Clinic Overview Count Modal -->
 <div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel" aria-hidden="true">
@@ -318,7 +250,6 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
     let calendar;
-    let selectedAppointments = [];
 
     let selectedClinic = document.getElementById('clinic-select').value || null;
     let selectedDate = null;
@@ -959,249 +890,6 @@
     }
 
 </script>
-
-<script>
-    let moveFromCalendar, moveToCalendar;
-    let selectedAppointment = null;
-    let selectedTargetDate = null;
-
-    function openMoveAppointmentModal() {
-        const modal = new bootstrap.Modal(document.getElementById('moveAppointmentModal'));
-        modal.show();
-        clearSelections();
-
-        setTimeout(() => {
-            initMoveAppointmentCalendars();
-        }, 300); // allow modal to open before rendering
-    }
-
-    function submitMoveAppointment() {
-
-        const reason = document.getElementById('moveReason').value;
-        if (!reason.trim()) {
-            Swal.fire("Error", "Please provide a reason for moving the appointment.", "warning");
-            return;
-        }
-
-        if (!selectedAppointments.length || !selectedTargetDate) {
-            Swal.fire("Incomplete", "Please select at least one appointment and a new target date.", "warning");
-            return;
-        }
-
-        // const selectedSlot = document.querySelector('input[name="timeSlot"]:checked')?.value;
-        // if (!selectedSlot) {
-        //     Swal.fire("Missing Time Slot", "Please select a time slot for the new date.", "warning");
-        //     return;
-        // }
-
-        const toClinicSelect = document.getElementById('toClinic');
-        fetch("{{ guard_route('appointments.move') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                appointment_ids: selectedAppointments,
-                clinic_id: toClinicSelect.value,
-                new_date: selectedTargetDate,
-                // time_slot: selectedSlot,
-                reason,
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire("Success", "Appointments moved successfully!", "success");
-                // Close modal and refresh calendar
-                $('#moveAppointmentModal').modal('hide');
-                moveFromCalendar.refetchEvents();
-                moveToCalendar.refetchEvents();
-
-                initCalendar();
-                refreshCalendarEvents();
-                loadSlotsAndAppointments();
-            } else {
-                Swal.fire("Error", data.message || "Move failed.", "error");
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            Swal.fire("Error", "An error occurred while moving appointments.", "error");
-        });
-    }
-
-    function selectAllAppointments() {
-        document.querySelectorAll('input[name="appointment_ids[]"]').forEach(cb => cb.checked = true);
-        updateSelectedAppointments();
-    }
-
-    function deselectAllAppointments() {
-        document.querySelectorAll('input[name="appointment_ids[]"]').forEach(cb => cb.checked = false);
-        updateSelectedAppointments();
-    }
-
-    function updateSelectedAppointments() {
-        selectedAppointments = Array.from(
-            document.querySelectorAll('input[name="appointment_ids[]"]:checked')
-        ).map(cb => parseInt(cb.value));
-    }
-
-    function selectAppointmentToMove(id, title, date) {
-        selectedAppointment = { id, title, date };
-        Swal.fire("Appointment Selected", `You selected: ${title} on ${date}`, "info");
-    }
-
-    function clearSelections() {
-        selectedAppointments = [];
-        selectedTargetDate = null;
-        selectedAppointment = null;
-
-        document.querySelectorAll('input[name="appointment_ids[]"]').forEach(cb => cb.checked = false);
-        document.getElementById('fromDateDisplay').innerHTML = '';
-        document.getElementById('timeSlotsForTarget').innerHTML = '';
-        document.getElementById('moveReason').value = '';
-    }
-
-    function initMoveAppointmentCalendars() {
-        const fromEl = document.getElementById('moveFromCalendar');
-        const toEl = document.getElementById('moveToCalendar');
-        const fromDateDisplay = document.getElementById('fromDateDisplay');
-
-        const fromClinicSelect = document.getElementById('fromClinic');
-        const toClinicSelect = document.getElementById('toClinic');
-
-        // Clear previous calendars
-        if (moveFromCalendar) moveFromCalendar.destroy();
-        if (moveToCalendar) moveToCalendar.destroy();
-
-        // LEFT Calendar: Pick date and show appointments list
-        moveFromCalendar = new FullCalendar.Calendar(fromEl, {
-            initialView: 'dayGridMonth',
-            height: 280,
-            // hiddenDays: [0, 6], // 0 = Sunday, 6 = Saturday
-            dateClick: function(info) {
-                const day = info.date.getDay(); // 0 = Sunday, 6 = Saturday
-                if (day === 0 || day === 6) {
-                    Swal.fire("Invalid Selection", "You cannot select Saturday or Sunday.", "warning");
-                    return; // prevent further logic
-                }
-                const selectedDate = info.dateStr;
-                selectedAppointment = null;
-                fromDateDisplay.innerHTML = `<div class="text-muted">Loading appointments for <strong>${selectedDate}</strong>...</div>`;
-
-                fetch("{{ guard_route('appointments.forDate') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        date: selectedDate,
-                        clinic_id: fromClinicSelect.value
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.appointments.length > 0) {
-                        const apptList = data.appointments.map(appt => `
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="appointment_ids[]" value="${appt.id}" id="appt-${appt.id}">
-                                <label class="form-check-label" for="appt-${appt.id}">
-                                <strong>${appt.title}</strong> (${appt.start_time} – ${appt.end_time})
-                                </label>
-                            </div>
-                            `).join('');
-
-                            fromDateDisplay.innerHTML = `
-                            <div class="mb-2 d-flex justify-content-between">
-                                <strong>Appointments on ${selectedDate}:</strong>
-                                <div>
-                                <button class="btn btn-sm btn-outline-primary me-1" onclick="selectAllAppointments()">Select All</button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deselectAllAppointments()">Deselect All</button>
-                                </div>
-                            </div>
-                            ${apptList}
-                            `;
-
-                        } else {
-                        fromDateDisplay.innerHTML = `<div class="text-muted">No appointments on ${selectedDate}.</div>`;
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    fromDateDisplay.innerHTML = `<div class="text-danger">Failed to load appointments.</div>`;
-                });
-            }
-        });
-        moveFromCalendar.render();
-
-        // RIGHT Calendar: pick new target date
-        moveToCalendar = new FullCalendar.Calendar(toEl, {
-            initialView: 'dayGridMonth',
-            height: 280,
-            // hiddenDays: [0, 6], // 0 = Sunday, 6 = Saturday
-            dateClick: function(info) {
-                const day = info.date.getDay(); // 0 = Sunday, 6 = Saturday
-                if (day === 0 || day === 6) {
-                    Swal.fire("Invalid Selection", "You cannot select Saturday or Sunday.", "warning");
-                    return; // prevent further logic
-                }
-                selectedTargetDate = info.dateStr;
-                Swal.fire("Target Date Selected", `Move to: ${info.dateStr}`, "success");
-
-                const clinicId = toClinicSelect.value;
-                if (!clinicId) {
-                    document.getElementById('timeSlotsForTarget').innerHTML = `<div class="text-danger">Please select a clinic first.</div>`;
-                    return;
-                }
-
-                fetch("{{ guard_route('appointments.availableSlots') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        date: selectedTargetDate,
-                        clinic_id: clinicId
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.slots.length > 0) {
-                        // const slotOptions = data.slots.map(slot => `
-                        //     <div class="form-check">
-                        //         <input class="form-check-input" type="radio" name="timeSlot" value="${slot}" id="slot-${slot}">
-                        //         <label class="form-check-label" for="slot-${slot}">${slot}</label>
-                        //     </div>
-                        // `).join('');
-                        // document.getElementById('timeSlotsForTarget').innerHTML = `
-                        //     <strong>Available Time Slots:</strong>
-                        //     ${slotOptions}
-                        // `;
-                    } else {
-                        document.getElementById('timeSlotsForTarget').innerHTML = `<div class="text-muted">No time slots available for ${selectedTargetDate}.</div>`;
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('timeSlotsForTarget').innerHTML = `<div class="text-danger">Failed to load time slots.</div>`;
-                });
-            }
-
-        });
-        moveToCalendar.render();
-    }
-
-    document.addEventListener("change", function(e) {
-        if (e.target && e.target.name === 'appointment_ids[]') {
-            selectedAppointments = Array.from(document.querySelectorAll('input[name="appointment_ids[]"]:checked')).map(cb => parseInt(cb.value));
-            console.log("Selected Appointments:", selectedAppointments);
-        }
-    });
-
-</script>
 <script>
     // JavaScript to dynamically set the WhatsApp message and phone number in the modal
     var currentAppointmentId, currentPhoneNumber;
@@ -1226,4 +914,225 @@
         window.open(whatsAppUrl, "_blank");
     }
 </script>
+<script>
+    let selectedAppointments = [];
+    let selectedTargetDate = null;
+
+    // Initialize flatpickr date pickers
+    flatpickr("#fromDate", {
+        dateFormat: "Y-m-d", // Customize the date format
+        onChange: function(selectedDates, dateStr) {
+            // Load appointments for the selected "from" date
+            loadAppointmentsForDate(dateStr);
+        }
+    });
+
+    document.getElementById('fromClinic').addEventListener('change', function() {
+        const selectedDate = document.getElementById('fromDate').value;
+        if (selectedDate) {
+            loadAppointmentsForDate(selectedDate);
+        } else {
+            document.getElementById('fromDateDisplay').innerHTML = `<div class="text-muted">Please select a date first.</div>`;
+        }
+    });
+
+    flatpickr("#toDate", {
+        dateFormat: "Y-m-d", // Customize the date format
+        onChange: function(selectedDates, dateStr) {
+            // Set selected target date
+            selectedTargetDate = dateStr;
+            console.log('Target Date selected:', selectedTargetDate);
+
+            // Load available time slots for the selected "to" date
+            loadAvailableTimeSlots(dateStr);
+        }
+    });
+
+    document.getElementById('toClinic').addEventListener('change', function() {
+        const selectedTargetDate = document.getElementById('toDate').value;
+        if (selectedTargetDate) {
+            loadAvailableTimeSlots(selectedTargetDate);
+        } else {
+            document.getElementById('timeSlotsForTarget').innerHTML = `<div class="text-muted">Please select a date first.</div>`;
+        }
+    });
+
+    function loadAppointmentsForDate(date) {
+        const fromClinicSelect = document.getElementById('fromClinic');
+        const displayContainer = document.getElementById('fromDateDisplay');
+
+        displayContainer.innerHTML = `
+            <div class="text-center py-3 text-muted">
+                <div class="spinner-border text-primary me-2" role="status"></div>
+                Loading appointments for ${date}...
+            </div>
+        `;
+
+        fetch("{{ guard_route('appointments.forDate') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                date: date,
+                clinic_id: fromClinicSelect.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                displayContainer.innerHTML = data.appointments_html || 
+                    `<div class="text-center text-muted py-3">No appointments on ${date}.</div>`;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            displayContainer.innerHTML = `<div class="text-center text-danger py-3">Failed to load appointments.</div>`;
+        });
+    }
+
+    function loadAvailableTimeSlots(date) {
+        const toClinicSelect = document.getElementById('toClinic');
+        const timeSlotsContainer = document.getElementById('timeSlotsForTarget');
+
+        if (!toClinicSelect.value) {
+            timeSlotsContainer.innerHTML = `<div class="text-danger">Please select a clinic first.</div>`;
+            return;
+        }
+
+        // Fetch available time slots for the selected "to" date
+        fetch("{{ guard_route('appointments.availableSlots') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                date: date,
+                clinic_id: toClinicSelect.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.slots.length > 0) {
+                const slotButtons = data.slots.map(slot => `
+                    <button 
+                        type="button" 
+                        class="btn btn-outline-success w-100 mb-2 slot-btn" 
+                        data-slot="${slot}">
+                        ${slot}
+                    </button>
+                `).join('');
+                
+                timeSlotsContainer.innerHTML = `
+                    <strong>Available Time Slots:</strong>
+                    ${slotButtons}
+                    <input type="hidden" id="selectedSlot" name="selected_slot" value="">
+                `;
+
+                // Add event listeners for selecting a slot
+                document.querySelectorAll('.slot-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Remove "active" style from all buttons
+                        document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('active', 'btn-success'));
+                        document.querySelectorAll('.slot-btn').forEach(b => b.classList.add('btn-outline-success'));
+
+                        // Mark this button as selected
+                        this.classList.remove('btn-outline-success');
+                        this.classList.add('btn-success', 'active');
+
+                        // Store selected slot in hidden input
+                        document.getElementById('selectedSlot').value = this.dataset.slot;
+                    });
+                });
+
+            } else {
+                timeSlotsContainer.innerHTML = `<div class="text-muted">No time slots available for ${date}.</div>`;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            timeSlotsContainer.innerHTML = `<div class="text-danger">Failed to load time slots.</div>`;
+        });
+    }
+
+    document.addEventListener("change", function(e) {
+        if (e.target && e.target.name === 'appointment_ids[]') {
+            selectedAppointments = Array.from(document.querySelectorAll('input[name="appointment_ids[]"]:checked')).map(cb => parseInt(cb.value));
+            console.log("Selected Appointments:", selectedAppointments);
+        }
+    });
+    // Submit the appointment move request
+    function submitMoveAppointment() {
+        const reason = document.getElementById('moveReason').value;
+        if (!reason.trim()) {
+            Swal.fire("Error", "Please provide a reason for moving the appointment.", "warning");
+            return;
+        }
+
+        if (!selectedAppointments.length || !selectedTargetDate) {
+            Swal.fire("Incomplete", "Please select at least one appointment and a new target date.", "warning");
+            return;
+        }
+
+        const toClinicSelect = document.getElementById('toClinic');
+
+        const selectedSlot = document.getElementById('selectedSlot')?.value || '';
+        if (!selectedSlot) {
+            Swal.fire("Incomplete", "Please select a time slot for the new appointment.", "warning");
+            return;
+        }
+        fetch("{{ guard_route('appointments.move') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                appointment_ids: selectedAppointments,
+                clinic_id: toClinicSelect.value,
+                new_date: selectedTargetDate,
+                time_slot: selectedSlot,
+                reason,
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire("Success", "Appointments moved successfully!", "success");
+                $('#moveAppointmentModal').modal('hide');
+                    initCalendar();
+                    refreshCalendarEvents();
+                    loadSlotsAndAppointments();
+                // Optionally, refresh other parts of the page here...
+            } else {
+                Swal.fire("Error", data.message || "Move failed.", "error");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error", "An error occurred while moving appointments.", "error");
+        });
+    }
+    function openMoveAppointmentModal() {
+        // Open the modal (this assumes you're using Bootstrap's modal)
+        const modal = new bootstrap.Modal(document.getElementById('moveAppointmentModal'));
+        modal.show();
+        
+        // Optionally, you can clear selections or do additional actions here
+        clearSelections();
+    }
+
+    function clearSelections() {
+        document.getElementById('fromClinic').value = '';
+        document.getElementById('fromDate').value = '';
+        document.getElementById('toClinic').value = '';
+        document.getElementById('toDate').value = '';
+        document.getElementById('moveReason').value = '';
+        document.getElementById('fromDateDisplay').innerHTML = '<div class="text-muted">No appointments selected</div>';
+        document.getElementById('timeSlotsForTarget').innerHTML = '<div class="text-muted">Please select clinic and date</div>';
+    }
+</script>
+
 @endpush

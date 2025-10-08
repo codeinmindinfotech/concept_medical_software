@@ -11353,3 +11353,20 @@ input.error:focus, select.error:focus, textarea.error:focus {
   transform: translate(50%, -50%);
 }
 
+
+    .bg-gradient-primary {
+        background: linear-gradient(90deg, #4e73df, #224abe);
+    }
+    .btn-gradient-primary {
+        background: linear-gradient(90deg, #4e73df, #224abe);
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+    .btn-gradient-primary:hover {
+        filter: brightness(1.1);
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.15) !important;
+        transition: all 0.3s ease;
+    }
+
