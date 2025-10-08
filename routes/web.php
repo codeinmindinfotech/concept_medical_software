@@ -346,6 +346,15 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal')->defaults('flag', 1);
         });
 
+        Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+        Route::post('/appointments/available-slots', [AppointmentController::class, 'availableSlots'])->name('appointments.availableSlots')->defaults('flag', 0);
+        Route::post('/appointments/move', [AppointmentController::class, 'move'])->name('appointments.move')->defaults('flag', 0);
+        Route::post('/appointments/forDate', [AppointmentController::class, 'getAppointmentsForDate'])->name('appointments.forDate');
+
+        Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
+        Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
+
+
         Route::prefix('patients/{patient}/appointments')->group(function () {
             Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
             Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
@@ -523,6 +532,15 @@ foreach ($roles as $role) {
                 Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal')->defaults('flag', 1);
                 Route::post('/hospital', [AppointmentController::class, 'storeHospitalAppointment'])->name('hospital_appointments.storeGlobal')->defaults('flag', 1);
             });
+
+            Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+            Route::post('/appointments/available-slots', [AppointmentController::class, 'availableSlots'])->name('appointments.availableSlots')->defaults('flag', 0);
+            Route::post('/appointments/move', [AppointmentController::class, 'move'])->name('appointments.move')->defaults('flag', 0);
+            Route::post('/appointments/forDate', [AppointmentController::class, 'getAppointmentsForDate'])->name('appointments.forDate');
+
+            Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
+            Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
+
 
             Route::prefix('patients/{patient}/appointments')->group(function () {
                 Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
