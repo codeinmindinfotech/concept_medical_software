@@ -84,9 +84,12 @@
                                 <x-nav.item icon="fas fa-bell" label="Send Notification" route="notification.form" pattern="notification*" />
                             @elseif ($currentGuard === 'clinic')
                                 <x-nav.item icon="fas fa-bell" label="Send Notification" route="clinic.notification.form" pattern="clinic.notification*" />
-                            @elseif (has_role('superadmin') || has_role('manager'))
+                            @elseif (has_role('superadmin'))
                                 <x-nav.item icon="fas fa-bell" label="Send Notification" route="notifications.form" pattern="send-notification*" />
+                            @elseif (has_role('manager'))
+                                <x-nav.item icon="fas fa-bell" label="Send Notification" route="notifications.managerform" pattern="send-notification*" />
                             @endif
+                            
 
                             {{-- Utility items --}}
                             <x-nav.item icon="fas fa-user-md" label="Doctors" route="doctors.index" permission="doctor-list" pattern="doctors*" />

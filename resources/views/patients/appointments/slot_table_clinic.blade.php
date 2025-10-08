@@ -15,6 +15,10 @@
                 $type = strtolower($appointment->appointmentType->value ?? '');
                 $rowClass =  $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' ;
 
+                 // Default message
+                $defaultMessage = "Hello, I wanted to confirm my appointment for " . $time;
+                $phoneNumber = "+918460870599";// $appointment->patient->phone_number; // Patient phone number
+            
             @endphp
 
             <tr class="align-middle"
@@ -61,6 +65,18 @@
                     <span class="text-muted small appointment-note">
                         {{ $appointment->appointment_note ?? '' }}
                     </span>
+                </td>
+                <td>
+                    <!-- Trigger Button for Modal -->
+                    <button class="btn btn-sm btn-outline-success" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#whatsAppModal"
+                            data-appointment-id="{{ $appointment->id }}"
+                            data-patient-name="{{ $appointment->patient->full_name }}"
+                            data-patient-phone="{{ $appointment->patient->phone_number }}"
+                            data-appointment-time="{{ $time }}">
+                        <i class="fab fa-whatsapp"></i> Send Message
+                    </button>
                 </td>
                 <td>
                     <div class="dropdown">
@@ -126,7 +142,7 @@
     @else
         <tr ondrop="onDrop(event)" ondragover="onDragOver(event)" data-time-slot="{{ $time }}">
             <td class="fw-bold text-primary">{{ $time }}</td>
-            <td colspan="5">
+            <td colspan="6">
                 <div class="d-flex align-items-center text-muted">
                     <i class="fas fa-calendar-check me-2 text-success"></i>
                     <span class="fst-italic">This time slot is available. Book now!</span>

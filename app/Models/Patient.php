@@ -139,6 +139,16 @@ class Patient extends Authenticatable
         return $this->hasMany(Recall::class);
     }
 
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+    
     public function communication()
     {
         return $this->hasMany(Communication::class);

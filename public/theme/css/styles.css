@@ -11344,3 +11344,12 @@ input.error:focus, select.error:focus, textarea.error:focus {
   }
 }
 
+/* Custom Badge Position */
+.badge-custom {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.75rem;
+  transform: translate(50%, -50%);
+}
+
