@@ -193,14 +193,14 @@ class PatientDocumentController extends Controller
             ]
         ];
 
-        $secret = env('DOCUMENT_SERVER_JWT_SECRET');
-        if ($secret) {
-            $config['token'] = JWT::encode($config, $secret, 'HS256');
-        }
+        // $secret = env('DOCUMENT_SERVER_JWT_SECRET');
+        // if ($secret) {
+        //     $config['token'] = JWT::encode($config, $secret, 'HS256');
+        // }
 
         return view('docs.editor', [
             'documentServer' => env('DOCUMENT_SERVER_URL'),
-            'config' => json_encode($config, JSON_UNESCAPED_SLASHES)
+            // 'config' => json_encode($config, JSON_UNESCAPED_SLASHES)
         ]);
     }
 
