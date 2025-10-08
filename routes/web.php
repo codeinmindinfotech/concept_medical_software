@@ -37,6 +37,7 @@ use App\Http\Controllers\Auth\SuperadminLoginController;
 use App\Http\Controllers\Backend\ClinicMessageController;
 use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\DoctorMessageController;
+use App\Http\Controllers\Backend\ManagerNotificationController;
 use App\Http\Controllers\Backend\Master\DocumentTemplateController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
@@ -79,9 +80,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/download/{filename}', [PatientDocumentController::class, 'download'])->name('documents.download');
         Route::post('/onlyoffice/callback', [PatientDocumentController::class, 'callback'])->name('onlyoffice.callback');
 
-
-        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form')->middleware('auth:web');
-        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send')->middleware('auth:web');
+       
+        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form');
+        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
 
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
@@ -246,8 +247,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
         Route::post('/notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
 
-        Route::get('/send-notification', [NotificationController::class, 'showForm'])->name('notifications.form');
-        Route::post('/send-notification', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
+        Route::get('/send-manager-notification', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
+        Route::post('/send-manager-notification', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
 
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
 

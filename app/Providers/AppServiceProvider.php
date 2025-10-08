@@ -13,6 +13,10 @@ use App\Auth\CustomPasswordBrokerManager;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use App\Auth\CustomDatabaseTokenRepository; 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Patient;
+use Carbon\Carbon;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,7 +50,39 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive(); // 👈 This is the key line
 
-        
+        View::composer('backend.theme.tab-navigation', function ($view) {
+            // Get today's date
+            $today = Carbon::today();
+
+            // Get patients with count of tasks, recalls, and appointments after today
+            $patients = Patient::withCount([
+                'tasks' => function($query) use ($today) {
+                    $query->where('start_date', '>', $today);
+                },
+                'recall' => function($query) use ($today) {
+                    $query->where('recall_date', '>', $today);
+                },
+                'appointments' => function($query) use ($today) {
+                    $query->where('appointment_date', '>', $today);
+                },
+                'notes' => function($query) use ($today) {
+                    $query->where('created_at', '>', $today);
+                },
+                'histories' => function($query) use ($today) {
+                    $query->where('created_at', '>', $today);
+                },
+                'WaitingLists' => function($query) use ($today) {
+                    $query->where('visit_date', '>', $today);
+                },
+                'FeeNoteList' => function($query) use ($today) {
+                    $query->where('admission_date', '>', $today);
+                }
+                
+            ])->find($view->patient->id);
+            // Share the $patients variable with the view
+            $view->with('patients', $patients);
+        });
+
          View::composer('backend.theme.header', function ($view) {
             $user = Auth::user();
 

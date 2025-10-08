@@ -1,6 +1,6 @@
 @if ($isOpen == 0)
 <tr>
-    <td colspan="7">
+    <td colspan="8">
         <div class="alert alert-warning d-flex align-items-center justify-content-center mb-0 py-4 rounded-3 shadow-sm" role="alert" id="close_clinic">
             <i class="fas fa-exclamation-triangle me-2 fs-5 text-warning"></i>
             <strong class="me-1">Clinic Closed:</strong> The hospital is closed on this date.
@@ -54,6 +54,17 @@
             </span>
         </td>
         <td class="text-muted small appointment-note">{{ $appointment->appointment_note ?? '-' }}</td>
+        <td>
+            <button class="btn btn-sm btn-outline-success" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#whatsAppModal"
+                    data-appointment-id="{{ $appointment->id }}"
+                    data-patient-name="{{ $appointment->patient->full_name }}"
+                    data-patient-phone="{{ $appointment->patient->phone_number }}"
+                    data-appointment-time="{{ $time }}">
+                <i class="fab fa-whatsapp"></i> Send Message
+            </button>
+        </td>
         <td>
             <div class="dropdown">
                 <button class="btn btn-sm btn-light border dropdown-toggle" data-bs-toggle="dropdown">
@@ -126,7 +137,7 @@
 
     @if ($appointments->isEmpty())
     <tr class="text-muted fst-italic">
-        <td colspan="7" class="text-center">
+        <td colspan="8" class="text-center">
           <i class="fas fa-hospital me-2 text-secondary"></i>
           No hospital appointments scheduled for this date.
         </td>

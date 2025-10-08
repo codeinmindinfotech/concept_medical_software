@@ -6,7 +6,7 @@
 
 <div class="card shadow-sm">
     <div class="card-header py-2 px-3 bg-light border-bottom">
-        <strong class="text-dark"><i class="fas fa-user-md me-2"></i>Patient Actions</strong>
+        <strong class="text-dark"><i class="fas fa-user-md me-2"></i> Patient Actions</strong>
     </div>
 
     <div class="card-body px-1 py-1">
@@ -24,15 +24,21 @@
                 </a>
 
                 <a href="{{ guard_route('patients.notes.index', $patient->id) }}" class="{{ btnClass('patients.notes.*', 'success') }}">
-                    <i class="fa-solid fa-notes-medical me-2"></i> Notes
+                    <i class="fa-solid fa-notes-medical me-2"></i> Notes 
+                    <span class="badge bg-success ">
+                        {{ $patients->notes_count }}
+                    </span>
                 </a>
-                
+
                 <a href="{{ guard_route('patients.upload-picture-form', $patient->id) }}" class="{{ btnClass('upload-picture.*', 'primary') }}">
-                  <i class="fas fa-camera me-2"></i> Upload Picture
+                    <i class="fas fa-camera me-2"></i> Upload Picture
                 </a>
 
                 <a href="{{ guard_route('patients.history.index', $patient->id) }}" class="{{ btnClass('patients.history.*', 'warning') }}">
                     <i class="fas fa-history me-2"></i> History
+                    <span class="badge bg-warning ">
+                        {{ $patients->histories_count }}
+                    </span>
                 </a>
 
                 <a href="{{ guard_route('patients.physical.index', $patient->id) }}" class="{{ btnClass('patients.physical.*', 'secondary') }}">
@@ -44,19 +50,31 @@
                 </a>
 
                 <a href="{{ guard_route('tasks.tasks.index', ['patient' => $patient]) }}" class="{{ btnClass('tasks.tasks.*', 'info') }}">
-                    <i class="fas fa-tasks me-2"></i> Tasks
+                    <i class="fas fa-tasks me-2"></i> Tasks 
+                    <span class="badge bg-info ">
+                        {{ $patients->tasks_count }}
+                    </span>
                 </a>
 
                 <a href="{{ guard_route('recalls.recalls.index', ['patient' => $patient]) }}" class="{{ btnClass('recalls.recalls.*', 'success') }}">
-                    <i class="fas fa-bell me-2"></i> Recalls
+                    <i class="fas fa-bell me-2"></i> Recalls 
+                    <span class="badge bg-success ">
+                        {{ $patients->recall_count }}
+                    </span>
                 </a>
 
                 <a href="{{ guard_route('waiting-lists.index', ['patient' => $patient]) }}" class="{{ btnClass('waiting-lists.*', 'warning') }}">
                     <i class="fas fa-notes-medical me-2"></i> Waiting List
+                    <span class="badge bg-warning ">
+                        {{ $patients->waiting_lists_count }}
+                    </span>
                 </a>
 
                 <a href="{{ guard_route('fee-notes.index', ['patient' => $patient]) }}" class="{{ btnClass('fee-notes.*', 'secondary') }}">
                     <i class="fas fa-money-check-alt me-2"></i> Fee Notes
+                    <span class="badge bg-secondary ">
+                        {{ $patients->fee_note_list_count }}
+                    </span>
                 </a>
 
                 <a href="{{ guard_route('sms.index', ['patient' => $patient]) }}" class="{{ btnClass('sms.*', 'danger') }}">
@@ -68,7 +86,10 @@
                 </a>
 
                 <a href="{{ guard_route('patients.appointments.schedule', ['patient' => $patient]) }}" class="{{ btnClass('patients.appointments.*', 'primary') }}">
-                    <i class="fas fa-calendar-check me-2"></i> Appointments
+                    <i class="fas fa-calendar-check me-2"></i> Appointments 
+                    <span class="badge bg-primary ">
+                        {{ $patients->appointments_count }}
+                    </span>
                 </a>
             @endcan
 

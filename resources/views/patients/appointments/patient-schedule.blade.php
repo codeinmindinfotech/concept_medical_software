@@ -171,6 +171,7 @@
                                     <th data-sort="dob" style="width: 110px;">DOB<i class="fa fa-sort"></i></th>
                                     <th data-sort="status" style="width: 130px;">Status<i class="fa fa-sort"></i></th>
                                     <th data-sort="note">Note<i class="fa fa-sort"></i></th>
+                                    <th>WhatsApp</th>
                                     <th style="width: 80px;">Actions<i class="fa fa-sort"></i></th>
                                 </tr>
                             </thead>
@@ -189,6 +190,26 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- WhatsApp Modal (Only One Modal for All Appointments) -->
+<div class="modal fade" id="whatsAppModal" tabindex="-1" aria-labelledby="whatsAppModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="whatsAppModalLabel">Send WhatsApp Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Custom Message Input -->
+                <textarea id="customMessage" class="form-control" rows="4" placeholder="Enter your message here...">Hello, I wanted to confirm my appointment for</textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="sendWhatsAppMessage()">Send Message</button>
+            </div>
         </div>
     </div>
 </div>
@@ -1181,5 +1202,28 @@
     });
 
 </script>
+<script>
+    // JavaScript to dynamically set the WhatsApp message and phone number in the modal
+    var currentAppointmentId, currentPhoneNumber;
 
+    // Set up modal with data from the clicked button
+    $('#whatsAppModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        currentAppointmentId = button.data('appointment-id');
+        currentPhoneNumber = button.data('patient-phone');
+
+        var defaultMessage = "Hello, I wanted to confirm my appointment for " + button.data('appointment-time');
+
+        // Set the textarea content
+        $('#customMessage').val(defaultMessage);
+    });
+
+    // Function to send WhatsApp message with custom text
+    function sendWhatsAppMessage() {
+        var message = $('#customMessage').val();
+        var whatsAppUrl = "https://wa.me/" + currentPhoneNumber + "?text=" + encodeURIComponent(message);
+
+        window.open(whatsAppUrl, "_blank");
+    }
+</script>
 @endpush
