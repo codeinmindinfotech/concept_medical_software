@@ -1019,15 +1019,16 @@
                 const slotButtons = data.slots.map(slot => `
                     <button 
                         type="button" 
-                        class="btn btn-outline-success w-100 mb-2 slot-btn" 
+                        class="btn btn-outline-success btn-sm slot-btn m-1 px-2 py-1" 
+                        style="min-width: 80px; font-size: 0.85rem;"
                         data-slot="${slot}">
                         ${slot}
                     </button>
                 `).join('');
-                
+
                 timeSlotsContainer.innerHTML = `
-                    <strong>Available Time Slots:</strong>
-                    ${slotButtons}
+                    <div class="fw-semibold mb-1" style="font-size: 0.9rem;">Available Slots:</div>
+                    <div class="d-flex flex-wrap justify-content-start">${slotButtons}</div>
                     <input type="hidden" id="selectedSlot" name="selected_slot" value="">
                 `;
 
