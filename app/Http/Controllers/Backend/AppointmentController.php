@@ -29,9 +29,9 @@ class AppointmentController extends Controller
         }
         
         $clinics = Clinic::companyOnly()->get()->map(function ($clinic) {
-            $clinic->color = '#'.substr(md5($clinic->id), 0, 6); // assign hex color
             return $clinic;
         });
+
         $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();

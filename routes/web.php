@@ -34,6 +34,7 @@ use App\Http\Controllers\Backend\SmsController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaskFollowupController;
 use App\Http\Controllers\Auth\SuperadminLoginController;
+use App\Http\Controllers\Backend\CalendarController;
 use App\Http\Controllers\Backend\ClinicMessageController;
 use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\DoctorMessageController;
@@ -203,6 +204,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
         Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
 
+        Route::post('/calendar/store', [CalendarController::class, 'store'])->name('calendar.store');
+        Route::post('/calendar/fetch-days', [CalendarController::class, 'fetchDays'])->name('calendar.fetchDays');
+
 
         Route::prefix('patients/{patient}/appointments')->group(function () {
             Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
@@ -353,6 +357,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
         Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
+
+        Route::post('/calendar/store', [CalendarController::class, 'store'])->name('calendar.store');
+        Route::post('/calendar/fetch-days', [CalendarController::class, 'fetchDays'])->name('calendar.fetchDays');
 
 
         Route::prefix('patients/{patient}/appointments')->group(function () {
@@ -541,6 +548,8 @@ foreach ($roles as $role) {
             Route::get('/reports/entire-day', [ReportController::class, 'entireDayReport'])->name('reports.entire-day');
             Route::post('/reports/entire-day/email', [ReportController::class, 'emailEntireDayReport'])->name('reports.entire-day.email');
 
+            Route::post('/calendar/store', [CalendarController::class, 'store'])->name('calendar.store');
+            Route::post('/calendar/fetch-days', [CalendarController::class, 'fetchDays'])->name('calendar.fetchDays');
 
             Route::prefix('patients/{patient}/appointments')->group(function () {
                 Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);

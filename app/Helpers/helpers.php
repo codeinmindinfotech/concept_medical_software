@@ -255,6 +255,23 @@ if (!function_exists('btnClass')) {
     }
 }
 
+if (!function_exists('isDarkColor')) {
+    function isDarkColor($hexColor) {
+        $hexColor = str_replace('#', '', $hexColor);
+        if (strlen($hexColor) == 3) {
+            $r = hexdec(str_repeat(substr($hexColor,0,1), 2));
+            $g = hexdec(str_repeat(substr($hexColor,1,1), 2));
+            $b = hexdec(str_repeat(substr($hexColor,2,1), 2));
+        } else {
+            $r = hexdec(substr($hexColor,0,2));
+            $g = hexdec(substr($hexColor,2,2));
+            $b = hexdec(substr($hexColor,4,2));
+        }
+        $brightness = ($r * 299 + $g * 587 + $b * 114) / 1000;
+        return $brightness < 128;
+    }
+}
+
 
 
 
