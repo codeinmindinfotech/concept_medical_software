@@ -34,5 +34,9 @@ class Clinic extends Authenticatable
         return $this->hasMany(Appointment::class, 'clinic_id');
     }
 
+    public function calendarDays()
+    {
+        return $this->hasMany(CalendarDay::class);
+    }
 
 }

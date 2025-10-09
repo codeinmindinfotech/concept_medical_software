@@ -1,3 +1,19 @@
+    .fc .fc-event-background {
+        opacity: 1 !important;   /* full color */
+    }
+
+    .fc .fc-event {
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    .fc .fc-daygrid-day-bg {
+        z-index: 1;
+    }
+
+    .fc .fc-daygrid-day-frame {
+        position: relative;
+    }
 
     #slot-table {
         max-height: 700px;
