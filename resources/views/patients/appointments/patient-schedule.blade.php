@@ -573,14 +573,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             eventDidMount: function(info) {
                 if (info.event.display === 'background') {
-                    // Force the background color
-                    info.el.style.backgroundColor = info.event.backgroundColor;
-                    info.el.style.borderColor = info.event.borderColor;
-                    info.el.style.opacity = 1; // full visibility
-
-                    // Make day numbers / text white for contrast
-                    info.el.style.color = '#ffffff' ;
-                    info.el.style.fontWeight = 'bold'; // optional, for better visibility
+                    // Force visibility & style
+                    info.el.style.backgroundColor = 'transparent';
+                    info.el.style.borderColor = info.event.borderColor || info.event.backgroundColor || '#592222';
+                    info.el.style.borderWidth = '2px';       // ✅ add this
+                    info.el.style.borderStyle = 'solid';     // ✅ and this
+                    info.el.style.opacity = 1;
+                    info.el.style.color = '#ffffff';
+                    info.el.style.fontWeight = 'bold';
                 }
             },
             eventContent: function(arg) {
