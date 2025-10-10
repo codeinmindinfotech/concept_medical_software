@@ -11,7 +11,7 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Recall Management
             </h5>
-            <a href="{{guard_route('recalls.recalls.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('recalls.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> Add Recall
             </a>
         </div>
@@ -39,10 +39,10 @@
                         <td>{{ $recall->note }}</td>
                         <td>{{ $recall->status?->value }}</td>
                         <td>
-                            <a href="{{guard_route('recalls.recalls.edit', ['patient' => $patient, 'recall' => $recall]) }}" class="btn btn-sm btn-warning">
+                            <a href="{{guard_route('recalls.edit', ['patient' => $patient, 'recall' => $recall]) }}" class="btn btn-sm btn-warning">
                               <i class="fa fa-edit"></i>
                             </a>
-                            <form action="{{guard_route('recalls.recalls.destroy', ['patient' => $patient, 'recall' => $recall]) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Delete this task?');">
+                            <form action="{{guard_route('recalls.destroy', ['patient' => $patient, 'recall' => $recall]) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Delete this task?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">

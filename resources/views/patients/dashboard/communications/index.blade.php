@@ -64,12 +64,12 @@
                     const row = document.querySelector(`tr[data-id="${id}"]`);
                     if (row) row.remove();
                 } else {
-                    alert('Failed to update.');
+                    Swal.fire("Error", 'Failed to update.', "warning");
                     checkbox.checked = false;
                 }
             })
             .catch(() => {
-                alert('Request failed.');
+                Swal.fire("Error", 'Request failed.', "warning");
                 checkbox.checked = false;
             });
     }

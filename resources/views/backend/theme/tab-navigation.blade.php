@@ -49,14 +49,14 @@
                     <i class="fas fa-microphone me-2"></i> Audio Consult
                 </a>
 
-                <a href="{{ guard_route('tasks.tasks.index', ['patient' => $patient]) }}" class="{{ btnClass('tasks.tasks.*', 'info') }}">
+                <a href="{{ guard_route('tasks.index', ['patient' => $patient]) }}" class="{{ btnClass('tasks.*', 'info') }}">
                     <i class="fas fa-tasks me-2"></i> Tasks 
                     <span class="badge bg-info ">
                         {{ $patients->tasks_count }}
                     </span>
                 </a>
 
-                <a href="{{ guard_route('recalls.recalls.index', ['patient' => $patient]) }}" class="{{ btnClass('recalls.recalls.*', 'success') }}">
+                <a href="{{ guard_route('recalls.index', ['patient' => $patient]) }}" class="{{ btnClass('recalls.*', 'success') }}">
                     <i class="fas fa-bell me-2"></i> Recalls 
                     <span class="badge bg-success ">
                         {{ $patients->recall_count }}

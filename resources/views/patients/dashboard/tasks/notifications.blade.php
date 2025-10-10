@@ -140,7 +140,7 @@
                                    title="View Patient">
                                    <i class="fas fa-user"></i> View Patient
                                 </a>
-                                <a href="{{guard_route('tasks.tasks.edit', ['patient' => $task->patient_id, 'task' => $task]) }}"
+                                <a href="{{guard_route('tasks.edit', ['patient' => $task->patient_id, 'task' => $task]) }}"
                                    class="btn btn-warning btn-sm" 
                                    title="Edit Task">
                                    <i class="fas fa-edit"></i> Edit Task

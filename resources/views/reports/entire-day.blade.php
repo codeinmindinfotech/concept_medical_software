@@ -84,6 +84,7 @@
     <button onclick="sendReportEmail()">Send Email</button>
 </footer>
 @endif
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 function exportToPDF() {
     // Simplest: just open print dialog to save as PDF
@@ -152,8 +153,15 @@ function exportToWord() {
 function sendReportEmail() {
     const email = document.getElementById('emailAddress').value;
     const attachPdf = document.getElementById('attachPdf').checked;
+
     if (!email) {
-        alert('Please enter a recipient email.');
+        Swal.fire({
+            title: 'Error!',
+            text: 'Please enter a recipient email.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33'
+        });
         return;
     }
 
@@ -170,9 +178,36 @@ function sendReportEmail() {
         })
     })
     .then(response => response.json())
-    .then(data => alert(data.message))
-    .catch(() => alert('Failed to send email.'));
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: data.message || 'Email sent successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#28a745'
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: data.message || 'Something went wrong. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#d33'
+            });
+        }
+    })
+    .catch(() => {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Failed to send email.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33'
+        });
+    });
 }
+
 </script>
 
 </body>

@@ -125,7 +125,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+                                <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.create', ['patient' => $appointment->patient->id]) }}">
                                     <i class="fas fa-bell me-2"></i> Add Recall
                                 </a>
                             </li>

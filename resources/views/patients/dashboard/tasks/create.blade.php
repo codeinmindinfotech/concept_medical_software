@@ -11,12 +11,12 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Task Management
             </h5>
-            <a href="{{guard_route('tasks.tasks.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('tasks.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> Task List
             </a>
         </div>
         <div class="card-body">
-            <form action="{{guard_route('tasks.tasks.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
+            <form action="{{guard_route('tasks.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
                 @csrf
                 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
@@ -102,7 +102,7 @@
                         <textarea name="task" id="task" class="form-control" rows="3" required>{{ old('task') }}</textarea>
                     </div>
                 </div>
-                <a href="{{guard_route('tasks.tasks.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{guard_route('tasks.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
 
                 <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Task</button>
             </form>

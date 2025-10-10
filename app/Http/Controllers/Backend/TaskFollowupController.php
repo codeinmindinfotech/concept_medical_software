@@ -24,7 +24,7 @@ class TaskFollowupController extends Controller
                 'note' => $request->note,
             ]);
             return response()->json([
-                'redirect' =>guard_route('tasks.tasks.index', $patientId),
+                'redirect' =>guard_route('tasks.index', $patientId),
                 'message' => 'Follow-up Updated successfully',
             ]);
         } else {
@@ -35,7 +35,7 @@ class TaskFollowupController extends Controller
             ]);
 
             return response()->json([
-                'redirect' =>guard_route('tasks.tasks.index', $patientId),
+                'redirect' =>guard_route('tasks.index', $patientId),
                 'message' => 'Follow-up created successfully',
             ]);
         }
@@ -45,7 +45,7 @@ class TaskFollowupController extends Controller
     {
         $followup->delete();
         return redirect()
-            ->route('tasks.tasks.index', ['patient' => $patientId])
+            ->route('tasks.index', ['patient' => $patientId])
             ->with('success', 'Follow Up deleted successfully.');
     }
 

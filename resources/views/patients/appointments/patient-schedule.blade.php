@@ -33,14 +33,18 @@
         </div>
         <!-- Show selected patient name and date -->
         @if($patient)
-            <h4 class="mb-4">Appointment Scheduler for <strong>{{ $patient->full_name }}</strong></h4>
+        <h4 class="mb-4">Appointment Scheduler for <strong>{{ $patient->full_name }}</strong></h4>
         @endif
 
         <div class="card-body">
+            <div class="row gy-4">
+                <!-- Left Column -->
+                <div class="col-md-3">
 
+                    
             <form id="filter-form" class="row g-3 align-items-end mb-4">
                 <!-- Patient select -->
-                <div class="col-md-6 col-lg-4">
+                <div>
                     <label for="patient-select" class="form-label fw-semibold">Select Patient</label>
                     <select id="patient-select" name="patient-select" class="form-select" aria-label="Select Patient">
                         <option value="">-- All Patients --</option>
@@ -58,11 +62,6 @@
                     <input type="date" id="appointment-date" class="form-control" value="">
                 </div> --}}
             </form>
-
-           
-            <div class="row gy-4">
-                <!-- Left Column -->
-                <div class="col-md-4">
                     <div id="calendar" class="border rounded p-3 shadow-sm" style="min-height: 300px;"></div>
 
                     <div class="mt-4">
@@ -78,7 +77,8 @@
                                     <label class="form-check-label" for="quick6m">+6 Months</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input quick-date" type="checkbox" value="today" id="quickToday">
+                                    <input class="form-check-input quick-date" type="checkbox" value="today"
+                                        id="quickToday">
                                     <label class="form-check-label" for="quickToday">Today</label>
                                 </div>
                             </div>
@@ -99,56 +99,58 @@
                         </div>
                     </div>
 
-                @php
+                    @php
                     $groupedClinics = $clinics->groupBy('clinic_type');
-                @endphp
-                
-                @foreach($groupedClinics as $type => $group)
+                    @endphp
+                <div class="mt-4">
+                    @foreach($groupedClinics as $type => $group)
                     <div class="mb-3">
-                        <h6 class="fw-semibold">{{ ucfirst($type) }}</h6>
+                        <h6 class="fw-semibold text-uppercase text-secondary mb-2">{{ ucfirst($type) }}</h6>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach($group as $clc)
-                                <div 
-                                    class="clinic-card d-flex align-items-center p-2 border rounded cursor-pointer
+                            <div class="clinic-card d-flex align-items-center p-2 border rounded cursor-pointer
                                     @if ($loop->first && $loop->parent->first) border-3 border-primary @endif"
-                                    data-id="{{ $clc->id }}"
-                                    data-type="{{ $clc->clinic_type }}"
-                                    data-color="{{ $clc->color ?? '#ffffff' }}"
-                                    style="border-color: {{ $clc->color ?? '#000000' }};"
-                                    onclick="selectClinicMain('{{ $clc->name }}', '{{ $clc->id }}', this)"
-                                    >
-                                    <div class="rounded-circle me-2" 
-                                         style="width:12px; height:12px; background-color: {{ $clc->color ?? '#ffffff' }}; border:1px solid #000;">
-                                    </div>
-                                    <span class="clinic-name" style="font-weight:bold; color: {{ $clc->color ?? '#000000' }};">{{ $clc->name }}</span>
+                                data-id="{{ $clc->id }}" data-type="{{ $clc->clinic_type }}"
+                                data-color="{{ $clc->color ?? '#ffffff' }}"
+                                style="border-color: {{ $clc->color ?? '#000000' }};"
+                                onclick="selectClinicMain('{{ $clc->name }}', '{{ $clc->id }}', this)">
+                                <div class="rounded-circle me-2"
+                                    style="width:12px; height:12px; background-color: {{ $clc->color ?? '#ffffff' }}; border:1px solid #000;">
                                 </div>
+                                <span class="clinic-name"
+                                    style="font-weight:bold; color: {{ $clc->color ?? '#000000' }};">{{ $clc->name
+                                    }}</span>
+                            </div>
                             @endforeach
                         </div>
                     </div>
-                @endforeach
-                
-                <input type="hidden" id="clinic-select" value="{{ optional($groupedClinics->first()->first())->id }}">
-                
-                 {{-- @php
-                 $groupedClinics = $clinics->groupBy('clinic_type');
-                 @endphp
-                 <div class="mt-4">
-                     <label for="clinic-select" class="form-label fw-semibold">Select Clinic:</label>
-                     <select id="clinic-select" class="form-select shadow-sm">
-                         <option value="">-- Choose Clinic --</option>
-                         @foreach($groupedClinics as $type => $group)
-                         <optgroup label="{{ ucfirst($type) }}">
-                             @foreach($group as $clinic)
-                             <option value="{{ $clinic->id }}" data-type="{{ $clinic->clinic_type }}" style="background-color:{{ $clinic->color ?? '#ffffff' }} ; color: #000000;" @if ($loop->first && $loop->parent->first) selected @endif>
-                                 {{ $clinic->name }}
-                             </option>
-                             @endforeach
-                         </optgroup>
-                         @endforeach
-                     </select>
-                 </div> --}}
+                    @endforeach
+                </div>
+                    <input type="hidden" id="clinic-select"
+                        value="{{ optional($groupedClinics->first()->first())->id }}">
 
-                <div id="appointment-stats" class="border rounded p-3 bg-light mt-4 shadow-sm">
+                    {{-- @php
+                    $groupedClinics = $clinics->groupBy('clinic_type');
+                    @endphp
+                    <div class="mt-4">
+                        <label for="clinic-select" class="form-label fw-semibold">Select Clinic:</label>
+                        <select id="clinic-select" class="form-select shadow-sm">
+                            <option value="">-- Choose Clinic --</option>
+                            @foreach($groupedClinics as $type => $group)
+                            <optgroup label="{{ ucfirst($type) }}">
+                                @foreach($group as $clinic)
+                                <option value="{{ $clinic->id }}" data-type="{{ $clinic->clinic_type }}"
+                                    style="background-color:{{ $clinic->color ?? '#ffffff' }} ; color: #000000;" @if
+                                    ($loop->first && $loop->parent->first) selected @endif>
+                                    {{ $clinic->name }}
+                                </option>
+                                @endforeach
+                            </optgroup>
+                            @endforeach
+                        </select>
+                    </div> --}}
+
+                    <div id="appointment-stats" class="border rounded p-3 bg-light mt-4 shadow-sm">
                         <h6 class="fw-bold mb-3 text-primary">Statistics</h6>
                         <div id="appointment-stats-content" class="small text-muted">
                             Loading stats...
@@ -157,19 +159,24 @@
                 </div>
 
                 <!-- Right Column -->
-                <div class="col-md-8 d-flex flex-column">
+                <div class="col-md-9 d-flex flex-column">
                     <div class="d-flex align-items-center mb-3">
                         <div class="dropdown me-3">
-                            <button class="btn btn-primary dropdown-toggle shadow" type="button" id="todoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-primary dropdown-toggle shadow" type="button" id="todoDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 Diary Options
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="todoDropdown" style="z-index: 1055;">
-                                <li><a class="dropdown-item" onclick="openClinicOverviewCountModal()">Clinic Overview</a></li>
+                                <li><a class="dropdown-item" onclick="openClinicOverviewCountModal()">Clinic
+                                        Overview</a></li>
                                 <li><a class="dropdown-item" onclick="openEntireDayReport()">Entire Day Report</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="openMoveAppointmentModal()">Move Appointment</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="openEntireDayReport()">Diary List</a></li>
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">Set Calendar Days</a></li>
-                                
+                                <li><a class="dropdown-item" href="#" onclick="openMoveAppointmentModal()">Move
+                                        Appointment</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="openEntireDayReport()">Diary List</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#setCalendarDaysModal">Set Calendar Days</a></li>
+
                             </ul>
                         </div>
 
@@ -198,7 +205,8 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="mb-3 justify-content-end p-3 border-bottom" id="manualSlotButton" class="d-flex " style="display: none;">
+                        <div class="mb-3 justify-content-end p-3 border-bottom" id="manualSlotButton" class="d-flex "
+                            style="display: none;">
                             <button class="btn btn-sm btn-outline-primary" onclick="openManualBookingModal()">
                                 <i class="fas fa-plus me-1"></i> Add Manual Slot
                             </button>
@@ -212,82 +220,90 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="setCalendarDaysModal" tabindex="-1" aria-labelledby="setCalendarDaysModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header py-2">
-        <h5 class="modal-title">Set Calendar Days</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body p-3">
-        <div class="row">
-          <!-- LEFT: Clinic List -->
-          <div class="col-md-3 border-end">
-            <h6 class="fw-semibold mb-2">Clinics</h6>
-            @foreach($clinics as $clinic)
-              <div class="d-flex align-items-center mb-2" style="cursor:pointer;"
-                   onclick="selectClinic('{{ $clinic->name }}', '{{ $clinic->id }}')">
-                <div class="me-2 rounded-circle" style="width:12px; height:12px; background:{{ $clinic->color }};"></div>
-                <span>{{ $clinic->name }}</span>
-              </div>
-            @endforeach
-          </div>
-
-          <!-- MIDDLE: Generated Dates -->
-          <div class="col-md-5 border-end">
-            <h6 class="fw-semibold mb-2">Dates</h6>
-            <table class="table table-sm table-bordered align-middle mb-0" id="dateTable">
-              <thead>
-                <tr><th>Date</th><th>Clinic</th><th>Select</th></tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <!-- RIGHT: Options -->
-          <div class="col-md-4">
-            <h6 class="fw-semibold mb-2">Options</h6>
-            <input type="hidden" id="selectedClinicId">
-
-            <div class="mb-2">
-              <label class="form-label mb-1">Clinic Name</label>
-              <input type="text" id="selectedClinic" class="form-control form-control-sm" readonly>
+<div class="modal fade" id="setCalendarDaysModal" tabindex="-1" aria-labelledby="setCalendarDaysModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h5 class="modal-title">Set Calendar Days</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <div class="mb-2">
-              <label class="form-label mb-1">Start Date</label>
-              <input type="text" id="startDate" class="form-control form-control-sm">
+            <div class="modal-body p-3">
+                <div class="row">
+                    <!-- LEFT: Clinic List -->
+                    <div class="col-md-3 border-end">
+                        <h6 class="fw-semibold mb-2">Clinics</h6>
+                        @foreach($clinics as $clinic)
+                        <div class="d-flex align-items-center mb-2" style="cursor:pointer;"
+                            onclick="selectClinic('{{ $clinic->name }}', '{{ $clinic->id }}')">
+                            <div class="me-2 rounded-circle"
+                                style="width:12px; height:12px; background:{{ $clinic->color }};"></div>
+                            <span>{{ $clinic->name }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+
+                    <!-- MIDDLE: Generated Dates -->
+                    <div class="col-md-5 border-end">
+                        <h6 class="fw-semibold mb-2">Dates</h6>
+                        <table class="table table-sm table-bordered align-middle mb-0" id="dateTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Clinic</th>
+                                    <th>Select</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- RIGHT: Options -->
+                    <div class="col-md-4">
+                        <h6 class="fw-semibold mb-2">Options</h6>
+                        <input type="hidden" id="selectedClinicId">
+
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Clinic Name</label>
+                            <input type="text" id="selectedClinic" class="form-control form-control-sm" readonly>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Start Date</label>
+                            <input type="text" id="startDate" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Repeat</label><br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="repeatType" value="weekly" checked>
+                                <label class="form-check-label">Weekly</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="repeatType" value="fortnightly">
+                                <label class="form-check-label">Fortnightly</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Number of Weeks</label>
+                            <input type="number" id="repeatCount" class="form-control form-control-sm" min="1"
+                                value="5">
+                        </div>
+
+                        <button class="btn btn-success btn-sm w-100 mt-2" onclick="generateDates()">Generate
+                            Dates</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-2">
-              <label class="form-label mb-1">Repeat</label><br>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="repeatType" value="weekly" checked>
-                <label class="form-check-label">Weekly</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="repeatType" value="fortnightly">
-                <label class="form-check-label">Fortnightly</label>
-              </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="saveCalendarDays()">Save</button>
             </div>
-
-            <div class="mb-2">
-              <label class="form-label mb-1">Number of Weeks</label>
-              <input type="number" id="repeatCount" class="form-control form-control-sm" min="1" value="5">
-            </div>
-
-            <button class="btn btn-success btn-sm w-100 mt-2" onclick="generateDates()">Generate Dates</button>
-          </div>
         </div>
-      </div>
-
-      <div class="modal-footer py-2">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="saveCalendarDays()">Save</button>
-      </div>
     </div>
-  </div>
 </div>
 
 
@@ -301,7 +317,8 @@
             </div>
             <div class="modal-body">
                 <!-- Custom Message Input -->
-                <textarea id="customMessage" class="form-control" rows="4" placeholder="Enter your message here...">Hello, I wanted to confirm my appointment for</textarea>
+                <textarea id="customMessage" class="form-control" rows="4"
+                    placeholder="Enter your message here...">Hello, I wanted to confirm my appointment for</textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -313,45 +330,37 @@
 
 <!-- Move Appointment Modal -->
 <x-move-appointment-modal :clinics="$clinics" id="moveAppointmentModal" title="Reschedule Appointment" />
- 
+
 <!-- Clinic Overview Count Modal -->
-<div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel" aria-hidden="true">
+<div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header bg-info text-white">
-          <h5 class="modal-title" id="clinicOverviewCountLabel">Clinic Appointment Count for <span id="clinic-count-date"></span></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="clinicOverviewCountLabel">Clinic Appointment Count for <span
+                        id="clinic-count-date"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="clinic-overview-count-body">
+                <p class="text-muted">Loading data...</p>
+            </div>
         </div>
-        <div class="modal-body" id="clinic-overview-count-body">
-          <p class="text-muted">Loading data...</p>
-        </div>
-      </div>
     </div>
 </div>
 
 <!-- Hospital Booking Modal -->
-<x-hospital-appointment-modal
-    :clinics="$clinics"
-    :patients="$patients"
-    :patient="$patient ? $patient : ''"
-    :procedures="$procedures"
-    :flag="0"
-    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" 
-/>
+<x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
+    :procedures="$procedures" :flag="0"
+    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
 <!-- Status Change Modal -->
 <x-status-modal :diary_status="$diary_status" :flag="0" />
 
 <!-- Appointment Booking Modal -->
-<x-appointment-modal
-    :clinics="$clinics"
-    :patients="$patients"
-    :patient="$patient ? $patient : ''"
-    :appointmentTypes="$appointmentTypes"
-    :flag="0"
-    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" 
-/>
- 
+<x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
+    :appointmentTypes="$appointmentTypes" :flag="0"
+    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+
 @endsection
 
 
@@ -366,7 +375,6 @@
     let selectedDate = null;
     const patientId = "{{ $patient ? $patient->id : '' }}";
     // Handle quick date checkboxes
-
     document.addEventListener('change', function(e) {
         if (e.target.classList.contains('quick-date')) {
             // Uncheck other boxes (only one selection at a time)
@@ -487,13 +495,13 @@ document.addEventListener('DOMContentLoaded', function () {
     window.toggleManualSlotButton();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const clinicSelect = document.getElementById('clinic-select');
-    if (clinicSelect) {
-        clinicSelect.addEventListener('change', toggleManualSlotButton);
-    }
-    toggleManualSlotButton();
-});
+// document.addEventListener('DOMContentLoaded', function () {
+//     const clinicSelect = document.getElementById('clinic-select');
+//     if (clinicSelect) {
+//         clinicSelect.addEventListener('change', toggleManualSlotButton);
+//     }
+//     toggleManualSlotButton();
+// });
 
 
     function getLocalDateString() {
@@ -648,6 +656,7 @@ document.addEventListener('DOMContentLoaded', function () {
             `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
+        reportUrl: "{{ guard_route('reports.entire-day') }}"
 
     };
 
@@ -665,7 +674,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function loadSlotsAndAppointments(clinicId = null, date = null) {
-
+        if(clinicId){
+            triggerClinicById(clinicId); // replace 5 with your clinicId
+        }
+        
         const modalElement = document.getElementById('clinicOverviewCountModal');
         if (modalElement) {
             const bsModal = bootstrap.Modal.getInstance(modalElement);
@@ -683,6 +695,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!selectedClinicId || !selectedDateValue) return;
 
+        $('#globalLoader').show();
         const res = await fetch(routes.fetchAppointments, {
             method: 'POST',
             headers: {
@@ -695,7 +708,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 date: selectedDateValue
             })
         });
-
+        
+        $('#globalLoader').hide();
         const [year, month, day] = selectedDateValue.split('-');
         document.getElementById('selected-date-display').innerText =
             `Appointments for ${day}/${month}/${year}`;
@@ -711,6 +725,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (data.stats) {
             renderAppointmentStats(data.stats);
+        }
+    }
+
+    function triggerClinicById(clinicId) {
+
+        const clinicCard = document.querySelector(`.clinic-card[data-id='${clinicId}']`);
+        if (clinicCard) {
+            selectedClinic = clinicId;
+            const clinicName = clinicCard.querySelector('.clinic-name').innerText;
+            selectClinicMain(clinicName, clinicId, clinicCard);
+        } else {
+            console.warn(`Clinic card with ID ${clinicId} not found.`);
         }
     }
 
@@ -918,17 +944,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const resetBtn = document.getElementById('reset-filters');
         const patientSelect = document.getElementById('patient-select');
-        // const dateInput = document.getElementById('appointment-date');
 
         resetBtn.addEventListener('click', function () {
-            // Reset values
             patientSelect.value = '';
-            // dateInput.value = new Date().toISOString().split('T')[0]; // today's date in YYYY-MM-DD
 
             // Optionally trigger reload
             const event = new Event('change');
             patientSelect.dispatchEvent(event);
-            // dateInput.dispatchEvent(event);
         });
     });
 
@@ -951,8 +973,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('hospital_appointment_date').value = selectedDate;
         document.getElementById('admission_date').value = selectedDate;
         $('#procedure_id').select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $('#manualBookingModal')  // important for modals!
+            theme: 'bootstrap-5',
+            dropdownParent: $('#manualBookingModal')  // important for modals!
         });
         let finalUrl = routes.storeHospitalAppointment;
         $('#manualBookingForm').attr('data-action', finalUrl);
@@ -1068,16 +1090,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function openEntireDayReport() {
-        // const selectedDate = document.getElementById('entire-day-date').value;
         if (!selectedDate) {
-            alert("Please select a date for the report.");
+            Swal.fire("Error", "Please select a date for the report.", "warning");
             return; // Stop if no date selected
         }
-        window.open(`/reports/entire-day?date=${selectedDate}`, '_blank');
-
-        // Redirect to the Laravel route with date as query parameter
-        // window.location.href = `/reports/entire-day?date=${selectedDate}`;
-    }
+        window.open(`${routes.reportUrl}?date=${selectedDate}`, '_blank');
+   }
 
 </script>
 <script>
@@ -1127,7 +1145,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // refresh UI and data
         initCalendar();
         refreshCalendarEvents();
-        loadSlotsAndAppointments();
+        loadSlotsAndAppointments()
     }
 
     let selectedAppointments = [];
@@ -1412,6 +1430,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.success) {
                 Swal.fire("Success", data.message, "success");
                 $('#setCalendarDaysModal').modal('hide');
+                // Example usage:
                 initCalendar();
                 refreshCalendarEvents();
                 loadSlotsAndAppointments();
