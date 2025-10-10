@@ -570,10 +570,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 }
             ],
-
             eventDidMount: function(info) {
                 if (info.event.display === 'background') {
-                    // Force visibility & style
                     info.el.style.backgroundColor = 'transparent';
                     info.el.style.borderColor = info.event.borderColor || info.event.backgroundColor || '#592222';
                     info.el.style.borderWidth = '2px';       // ✅ add this
