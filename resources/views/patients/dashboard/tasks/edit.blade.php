@@ -11,7 +11,7 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Task Management
             </h5>
-            <a href="{{guard_route('tasks.tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> New Task
             </a>
         </div>
@@ -32,7 +32,7 @@
         </ul>
     </div>
     @endif
-    <form action="{{guard_route('tasks.tasks.update', ['patient' => $task->patient_id, 'task' => $task->id]) }}" method="POST" class="validate-form">
+    <form action="{{guard_route('tasks.update', ['patient' => $task->patient_id, 'task' => $task->id]) }}" method="POST" class="validate-form">
         @csrf
         @method('PUT')
         <input type="hidden" name="patient_id" value="{{ $task->patient_id }}">
@@ -114,7 +114,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Task</button>
-        <a href="{{guard_route('tasks.tasks.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{guard_route('tasks.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
     </form>
 
 </div>

@@ -69,7 +69,7 @@ class AppointmentController extends Controller
         return response()->json($appointments);
     }
 
-    public function getAppointmentsByDate(Request $request, Patient $patient)
+    public function getAppointmentsByDate(Request $request, Patient $patient = null)
     {
         $this->authorize('viewAny', Appointment::class);
         $flag = $request->route('flag'); 
@@ -79,6 +79,10 @@ class AppointmentController extends Controller
                 'date' => 'required|date',
             ]);
 
+            if ($flag == 1 && !$patient) {
+                $patient = null;
+            }
+            
             $appointmentsQuery = Appointment::companyOnly()->with('appointmentType', 'patient','appointmentStatus')
                 ->whereDate('appointment_date', $request->date);
 
@@ -87,7 +91,7 @@ class AppointmentController extends Controller
             }
 
             $clinic = null;
-
+            
             if ($request->filled('clinic_id')) {
                 $appointmentsQuery->where('clinic_id', $request->clinic_id);
                 $clinic = Clinic::companyOnly()->findOrFail($request->clinic_id);
@@ -103,7 +107,7 @@ class AppointmentController extends Controller
             // Determine working day schedule
             if (!$clinic) {
                 return response()->json([
-                    'html' => '<tr><td class="text-center text-muted" colspan="7">No clinic selected</td></tr>',
+                    'html' => '<tr><td class="text-center text-muted" colspan="8">No clinic selected</td></tr>',
                 ]);
             }
 
@@ -116,7 +120,7 @@ class AppointmentController extends Controller
             if (!$clinic->$dayKey) {
                 return response()->json([
                     'html' => '<tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="alert alert-warning d-flex align-items-center justify-content-center mb-0 py-4 rounded-3 shadow-sm" role="alert" id="close_clinic">
                                 <i class="fas fa-exclamation-triangle me-2 fs-5 text-warning"></i>
                                 <strong class="me-1">Clinic Closed:</strong> The clinic is closed on this date.
@@ -167,7 +171,7 @@ class AppointmentController extends Controller
         }
     }
 
-    private function getHospitalAppointmentsByDate(Request $request, Patient $patient, Clinic $clinic)
+    private function getHospitalAppointmentsByDate(Request $request, ?Patient $patient, Clinic $clinic)
     {
         $this->authorize('viewAny', Appointment::class);
         $isOpen = 0;
@@ -176,7 +180,7 @@ class AppointmentController extends Controller
         // Determine working day schedule
         if (!$clinic) {
             return response()->json([
-                'html' => '<tr><td class="text-center text-muted" colspan="7">No clinic selected</td></tr>',
+                'html' => '<tr><td class="text-center text-muted" colspan="8">No Hospital selected</td></tr>',
             ]);
         }
         
@@ -508,24 +512,27 @@ class AppointmentController extends Controller
 
     public function clinicOverviewCounts(Request $request)
     {
-
+        $user = current_user();
+        $isSuperAdmin = $user->hasRole('superadmin');
         // $selectedDate = $request->input('date');
         $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
         $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
 
-            $appointmentCounts = Appointment::select(
+            $query = Appointment::with('clinic')->select(
                     'appointments.clinic_id',
                     'clinics.name as clinic_name',
                     DB::raw('DATE(appointments.appointment_date) as appointment_date'),
                     DB::raw('COUNT(*) as appointment_count')
                 )
                 ->join('clinics', 'appointments.clinic_id', '=', 'clinics.id')
-                ->whereBetween('appointments.appointment_date', [$startOfMonth, $endOfMonth])
-                ->companyOnly() 
-                ->groupBy('appointments.clinic_id', 'clinics.name', DB::raw('DATE(appointments.appointment_date)'))
-                ->orderBy('clinics.name')
-                ->orderBy('appointment_date')
-                ->get();
+                ->whereBetween('appointments.appointment_date', [$startOfMonth, $endOfMonth]);
+                if (! $isSuperAdmin) {
+                    $query->where('appointments.company_id', current_company_id());
+                }
+                $query->groupBy('appointments.clinic_id', 'clinics.name', DB::raw('DATE(appointments.appointment_date)'))
+                        ->orderBy('clinics.name')
+                        ->orderBy('appointment_date');
+                $appointmentCounts = $query->get();
 
         return view('patients.appointments.clinic_overview_counts', compact('appointmentCounts'))->render();
     }

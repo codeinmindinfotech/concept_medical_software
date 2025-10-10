@@ -113,7 +113,7 @@
 
                 @forelse($upcomingTasks as $task)
                 <li>
-                    <a class="dropdown-item" href="{{guard_route('tasks.tasks.edit', ['patient' => $task->patient_id, 'task' => $task->id]) }}">
+                    <a class="dropdown-item" href="{{guard_route('tasks.edit', ['patient' => $task->patient_id, 'task' => $task->id]) }}">
                         <i class="fas fa-file-alt me-2"></i>
                         {{ $task->subject }} – {{ \Carbon\Carbon::parse($task->end_date)->format('d M Y') }}
                     </a>
