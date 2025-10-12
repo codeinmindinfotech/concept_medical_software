@@ -25,17 +25,13 @@
         <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="fas fa-calendar-check me-2 fs-4"></i>
-                <h5 class="mb-0">Patients Appointment Management</h5>
+                <h5 class="mb-0">Appointment Management   @if($patient) for <strong>{{ $patient->full_name }}</strong> @endif</h5>
             </div>
             <button id="reset-filters" class="btn btn-outline-light btn-sm" title="Reset filters">
                 <i class="fas fa-undo"></i> Reset
             </button>
         </div>
         <!-- Show selected patient name and date -->
-        @if($patient)
-        <h4 class="mb-4">Appointment Scheduler for <strong>{{ $patient->full_name }}</strong></h4>
-        @endif
-
         <div class="card-body">
             <div class="row gy-4">
                 <!-- Left Column -->
