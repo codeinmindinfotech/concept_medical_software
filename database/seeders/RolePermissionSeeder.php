@@ -19,13 +19,13 @@ class RolePermissionSeeder extends Seeder
                 'guard_name' => 'web',
                 'permissions' => [
                     'patient-list', 'patient-create', 'patient-edit', 'patient-delete',
-                    'appointment-list', 'appointment-create',
+                    'appointment-list', 'appointment-create','notification-list','notification-create', 'notification-edit', 'notification-delete'
                 ],
             ],
             'doctor' => [
                 'guard_name' => 'doctor',
                 'permissions' => [
-                    'appointment-list', 'appointment-create', 'appointment-edit',
+                    'appointment-list', 'appointment-create', 'appointment-edit','notification-list','notification-create', 'notification-edit', 'notification-delete',
                     'patient-list',
                 ],
             ],
@@ -33,14 +33,14 @@ class RolePermissionSeeder extends Seeder
                 'guard_name' => 'patient',
                 'permissions' => [
                     'appointment-list', 'appointment-create', 'appointment-edit',
-                    'patient-list','patient-edit'
+                    'patient-list','patient-edit','notification-list','notification-create', 'notification-edit', 'notification-delete'
                 ],
             ],
             'clinic' => [
                 'guard_name' => 'clinic',
                 'permissions' => [
                     'doctor-list', 'doctor-create', 'patient-list', 'appointment-list',
-                    'appointment-create', 'appointment-edit'
+                    'appointment-create', 'appointment-edit','notification-list','notification-create', 'notification-edit', 'notification-delete'
                 ],
             ],
         ];

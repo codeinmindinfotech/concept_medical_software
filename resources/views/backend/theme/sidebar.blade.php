@@ -35,11 +35,10 @@
                     $isSettingsOpen = collect($settingsRoutes)->contains(fn($route) => is_guard_route($route));
 
                     // Routes & permissions for UTILITIES
-                    $utilityRoutes = ['/send-notification*', '/doctors*', '/consultants*', '/companies*', '/insurances*', '/chargecodes*', '/clinics*'];
-                    $utilityPermissions = ['doctor-list', 'consultant-list', 'company-list', 'insurance-list', 'chargecode-list', 'clinic-list'];
+                    $utilityRoutes = ['/send-notification*','/send-patient-notification*','/send-clinic-notification*', '/doctors*', '/consultants*', '/companies*', '/insurances*', '/chargecodes*', '/clinics*'];
+                    $utilityPermissions = ['doctor-list', 'consultant-list', 'company-list', 'insurance-list', 'chargecode-list', 'clinic-list','notification-list'];
                     $hasUtilitiesPermission = collect($utilityPermissions)->contains(fn($perm) => has_permission($perm)) || has_role('superadmin') || has_role('manager');
-                    $isUtilitiesOpen = collect($utilityRoutes)->contains(fn($route) => is_guard_route($route));
-
+                   echo  $isUtilitiesOpen = collect($utilityRoutes)->contains(fn($route) => is_guard_route($route));
                     $currentGuard = getCurrentGuard();
                 @endphp
 
@@ -88,6 +87,8 @@
                                 <x-nav.item icon="fas fa-bell" label="Send Notification" route="notifications.form" pattern="send-notification*" />
                             @elseif (has_role('manager'))
                                 <x-nav.item icon="fas fa-bell" label="Send Notification" route="notifications.managerform" pattern="send-notification*" />
+                            @elseif ($currentGuard === 'patient')
+                                <x-nav.item icon="fas fa-bell" label="Send Notification" route="patient.notification.form" pattern="send-notification*" />
                             @endif
                             
 
