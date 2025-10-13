@@ -11354,7 +11354,7 @@ input.error:focus, select.error:focus, textarea.error:focus {
 }
 
 footer.py-4.bg-light.mt-auto {
-  position: fixed;
+  /* position: fixed; */
   bottom: 0;
   width: 100%;
   z-index: 9999;

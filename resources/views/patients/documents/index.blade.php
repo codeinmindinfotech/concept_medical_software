@@ -16,7 +16,7 @@
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Patients List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' => route('patient-documents.create', $patient),
+        'backUrl' => guard_route('patient-documents.create', $patient),
         'isListPage' => true
     ])
 
