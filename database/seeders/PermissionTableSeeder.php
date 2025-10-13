@@ -24,7 +24,8 @@ class PermissionTableSeeder extends Seeder
             'clinic',
             'chargecode',
             'appointment',
-            'configuration'
+            'configuration',
+            'notification'
         ];
 
         $actions = ['list', 'create', 'edit', 'delete'];

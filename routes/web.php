@@ -43,6 +43,7 @@ use App\Http\Controllers\Backend\Master\DocumentTemplateController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
 use App\Http\Controllers\Backend\PatientDocumentController;
+use App\Http\Controllers\Backend\PatientMessageController;
 use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\OnlyOfficeController;
@@ -297,6 +298,11 @@ foreach ($roles as $role) {
             if ($role === 'clinic') {
                 Route::get('/send-clinic-notification', [ClinicMessageController::class, 'showForm'])->name('clinic.notification.form');
                 Route::post('/send-clinic-notification', [ClinicMessageController::class, 'send'])->name('clinic.notification.send');
+            }
+
+            if ($role === 'patient') {
+                Route::get('/send-patient-notification', [PatientMessageController::class, 'showForm'])->name('patient.notification.form');
+                Route::post('/send-patient-notification', [PatientMessageController::class, 'send'])->name('patient.notification.send');
             }
 
             Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
