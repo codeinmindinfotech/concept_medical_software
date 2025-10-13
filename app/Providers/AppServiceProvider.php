@@ -76,6 +76,9 @@ class AppServiceProvider extends ServiceProvider
                 },
                 'FeeNoteList' => function($query) use ($today) {
                     $query->where('admission_date', '>', $today);
+                },
+                'documents' => function($query) use ($today) {
+                    // $query->where('admission_date', '>', $today);
                 }
                 
             ])->find($view->patient->id);
