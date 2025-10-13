@@ -31,7 +31,7 @@
                     ondragover="onDragOver(event)"
                 @endif
             >
-                <td class="fw-bold text-primary">{{ $time }}{{$user->hasRole('manager')}}</td>
+                <td class="fw-bold text-primary">{{ $time }}</td>
                 <td>
                     <span class="badge {{ $rowClass }} text-dark px-3">
                         {{ $appointment->appointmentType->value ?? '-' }}
@@ -125,7 +125,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+                                <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.create', ['patient' => $appointment->patient->id]) }}">
                                     <i class="fas fa-bell me-2"></i> Add Recall
                                 </a>
                             </li>

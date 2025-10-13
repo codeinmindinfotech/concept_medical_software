@@ -11,7 +11,7 @@
             <h5 class="mb-0">
                 <i class="fas fa-user-clock me-2"></i> Edit Recall
             </h5>
-            <a href="{{guard_route('recalls.recalls.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <a href="{{guard_route('recalls.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                 <i class="fas fa-plus-circle me-1"></i> Add Recall
             </a>
         </div>
@@ -32,7 +32,7 @@
                 </ul>
             </div>
             @endif
-            <form action="{{guard_route('recalls.recalls.update', ['patient' => $patient->id, 'recall' => $recall->id]) }}" method="POST" class="validate-form">
+            <form action="{{guard_route('recalls.update', ['patient' => $patient->id, 'recall' => $recall->id]) }}" method="POST" class="validate-form">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
@@ -78,7 +78,7 @@
 
 
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Task</button>
-                <a href="{{guard_route('recalls.recalls.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{guard_route('recalls.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
     </div>

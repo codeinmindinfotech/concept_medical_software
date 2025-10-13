@@ -40,6 +40,7 @@ class RolePermissionSeeder extends Seeder
                 'guard_name' => 'clinic',
                 'permissions' => [
                     'doctor-list', 'doctor-create', 'patient-list', 'appointment-list',
+                    'appointment-create', 'appointment-edit'
                 ],
             ],
         ];

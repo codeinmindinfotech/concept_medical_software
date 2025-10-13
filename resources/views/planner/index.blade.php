@@ -437,11 +437,11 @@
                     });
                 location.reload(); // Or dynamically move the card
             } else {
-                alert('Could not reschedule appointment.');
+                Swal.fire("Error", 'Could not reschedule appointment.', "warning");
             }
         })
         .catch(() => {
-            alert('Error updating appointment.');
+            Swal.fire("Error", 'Error updating appointment.', "warning");
         });
     }
 </script>

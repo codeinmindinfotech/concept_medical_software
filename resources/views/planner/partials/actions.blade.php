@@ -54,7 +54,7 @@
             <a class="dropdown-item" href="#"><i class="fas fa-credit-card"></i> Take Payment</a>
         </li>
         <li>
-            <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+            <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.create', ['patient' => $appointment->patient->id]) }}">
                 <i class="fas fa-bell"></i> Add Recall
             </a>
         </li>

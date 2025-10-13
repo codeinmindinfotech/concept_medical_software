@@ -77,7 +77,7 @@
                     }
                 },
                 error: function() {
-                    alert('Failed to toggle completed status.');
+                    Swal.fire("Error", 'Failed to toggle completed status.', "warning");
                 }
             });
         });

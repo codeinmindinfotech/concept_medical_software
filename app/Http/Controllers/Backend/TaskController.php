@@ -57,7 +57,7 @@ class TaskController extends Controller
 
         Task::create($request->all());
         return response()->json([
-            'redirect' =>guard_route('tasks.tasks.index', ['patient' => $request->patient_id]),
+            'redirect' =>guard_route('tasks.index', ['patient' => $request->patient_id]),
             'message' => 'Task created successfully',
         ]);
     }
@@ -90,7 +90,7 @@ class TaskController extends Controller
         $task->update($request->all());
 
         return response()->json([
-            'redirect' =>guard_route('tasks.tasks.index', ['patient' => $patient->id]),
+            'redirect' =>guard_route('tasks.index', ['patient' => $patient->id]),
             'message' => 'Task updated successfully',
         ]);
     }
@@ -99,7 +99,7 @@ class TaskController extends Controller
         $task->delete();
 
         return redirect()
-            ->route('tasks.tasks.index', ['patient' => $patient->id])
+            ->route('tasks.index', ['patient' => $patient->id])
             ->with('success', 'Task deleted successfully.');
     }
 
