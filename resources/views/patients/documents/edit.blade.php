@@ -46,8 +46,8 @@ $breadcrumbs = [
         documentType: "word",
         editorConfig: {
             mode: "edit",
-            callbackUrl: "http://137.184.194.64/onlyoffice/callback",
-            // callbackUrl: "{{ route('onlyoffice.callback', $document->id) }}",
+            // callbackUrl: "http://137.184.194.64/onlyoffice/callback",
+            callbackUrl: "{{ route('onlyoffice.callback', $document->id) }}",
             user: {
                 id: "{{ auth()->id() }}",
                 name: "{{ auth()->user()->name }}"
