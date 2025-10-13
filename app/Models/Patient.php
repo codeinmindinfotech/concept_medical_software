@@ -175,4 +175,9 @@ class Patient extends Authenticatable
         $this->notify(new \App\Notifications\ClinicResetPasswordNotification($token, $this->company_id, $this->guard_name));
     }
 
+    public function documents()
+    {
+        return $this->hasMany(PatientDocument::class);
+    }
+
 }

@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>ONLYOFFICE Editor</title>
-    <script type="text/javascript" src="{{ $documentServer }}/web-apps/apps/api/documents/api.js"></script>
+    <title>OnlyOffice Document Editor</title>
+    <script type="text/javascript" src="http://137.184.194.64/web-apps/apps/api/documents/api.js"></script>
 </head>
 <body>
-    <div id="placeholder" style="width:100%; height:90vh;"></div>
+    <h2>Document Editor</h2>
+    <div id="placeholder" style="width: 100%; height: 800px;"></div>
 
-    <script>
-        const config = {!! $config !!};
-
-        // Instantiate the editor
-        const docEditor = new DocsAPI.DocEditor("placeholder", {
-            width: "100%",
-            height: "100%",
-            documentType: "text",
-            token: config.token ?? null,
-            document: config.document,
-            editorConfig: config.editorConfig
+    <script type="text/javascript">
+        var docEditor = new DocsAPI.DocEditor("placeholder", {
+            document: {
+                fileType: "docx",
+                key: "doc-key-{{ \Illuminate\Support\Str::uuid() }}",
+                title: "My Document",
+                url: "https://conceptmedicalpm.ie/storage/document_templates/KkqZ2ghGmwwaXBS1D1XmrOSVfZtopDuayNOqLpih.docx"
+            },
+            documentType: "word",
+            editorConfig: {
+                mode: "edit", // or 'view'
+                callbackUrl: "{{ route('onlyoffice.callback') }}",
+                user: {
+                    id: "1",
+                    name: "John Doe"
+                }
+            }
         });
     </script>
 </body>

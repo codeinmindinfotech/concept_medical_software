@@ -11353,6 +11353,17 @@ input.error:focus, select.error:focus, textarea.error:focus {
   transform: translate(50%, -50%);
 }
 
+footer.py-4.bg-light.mt-auto {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 9999;
+}
+#placeholder {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
 
     .bg-gradient-primary {
         background: linear-gradient(90deg, #4e73df, #224abe);

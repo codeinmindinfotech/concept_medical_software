@@ -60,7 +60,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
     </div>
     <div class="col-md-2">
         <label for="color" class="form-label"><strong>Color</strong></label>
-        <input id="color" name="color" type="color" class="form-control form-control-color @error('color') is-invalid @enderror" value="{{ old('color', $clinic->color ?? '#ffffff') }}">
+        <input id="color" name="color" type="color" class="form-control form-control-color @error('color') is-invalid @enderror" value="{{ old('color', $clinic->color ?? '#000000') }}">
         @error('color')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 </div>

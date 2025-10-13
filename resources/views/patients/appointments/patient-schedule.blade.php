@@ -111,11 +111,11 @@
                             <div class="clinic-card d-flex align-items-center p-2 border rounded cursor-pointer
                                     @if ($loop->first && $loop->parent->first) border-3 border-primary @endif"
                                 data-id="{{ $clc->id }}" data-type="{{ $clc->clinic_type }}"
-                                data-color="{{ $clc->color ?? '#ffffff' }}"
-                                style="border-color: {{ $clc->color ?? '#000000' }};"
+                                data-color="{{ $clc->color ?? '#000000' }}"
+                                style="border-color: {{ $clc->color ?? '#000000' }} !important;"
                                 onclick="selectClinicMain('{{ $clc->name }}', '{{ $clc->id }}', this)">
                                 <div class="rounded-circle me-2"
-                                    style="width:12px; height:12px; background-color: {{ $clc->color ?? '#ffffff' }}; border:1px solid #000;">
+                                    style="width:12px; height:12px; background-color: {{ $clc->color ?? '#000000' }}; border:1px solid #000;">
                                 </div>
                                 <span class="clinic-name"
                                     style="font-weight:bold; color: {{ $clc->color ?? '#000000' }};">{{ $clc->name

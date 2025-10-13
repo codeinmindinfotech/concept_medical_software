@@ -45,6 +45,7 @@ use App\Http\Controllers\Backend\PasswordChangeController;
 use App\Http\Controllers\Backend\PatientDocumentController;
 use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\BroadcastController;
+use App\Http\Controllers\OnlyOfficeController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -114,6 +115,11 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     });
     Route::post('/communications/{communication}/received', [CommunicationController::class, 'markAsReceived'])->name('communications.received');
 
+    Route::prefix("$prefix")->group(function () {
+        Route::resource('patient-documents', PatientDocumentController::class)->except(['show'])->names('patient-documents');
+    });
+    Route::post('/onlyoffice/callback/{id}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');
+
     // Follow-ups
     Route::prefix("$prefix/tasks/{task}/followups")->name('followups.')->group(function () {
         Route::post('/{followup?}', [TaskFollowupController::class, 'storeOrUpdate'])->name('storeOrUpdate');
@@ -173,6 +179,8 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
         Route::post('/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
     });
 
+    Route::post('/onlyoffice/callback', [PatientDocumentController::class, 'callback'])->name('onlyoffice.callback');
+
     Route::get("$prefix/upload-picture", [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
 };
 
@@ -209,10 +217,6 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
             Route::post('/send', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
         });
     
-        // Editor & download callbacks
-        Route::get('/editor/{filename}', [PatientDocumentController::class, 'edit'])->name('editor');
-        Route::get('/download/{filename}', [PatientDocumentController::class, 'download'])->name('documents.download');
-        Route::post('/onlyoffice/callback', [PatientDocumentController::class, 'callback'])->name('onlyoffice.callback');
     
         // Dropdowns
         Route::resource('dropdowns', DropDownController::class);

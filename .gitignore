@@ -2,6 +2,7 @@
 /vendor
 .env
 /public/storage/
+/public/storage/patient_docs/
 /public/storage/audio/
 /public/storage/consultants/
 /public/storage/debugbar/
