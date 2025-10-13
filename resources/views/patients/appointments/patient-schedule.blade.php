@@ -15,10 +15,10 @@
     @endphp
 
     @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Patients Appointment ',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('patients.index'),
-    'isListPage' => false
+        'pageTitle' => 'Patients Appointment ',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' =>guard_route('patients.index'),
+        'isListPage' => false
     ])
 
     <div class="card shadow-sm rounded-4 border-0">
