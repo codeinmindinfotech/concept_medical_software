@@ -4,230 +4,116 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
-use App\Models\PatientNote;
-use Illuminate\Http\JsonResponse;
+use App\Models\PatientDocument;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use PhpOffice\PhpWord\TemplateProcessor;
-use Illuminate\Support\Facades\File;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Shared\Html;
-use Firebase\JWT\JWT;
-
-use ZipArchive;
+use App\Models\DocumentTemplate;
+use Illuminate\Support\Facades\Storage;
 
 class PatientDocumentController extends Controller
 {
-
-    public function generateDocxWithReplacements($filePath, $replacements)
+    public function index(Patient $patient)
     {
-        // Load your existing docx template
-        $templateProcessor = new TemplateProcessor($filePath);
-
-        // Replace placeholders
-        foreach ($replacements as $placeholder => $value) {
-            // Note: TemplateProcessor expects placeholders wrapped like ${placeholder}
-            // So we can convert «Consultant.Name» to Consultant_Name (or other format)
-            // But PHPWord replaces ${placeholder} - so we'll do string replacements here
-
-            // Let's standardize placeholders as ${Consultant_Name}, ${Consultant_Description}
-            // So your docx placeholders should be like ${Consultant_Name} etc. or you do direct replace:
-            $templateProcessor->setValue($placeholder, $value);
-        }
-
-        // Save to a temp file or output directly
-        $tempFile = storage_path('app/public/generated_doc.docx');
-        $templateProcessor->saveAs($tempFile);
-
-        return $tempFile;
+        $documents = $patient->documents()->with('template')->get();
+        return view('patients.documents.index', compact('documents', 'patient'));
     }
 
-
-    // public function downloadGeneratedDoc()
-    // {
-    //     $filePath = 'https://conceptmedicalpm.ie/storage/document_templates/qwcOPjGeDvGAf6llbe1Cdg8VyOuJs9sRVwi9o6eR.docx';
-    //     //storage_path('app/public/document_templates/NPrZzyRSN67WSwWCLS4zh5PGFMoapdDYmvYXXArt.docx');
-
-    //     $replacements = [
-    //         'Consultant_Name' => 'Dr. John Smith',
-    //         'Consultant_Description' => 'Senior Consultant Cardiologist',
-    //     ];
-
-    //     $generatedFile = $this->generateDocxWithReplacements($filePath, $replacements);
-
-    //     return response()->download($generatedFile, 'consultant_letter.docx')->deleteFileAfterSend(true);
-    // }
-    public function replaceWordPlaceholders(string $templatePath, array $replacements, string $outputPath)
+    public function create(Patient $patient)
     {
-        $templatePath = storage_path('app/public/document_templates/E7fIUmRV9D8Mqnuc6E69omZe5oQoPEIMtpLIRQJd.docx');
-
-        $outputPath = storage_path('app/public/generated/generated-letter.docx');
-        $tempDir = storage_path('app/temp-docx');
-
-        if (!file_exists($templatePath)) {
-            throw new \Exception("Template not found at: $templatePath");
-        }
-
-        $zip = new \ZipArchive;
-    
-        // Clean temp dir
-        if (is_dir($tempDir)) {
-            \File::deleteDirectory($tempDir);
-        }
-        mkdir($tempDir);
-    
-        if ($zip->open($templatePath) === true) {
-            $zip->extractTo($tempDir);
-            $zip->close();
-    
-            // Load document.xml
-            $documentXmlPath = $tempDir . '/word/document.xml';
-            $content = file_get_contents($documentXmlPath);
-    
-            // Replace placeholders
-            foreach ($replacements as $key => $value) {
-                $content = str_replace("«{$key}»", $value, $content);
-            }
-    
-            // Save the modified content
-            file_put_contents($documentXmlPath, $content);
-    
-            // Recreate the .docx file
-            $newZip = new \ZipArchive;
-            if ($newZip->open($outputPath, \ZipArchive::CREATE) === true) {
-                $files = new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($tempDir),
-                    \RecursiveIteratorIterator::LEAVES_ONLY
-                );
-    
-                foreach ($files as $file) {
-                    if (!$file->isDir()) {
-                        $filePath     = $file->getRealPath();
-                        $relativePath = substr($filePath, strlen($tempDir) + 1);
-                        $newZip->addFile($filePath, $relativePath);
-                    }
-                }
-    
-                $newZip->close();
-            }
-    
-            \File::deleteDirectory($tempDir); // cleanup
-    
-            return $outputPath;
-        }
-    
-        throw new \Exception('Could not open the Word template.');
+        $templates = DocumentTemplate::all();
+        return view('patients.documents.create', compact('patient', 'templates'));
     }
-    
-    // public function downloadGeneratedDoc()
-    // {
-    //     // $templatePath = storage_path('app/public/document_templates/my-template.docx');
-    //     $templatePath = 'https://conceptmedicalpm.ie/storage/document_templates/qwcOPjGeDvGAf6llbe1Cdg8VyOuJs9sRVwi9o6eR.docx';
 
-    //     $replacements = [
-    //         'Consultant.Name' => 'Dr. John Smith',
-    //         'Consultant.Description' => 'M.B.,B.Ch, B.A.O.,F.R.C.S.I(Tr & Orth)',
-    //         'Consultant.Address1' => '123 Main St.',
-    //         'Consultant.Address2' => 'Suite 456',
-    //         'Consultant.Address3' => 'Dublin',
-    //         'Consultant.Address4' => 'Ireland',
-    //         'Consultant.PhoneNo' => '+353 1 123 4567',
-    //         'Consultant.FaxNo' => '+353 1 987 6543',
-    //         'Patient.Salutation' => 'Mr.',
-    //         'Patient.FirstName' => 'John',
-    //         'Patient.Surname' => 'Doe',
-    //         'Patient.DOB' => '01-Jan-1980',
-    //         'Patient.Address1' => 'Apt 1',
-    //         'Patient.Address2' => 'High Street',
-    //         'Patient.Address3' => 'Dublin',
-    //         'Patient.Address4' => '',
-    //         'Patient.Address5' => '',
-    //         'General.CurrentDate' => now()->format('d M Y'),
-    //     ];
-    
-    //     // Step 3: Cre
-
-    //     $outputPath = storage_path('app/public/generated/generated-letter.docx');
-
-    //     $this->replaceWordPlaceholders($templatePath, $replacements, $outputPath);
-
-    //     return response()->download($outputPath, 'Letter.docx')->deleteFileAfterSend(true);
-    // }
-
-
-    public function saveDoc(Request $request)
+    public function store(Request $request, Patient $patient)
     {
-        $phpWord = new PhpWord();
-        $section = $phpWord->addSection();
-
-        Html::addHtml($section, $request->input('content'));
-
-        $fileName = 'edited_' . time() . '.docx';
-        $savePath = storage_path("app/documents/$fileName");
-
-        $phpWord->save($savePath, 'Word2007');
-
-        return response()->download($savePath);
-    }
-    
-    public function edit($filename)
-    {
-        $documentUrl = route('documents.download', ['filename' => 'document_templates/'.$filename]);
-        $callbackUrl = route('onlyoffice.callback');
-
-        $config = [
-            'document' => [
-                'fileType' => pathinfo($filename, PATHINFO_EXTENSION),
-                'key' => md5($filename . time()),
-                'title' => $filename,
-                'url' => $documentUrl,
-            ],
-            'editorConfig' => [
-                'callbackUrl' => $callbackUrl,
-                'user' => [
-                    'id' => 'user-123',
-                    'name' => 'John Doe',
-                ]
-            ]
-        ];
-
-        // $secret = env('DOCUMENT_SERVER_JWT_SECRET');
-        // if ($secret) {
-        //     $config['token'] = JWT::encode($config, $secret, 'HS256');
-        // }
-
-        return view('docs.editor', [
-            'documentServer' => env('DOCUMENT_SERVER_URL'),
-            // 'config' => json_encode($config, JSON_UNESCAPED_SLASHES)
+        $request->validate([
+            'document_template_id' => 'required|exists:document_templates,id',
         ]);
+    
+        $template = DocumentTemplate::findOrFail($request->document_template_id);
+        $templatePath = storage_path('app/public/' . $template->file_path);
+    
+        // Prepare new file path
+        $newFileName = uniqid('patient_doc_') . '.docx';
+        $newStoragePath = "patient_docs/{$newFileName}";
+        $newFullPath = storage_path("app/public/{$newStoragePath}");
+    
+        // ✅ Ensure destination folder exists
+        $directoryPath = storage_path('app/public/patient_docs');
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0775, true);
+        }
+    
+        // ✅ Copy template to new file
+        if (!copy($templatePath, $newFullPath)) {
+            return back()->with('error', 'Could not copy template file.');
+        }
+    
+        // 🔁 Replace placeholders
+        $this->replaceDocxPlaceholders($newFullPath, [
+            '{{name}}' => $patient->full_name,
+            '{{dob}}' => $patient->date_of_birth,
+        ]);
+    
+        // 💾 Save in database
+        PatientDocument::create([
+            'patient_id' => $patient->id,
+            'document_template_id' => $template->id,
+            'file_path' => $newStoragePath,
+        ]);
+    
+        return redirect()->route('patient-documents.index', $patient)
+            ->with('success', 'Document created successfully.');
+    }
+    
+    
+
+    public function edit(Patient $patient, $documentId)
+    {
+        $templates = DocumentTemplate::all();
+        $document = PatientDocument::where('id', $documentId)
+            ->where('patient_id', $patient->id)
+            ->firstOrFail();
+       
+        abort_if($document->patient_id !== $patient->id, 403);
+
+        return view('patients.documents.edit', compact('patient', 'document', 'templates'));
     }
 
-    public function download($filename)
+    public function update(Request $request, Patient $patient, PatientDocument $document)
     {
-        $path = storage_path("app/public/{$filename}");
-        if (!file_exists($path)) {
-            abort(404);
-        }
-        return response()->file($path);
+        // OnlyOffice should handle the save via callback
+        return back()->with('info', 'Documents are auto-saved via OnlyOffice.');
     }
 
-    public function callback(Request $request)
+    public function destroy(Patient $patient, PatientDocument $document)
     {
-        $data = $request->all();
+        abort_if($document->patient_id !== $patient->id, 403);
 
-        // OnlyOffice status 2 => “MustSave”
-        if (isset($data['status']) && $data['status'] === 2) {
-            $fileUrl = $data['url'];
-            $filename = 'saved_' . time() . '.' . pathinfo($fileUrl, PATHINFO_EXTENSION);
+        Storage::delete("public/" . $document->file_path);
+        $document->delete();
 
-            $content = file_get_contents($fileUrl);
-            file_put_contents(storage_path("app/public/{$filename}"), $content);
+        return redirect()->route('patient-documents.index', $patient)
+            ->with('success', 'Document deleted.');
+    }
+
+    protected function replaceDocxPlaceholders($filePath, array $replacements)
+    {
+        $zip = new \ZipArchive;
+
+        if ($zip->open($filePath) === true) {
+            $content = $zip->getFromName('word/document.xml');
+
+            foreach ($replacements as $key => $value) {
+                $content = str_replace($key, $value, $content);
+            }
+
+            $zip->addFromString('word/document.xml', $content);
+            $zip->close();
+        } else {
+            throw new \Exception("Could not open DOCX file for placeholder replacement.");
         }
-
-        return response()->json(['error' => 0]);
     }
 
 
 }
+

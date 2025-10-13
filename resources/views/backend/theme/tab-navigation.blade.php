@@ -85,6 +85,10 @@
                     <i class="fas fa-comments me-2"></i> Communications
                 </a>
 
+                <a href="{{ guard_route('patient-documents.index', ['patient' => $patient]) }}" class="{{ btnClass('patient-documents.*', 'warning') }}">
+                    <i class="fas fa-comments me-2"></i> Documents
+                </a>
+
                 <a href="{{ guard_route('patients.appointments.schedule', ['patient' => $patient]) }}" class="{{ btnClass('patients.appointments.*', 'primary') }}">
                     <i class="fas fa-calendar-check me-2"></i> Appointments 
                     <span class="badge bg-primary ">
