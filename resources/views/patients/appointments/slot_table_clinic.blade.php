@@ -18,7 +18,13 @@
                  // Default message
                 $defaultMessage = "Hello, I wanted to confirm my appointment for " . $time;
                 $phoneNumber = "+918460870599";// $appointment->patient->phone_number; // Patient phone number
-            
+               $link="#";
+               $target= "_self";
+                if($isSuperAdmin || $isPatientUserEditingOwnAppointment || $isCurrentPatient)
+                {
+                    $target ="_blank";
+                    $link= guard_route('patients.show', ['patient' => $appointment->patient->id]);
+                }
             @endphp
 
             <tr class="align-middle"
@@ -48,9 +54,9 @@
                                 <i class="fas fa-user"></i>
                             </div>
                         @endif
-                        <a target="_blank"
+                        <a target="{{$target}}"
                             class="text-decoration-none text-dark fw-semibold"
-                            href="{{guard_route('patients.show', ['patient' => $appointment->patient->id]) }}">
+                            href="{{$link}}">
                             {{ $appointment->patient->full_name }}
                         </a>
                     </div>
@@ -79,12 +85,13 @@
                     </button>
                 </td>
                 <td>
+                    @if($isSuperAdmin || $isPatientUserEditingOwnAppointment || $isCurrentPatient)
+
                     <div class="dropdown">
                         <button class="btn btn-sm btn-light border dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                            @if($isSuperAdmin || $isPatientUserEditingOwnAppointment || $isCurrentPatient)
                                 <li>
                                     <a href="javascript:void(0)" class="dropdown-item edit-appointment"
                                         data-id="{{ $appointment->id }}"
@@ -113,7 +120,7 @@
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                            @endif
+                            
                             <li>
                                 <a class="dropdown-item" target="_blank" href="{{guard_route('patients.edit', $appointment->patient->id) }}">
                                     <i class="fa-solid fa-user-pen me-2"></i> Edit Patient
@@ -136,6 +143,8 @@
                             </li>
                         </ul>
                     </div>
+                    @endif
+
                 </td>
             </tr>
         @endforeach

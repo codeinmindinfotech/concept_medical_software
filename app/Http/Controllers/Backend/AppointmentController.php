@@ -21,12 +21,12 @@ class AppointmentController extends Controller
     public function schedulePage(Request $request, ?Patient $patient = null)
     {
         $this->authorize('viewAny', Appointment::class);
-        if (has_role('patient')) {
-            $user = auth()->user();
-            $patients = Patient::companyOnly()->with('title')->where('id', $user->id)->paginate(1);
-        } else {
+        // if (has_role('patient')) {
+        //     $user = auth()->user();
+        //     $patients = Patient::companyOnly()->with('title')->where('id', $user->id)->paginate(1);
+        // } else {
             $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
-        }
+        // }
         
         $clinics = Clinic::companyOnly()->get()->map(function ($clinic) {
             return $clinic;
