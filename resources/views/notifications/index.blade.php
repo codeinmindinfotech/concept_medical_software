@@ -8,10 +8,26 @@
             ['label' => 'Notifictaion List'],
         ];
     @endphp
+    @php
+        $currentGuard = getCurrentGuard();
+        $backUrl = "";
+        if ($currentGuard === 'doctor') {
+            $backUrl = guard_route('notification.form"'); // adjust if different
+        } elseif ($currentGuard === 'clinic') {
+            $backUrl = guard_route('clinic.notification.form');
+        } elseif (has_role('superadmin')) {
+            $backUrl = guard_route('notifications.form');
+        } elseif (has_role('manager')) {
+            $backUrl = guard_route('notifications.managerform');
+        } elseif ($currentGuard === 'patient') {
+            $backUrl = guard_route('patient.notification.form');
+        } 
+    @endphp
 
     @include('backend.theme.breadcrumb', [
         'pageTitle' => 'Notifictaion List',
         'breadcrumbs' => $breadcrumbs,
+        'backUrl' => $backUrl,
         'isListPage' => true
     ])
     
