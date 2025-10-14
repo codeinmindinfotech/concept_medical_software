@@ -24,14 +24,14 @@
     <form action="{{ route('patient.patient.notification.send') }}" method="POST">
         @csrf
         <div class="mb-3">
-            <label for="clinic_id" class="form-label">Select Recipients:<span class="txt-error">*</span></label>
-            <select name="recipients[]" id="clinic_id" class="select2" multiple required>
-                <option value="">-- Select Clinic --</option>
-                @foreach($clinics as $clinic)
-                    <option value="clinic-{{ $clinic->id }}">{{ $clinic->name }}</option>
+            <label for="manager_id" class="form-label">Select Managers:<span class="txt-error">*</span></label>
+            <select name="recipients[]" id="manager_id" class="select2" multiple required>
+                <option value="">-- Select Manager --</option>
+                @foreach($managers as $manager)
+                    <option value="manager-{{ $manager->id }}">{{ $manager->name }}</option>
                 @endforeach
             </select>
-            @error('clinic_id')
+            @error('manager_id')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>

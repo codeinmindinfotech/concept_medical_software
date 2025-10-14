@@ -4,17 +4,17 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-    ['label' => 'Notifications', 'url' =>guard_route('notifications.index')],
-    ['label' => 'Send Notification to Patients or Clinics'],
+        ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+        ['label' => 'Notifications', 'url' =>guard_route('notifications.index')],
+        ['label' => 'Send Notification to Patients or Clinics'],
     ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Send Notification to Patients or Clinics',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('notifications.index'),
-    'isListPage' => false
+        'pageTitle' => 'Send Notification to Patients or Clinics',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' =>guard_route('notifications.index'),
+        'isListPage' => false
     ])
 
     @if(session('success'))
@@ -24,7 +24,20 @@
     <form action="{{ route('doctor.notification.send') }}" method="POST">
         @csrf
         <div class="mb-3">
-            <label for="patient_id" class="form-label">Select Recipients:<span class="txt-error">*</span></label>
+            <label for="manager_id" class="form-label">Select Managers:<span class="txt-error">*</span></label>
+            <select name="recipients[]" id="manager_id" class="select2" multiple required>
+                <option value="">-- Select Manager --</option>
+                @foreach($managers as $manager)
+                    <option value="manager-{{ $manager->id }}">{{ $manager->name }}</option>
+                @endforeach
+            </select>
+            @error('manager_id')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="patient_id" class="form-label">Select Patients:<span class="txt-error">*</span></label>
             <select name="recipients[]" id="patient_id" class="select2" multiple required>
                 <option value="">-- Select Patient --</option>
                 @foreach($patients as $patient)

@@ -38,7 +38,7 @@
                     $utilityRoutes = ['/send-notification*','/send-patient-notification*','/send-clinic-notification*', '/doctors*', '/consultants*', '/companies*', '/insurances*', '/chargecodes*', '/clinics*'];
                     $utilityPermissions = ['doctor-list', 'consultant-list', 'company-list', 'insurance-list', 'chargecode-list', 'clinic-list','notification-list'];
                     $hasUtilitiesPermission = collect($utilityPermissions)->contains(fn($perm) => has_permission($perm)) || has_role('superadmin') || has_role('manager');
-                   echo  $isUtilitiesOpen = collect($utilityRoutes)->contains(fn($route) => is_guard_route($route));
+                    $isUtilitiesOpen = collect($utilityRoutes)->contains(fn($route) => is_guard_route($route));
                     $currentGuard = getCurrentGuard();
                 @endphp
 
