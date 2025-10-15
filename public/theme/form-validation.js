@@ -97,7 +97,11 @@ document.addEventListener('DOMContentLoaded', () => {
         patientId = document.getElementById('patient-id').value || '';
       }
       
-      const selectedClinic = document.getElementById('clinic-select')?.value || null;
+      const selectedClinic =
+    document.getElementById('appointment-clinic-id')?.value ||
+    document.getElementById('clinic-select')?.value ||
+    null;
+      // const selectedClinic = document.getElementById('clinic-select')?.value || null;
       
       const data = {
           appointment_id: id,

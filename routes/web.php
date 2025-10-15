@@ -42,6 +42,7 @@ use App\Http\Controllers\Backend\ManagerNotificationController;
 use App\Http\Controllers\Backend\Master\DocumentTemplateController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
+use App\Http\Controllers\Backend\PatientAptController;
 use App\Http\Controllers\Backend\PatientDocumentController;
 use App\Http\Controllers\Backend\PatientMessageController;
 use App\Http\Controllers\Backend\ReportController;
@@ -107,6 +108,7 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
     // Tasks, Recalls, Fee Notes, Waiting Lists, Communications, SMS
     Route::prefix("$prefix")->group(function () {
+        Route::resource('apts', PatientAptController::class)->except(['show','edit','update','destroy','create'])->names('apts');
         Route::resource('tasks', TaskController::class)->except(['show'])->names('tasks');
         Route::resource('recalls', RecallController::class)->except(['show'])->names('recalls');
         Route::resource('fee-notes', FeeNoteController::class)->except(['show'])->names('fee-notes');

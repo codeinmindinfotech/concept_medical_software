@@ -70,11 +70,12 @@
                         <div class="col-md-4">
                             <label class="form-label">Slots<span class="txt-error">*</span></label>
                             <div id="slot-options">
-                                @for ($i = 1; $i <= 10; $i++) <div class="form-check form-check-inline">
-                                    <input class="form-check-input apt-slot-radio" type="radio" name="apt_slots" id="slot{{ $i }}" {{ $i==1 ? 'checked' : '' }} value="{{ $i }}">
-                                    <label class="form-check-label" for="slot{{ $i }}">{{ $i }}</label>
-                            </div>
-                            @endfor
+                                @for ($i = 1; $i <= 10; $i++) 
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input apt-slot-radio" type="radio" name="apt_slots" id="slot{{ $i }}" {{ $i==1 ? 'checked' : '' }} value="{{ $i }}">
+                                        <label class="form-check-label" for="slot{{ $i }}">{{ $i }}</label>
+                                    </div>
+                                @endfor
                         </div>
                     </div>
 
@@ -87,6 +88,12 @@
                         <label class="form-label">Appointment Note</label>
                         <textarea class="form-control" id="appointment_note" name="appointment_note" rows="3" placeholder="Appointment Notes"></textarea>
                     </div>
+
+                    <div class="col-md-6">
+                        <label for="clinic_consultant" class="form-label">Consultant</label>
+                        <input type="text" id="clinic_consultant" class="form-control" readonly>
+                    </div>
+
                     @if ($flag == 1)
                         <div class="col-md-6" >
                             <label for="appointment-clinic-id" class="form-label fw-semibold">Select Clinic:</label>
@@ -100,6 +107,7 @@
                             </select>
                         </div>
                     @endif
+
                 </div>
             </div>
 

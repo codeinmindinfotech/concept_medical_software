@@ -107,6 +107,11 @@
                             </div>
                         @endif
 
+                        <div class="col-md-6">
+                            <label for="consultant" class="form-label">Consultant</label>
+                            <input type="text" id="consultant" class="form-control" readonly >
+                        </div>
+
                         <div class="col-12">
                             <label for="notes" class="form-label">Notes</label>
                             <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Additional notes"></textarea>

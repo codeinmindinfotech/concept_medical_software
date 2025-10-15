@@ -63,7 +63,7 @@ class AppServiceProvider extends ServiceProvider
                     $query->where('recall_date', '>', $today);
                 },
                 'appointments' => function($query) use ($today) {
-                    $query->where('appointment_date', '>', $today);
+                    // $query->where('appointment_date', '>', $today);
                 },
                 'notes' => function($query) use ($today) {
                     $query->where('created_at', '>', $today);
