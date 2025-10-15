@@ -85,6 +85,10 @@
                     <i class="fas fa-comments me-2"></i> Communications
                 </a>
 
+                <a href="{{ guard_route('apts.index', ['patient' => $patient]) }}" class="{{ btnClass('apts.*', 'primary') }}">
+                    <i class="fas fa-comments me-2"></i> Apt/Surgery
+                </a>
+
                 <a href="{{ guard_route('patient-documents.index', ['patient' => $patient]) }}" class="{{ btnClass('patient-documents.*', 'warning') }}">
                     <i class="fas fa-comments me-2"></i> Documents
                     <span class="badge bg-warning  border border-white">

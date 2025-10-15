@@ -59,10 +59,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     
     <script src="{{ asset('theme/main/js/scripts.js') }}"></script>
-     @stack('scripts')
     
- 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -75,20 +72,25 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
     <!-- Buttons extension JS -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 
-<!-- JSZip for Excel -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<!-- pdfmake for PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<!-- Buttons for Excel/PDF -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    @stack('scripts')
+    <!-- JSZip for Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- pdfmake for PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <!-- Buttons for Excel/PDF -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+
+  
+
 
     {{-- <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="{{ asset('theme/main/js/datatables-simple-demo.js') }}"></script> --}}
     <!-- Initialize Select2 -->
+    
     <script>
         $(document).ready(function() {
             $('#insurance_id').select2({
@@ -162,21 +164,21 @@
 
             ajaxPaginate(`#${container}`, pageUrl);
         });
-
+       
     </script>
-@php
-$guards = ['doctor', 'patient', 'clinic', 'web'];
-$user = null;
-$currentGuard = null;
+    @php
+        $guards = ['doctor', 'patient', 'clinic', 'web'];
+        $user = null;
+        $currentGuard = null;
 
-foreach ($guards as $guard) {
-    if (auth($guard)->check()) {
-        $user = auth($guard)->user();
-        $currentGuard = $guard;
-        break;
-    }
-}
-@endphp
+        foreach ($guards as $guard) {
+            if (auth($guard)->check()) {
+                $user = auth($guard)->user();
+                $currentGuard = $guard;
+                break;
+            }
+        }
+    @endphp
 
 @if ($user)
 <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>

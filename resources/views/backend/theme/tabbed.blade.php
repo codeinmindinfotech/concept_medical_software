@@ -1,12 +1,13 @@
 @extends('backend.theme.default') 
-<style>
-#tab-nav {
-    position: sticky;
-    top: 20px;
-    z-index: 1020; /* above content */
-}
-</style>
+
 @section('content')
+<style>
+    #tab-nav {
+        position: sticky;
+        top: 20px;
+        z-index: 1020; /* above content */
+    }
+</style>
 <div class="container-fluid">
     <div class="row">
         {{-- <div class="card shadow-sm mb-4">
@@ -40,14 +41,14 @@
         </div> --}}
         
         {{-- Tab Content --}}
-        <div class="col-md-10">
+        <div class="col-12 col-md-10">
             <div class="tab-content" id="tab-content">
                 @yield('tab-content')
             </div>
         </div>
 
         {{-- Sidebar Tabs --}}
-        <div class="col-md-2">
+        <div class="col-12 col-md-2">
             <div class="nav flex-column nav-pills position-sticky" id="tab-nav"
                  style="z-index: 1020;top: 20px;"
                  role="tablist" aria-orientation="vertical">
