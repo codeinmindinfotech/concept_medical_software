@@ -87,6 +87,9 @@
 
                 <a href="{{ guard_route('apts.index', ['patient' => $patient]) }}" class="{{ btnClass('apts.*', 'primary') }}">
                     <i class="fas fa-comments me-2"></i> Apt/Surgery
+                    <span class="badge bg-primary  border border-white">
+                        {{ $patients->appointments_count }}
+                    </span>
                 </a>
 
                 <a href="{{ guard_route('patient-documents.index', ['patient' => $patient]) }}" class="{{ btnClass('patient-documents.*', 'warning') }}">
