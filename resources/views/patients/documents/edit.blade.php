@@ -27,13 +27,11 @@ $breadcrumbs = [
                 'templates' => $templates,
                 'document'=> $document
                 ])
-                
 </form>
-{{ asset('storage/' . $document->file_path) }}
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="http://137.184.194.64/web-apps/apps/api/documents/api.js"></script>
+<script type="text/javascript" src="https://137.184.194.64/web-apps/apps/api/documents/api.js"></script>
 
 <script>
     var docEditor = new DocsAPI.DocEditor("placeholder", {
@@ -46,7 +44,7 @@ $breadcrumbs = [
         documentType: "word",
         editorConfig: {
             mode: "edit",
-            // callbackUrl: "http://137.184.194.64/onlyoffice/callback",
+            // callbackUrl: "https://137.184.194.64/onlyoffice/callback",
             callbackUrl: "{{ guard_route('onlyoffice.callback', $document->id) }}",
             user: {
                 id: "{{ auth()->id() }}",
