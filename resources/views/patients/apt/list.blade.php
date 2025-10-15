@@ -3,7 +3,7 @@
         <tr>
             <th>#</th>
             <th>Type</th>
-            <th>Strt Time</th>
+            <th>Start Time</th>
             <th>Appointment Date</th>
             <th>Note</th>
             <th>Location</th>
