@@ -86,7 +86,7 @@ class PatientDocumentController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => guard_route('onlyoffice.callback', $document->id),
+                'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
                 'user' => [
                     'id' => (string) auth()->id(),
                     'name' => auth()->user()->name,
