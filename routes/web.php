@@ -53,6 +53,8 @@ Route::get('/', function () {
     return view('frontend.index');
 });
 
+Route::post('/onlyoffice/callback/{document}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');
+
 Auth::routes();
 
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -60,7 +62,6 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 Route::post('/custom-password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
     ->name('custom.password.email');
 
-Route::post('/onlyoffice/callback/{document}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');
 
 Route::prefix('superadmin')->group(function () {
     Route::get('login', [SuperadminLoginController::class, 'showLoginForm'])->name('superadmin.login');
