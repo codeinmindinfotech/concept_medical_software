@@ -60,6 +60,8 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 Route::post('/custom-password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
     ->name('custom.password.email');
 
+Route::post('/onlyoffice/callback/{document}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');
+
 Route::prefix('superadmin')->group(function () {
     Route::get('login', [SuperadminLoginController::class, 'showLoginForm'])->name('superadmin.login');
     Route::post('login', [SuperadminLoginController::class, 'login'])->name('superadmin.login.submit');
@@ -121,7 +123,6 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     Route::prefix("$prefix")->group(function () {
         Route::resource('patient-documents', PatientDocumentController::class)->except(['show'])->names('patient-documents');
     });
-    Route::post('/onlyoffice/callback/{document}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');
 
     // Follow-ups
     Route::prefix("$prefix/tasks/{task}/followups")->name('followups.')->group(function () {
