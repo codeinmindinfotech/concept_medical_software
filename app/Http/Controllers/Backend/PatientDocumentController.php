@@ -8,6 +8,7 @@ use App\Models\PatientDocument;
 use Illuminate\Http\Request;
 use App\Models\DocumentTemplate;
 use Illuminate\Support\Facades\Storage;
+use Firebase\JWT\JWT;
 
 class PatientDocumentController extends Controller
 {
@@ -64,8 +65,7 @@ class PatientDocumentController extends Controller
         return redirect()->route('patient-documents.index', $patient)
             ->with('success', 'Document created successfully.');
     }
-    
-    
+
 
     public function edit(Patient $patient, $documentId)
     {
@@ -73,10 +73,36 @@ class PatientDocumentController extends Controller
         $document = PatientDocument::where('id', $documentId)
             ->where('patient_id', $patient->id)
             ->firstOrFail();
-       
+
         abort_if($document->patient_id !== $patient->id, 403);
 
-        return view('patients.documents.edit', compact('patient', 'document', 'templates'));
+        $docConfig = [
+            'document' => [
+                'fileType' => 'docx',
+                'key' => $document->id . '-' . strtotime($document->updated_at),
+                'title' => 'Document',
+                'url' => asset('storage/' . $document->file_path),
+            ],
+            'documentType' => 'word',
+            'editorConfig' => [
+                'mode' => 'edit',
+                'callbackUrl' => guard_route('onlyoffice.callback', $document->id),
+                'user' => [
+                    'id' => (string) auth()->id(),
+                    'name' => auth()->user()->name,
+                ],
+                'customization' => [
+                    'forcesave' => true,
+                ],
+            ],
+        ];
+
+        // Generate JWT token using your secret from .env
+        $jwtSecret = env('ONLYOFFICE_JWT_SECRET');
+
+        $token = JWT::encode($docConfig, $jwtSecret, 'HS256');
+
+        return view('patients.documents.edit', compact('patient', 'document', 'templates', 'docConfig', 'token'));
     }
 
     public function update(Request $request, Patient $patient, PatientDocument $document)
