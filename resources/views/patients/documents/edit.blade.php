@@ -36,29 +36,8 @@ $breadcrumbs = [
 <script>
     var docConfig = @json($docConfig);
     docConfig.token = "{{ $token }}";
-
+    console.log(docConfig.token);
     var docEditor = new DocsAPI.DocEditor("placeholder", docConfig);
-
-    // var docEditor = new DocsAPI.DocEditor("placeholder", {
-    //     document: {
-    //         fileType: "docx",
-    //         key: "{{ $document->id }}-{{ strtotime($document->updated_at) }}",
-    //         title: "Document",
-    //         url: "{{ asset('storage/' . $document->file_path) }}"
-    //     },
-    //     documentType: "word",
-    //     editorConfig: {
-    //         mode: "edit",
-    //         // callbackUrl: "https://137.184.194.64/onlyoffice/callback",
-    //         callbackUrl: "{{ guard_route('onlyoffice.callback', $document->id) }}",
-    //         user: {
-    //             id: "{{ auth()->id() }}",
-    //             name: "{{ auth()->user()->name }}"
-    //         },
-    //         customization: {
-    //             forcesave: true
-    //         }
-    //     }
-    // });
+    console.log(docEditor);
 </script>
 @endpush
