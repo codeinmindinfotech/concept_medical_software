@@ -8,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($values as $index => $val)
+        @foreach ($values as $index => $val)
         <tr>
             <td>{{ $index + 1 }}</td>
             <td><a href="{{guard_route('dropdowns.edit', [$dropDownId]) }}" >{{ $val->dropdown->name??'' }}</a></td>
@@ -21,11 +21,7 @@
                 @endcan
             </td>
         </tr>
-        @empty
-        <tr>
-            <td colspan="4">No values found.</td>
-        </tr>
-        @endforelse
+        @endforeach
     </tbody>    
 </table>
 {{-- {{ $values->appends(['dropDownId' => $dropDownId])->links('pagination::bootstrap-5') }} --}}

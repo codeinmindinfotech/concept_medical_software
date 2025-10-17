@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($apts as $index => $apt)
+        @foreach ($apts as $index => $apt)
             @php
                 $isClinic = $apt->clinic->clinic_type === 'clinic';
                 $borderColor = $apt->clinic->color ?? '';
@@ -73,10 +73,6 @@
                 </td>
                 <td>{{$apt->appointmentStatus->value??''}}</td>
             </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center">No apts found.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>

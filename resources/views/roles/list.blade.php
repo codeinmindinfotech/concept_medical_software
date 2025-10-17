@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>    
-    @forelse($roles as $key => $role)
+    @foreach($roles as $key => $role)
         <tr>
             <td>{{ ++$key }}</td>
             <td>{{ $role->name }}</td>
@@ -27,10 +27,6 @@
                 @endcan
             </td>
         </tr>
-        @empty
-        <tr>
-            <td colspan="3">There are no Patients.</td>
-        </tr>
-    @endforelse
+    @endforeach
     </tbody>    
 </table>

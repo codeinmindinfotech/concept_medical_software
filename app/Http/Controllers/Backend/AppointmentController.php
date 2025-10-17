@@ -54,7 +54,7 @@ class AppointmentController extends Controller
 
         $appointments = $query->get()->map(function ($appointment) {
             return [
-                'title' => '✔ ' . optional($appointment->patient)->full_name . " " . $appointment->start_time . "-" . $appointment->end_time,
+                'title' => optional($appointment->patient)->full_name . " " . $appointment->start_time . "-" . $appointment->end_time,
                 'borderColor' => optional($appointment->clinic)->color ?? '#000000',
                 'start' => $appointment->appointment_date . 'T' . format_time($appointment->start_time),
                 // 'end' => $appointment->appointment_date . 'T' . $appointment->end_time,
@@ -65,7 +65,6 @@ class AppointmentController extends Controller
                 ],
             ];
         });
-
         return response()->json($appointments);
     }
 

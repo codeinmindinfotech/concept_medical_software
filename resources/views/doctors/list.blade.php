@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($doctors as $i => $doctor)
+        @foreach ($doctors as $i => $doctor)
         <tr>
             <td>{{ ++$i }}</td>
             <td>{{ $doctor->name }}</td>
@@ -32,11 +32,7 @@
                 </form>
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="3">There are no doctors.</td>
-            </tr>
-        @endforelse
+       @endforeach
     </tbody>    
 </table>
 {{-- {!! $doctors->links('pagination::bootstrap-5') !!} --}}

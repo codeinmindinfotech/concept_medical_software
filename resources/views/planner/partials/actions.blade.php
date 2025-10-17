@@ -18,6 +18,7 @@
             <a href="javascript:void(0)" 
                 class="dropdown-item text-success edit-appointment" 
                 data-id="{{ $appointment->id }}"
+                data-consultant="{{ $appointment->patient->consultant->name }}"
                 data-action="{{guard_route('patients.appointments.store', ['patient' => $appointment->patient->id]) }}" 
                 data-clinic-id="{{ $appointment->clinic_id }}" 
                 data-dob="{{ format_date($appointment->patient->dob) }}" 

@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!form) return;
   form.addEventListener('submit', async function (e) {
       e.preventDefault();
-
+      const flag = document.getElementById('flag').value;
       const id = document.getElementById('appointment-id').value || '';
       const patient_input = document.getElementById('appointment-patient-id');
       var patientId = '';
@@ -138,14 +138,18 @@ document.addEventListener('DOMContentLoaded', () => {
                   showConfirmButton: false
               });
               bootstrap.Modal.getInstance(document.getElementById('bookAppointmentModal')).hide();
-              if (typeof loadSlotsAndAppointments === 'function') {
-                  loadSlotsAndAppointments();
-              }
-              if (typeof refreshCalendarEvents === 'function') {
-                refreshCalendarEvents();
-              }
-              if (typeof initCalendar === 'function') {
-                initCalendar();
+              if (flag == 1) {
+                location.reload();
+              } else {
+                  if (typeof loadSlotsAndAppointments === 'function') {
+                    loadSlotsAndAppointments();
+                  }
+                  if (typeof refreshCalendarEvents === 'function') {
+                    refreshCalendarEvents();
+                  }
+                  if (typeof initCalendar === 'function') {
+                    initCalendar();
+                  }
               }
           } else if (response.status === 422 && result.errors) {
               handleValidationErrors(result.errors, form);

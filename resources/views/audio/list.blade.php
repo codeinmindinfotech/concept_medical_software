@@ -9,7 +9,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($audios as $index => $audio)
+        @foreach ($audios as $index => $audio)
         <tr>
             <td>{{ $index + 1 }}</td>
             <td>
@@ -43,10 +43,6 @@
 
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="4" class="text-center">No audio found.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>

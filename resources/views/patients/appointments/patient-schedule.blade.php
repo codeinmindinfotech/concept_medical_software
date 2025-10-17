@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function () {
             eventDidMount: function(info) {
                 if (info.event.display === 'background') {
                     info.el.style.backgroundColor = 'transparent';
-                    info.el.style.borderColor = info.event.borderColor || info.event.backgroundColor || '#592222';
+                    info.el.style.borderColor = info.event.borderColor  || '#592222'; //|| info.event.backgroundColor
                     info.el.style.borderWidth = '2px';       // ✅ add this
                     info.el.style.borderStyle = 'solid';     // ✅ and this
                     info.el.style.opacity = 1;
@@ -590,7 +590,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const title = document.createElement('div');
                 title.className = 'fc-event-title';
                 title.innerText = arg.event.title;
-                title.style.backgroundColor = arg.event.borderColor;
+                title.style.borderColor = arg.event.borderColor;
+                // title.style.backgroundColor = arg.event.borderColor;
                 title.style.setProperty('color', 'black', 'important'); 
 
                 container.appendChild(dot);
@@ -771,6 +772,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const note = button.dataset.note;
             const patient_id = button.dataset.patient_id;
             const dob = button.dataset.dob;
+            const clinic_consultant = button.dataset.consultant;
 
             document.getElementById('bookAppointmentLabel').textContent = 'Edit Appointment';
             document.getElementById('modal-submit-btn').textContent = 'Update Appointment';
@@ -782,6 +784,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('end_time').value = end;
             document.getElementById('patient_need').value = need;
             document.getElementById('appointment_note').value = note;
+            document.getElementById('appointment-id').value = id;
+            document.getElementById('clinic_consultant').value = clinic_consultant;
             
             const patientName = "{{ $patient ? $patient->full_name : ""}}";
 
@@ -821,6 +825,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const ward = button.dataset.ward;
             const allergy = button.dataset.allergy;
             const clinic_id = button.dataset.clinic_id;
+            const consultant = button.dataset.consultant;
 
             document.getElementById('manualBookingLabel').textContent = 'Edit Appointment';
             document.getElementById('booking-submit-btn').textContent = 'Update Appointment';
@@ -837,6 +842,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('ward').value = ward;
             document.getElementById('allergy').value = allergy;
             document.getElementById('hospital-clinic-id').value = clinic_id;
+            document.getElementById('consultant').value = consultant;
 
             document.getElementById('hospital-dob').value = "{{ $patient ? format_date($patient->dob): '' }}";
             const patientName = "{{ $patient ? $patient->full_name : ''}}";
@@ -950,8 +956,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function openManualBookingModal() {
         const form = document.getElementById('manualBookingForm');
-    
         form.reset();
+
         const patientName = "{{ $patient ? $patient->full_name : '' }}";
         const modalPatientNameInput = document.getElementById('hospital-patient-name');
         if (modalPatientNameInput) {

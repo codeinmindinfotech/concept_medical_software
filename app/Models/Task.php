@@ -2,12 +2,12 @@
 
 namespace App\Models;
 use App\Traits\BelongsToCompany;
-
+use App\Traits\HasSoftDeletedPatientScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    use BelongsToCompany;
+    use BelongsToCompany,HasSoftDeletedPatientScope;
     protected $fillable = [
         'company_id',
         'patient_id',
@@ -24,7 +24,7 @@ class Task extends Model
 
     public function patient()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class)->withTrashed();
     }
 
     public function creator()

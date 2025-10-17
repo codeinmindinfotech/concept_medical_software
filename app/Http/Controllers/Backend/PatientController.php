@@ -106,7 +106,7 @@ class PatientController extends Controller
     {
         $this->authorize('create', Patient::class);
         $validated = $request->validated();
-    
+
         $validated['rip'] = $request->has('rip');
         $validated['sms_consent'] = $request->has('sms_consent');
         $validated['email_consent'] = $request->has('email_consent');

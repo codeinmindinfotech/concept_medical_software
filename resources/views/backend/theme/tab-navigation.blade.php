@@ -26,7 +26,7 @@
                 <a href="{{ guard_route('patients.notes.index', $patient->id) }}" class="{{ btnClass('patients.notes.*', 'success') }}">
                     <i class="fa-solid fa-notes-medical me-2"></i> Notes 
                     <span class="badge bg-success  border border-white">
-                        {{ $patients->notes_count }}
+                        {{ $patients->notes_count?? 0 }}
                     </span>
                 </a>
 
@@ -37,7 +37,7 @@
                 <a href="{{ guard_route('patients.history.index', $patient->id) }}" class="{{ btnClass('patients.history.*', 'warning') }}">
                     <i class="fas fa-history me-2"></i> History
                     <span class="badge bg-warning  border border-white">
-                        {{ $patients->histories_count }}
+                        {{ $patients->histories_count??0 }}
                     </span>
                 </a>
 
@@ -52,28 +52,28 @@
                 <a href="{{ guard_route('tasks.index', ['patient' => $patient]) }}" class="{{ btnClass('tasks.*', 'info') }}">
                     <i class="fas fa-tasks me-2"></i> Tasks 
                     <span class="badge bg-info border border-white ">
-                        {{ $patients->tasks_count }}
+                        {{ $patients->tasks_count??0 }}
                     </span>
                 </a>
 
                 <a href="{{ guard_route('recalls.index', ['patient' => $patient]) }}" class="{{ btnClass('recalls.*', 'success') }}">
                     <i class="fas fa-bell me-2"></i> Recalls 
                     <span class="badge bg-success  border border-white">
-                        {{ $patients->recall_count }}
+                        {{ $patients->recall_count??0 }}
                     </span>
                 </a>
 
                 <a href="{{ guard_route('waiting-lists.index', ['patient' => $patient]) }}" class="{{ btnClass('waiting-lists.*', 'warning') }}">
                     <i class="fas fa-notes-medical me-2"></i> Waiting List
                     <span class="badge bg-warning  border border-white">
-                        {{ $patients->waiting_lists_count }}
+                        {{ $patients->waiting_lists_count??0 }}
                     </span>
                 </a>
 
                 <a href="{{ guard_route('fee-notes.index', ['patient' => $patient]) }}" class="{{ btnClass('fee-notes.*', 'secondary') }}">
                     <i class="fas fa-money-check-alt me-2"></i> Fee Notes
                     <span class="badge bg-secondary border border-white ">
-                        {{ $patients->fee_note_list_count }}
+                        {{ $patients->fee_note_list_count??0 }}
                     </span>
                 </a>
 
@@ -88,21 +88,21 @@
                 <a href="{{ guard_route('apts.index', ['patient' => $patient]) }}" class="{{ btnClass('apts.*', 'primary') }}">
                     <i class="fas fa-comments me-2"></i> Apt/Surgery
                     <span class="badge bg-primary  border border-white">
-                        {{ $patients->appointments_count }}
+                        {{ $patients->appointments_count??0 }}
                     </span>
                 </a>
 
                 <a href="{{ guard_route('patient-documents.index', ['patient' => $patient]) }}" class="{{ btnClass('patient-documents.*', 'warning') }}">
                     <i class="fas fa-comments me-2"></i> Documents
                     <span class="badge bg-warning  border border-white">
-                        {{ $patients->documents_count }}
+                        {{ $patients->documents_count??0}}
                     </span>
                 </a>
 
                 <a href="{{ guard_route('patients.appointments.schedule', ['patient' => $patient]) }}" class="{{ btnClass('patients.appointments.*', 'primary') }}">
                     <i class="fas fa-calendar-check me-2"></i> Appointments 
                     <span class="badge bg-primary  border border-white">
-                        {{ $patients->appointments_count }}
+                        {{ $patients->appointments_count??0 }}
                     </span>
                 </a>
             @endcan

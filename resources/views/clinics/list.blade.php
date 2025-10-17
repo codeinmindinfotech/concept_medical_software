@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($clinics as $index => $clinic)
+        @foreach ($clinics as $index => $clinic)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $clinic->code }}</td>
@@ -54,10 +54,6 @@
                     </div>
                 </td>
             </tr>
-        @empty
-            <tr>
-                <td colspan="7" class="text-center text-muted">No clinics found.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>

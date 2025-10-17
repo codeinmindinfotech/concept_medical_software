@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($dropdowns as $i => $dropdown)
+        @foreach ($dropdowns as $i => $dropdown)
         <tr>
             <td>{{ ++$i }}</td>
             <td>
@@ -34,11 +34,7 @@
                 </form>
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="3">There are no dropdowns.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>    
 </table>
 {{-- {!! $dropdowns->links('pagination::bootstrap-5') !!} --}}

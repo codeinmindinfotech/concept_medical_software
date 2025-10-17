@@ -38,7 +38,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($feeNotes as $note)
+                                @foreach($feeNotes as $note)
                                 <tr data-id="{{ $note->id }}">
                                     <td>{{ $note->id }}</td>
                                     <td>{{ format_date($note->procedure_date) }}</td>
@@ -67,15 +67,8 @@
                                           </button>
                                       </form>
                                   </td>
-                                  
-                                  
-                                  
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="8" class="text-center">No fee notes</td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                         @else

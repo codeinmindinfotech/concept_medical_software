@@ -8,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($documents as $index => $doc)
+        @foreach ($documents as $index => $doc)
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $doc->template->name }}</td>
@@ -22,10 +22,6 @@
                 </td>
 
             </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="text-center">No notes found.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>
