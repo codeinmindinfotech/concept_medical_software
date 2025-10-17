@@ -8,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($physicals as $index => $physical)
+        @foreach ($physicals as $index => $physical)
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $physical->physical_notes }}</td>
@@ -26,11 +26,7 @@
                 </td>
 
             </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="text-center">No physicals found.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>
 {{-- {!! $physicals->links('pagination::bootstrap-5') !!} --}}

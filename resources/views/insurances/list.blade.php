@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($insurances as $index => $insurance)
+        @foreach ($insurances as $index => $insurance)
         <tr>
             <td>{{ $index + 1 }}</td>
             <td>{{ $insurance->code }} </td>
@@ -27,11 +27,7 @@
                 </form>
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="3">There are no Patients.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>    
 </table>
 {{-- {!! $insurances->links('pagination::bootstrap-5') !!} --}}

@@ -88,6 +88,7 @@
                                 <li>
                                     <a href="javascript:void(0)" class="dropdown-item edit-appointment"
                                         data-id="{{ $appointment->id }}"
+                                        data-consultant="{{ $appointment->patient->consultant->name }}"
                                         data-dob="{{ format_date($appointment->patient->dob) }}"
                                         data-patient_id="{{ $appointment->patient->id }}"
                                         data-patient_name="{{ $appointment->patient->full_name }}"

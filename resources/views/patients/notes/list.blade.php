@@ -10,7 +10,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($notes as $index => $note)
+        @foreach ($notes as $index => $note)
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ ucfirst($note->method) }}</td>
@@ -36,11 +36,7 @@
                 </td>
 
             </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="text-center">No notes found.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>
 {{-- {!! $notes->links('pagination::bootstrap-5') !!} --}}

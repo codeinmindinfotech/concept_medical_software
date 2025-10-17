@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($chargecodes as $i => $chargecode)
+        @foreach ($chargecodes as $i => $chargecode)
         <tr>
             <td>{{ ++$i }}</td>
             <td>{{ $chargecode->code }}</td>
@@ -40,11 +40,7 @@
                 </form>
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="7">There are no chargecodes.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>    
 </table>
 {{-- {!! $chargecodes->appends(request()->query())->links('pagination::bootstrap-5') !!} --}}

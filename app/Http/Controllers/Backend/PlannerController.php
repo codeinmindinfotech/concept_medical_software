@@ -37,9 +37,9 @@ class PlannerController extends Controller
         
         if (has_role('patient')) {
             $user = auth()->user();
-            $patients = Patient::with(['title','preferredContact'])->companyOnly()->where('id', $user->id)->paginate(1);
+            $patients = Patient::companyOnly()->with(['title','preferredContact'])->where('id', $user->id)->paginate(1);
         } else {
-            $patients = Patient::with(['title', 'preferredContact'])->companyOnly()->get();
+            $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
         }
         $patient = null; // Pass blank $patient
 

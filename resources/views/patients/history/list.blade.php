@@ -8,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($historys as $index => $history)
+        @foreach ($historys as $index => $history)
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $history->history_notes }}</td>
@@ -26,11 +26,7 @@
                 </td>
 
             </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="text-center">No historys found.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>
 {{-- {!! $historys->links('pagination::bootstrap-5') !!} --}}

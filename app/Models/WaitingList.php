@@ -2,13 +2,13 @@
 
 namespace App\Models;
 use App\Traits\BelongsToCompany;
-
+use App\Traits\HasSoftDeletedPatientScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WaitingList extends Model
 {
-    use BelongsToCompany, SoftDeletes;
+    use BelongsToCompany, SoftDeletes, HasSoftDeletedPatientScope;
 
     protected $fillable = [
         'company_id','clinic_id','visit_date', 'consult_note', 'patient_id', 'category_id'
@@ -16,7 +16,7 @@ class WaitingList extends Model
 
     public function patient()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class)->withTrashed();
     }
 
     public function category()

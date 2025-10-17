@@ -10,10 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Authenticatable
 {
-    use BelongsToCompany, HasFactory, HasRoles, Notifiable;
+    use BelongsToCompany, HasFactory, HasRoles, Notifiable, SoftDeletes;
     protected $guard_name = 'patient';
     protected $fillable = [
         'company_id',

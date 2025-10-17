@@ -31,7 +31,9 @@ $breadcrumbs = [
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="https://137.184.194.64/web-apps/apps/api/documents/api.js"></script>
+<script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
+
+{{-- <script type="text/javascript" src="https://137.184.194.64/web-apps/apps/api/documents/api.js"></script> --}}
 
 <script>
     var docEditor = new DocsAPI.DocEditor("placeholder", {

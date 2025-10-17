@@ -4,8 +4,10 @@ $(document).ready(function () {
     $('#patient-id').on('change', function () {
         const selectedOption = $(this).find(':selected');
         const dob = selectedOption.data('dob') || '';
+        const consultant = selectedOption.data('consultant') || '';
 
         $('#modal-dob').val(dob);
+        $('#clinic_consultant').val(consultant);
     });
     $('#bookAppointmentModal .select2').select2({
       dropdownParent: $('#bookAppointmentModal') // Replace with modal ID if needed
@@ -14,8 +16,10 @@ $(document).ready(function () {
     $('#hospital-patient-id').on('change', function () {
         const selectedOption = $(this).find(':selected');
         const dob = selectedOption.data('dob') || '';
+        const consultant = selectedOption.data('consultant') || '';
 
         $('#hospital-dob').val(dob);
+        $('#consultant').val(consultant);
     });
     $('#manualBookingModal .select2').select2({
       dropdownParent: $('#manualBookingModal')

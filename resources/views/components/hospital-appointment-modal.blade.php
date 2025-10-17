@@ -29,7 +29,8 @@
                                 <option value="">-- Select Patient --</option>
                                 @foreach ($patients as $p)
                                     <option value="{{ $p->id }}"
-                                        data-dob="{{ format_date($p->dob) }}">{{ $p->full_name }}</option>
+                                        data-dob="{{ format_date($p->dob) }}"
+                                        data-consultant="{{ $p->consultant->name }}">{{ $p->full_name }}</option>
                                 @endforeach
                             </select>
                         </div>                        

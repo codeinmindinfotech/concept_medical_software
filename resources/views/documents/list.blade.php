@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($templates as $i => $document)
+        @foreach ($templates as $i => $document)
         <tr>
             <td>{{ ++$i }}</td>
             <td>{{ $document->name }}</td>
@@ -32,11 +32,7 @@
                 </form>
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="3">There are no templates.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>    
 </table>
 {{-- {!! $templates->links('pagination::bootstrap-5') !!} --}}

@@ -81,6 +81,7 @@
                             <a class="dropdown-item text-success edit-hospital-appointment"
                                href="javascript:void(0)"
                                data-id="{{ $appointment->id }}"
+                               data-consultant="{{ $appointment->patient->consultant->name }}"
                                data-clinic_id="{{ $appointment->clinic_id }}"
                                data-type="{{ $appointment->appointment_type }}"
                                data-date="{{ $appointment->appointment_date }}"

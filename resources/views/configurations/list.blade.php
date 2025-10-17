@@ -8,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($configs as $index => $config)
+        @foreach ($configs as $index => $config)
         <tr>
             <td>{{ $index + 1 }}</td>
             <td>{{ $config->key }}</td>
@@ -28,10 +28,6 @@
 
             </td>
         </tr>
-        @empty
-        <tr>
-            <td colspan="4">There are no Configuration.</td>
-        </tr>
-        @endforelse
+        @endforeach
     </tbody>
 </table>

@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($companies as $index => $company)
+        @foreach ($companies as $index => $company)
         <tr>
             <td>{{ $index + 1 }}</td>
             <td>{{ $company->name }} </td>
@@ -26,10 +26,6 @@
                    
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="3">There are no Companies.</td>
-            </tr>
-        @endforelse
+        @endforeach
     </tbody>    
 </table>

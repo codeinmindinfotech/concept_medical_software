@@ -245,7 +245,7 @@
         $('#patient_need').val(btn.data('need'));
         $('#appointment_note').val(btn.data('note'));
         $('#appointment-clinic-id').val(btn.data('clinic-id'));
-
+        $('#clinic_consultant').val(btn.data('consultant'));
         $('#modal-patient-name').val(btn.data('patient_name') || '');
         $('#modal-dob').val(btn.data('dob') || '');
 
@@ -324,6 +324,8 @@
             const patient_id =  button.dataset.patient_id;  
             const patient_name =  button.dataset.patient_name;
             const patient_dob =  button.dataset.patient_dob;
+            const consultant = button.dataset.consultant;
+
             document.getElementById('manualBookingLabel').textContent = 'Edit Appointment';
             document.getElementById('booking-submit-btn').textContent = 'Update Appointment';
 
@@ -345,6 +347,7 @@
             document.getElementById('notes').value = note;
             document.getElementById('hospital-patient-name').value = patient_name;
             document.getElementById('hospital-dob').value = patient_dob;
+            document.getElementById('consultant').value = consultant;
 
             $('#manualBookingForm').attr('data-action', action);
 
