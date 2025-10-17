@@ -33,29 +33,32 @@ $breadcrumbs = [
 @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 
-{{-- <script type="text/javascript" src="https://137.184.194.64/web-apps/apps/api/documents/api.js"></script> --}}
-
 <script>
-    var docEditor = new DocsAPI.DocEditor("placeholder", {
-        document: {
-            fileType: "docx",
-            key: "{{ $document->id }}-{{ strtotime($document->updated_at) }}",
-            title: "Document",
-            url: "{{ asset('storage/' . $document->file_path) }}"
-        },
-        documentType: "word",
-        editorConfig: {
-            mode: "edit",
-            // callbackUrl: "https://137.184.194.64/onlyoffice/callback",
-            callbackUrl: "{{ guard_route('onlyoffice.callback', $document->id) }}",
-            user: {
-                id: "{{ auth()->id() }}",
-                name: "{{ auth()->user()->name }}"
-            },
-            customization: {
-                forcesave: true
-            }
-        }
-    });
+    var docConfig = @json($docConfig);
+    docConfig.token = "{{ $token }}";
+
+    var docEditor = new DocsAPI.DocEditor("placeholder", docConfig);
+
+    // var docEditor = new DocsAPI.DocEditor("placeholder", {
+    //     document: {
+    //         fileType: "docx",
+    //         key: "{{ $document->id }}-{{ strtotime($document->updated_at) }}",
+    //         title: "Document",
+    //         url: "{{ asset('storage/' . $document->file_path) }}"
+    //     },
+    //     documentType: "word",
+    //     editorConfig: {
+    //         mode: "edit",
+    //         // callbackUrl: "https://137.184.194.64/onlyoffice/callback",
+    //         callbackUrl: "{{ guard_route('onlyoffice.callback', $document->id) }}",
+    //         user: {
+    //             id: "{{ auth()->id() }}",
+    //             name: "{{ auth()->user()->name }}"
+    //         },
+    //         customization: {
+    //             forcesave: true
+    //         }
+    //     }
+    // });
 </script>
 @endpush
