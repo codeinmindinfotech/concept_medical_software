@@ -1,31 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>OnlyOffice Document Editor</title>
-    <script type="text/javascript" src="http://137.184.194.64/web-apps/apps/api/documents/api.js"></script>
+    <meta charset="UTF-8">
+    <title>OnlyOffice Editor</title>
+    <script type="text/javascript" src="{{ env('ONLYOFFICE_DOC_SERVER') }}/web-apps/apps/api/documents/api.js"></script>
 </head>
 <body>
-    <h2>Document Editor</h2>
-    <div id="placeholder" style="width: 100%; height: 800px;"></div>
+<div id="placeholder" style="height:900px;"></div>
 
-    <script type="text/javascript">
-        var docEditor = new DocsAPI.DocEditor("placeholder", {
-            document: {
-                fileType: "docx",
-                key: "doc-key-{{ \Illuminate\Support\Str::uuid() }}",
-                title: "My Document",
-                url: "https://conceptmedicalpm.ie/storage/document_templates/KkqZ2ghGmwwaXBS1D1XmrOSVfZtopDuayNOqLpih.docx"
-            },
-            documentType: "word",
-            editorConfig: {
-                mode: "edit", // or 'view'
-                callbackUrl: "{{ route('onlyoffice.callback') }}",
-                user: {
-                    id: "1",
-                    name: "John Doe"
-                }
-            }
-        });
-    </script>
+<script>
+    const config = {!! json_encode($config) !!};
+
+    const docEditor = new DocsAPI.DocEditor("placeholder", config);
+</script>
 </body>
 </html>

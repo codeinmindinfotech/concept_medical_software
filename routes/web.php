@@ -53,7 +53,11 @@ Route::get('/', function () {
     return view('frontend.index');
 });
 
-Route::post('/onlyoffice/callback/{document}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');
+Route::get('/onlyoffice/editor/{fileId}', [OnlyOfficeController::class, 'editor'])->name('onlyoffice.editor');;
+Route::post('/onlyoffice/callback/{fileId?}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');;
+
+
+// Route::post('/onlyoffice/callback/{document}', [OnlyOfficeController::class, 'callback'])->name('onlyoffice.callback');
 
 Auth::routes();
 
