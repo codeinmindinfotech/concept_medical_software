@@ -1,10 +1,12 @@
 <?php
 
+use App\Models\PatientDocument;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Hash;
 
 if (!function_exists('format_date')) {
     function format_date($date, $format = 'd M Y', $default = '-')
@@ -272,7 +274,12 @@ if (!function_exists('isDarkColor')) {
     }
 }
 
+function generateDocumentKey(PatientDocument $document): string
+{
+    $data = $document->id . '|' . $document->updated_at->timestamp;
 
+    return substr(hash('sha256', $data), 0, 128); // OnlyOffice requires max 128 chars
+}
 
 
 
