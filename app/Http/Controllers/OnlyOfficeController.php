@@ -58,6 +58,18 @@ class OnlyOfficeController extends Controller
                 'title' => 'Document',
                 'url' => asset('storage/' . $document->file_path),
             ],
+            'documentType' => 'word',
+            'editorConfig' => [
+                'mode' => 'edit',
+                'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
+                'user' => [
+                    'id' => (string) auth()->id(),
+                    'name' => auth()->user()?->name?? "Guest",
+                ],
+                'customization' => [
+                    'forcesave' => true,
+                ],
+            ],
             // "document" => [
             //     "fileType" => "docx",
             //     // "key" => strval(time()), // unique key per version
@@ -65,14 +77,14 @@ class OnlyOfficeController extends Controller
             //     // 'title' => $documentId . '-' . strval(time()).'.docx',
             //     "url" => $fileUrl,
             // ],
-            "documentType" => "text",
-            "editorConfig" => [
-                "callbackUrl" => route('onlyoffice.callback', ['documentId' => $documentId]),
-                "user" => [
-                    'id' => (string) auth()->id(),
-                    'name' => auth()->user()->name ?? "Guest",
-                ],
-            ],
+            // "documentType" => "text",
+            // "editorConfig" => [
+            //     "callbackUrl" => route('onlyoffice.callback', ['documentId' => $documentId]),
+            //     "user" => [
+            //         'id' => (string) auth()->id(),
+            //         'name' => auth()->user()->name ?? "Guest",
+            //     ],
+            // ],
             "token" => $this->createJwtToken($documentId),
         ];
 
