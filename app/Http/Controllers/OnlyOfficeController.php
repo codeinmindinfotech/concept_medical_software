@@ -70,15 +70,15 @@ class OnlyOfficeController extends Controller
                 'customization' => [
                     'forcesave' => true,
                 ],
-            ]
-            // "token" => $this->createJwtToken($documentId),
+            ],
+            "token" => $this->createJwtToken($documentId),
         ];
-        // 2. Sign the entire config with your secret to produce the JWT
-        $jwtSecret = env('ONLYOFFICE_JWT_SECRET', 'default-secret'); // make sure it's set in .env
-        $token = JWT::encode($config, $jwtSecret, 'HS256');
+        // // 2. Sign the entire config with your secret to produce the JWT
+        // $jwtSecret = env('ONLYOFFICE_JWT_SECRET', 'your-strong-secret-key'); // make sure it's set in .env
+        // $token = JWT::encode($config, $jwtSecret, 'HS256');
 
-        // 3. Add the token to the config that will be passed to the frontend
-        $config['token'] = $token;
+        // // 3. Add the token to the config that will be passed to the frontend
+        // $config['token'] = $token;
         return view('docs.editor', compact('config'));
     }
 
@@ -107,10 +107,6 @@ class OnlyOfficeController extends Controller
             "exp" => time() + 3600,
         ];
          // Generate JWT token using your secret from .env
-         $jwtSecret = env('ONLYOFFICE_JWT_SECRET');
-
-         $token = JWT::encode($docConfig, $jwtSecret, 'HS256');
-
         return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
     }
 
