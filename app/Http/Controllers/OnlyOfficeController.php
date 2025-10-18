@@ -52,13 +52,19 @@ class OnlyOfficeController extends Controller
         $fileUrl = asset('storage/' . $filePath);
 
         $config = [
-            "document" => [
-                "fileType" => "docx",
-                "key" => strval(time()), // unique key per version
-                "title" => "$documentId.docx",
-                // 'title' => $documentId . '-' . strval(time()).'.docx',
-                "url" => $fileUrl,
+            'document' => [
+                'fileType' => 'docx',
+                'key' => $document->id . '-' . strtotime($document->updated_at),
+                'title' => 'Document',
+                'url' => asset('storage/' . $document->file_path),
             ],
+            // "document" => [
+            //     "fileType" => "docx",
+            //     // "key" => strval(time()), // unique key per version
+            //     "title" => "$documentId.docx",
+            //     // 'title' => $documentId . '-' . strval(time()).'.docx',
+            //     "url" => $fileUrl,
+            // ],
             "documentType" => "text",
             "editorConfig" => [
                 "callbackUrl" => route('onlyoffice.callback', ['documentId' => $documentId]),
