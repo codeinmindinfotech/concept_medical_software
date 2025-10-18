@@ -6,6 +6,8 @@ use App\Models\PatientDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Firebase\JWT\JWT;
+
 
 class OnlyOfficeController extends Controller
 {
@@ -41,7 +43,6 @@ class OnlyOfficeController extends Controller
 
     //     return response()->json(['error' => 1]);
     // }
-
     public function editor($documentId)
     {
         $document = PatientDocument::where('id', $documentId)
@@ -58,7 +59,7 @@ class OnlyOfficeController extends Controller
                 'title' => 'Document',
                 'url' => asset('storage/' . $document->file_path),
             ],
-            'documentType' => 'text',
+            'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
                 'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
@@ -69,25 +70,15 @@ class OnlyOfficeController extends Controller
                 'customization' => [
                     'forcesave' => true,
                 ],
-            ],
-            // "document" => [
-            //     "fileType" => "docx",
-            //     // "key" => strval(time()), // unique key per version
-            //     "title" => "$documentId.docx",
-            //     // 'title' => $documentId . '-' . strval(time()).'.docx',
-            //     "url" => $fileUrl,
-            // ],
-            // "documentType" => "text",
-            // "editorConfig" => [
-            //     "callbackUrl" => route('onlyoffice.callback', ['documentId' => $documentId]),
-            //     "user" => [
-            //         'id' => (string) auth()->id(),
-            //         'name' => auth()->user()->name ?? "Guest",
-            //     ],
-            // ],
-            "token" => $this->createJwtToken($documentId),
+            ]
+            // "token" => $this->createJwtToken($documentId),
         ];
+        // 2. Sign the entire config with your secret to produce the JWT
+        $jwtSecret = env('ONLYOFFICE_JWT_SECRET', 'default-secret'); // make sure it's set in .env
+        $token = JWT::encode($config, $jwtSecret, 'HS256');
 
+        // 3. Add the token to the config that will be passed to the frontend
+        $config['token'] = $token;
         return view('docs.editor', compact('config'));
     }
 
@@ -115,8 +106,12 @@ class OnlyOfficeController extends Controller
             "iat" => time(),
             "exp" => time() + 3600,
         ];
+         // Generate JWT token using your secret from .env
+         $jwtSecret = env('ONLYOFFICE_JWT_SECRET');
 
-        return \Firebase\JWT\JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+         $token = JWT::encode($docConfig, $jwtSecret, 'HS256');
+
+        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
     }
 
 }
