@@ -69,8 +69,8 @@ class OnlyOfficeController extends Controller
             "editorConfig" => [
                 "callbackUrl" => route('onlyoffice.callback', ['documentId' => $documentId]),
                 "user" => [
-                    "id" => auth()->id() ?? 1,
-                    "name" => auth()->user()?->name ?? "Guest",
+                    'id' => (string) auth()->id(),
+                    'name' => auth()->user()->name ?? "Guest",
                 ],
             ],
             "token" => $this->createJwtToken($documentId),
