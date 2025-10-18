@@ -35,6 +35,8 @@ $breadcrumbs = [
 
 <script>
     var docConfig = @json($docConfig);
+    docConfig.documentServerUrl = "https://office.conceptmedicalpm.ie";
+
     docConfig.token = "{{ $token }}";
     console.log(docConfig.token);
     var docEditor = new DocsAPI.DocEditor("placeholder", docConfig);
