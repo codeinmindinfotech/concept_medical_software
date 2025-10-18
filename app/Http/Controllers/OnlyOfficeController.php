@@ -54,11 +54,11 @@ class OnlyOfficeController extends Controller
         $config = [
             'document' => [
                 'fileType' => 'docx',
-                'key' => $document->id . '-' . strtotime($document->updated_at),
+                'key' => generateDocumentKey($document),
                 'title' => 'Document',
                 'url' => asset('storage/' . $document->file_path),
             ],
-            'documentType' => 'word',
+            'documentType' => 'text',
             'editorConfig' => [
                 'mode' => 'edit',
                 'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
