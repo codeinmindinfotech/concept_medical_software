@@ -7,107 +7,58 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Firebase\JWT\JWT;
-
-
 class OnlyOfficeController extends Controller
 {
-    // public function callback(Request $request, PatientDocument $document)
-    // {
-    //     \Log::info('ONLYOFFICE callback:', $request->all());
-
-    //     if ($request->has('status')) {
-    //         // Status 2 means "Document is ready to save"
-    //         if ($request->status == 2 && $request->has('url')) {
-    //             $updatedFileUrl = $request->input('url');
-
-    //             try {
-    //                 $contents = file_get_contents($updatedFileUrl);
-
-    //                 if ($contents === false) {
-    //                     \Log::error('Failed to download updated file from URL: ' . $updatedFileUrl);
-    //                     return response()->json(['error' => 1]);
-    //                 }
-
-    //                 \Storage::put($document->file_path, $contents);
-
-    //                 return response()->json(['error' => 0]);
-    //             } catch (\Exception $e) {
-    //                 \Log::error('Exception when downloading file: ' . $e->getMessage());
-    //                 return response()->json(['error' => 1]);
-    //             }
-    //         }
-
-    //         // Other statuses
-    //         return response()->json(['error' => 0]);
-    //     }
-
-    //     return response()->json(['error' => 1]);
-    // }
     public function editor($documentId)
     {
-        $document = PatientDocument::where('id', $documentId)
-        // ->where('patient_id', $patient->id)
-        ->firstOrFail();
-        // Example: get file info from storage or DB
-        $filePath = $document->file_path;
-        $fileUrl = asset('storage/' . $filePath);
+        $document = PatientDocument::findOrFail($documentId);
+        $fileUrl  = asset('storage/' . $document->file_path);
+        $key      = generateDocumentKey($document);  // you define this function
 
-        $config = [
+        // Build the full config payload
+        $configPayload = [
             'document' => [
                 'fileType' => 'docx',
-                'key' => generateDocumentKey($document),
-                'title' => 'Document',
-                'url' => asset('storage/' . $document->file_path),
+                'key'      => $key,
+                'title'    => $document->title ?? 'Document',
+                'url'      => $fileUrl,
             ],
             'documentType' => 'word',
             'editorConfig' => [
-                'mode' => 'edit',
+                'mode'        => 'edit',
                 'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
-                'user' => [
-                    'id' => (string) auth()->id(),
-                    'name' => auth()->user()?->name?? "Guest",
+                'user'        => [
+                    'id'   => (string) auth()->id(),
+                    'name' => auth()->user()?->name ?? "Guest",
                 ],
                 'customization' => [
                     'forcesave' => true,
                 ],
             ],
-            "token" => $this->createJwtToken($documentId),
         ];
-        // // 2. Sign the entire config with your secret to produce the JWT
-        // $jwtSecret = env('ONLYOFFICE_JWT_SECRET', 'your-strong-secret-key'); // make sure it's set in .env
-        // $token = JWT::encode($config, $jwtSecret, 'HS256');
 
-        // // 3. Add the token to the config that will be passed to the frontend
-        // $config['token'] = $token;
+        $jwtSecret = env('ONLYOFFICE_JWT_SECRET');
+        $token     = JWT::encode($configPayload, $jwtSecret, 'HS256');
+
+        // Create the config for view
+        $config = array_merge($configPayload, [
+            'token' => $token,
+        ]);
+
         return view('docs.editor', compact('config'));
     }
 
     public function callback(Request $request, $documentId = null)
     {
-        Log::info('OnlyOffice callback received', $request->all());
+        \Log::info('OnlyOffice callback received', $request->all());
 
-        // Handle save/close events
         $status = $request->get('status');
-
-        if ($status == 2 || $status == 6) { // 2 = ready to save, 6 = forced save
-            $url = $request->get('url');
+        if ($status == 2 || $status == 6) {
+            $url     = $request->get('url');
             $newFile = file_get_contents($url);
-            Storage::disk('public')->put("documents/{$documentId}.docx", $newFile);
+            \Storage::disk('public')->put("documents/{$documentId}.docx", $newFile);
         }
 
         return response()->json(['error' => 0]);
     }
-
-    private function createJwtToken($documentId)
-    {
-        $payload = [
-            "userid" => auth()->id() ?? 1,
-            "file" => $documentId,
-            "iat" => time(),
-            "exp" => time() + 3600,
-        ];
-         // Generate JWT token using your secret from .env
-        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
-    }
-
 }
