@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Firebase\JWT\JWT;
 
-
 class OnlyOfficeController extends Controller
 {
     public function editor($documentId)
@@ -19,6 +18,21 @@ class OnlyOfficeController extends Controller
         // Example: get file info from storage or DB
         $filePath = $document->file_path;
         $fileUrl = asset('storage/' . $filePath);
+
+        $payload = [
+            "document" => [
+                "fileType" => "docx",
+                "key" => generateDocumentKey($document),
+                "title" => "Test Document",
+                "url" => asset('storage/' . $document->file_path),
+            ],
+            "permissions" => [
+                "edit" => true,
+            ]
+        ];
+
+        $secret = env('ONLYOFFICE_JWT_SECRET');
+        $token = JWT::encode($payload, $secret, 'HS256');
 
         $config = [
             'document' => [
@@ -39,14 +53,9 @@ class OnlyOfficeController extends Controller
                     'forcesave' => true,
                 ],
             ],
-            "token" => $this->createJwtToken($documentId),
+            "token" => $token,
         ];
-        // // 2. Sign the entire config with your secret to produce the JWT
-        // $jwtSecret = env('ONLYOFFICE_JWT_SECRET', 'q4zQCWjKaflL0lC96Jdx'); // make sure it's set in .env
-        // $token = JWT::encode($config, $jwtSecret, 'HS256');
-
-        // // 3. Add the token to the config that will be passed to the frontend
-        // $config['token'] = $token;
+       
         return view('docs.editor', compact('config'));
     }
 
