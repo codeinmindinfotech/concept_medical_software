@@ -14,45 +14,10 @@ class OnlyOfficeController extends Controller
     public function editor($documentId)
     {
         $document = PatientDocument::where('id', $documentId)
-        // ->where('patient_id', $patient->id)
-        ->firstOrFail();
-        // Example: get file info from storage or DB
+            ->firstOrFail();
         $filePath = $document->file_path;
-        $fileUrl = asset('storage/' . $filePath);
- // Create your payload – adjust fields as needed
-//  $payload = [
-//     "uid" => auth()->id(),  // user ID
-//     "doc" => $document->id, // document identifier
-//     "iat" => time(),        // issued at
-//     "exp" => time() + 3600, // expiry (1 hour from now)
-// ];
+        $fileUrl = secure_asset('storage/' . $filePath);
 
-// // Encode the JWT token using the shared secret
-// $token = JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
-// Log::info($token);
-// // Now attach it to your config
-// $config['token'] = $token;
-        // $config = [
-        //     'document' => [
-        //         'fileType' => 'docx',
-        //         'key' => generateDocumentKey($document),
-        //         'title' => 'Document',
-        //         'url' => asset('storage/' . $document->file_path),
-        //     ],
-        //     'documentType' => 'word',
-        //     'editorConfig' => [
-        //         'mode' => 'edit',
-        //         'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
-        //         'user' => [
-        //             'id' => (string) auth()->id(),
-        //             'name' => auth()->user()?->name?? "Guest",
-        //         ],
-        //         'customization' => [
-        //             'forcesave' => true,
-        //         ],
-        //     ]
-        //     // "token" => $this->createJwtToken($document->id),
-        // ];
         $config = [
             'document' => [
                 'fileType' => 'docx',
@@ -65,7 +30,7 @@ class OnlyOfficeController extends Controller
                 'mode' => 'edit',
                 'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
                 'user' => [
-                    'id' => (string) auth()->id(),
+                    'id' => (string) auth()->user()?->id(),
                     'name' => auth()->user()?->name ?? "Guest",
                 ],
                 'customization' => [
@@ -74,14 +39,9 @@ class OnlyOfficeController extends Controller
             ]
             // 'token' =>  $token
         ];
-        
-
-
-       
-
 
         $token = JWT::encode($config, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
-        $config['token'] = $token;
+        $config['token'] = $this->createJwtToken($document->id);//$token;
         
         return view('docs.editor', compact('config'));
     }
