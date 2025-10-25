@@ -24,7 +24,7 @@ class OnlyOfficeController extends Controller
             'document' => [
                 'storagePath' => storage_path('app/public'),
                 'fileType' => 'docx',
-                'key' => generateDocumentKey($document), // MUST be set
+                'key' => $key, // MUST be set
                 'title' => $document->title ?? 'Document',
                 'url' => $fileUrl, // full HTTPS URL
             ],
@@ -68,7 +68,7 @@ class OnlyOfficeController extends Controller
     {
         $payload = [
             "userid" => auth()->id() ?? 1,
-            "file" => generateDocumentKey($key),
+            "file" => $key,
             "iat" => time(),
             "exp" => time() + 3600,
         ];
