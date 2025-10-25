@@ -17,8 +17,9 @@ class OnlyOfficeController extends Controller
             ->firstOrFail();
         $filePath = $document->file_path;
         $fileUrl = secure_asset('storage/' . $filePath);
-        $token = $this->createJwtToken($document);
-
+        
+        $key = generateDocumentKey($document);
+        $token = $this->createJwtToken($key);
         $config = [
             'document' => [
                 'storagePath' => storage_path('app/public'),
@@ -63,11 +64,11 @@ class OnlyOfficeController extends Controller
         return response()->json(['error' => 0]);
     }
 
-    private function createJwtToken($document)
+    private function createJwtToken($key)
     {
         $payload = [
             "userid" => auth()->id() ?? 1,
-            "file" => generateDocumentKey($document),
+            "file" => generateDocumentKey($key),
             "iat" => time(),
             "exp" => time() + 3600,
         ];
