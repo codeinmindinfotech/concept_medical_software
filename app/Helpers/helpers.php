@@ -274,16 +274,15 @@ if (!function_exists('isDarkColor')) {
     }
 }
 
-// function generateDocumentKey(PatientDocument $document): string
-// {
-//     $data = $document->id . '|' . $document->updated_at->timestamp;
-
-//     return substr(hash('sha256', $data), 0, 128); // OnlyOffice requires max 128 chars
-// }
-function generateDocumentKey($document) {
-    // Create a short unique key using document ID and last updated time
-    return substr(md5($document->id . '_' . $document->updated_at), 0, 20);
+function generateDocumentKey($document): string
+{
+    $data = $document->id . '|' . $document->updated_at->timestamp; // use integer timestamp
+    return substr(hash('sha256', $data), 0, 128);
 }
+// function generateDocumentKey($document) {
+//     // Create a short unique key using document ID and last updated time
+//     return substr(md5($document->id . '_' . $document->updated_at), 0, 20);
+// }
 
 
 
