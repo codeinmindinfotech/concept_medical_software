@@ -28,6 +28,8 @@ class OnlyOfficeController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
+                // 'callbackUrl' => 'https://conceptmedicalpm.ie/onlyoffice/callback?document=' . $document->id,
+
                 'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
                 'user' => [
                     'id' => (string) auth()->user()?->id(),
@@ -40,8 +42,12 @@ class OnlyOfficeController extends Controller
             // 'token' =>  $token
         ];
 
-        $token = JWT::encode($config, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
-        $config['token'] = $this->createJwtToken($document->id);//$token;
+        $secret = env('ONLYOFFICE_JWT_SECRET');
+        $token = JWT::encode($config, $secret, 'HS256');
+        $config['token'] = $token;
+
+        // $token = JWT::encode($config, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+        // $config['token'] = $this->createJwtToken($document->id);//$token;
         
         return view('docs.editor', compact('config'));
     }
@@ -73,5 +79,4 @@ class OnlyOfficeController extends Controller
          // Generate JWT token using your secret from .env
         return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
     }
-
 }
