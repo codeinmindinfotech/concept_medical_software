@@ -17,37 +17,33 @@ class OnlyOfficeController extends Controller
             ->firstOrFail();
         $filePath = $document->file_path;
         $fileUrl = secure_asset('storage/' . $filePath);
+        $token = $this->createJwtToken($document->id);
 
         $config = [
             'document' => [
+                'storagePath' => storage_path('app/public'),
                 'fileType' => 'docx',
-                'key' => generateDocumentKey($document),
-                'title' => 'Document',
-                'url' => $fileUrl,
+                'key' => generateDocumentKey($document), // MUST be set
+                'title' => $document->title ?? 'Document',
+                'url' => $fileUrl, // full HTTPS URL
             ],
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                // 'callbackUrl' => 'https://conceptmedicalpm.ie/onlyoffice/callback?document=' . $document->id,
-                'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
+                'callbackUrl' => route('onlyoffice.callback', ['fileId' => $document->id]),
                 'user' => [
-                    'id' => (string) auth()->user()?->id(),
-                    'name' => auth()->user()?->name ?? "Guest",
+                    'id' => (string) auth()->user()?->id ?? '1',
+                    'name' => auth()->user()?->name ?? 'Guest',
                 ],
                 'customization' => [
                     'forcesave' => true,
                 ],
-            ]
-            // 'token' =>  $token
+            ],
+            'token' => $token, // your JWT token
         ];
-
-        // $secret = env('ONLYOFFICE_JWT_SECRET');
-        // $token = JWT::encode($config, $secret, 'HS256');
-        // $config['token'] = $token;
-
-        // $token = JWT::encode($config, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
-        $config['token'] = $this->createJwtToken($document->id);//$token;
         
+        \Log::info('ONLYOFFICE TOKEN: ' . $token);
+
         return view('docs.editor', compact('config'));
     }
 
