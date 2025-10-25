@@ -17,9 +17,10 @@ class OnlyOfficeController extends Controller
             ->firstOrFail();
         $filePath = $document->file_path;
         $fileUrl = secure_asset('storage/' . $filePath);
-        
+        // $key = 'test-document-key-123';
+
         $key = generateDocumentKey($document);
-        $token = $this->createJwtToken($key);
+        $token = $this->createJwtToken($document, $key, $fileUrl);
         $config = [
             'document' => [
                 'storagePath' => storage_path('app/public'),
@@ -42,7 +43,7 @@ class OnlyOfficeController extends Controller
             ],
             'token' => $token, // your JWT token
         ];
-        
+        \Log::info('ONLYOFFICE key: ' . $key);
         \Log::info('ONLYOFFICE TOKEN: ' . $token);
 
         return view('docs.editor', compact('config'));
@@ -55,24 +56,47 @@ class OnlyOfficeController extends Controller
         // Handle save/close events
         $status = $request->get('status');
 
-        if ($status == 2 || $status == 6) { // 2 = ready to save, 6 = forced save
-            $url = $request->get('url');
-            $newFile = file_get_contents($url);
-            Storage::disk('public')->put("documents/{$documentId}.docx", $newFile);
+        if (in_array($status, [2, 6])) {
+            $url = $request->input('url');
+            if ($url) {
+                try {
+                    $newFile = file_get_contents($url);
+                    Storage::disk('public')->put("documents/{$documentId}.docx", $newFile);
+                } catch (\Exception $e) {
+                    Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
+                    return response()->json(['error' => 1, 'message' => $e->getMessage()]);
+                }
+            } else {
+                Log::error("OnlyOffice callback missing file URL");
+                return response()->json(['error' => 1, 'message' => 'Missing file URL']);
+            }
         }
+        
 
         return response()->json(['error' => 0]);
     }
 
-    private function createJwtToken($key)
+    private function createJwtToken($document, $key, $url)
     {
         $payload = [
-            "userid" => auth()->id() ?? 1,
-            "file" => $key,
+            "document" => [
+                "key" => $key,
+                "url" => $url
+            ],
+            "editorConfig" => [
+                "mode" => "edit", 
+                "callbackUrl" => route('onlyoffice.callback', ['fileId' => $document->id])
+            ],
+            "user" => [
+                "id" => (string)(auth()->id() ?? 1),
+                "name" => auth()->user()?->name ?? 'Guest'
+            ],
             "iat" => time(),
-            "exp" => time() + 3600,
+            "exp" => time() + 3600
         ];
-         // Generate JWT token using your secret from .env
+        
+
         return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
     }
+
 }
