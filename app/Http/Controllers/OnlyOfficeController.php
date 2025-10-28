@@ -32,7 +32,8 @@ class OnlyOfficeController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => route('onlyoffice.callback', ['fileId' => $document->id]),
+                'callbackUrl' => url("/api/onlyoffice/callback/{$document->id}"),
+                // 'callbackUrl' => route('onlyoffice.callback', ['fileId' => $document->id]),
                 'user' => [
                     'id' => (string) auth()->user()?->id ?? '1',
                     'name' => auth()->user()?->name ?? 'Guest',
