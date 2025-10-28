@@ -14,8 +14,6 @@
                 href="javascript:void(0)"
                 data-id="{{ $appointment->id }}"
                 data-patient_id="{{ $appointment->patient->id }}"
-                data-consultant="{{ $appointment->patient->consultant->name }}"
-                data-patient_name="{{ $appointment->patient->full_name }}"
                 data-action="{{guard_route('hospital_appointments.store', ['patient' => $appointment->patient->id]) }}" 
                 data-type="{{ $appointment->appointment_type }}"
                 data-date="{{ $appointment->appointment_date }}"
