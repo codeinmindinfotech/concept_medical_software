@@ -52,7 +52,9 @@ class OnlyOfficeController extends Controller
     public function callback(Request $request, $documentId = null)
     {
         Log::info('OnlyOffice callback received', $request->all());
-
+        $document = PatientDocument::where('id', $documentId)->firstOrFail();
+        $filePath = $document->file_path;
+        
         // Handle save/close events
         $status = $request->get('status');
 
@@ -61,7 +63,7 @@ class OnlyOfficeController extends Controller
             if ($url) {
                 try {
                     $newFile = file_get_contents($url);
-                    Storage::disk('public')->put("documents/{$documentId}.docx", $newFile);
+                    Storage::disk('public')->put($filePath, $newFile);
                 } catch (\Exception $e) {
                     Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
                     return response()->json(['error' => 1, 'message' => $e->getMessage()]);
@@ -71,26 +73,32 @@ class OnlyOfficeController extends Controller
                 return response()->json(['error' => 1, 'message' => 'Missing file URL']);
             }
         }
-        
 
         return response()->json(['error' => 0]);
     }
 
     private function createJwtToken($document, $key, $url)
     {
+        // $payload = [
+        //     "document" => [
+        //         "key" => $key,
+        //         "url" => $url
+        //     ],
+        //     "editorConfig" => [
+        //         "mode" => "edit", 
+        //         "callbackUrl" => route('onlyoffice.callback', ['fileId' => $document->id])
+        //     ],
+        //     "user" => [
+        //         "id" => (string)(auth()->id() ?? 1),
+        //         "name" => auth()->user()?->name ?? 'Guest'
+        //     ],
+        //     "iat" => time(),
+        //     "exp" => time() + 3600
+        // ];
+
         $payload = [
-            "document" => [
-                "key" => $key,
-                "url" => $url
-            ],
-            "editorConfig" => [
-                "mode" => "edit", 
-                "callbackUrl" => route('onlyoffice.callback', ['fileId' => $document->id])
-            ],
-            "user" => [
-                "id" => (string)(auth()->id() ?? 1),
-                "name" => auth()->user()?->name ?? 'Guest'
-            ],
+            "key" => $key,
+            "id" => (string)(auth()->id() ?? 1),
             "iat" => time(),
             "exp" => time() + 3600
         ];
