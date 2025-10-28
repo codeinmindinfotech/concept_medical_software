@@ -6,13 +6,13 @@
     <script type="text/javascript" src="{{ env('ONLYOFFICE_DOC_SERVER') }}/web-apps/apps/api/documents/api.js"></script>
 </head>
 <body>
-    <h1>Editing Document</h1>
-    <div id="onlyoffice-editor" style="width: 100%; height: 900px !important;"></div>
+        <h1>Editing Document</h1>
+        <div id="onlyoffice-editor" style="width: 100%; height: 100vh;"></div>
     
-    <script type="text/javascript">
-        const config = {!! json_encode($config) !!};
-        console.log(config);
-        const docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
-    </script> 
+        <script type="text/javascript">
+    const config = {!! json_encode($config) !!};
+console.log(config);
+    const docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+</script> 
 </body>
 </html>

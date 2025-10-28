@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.guard.role' => \App\Http\Middleware\CheckGuardRole::class,
             'auth.multi' => \App\Http\Middleware\MultiGuardAuthenticate::class,
         ]);
+        // ✅ 2. Register default Laravel web middleware stack
+        $middleware->web(append: [
+            \App\Http\Middleware\VerifyCsrfToken::class, // 👈 CSRF Middleware
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
