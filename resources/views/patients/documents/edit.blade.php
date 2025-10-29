@@ -1,5 +1,20 @@
 @extends('backend.theme.tabbed')
-
+@push('styles')
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden; /* prevents scrollbars */
+    }
+    
+    #onlyoffice-editor {
+        width: 100%;
+        height: 100vh; /* or 100% */
+        border: none;
+    }
+    </style>
+@endpush
 @section('tab-navigation')
 @include('backend.theme.tab-navigation', ['patient' => $patient])
 @endsection
@@ -39,7 +54,7 @@ $breadcrumbs = [
 
     config.token = "{{ $token }}";
     console.log(config.token);
-    var docEditor = new DocsAPI.DocEditor("placeholder", config);
+    var docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
     console.log(docEditor);
 </script>
 @endpush
