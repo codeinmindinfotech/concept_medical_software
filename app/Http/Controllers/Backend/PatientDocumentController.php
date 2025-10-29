@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\DocumentTemplate;
 use Illuminate\Support\Facades\Storage;
 use Firebase\JWT\JWT;
+use PhpOffice\PhpWord\TemplateProcessor;
+
 
 class PatientDocumentController extends Controller
 {
@@ -49,11 +51,33 @@ class PatientDocumentController extends Controller
             return back()->with('error', 'Could not copy template file.');
         }
     
+        $replacements = [
+            'Consultant.Name' => $patient->consultant->name,
+            'Consultant.Description' => $patient->consultant->imc_no,
+            'Consultant.Address1' => $patient->consultant->address,
+            'Consultant.Address2' => $patient->consultant->address,
+            'Consultant.Address3' => $patient->consultant->address,
+            'Consultant.Address4' => $patient->consultant->address,
+            'Consultant.PhoneNo' => $patient->consultant->phone,
+            'Consultant.FaxNo' => $patient->consultant->fax,
+            
+            'General.CurrentDate' => now()->format('d/m/Y'),
+        
+            'Patient.Salutation' => $patient->title->value,
+            'Patient.FirstName' => $patient->first_name,
+            'Patient.Surname' => $patient->surname,
+            'Patient.DOB' => $patient->dob->format('d/m/Y'),
+            'Patient.Address1' => $patient->address,
+            'Patient.Address2' => $patient->address,
+            'Patient.Address3' => $patient->address,
+            'Patient.Address4' => $patient->address,
+            'Patient.Address5' => $patient->address,
+        ];
+
+        
         // 🔁 Replace placeholders
-        $this->replaceDocxPlaceholders($newFullPath, [
-            '{{name}}' => $patient->full_name,
-            '{{dob}}' => $patient->date_of_birth,
-        ]);
+        $this->replaceDocxPlaceholders($newFullPath, $replacements);
+
     
         // 💾 Save in database
         PatientDocument::create([
@@ -129,20 +153,16 @@ class PatientDocumentController extends Controller
 
     protected function replaceDocxPlaceholders($filePath, array $replacements)
     {
-        $zip = new \ZipArchive;
+         // Load the template
+        $template = new TemplateProcessor($filePath);
 
-        if ($zip->open($filePath) === true) {
-            $content = $zip->getFromName('word/document.xml');
-
-            foreach ($replacements as $key => $value) {
-                $content = str_replace($key, $value, $content);
-            }
-
-            $zip->addFromString('word/document.xml', $content);
-            $zip->close();
-        } else {
-            throw new \Exception("Could not open DOCX file for placeholder replacement.");
+        // Replace each placeholder
+        foreach ($replacements as $key => $value) {
+            $template->setValue($key, $value);
         }
+
+        // Save the updated file
+        $template->saveAs($filePath);
     }
 
     private function createJwtToken($document, $key, $url, $patient)
