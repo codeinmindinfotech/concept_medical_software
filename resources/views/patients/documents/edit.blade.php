@@ -13,10 +13,10 @@ $breadcrumbs = [
 ];
 @endphp
 @include('backend.theme.breadcrumb', [
-'pageTitle' => 'Edit Document',
-'breadcrumbs' => $breadcrumbs,
-'backUrl' =>guard_route('patient-documents.index', $patient->id),
-'isListPage' => false
+    'pageTitle' => 'Edit Document',
+    'breadcrumbs' => $breadcrumbs,
+    'backUrl' =>guard_route('patient-documents.index', $patient->id),
+    'isListPage' => false
 ])
 <form action="{{guard_route('patient-documents.update',[$patient->id, $document->id]) }}" method="POST" class="validate-form">
     @csrf
@@ -34,12 +34,12 @@ $breadcrumbs = [
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 
 <script>
-    var docConfig = @json($docConfig);
-    docConfig.documentServerUrl = "https://office.conceptmedicalpm.ie";
+    var config = @json($config);
+    config.documentServerUrl = "https://office.conceptmedicalpm.ie";
 
-    docConfig.token = "{{ $token }}";
-    console.log(docConfig.token);
-    var docEditor = new DocsAPI.DocEditor("placeholder", docConfig);
+    config.token = "{{ $token }}";
+    console.log(config.token);
+    var docEditor = new DocsAPI.DocEditor("placeholder", config);
     console.log(docEditor);
 </script>
 @endpush

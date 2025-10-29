@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <title>OnlyOffice Editor</title>
     <script type="text/javascript" src="{{ env('ONLYOFFICE_DOC_SERVER') }}/web-apps/apps/api/documents/api.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* prevents scrollbars */
+        }
+        
+        #onlyoffice-editor {
+            width: 100%;
+            height: 100vh; /* or 100% */
+            border: none;
+        }
+        </style>
+        
 </head>
 <body>
         <h1>Editing Document</h1>

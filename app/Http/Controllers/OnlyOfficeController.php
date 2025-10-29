@@ -49,19 +49,50 @@ class OnlyOfficeController extends Controller
         return view('docs.editor', compact('config'));
     }
 
+    // public function callback(Request $request, $documentId = null)
+    // {
+    //     Log::info('OnlyOffice callback received', $request->all());
+
+    //     // Handle save/close events
+    //     $status = $request->get('status');
+
+    //     if (in_array($status, [2, 6])) {
+    //         $url = $request->input('url');
+    //         if ($url) {
+    //             try {
+    //                 $newFile = file_get_contents($url);
+    //                 Storage::disk('public')->put("documents/{$documentId}.docx", $newFile);
+    //             } catch (\Exception $e) {
+    //                 Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
+    //                 return response()->json(['error' => 1, 'message' => $e->getMessage()]);
+    //             }
+    //         } else {
+    //             Log::error("OnlyOffice callback missing file URL");
+    //             return response()->json(['error' => 1, 'message' => 'Missing file URL']);
+    //         }
+    //     }
+        
+
+    //     return response()->json(['error' => 0]);
+    // }
+
     public function callback(Request $request, $documentId = null)
     {
         Log::info('OnlyOffice callback received', $request->all());
 
-        // Handle save/close events
         $status = $request->get('status');
 
-        if (in_array($status, [2, 6])) {
+        if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
             $url = $request->input('url');
             if ($url) {
                 try {
+                    $document = PatientDocument::findOrFail($documentId);
+
+                    // Save the new content
                     $newFile = file_get_contents($url);
-                    Storage::disk('public')->put("documents/{$documentId}.docx", $newFile);
+                    Storage::disk('public')->put($document->file_path, $newFile);
+
+                    Log::info("Document saved: {$document->file_path}");
                 } catch (\Exception $e) {
                     Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
                     return response()->json(['error' => 1, 'message' => $e->getMessage()]);
@@ -71,7 +102,6 @@ class OnlyOfficeController extends Controller
                 return response()->json(['error' => 1, 'message' => 'Missing file URL']);
             }
         }
-        
 
         return response()->json(['error' => 0]);
     }
