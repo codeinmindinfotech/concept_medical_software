@@ -19,6 +19,7 @@ class RolePermissionSeeder extends Seeder
                 'guard_name' => 'web',
                 'permissions' => [
                     'patient-list', 'patient-create', 'patient-edit', 'patient-delete',
+                    'document-list', 'document-create', 'document-edit', 'document-delete',
                     'appointment-list', 'appointment-create','notification-list','notification-create', 'notification-edit', 'notification-delete'
                 ],
             ],

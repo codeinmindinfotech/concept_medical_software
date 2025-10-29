@@ -15,6 +15,7 @@ class PermissionTableSeeder extends Seeder
         $entities = [
             'role',
             'dropdown',
+            'document',
             'dropdownvalue',
             'doctor',
             'company',
