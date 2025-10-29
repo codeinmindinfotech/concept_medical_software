@@ -33,7 +33,6 @@ class OnlyOfficeController extends Controller
             'editorConfig' => [
                 'mode' => 'edit',
                 'callbackUrl' => url("/api/onlyoffice/callback/{$document->id}"),
-                // 'callbackUrl' => route('onlyoffice.callback', ['fileId' => $document->id]),
                 'user' => [
                     'id' => (string) auth()->user()?->id ?? '1',
                     'name' => auth()->user()?->name ?? 'Guest',
@@ -79,29 +78,32 @@ class OnlyOfficeController extends Controller
 
     private function createJwtToken($document, $key, $url)
     {
+        $payload = [
+            "document" => [
+                "fileType" => "docx",
+                "key" => $key,
+                "title" => $document->title ?? 'Document',
+                "url" => $url,
+            ],
+            "editorConfig" => [
+                "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
+                "mode" => "edit",
+                "user" => [
+                    "id" => (string)(auth()->id() ?? 1),
+                    "name" => auth()->user()?->name ?? 'Guest',
+                ],
+            ],
+            "iat" => time(),
+            "exp" => time() + 3600,
+        ];
+        
+
         // $payload = [
-        //     "document" => [
-        //         "key" => $key,
-        //         "url" => $url
-        //     ],
-        //     "editorConfig" => [
-        //         "mode" => "edit", 
-        //         "callbackUrl" => route('onlyoffice.callback', ['fileId' => $document->id])
-        //     ],
-        //     "user" => [
-        //         "id" => (string)(auth()->id() ?? 1),
-        //         "name" => auth()->user()?->name ?? 'Guest'
-        //     ],
+        //     "key" => $key,
+        //     "id" => (string)(auth()->id() ?? 1),
         //     "iat" => time(),
         //     "exp" => time() + 3600
         // ];
-
-        $payload = [
-            "key" => $key,
-            "id" => (string)(auth()->id() ?? 1),
-            "iat" => time(),
-            "exp" => time() + 3600
-        ];
         
 
         return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
