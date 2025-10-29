@@ -100,7 +100,33 @@ class PatientDocumentController extends Controller
 
         abort_if($document->patient_id !== $patient->id, 403);
 
+        $replacements = [
+            'Consultant.Name' => $patient->consultant->name,
+            'Consultant.Description' => $patient->consultant->imc_no,
+            'Consultant.Address1' => $patient->consultant->address,
+            'Consultant.Address2' => $patient->consultant->address,
+            'Consultant.Address3' => $patient->consultant->address,
+            'Consultant.Address4' => $patient->consultant->address,
+            'Consultant.PhoneNo' => $patient->consultant->phone,
+            'Consultant.FaxNo' => $patient->consultant->fax,
+            
+            'General.CurrentDate' => now()->format('d/m/Y'),
+        
+            'Patient.Salutation' => $patient->title->value,
+            'Patient.FirstName' => $patient->first_name,
+            'Patient.Surname' => $patient->surname,
+            'Patient.DOB' => $patient->dob->format('d/m/Y'),
+            'Patient.Address1' => $patient->address,
+            'Patient.Address2' => $patient->address,
+            'Patient.Address3' => $patient->address,
+            'Patient.Address4' => $patient->address,
+            'Patient.Address5' => $patient->address,
+        ];
         $filePath = $document->file_path;
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        $this->replaceDocxPlaceholders($fullPath, $replacements);
+      
         $fileUrl = secure_asset('storage/' . $filePath);
         // $key = 'test-document-key-123';
 
