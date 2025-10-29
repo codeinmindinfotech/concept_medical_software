@@ -76,33 +76,38 @@ class PatientDocumentController extends Controller
 
         abort_if($document->patient_id !== $patient->id, 403);
 
-        $docConfig = [
+        $filePath = $document->file_path;
+        $fileUrl = secure_asset('storage/' . $filePath);
+        // $key = 'test-document-key-123';
+
+        $key = generateDocumentKey($document);
+        $token = $this->createJwtToken($document, $key, $fileUrl, $patient);
+        $config = [
             'document' => [
+                'storagePath' => storage_path('app/public'),
                 'fileType' => 'docx',
-                'key' => $document->id . '-' . strtotime($document->updated_at),
-                'title' => 'Document',
-                'url' => asset('storage/' . $document->file_path),
+                'key' => $key, // MUST be set
+                'title' => $document->title ?? 'Document',
+                'url' => $fileUrl, // full HTTPS URL
             ],
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => route('onlyoffice.callback', ['document' => $document->id]),
+                'callbackUrl' => url("/api/onlyoffice/callback/{$document->id}"),
                 'user' => [
-                    'id' => (string) auth()->id(),
-                    'name' => auth()->user()->name,
+                    'id' => (string) $patient->id ?? '1',
+                    'name' => $patient->full_name ?? 'Guest',
                 ],
                 'customization' => [
                     'forcesave' => true,
                 ],
             ],
+            'token' => $token, // your JWT token
         ];
+        \Log::info('ONLYOFFICE key: ' . $key);
+        \Log::info('ONLYOFFICE TOKEN: ' . $token);
 
-        // Generate JWT token using your secret from .env
-        $jwtSecret = env('ONLYOFFICE_JWT_SECRET');
-
-        $token = JWT::encode($docConfig, $jwtSecret, 'HS256');
-
-        return view('patients.documents.edit', compact('patient', 'document', 'templates', 'docConfig', 'token'));
+        return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
     }
 
     public function update(Request $request, Patient $patient, PatientDocument $document)
@@ -140,6 +145,29 @@ class PatientDocumentController extends Controller
         }
     }
 
+    private function createJwtToken($document, $key, $url, $patient)
+    {
+        $payload = [
+            "document" => [
+                "fileType" => "docx",
+                "key" => $key,
+                "title" => $document->title ?? 'Document',
+                "url" => $url,
+            ],
+            "editorConfig" => [
+                "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
+                "mode" => "edit",
+                "user" => [
+                    'id' => (string) $patient->id ?? '1',
+                    'name' => $patient->full_name ?? 'Guest',
+                ],
+            ],
+            "iat" => time(),
+            "exp" => time() + 3600,
+        ];
+        
+        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+    }
 
 }
 
