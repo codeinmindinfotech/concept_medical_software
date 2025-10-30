@@ -40,6 +40,7 @@ use App\Http\Controllers\Backend\ConfigurationController;
 use App\Http\Controllers\Backend\DoctorMessageController;
 use App\Http\Controllers\Backend\ManagerNotificationController;
 use App\Http\Controllers\Backend\Master\DocumentTemplateController;
+use App\Http\Controllers\Backend\Master\WhatsAppController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\PasswordChangeController;
 use App\Http\Controllers\Backend\PatientAptController;
@@ -76,6 +77,8 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
  // Function for patient sub-resources
  $patientSubRoutes = function ($prefix = 'patients/{patient}') {
+
+    Route::post('/whatsapp/send-runtime', [WhatsAppController::class, 'sendRuntime'])->name('whatsapp.send.runtime');
 
     Route::prefix("$prefix/notes")->group(function () {
         Route::get('/', [PatientNoteController::class, 'index'])->name('patients.notes.index');
