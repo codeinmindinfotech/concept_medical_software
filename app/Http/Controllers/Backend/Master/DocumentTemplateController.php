@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Backend\Master;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PatientDocumentMail;
 use App\Models\DocumentTemplate;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use PhpOffice\PhpWord\IOFactory;
+use Illuminate\Support\Facades\Response;
+use ZipArchive;
+use Illuminate\Support\Facades\Mail;
+
 class DocumentTemplateController extends Controller
 {
     /**
@@ -120,4 +125,80 @@ class DocumentTemplateController extends Controller
         DocumentTemplate::destroy($id);
         return redirect()->route('documents.index')->with('success', 'Template deleted');
     }
+    public function downloadSelectedDocuments(Request $request)
+    {
+        $request->validate([
+            'selected_doc' => 'required|exists:document_templates,id',
+            'newTemplateDescription' => 'nullable|string|max:255',
+        ]);
+    
+        $template = DocumentTemplate::findOrFail($request->selected_doc);
+    
+        // Create new template if description provided
+        if ($request->newTemplateDescription) {
+            $newTemplate = DocumentTemplate::create([
+                'name' => $request->newTemplateDescription,
+                'type' => $template->type,
+                'file_path' => '', // will be filled with copied file
+            ]);
+    
+            // Copy selected document as base
+            $originalFile = $template->file_path;
+            $copyPath = 'document_templates/' . uniqid('template_') . '.' . pathinfo($originalFile, PATHINFO_EXTENSION);
+            \Storage::disk('public')->copy($originalFile, $copyPath);
+    
+            $newTemplate->update(['file_path' => $copyPath]);
+    
+            // $template = $newTemplate; // Only download new template
+        }
+    
+        // Return the file for download
+        // $fileFullPath = storage_path('app/public/' . $template->file_path);
+        // $fileName = $template->name . '.' . pathinfo($template->file_path, PATHINFO_EXTENSION);
+        return redirect()->route('documents.index')->with('success', 'Template updated successfully');
+
+        // return response()->download($fileFullPath, $fileName);
+    }
+    
+        // // Create ZIP
+        // $zipFileName = 'documents_' . now()->format('YmdHis') . '.zip';
+        // $zipPath = storage_path('app/public/' . $zipFileName);
+        // $zip = new ZipArchive;
+        // if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
+        //     foreach ($templates as $template) {
+        //         $file = storage_path('app/public/' . $template->file_path);
+        //         if(file_exists($file)){
+        //             $zip->addFile($file, basename($file));
+        //         }
+        //     }
+        //     $zip->close();
+        // }
+
+        // return response()->download($zipPath)->deleteFileAfterSend(true);
+
+        public function emailSelectedDocuments(Request $request)
+        {
+            $request->validate([
+                'email_to' => 'required|email',
+                'email_docs' => 'required|array',
+                'email_docs.*' => 'exists:document_templates,id',
+            ]);
+        
+            $documents = DocumentTemplate::whereIn('id', $request->email_docs)->get();
+        
+            // Prepare a "dummy" patient object with name/email
+            $patient = (object)[
+                'first_name' => 'Valued',
+                'surname' => 'Patient',
+                'email' => $request->email_to,
+            ];
+        
+            $messageContent = "Please find your requested documents attached.";
+        
+            Mail::to($patient->email)->send(new PatientDocumentMail($patient, $documents, $messageContent));
+        
+            return redirect()->back()->with('success', 'Documents emailed successfully.');
+        }
+        
+
 }

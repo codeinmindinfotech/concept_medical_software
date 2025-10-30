@@ -197,6 +197,9 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
 
         // Basic resources
         Route::resource('documents', DocumentTemplateController::class);
+        Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
+        Route::post('documents/email/send', [DocumentTemplateController::class, 'emailSelectedDocuments'])->name('documents.email.send');
+
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
         Route::resource('companies', CompanyController::class);
         Route::resource('roles', RoleController::class);
@@ -249,6 +252,12 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
                 Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
                 Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
             });
+
+            // Basic resources
+        Route::resource('documents', DocumentTemplateController::class);
+        Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
+        Route::post('documents/email/send', [DocumentTemplateController::class, 'emailSelectedDocuments'])->name('documents.email.send');
+
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
