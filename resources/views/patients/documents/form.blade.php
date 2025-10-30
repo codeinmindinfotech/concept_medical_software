@@ -34,7 +34,7 @@
         {{-- Only show editor when editing an actual patient document --}}
         @if(isset($document) && $document->file_path)
 
-        <div style="width: 100%; height: 100vh;">
+        <div style="width: 100%; height: 80vh;">
           <div id="onlyoffice-editor"></div>
         </div>
         @endif
