@@ -109,7 +109,7 @@ class PatientDocumentController extends Controller
             'Consultant.Address4' => $patient->consultant->address,
             'Consultant.PhoneNo' => $patient->consultant->phone,
             'Consultant.FaxNo' => $patient->consultant->fax,
-            
+        
             'General.CurrentDate' => now()->format('d/m/Y'),
         
             'Patient.Salutation' => $patient->title->value,
@@ -122,6 +122,8 @@ class PatientDocumentController extends Controller
             'Patient.Address4' => $patient->address,
             'Patient.Address5' => $patient->address,
         ];
+        
+        
         $filePath = $document->file_path;
         $fullPath = storage_path('app/public/' . $filePath);
 
@@ -129,6 +131,11 @@ class PatientDocumentController extends Controller
       
         $fileUrl = secure_asset('storage/' . $filePath);
         // $key = 'test-document-key-123';
+
+        \Log::info("Replaced DOCX saved at: {$fullPath}, size: " . filesize($fullPath));
+
+        // // Optional: return the file for download to manually check
+        // return response()->download($fullPath);
 
         $key = generateDocumentKey($document);
         $token = $this->createJwtToken($document, $key, $fileUrl, $patient);
@@ -177,20 +184,99 @@ class PatientDocumentController extends Controller
             ->with('success', 'Document deleted.');
     }
 
+    // protected function replaceDocxPlaceholders($filePath, array $replacements)
+    // {
+    //     // Load the template
+    //     $template = new TemplateProcessor($filePath);
+    //     $tempPath = $filePath . '_temp.docx';
+
+    //     // Replace each placeholder
+    //     foreach ($replacements as $key => $value) {
+    //         $template->setValue($key, $value);
+    //         \Log::info("Replacing {$key} with {$value}");
+    //     }
+
+    //     // Save the updated file
+    //     $template->saveAs($filePath);
+
+    //     // Replace original
+    //     unlink($filePath); // delete old file
+    //     rename($tempPath, $filePath);
+    //     \Log::info("DOCX saved: {$filePath}");
+
+    // }
+    protected function preprocessSmartQuotes($filePath)
+    {
+        $zip = new \ZipArchive;
+        $tmp = $filePath . '_tmp.zip';
+    
+        copy($filePath, $tmp);
+    
+        if ($zip->open($tmp) === true) {
+            $content = $zip->getFromName('word/document.xml');
+            // Replace smart quotes with ${...} placeholders
+            $content = preg_replace('/«(.*?)»/', '${$1}', $content);
+            $zip->addFromString('word/document.xml', $content);
+            $zip->close();
+    
+            copy($tmp, $filePath);
+            unlink($tmp);
+        }
+    }
     protected function replaceDocxPlaceholders($filePath, array $replacements)
     {
-         // Load the template
+        \Log::info("🔧 Starting replacement for: {$filePath}");
+
+        // 🔁 Convert «... » → ${...}
+        $this->preprocessSmartQuotes($filePath);
+
         $template = new TemplateProcessor($filePath);
 
-        // Replace each placeholder
         foreach ($replacements as $key => $value) {
+            \Log::info("Replacing {$key} with: {$value}");
             $template->setValue($key, $value);
         }
 
-        // Save the updated file
         $template->saveAs($filePath);
+        \Log::info("✅ Replacement completed and saved to: {$filePath}");
     }
 
+    // protected function replaceDocxPlaceholders($filePath, array $replacements)
+    // {
+    //     try {
+    //         \Log::info("🔧 Starting replacement for: {$filePath}");
+    
+    //         // Temporary file (to avoid Windows file lock)
+    //         $tempPath = $filePath . '_temp.docx';
+    
+    //         // Load the DOCX
+    //         $template = new TemplateProcessor($filePath);
+    
+    //         // Replace placeholders
+    //         foreach ($replacements as $key => $value) {
+    //             $template->setValue($key, $value ?? '');
+    //             \Log::info("Replacing {$key} with: {$value}");
+    //         }
+    
+    //         // Save to temp file first
+    //         $template->saveAs($tempPath);
+    
+    //         // ✅ Ensure the TemplateProcessor is fully released
+    //         unset($template);
+    //         gc_collect_cycles(); // force close any file handles
+    
+    //         // Replace original safely
+    //         if (file_exists($filePath)) {
+    //             unlink($filePath);
+    //         }
+    //         rename($tempPath, $filePath);
+    
+    //         \Log::info("✅ Replacement completed and saved to: {$filePath}");
+    //     } catch (\Throwable $e) {
+    //         \Log::error("❌ Error replacing DOCX: " . $e->getMessage());
+    //     }
+    // }
+    
     private function createJwtToken($document, $key, $url, $patient)
     {
         $payload = [
