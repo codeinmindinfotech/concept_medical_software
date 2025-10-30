@@ -8,7 +8,10 @@ class Company extends Model
 {
     protected $fillable = [
         'name' ,
-        'email'
+        'email',
+        'whatsapp_phone_number_id',
+        'whatsapp_business_account_id',
+        'whatsapp_access_token',
     ];
     
     public function users()

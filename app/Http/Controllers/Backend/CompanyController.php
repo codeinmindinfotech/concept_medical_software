@@ -39,6 +39,9 @@ class CompanyController extends Controller
                 'regex:/^[A-Za-z0-9_]+$/',
             ],
             'email' => 'nullable|email|max:255|unique:companies,email',
+            'whatsapp_phone_number_id' => 'nullable|string|max:50',
+            'whatsapp_business_account_id' => 'nullable|string|max:50',
+            'whatsapp_access_token' => 'nullable|string',
         ]);
         
 
@@ -119,6 +122,9 @@ class CompanyController extends Controller
                 'regex:/^[A-Za-z0-9_]+$/',
             ],
             'email' => 'nullable|email|max:255|unique:companies,email,'. $id,
+            'whatsapp_phone_number_id' => 'nullable|string|max:50',
+            'whatsapp_business_account_id' => 'nullable|string|max:50',
+            'whatsapp_access_token' => 'nullable|string',
         ]);
 
         $company = Company::findOrFail($id);

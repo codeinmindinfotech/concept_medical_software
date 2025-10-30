@@ -1099,28 +1099,76 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 <script>
-    // JavaScript to dynamically set the WhatsApp message and phone number in the modal
-    var currentAppointmentId, currentPhoneNumber;
+let currentAppointmentId = null;
+let currentPhoneNumber = null;
 
-    // Set up modal with data from the clicked button
-    $('#whatsAppModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        currentAppointmentId = button.data('appointment-id');
-        currentPhoneNumber = button.data('patient-phone');
+// When modal opens — fill with dynamic data
+$('#whatsAppModal').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget);
+    currentAppointmentId = button.data('appointment-id');
+    currentPhoneNumber = button.data('patient-phone');
+    const appointmentTime = button.data('appointment-time');
+    const patientName = button.data('patient-name');
 
-        var defaultMessage = "Hello, I wanted to confirm my appointment for " + button.data('appointment-time');
+    const defaultMessage = `Hello ${patientName}, I wanted to confirm your appointment for ${appointmentTime}.`;
+    $('#customMessage').val(defaultMessage);
+});
 
-        // Set the textarea content
-        $('#customMessage').val(defaultMessage);
+// Send WhatsApp message via AJAX
+function sendWhatsAppMessage() {
+    alert("ddddd");
+    const message = $('#customMessage').val();
+
+    if (!currentPhoneNumber || !message.trim()) {
+        alert('Phone number or message missing!');
+        return;
+    }
+
+    $.ajax({
+        url: "{{ guard_route('whatsapp.send.runtime') }}", // define route below
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            phone: currentPhoneNumber,
+            message: message,
+            appointment_id: currentAppointmentId
+        },
+        beforeSend: function() {
+            $('#whatsAppModal .btn-success').prop('disabled', true).text('Sending...');
+        },
+        success: function(response) {
+            $('#whatsAppModal').modal('hide');
+            toastr.success('WhatsApp message sent successfully!');
+        },
+        error: function(xhr) {
+            toastr.error('Failed to send message. Check console for details.');
+            console.error(xhr.responseText);
+        },
+        complete: function() {
+            $('#whatsAppModal .btn-success').prop('disabled', false).text('Send Message');
+        }
     });
+}
+
+    // // Set up modal with data from the clicked button
+    // $('#whatsAppModal').on('show.bs.modal', function (event) {
+    //     var button = $(event.relatedTarget); // Button that triggered the modal
+    //     currentAppointmentId = button.data('appointment-id');
+    //     currentPhoneNumber = button.data('patient-phone');
+
+    //     var defaultMessage = "Hello, I wanted to confirm my appointment for " + button.data('appointment-time');
+
+    //     // Set the textarea content
+    //     $('#customMessage').val(defaultMessage);
+    // });
 
     // Function to send WhatsApp message with custom text
-    function sendWhatsAppMessage() {
-        var message = $('#customMessage').val();
-        var whatsAppUrl = "https://wa.me/" + currentPhoneNumber + "?text=" + encodeURIComponent(message);
+    // function sendWhatsAppMessage() {
+    //     var message = $('#customMessage').val();
+    //     var whatsAppUrl = "https://wa.me/" + currentPhoneNumber + "?text=" + encodeURIComponent(message);
 
-        window.open(whatsAppUrl, "_blank");
-    }
+    //     window.open(whatsAppUrl, "_blank");
+    // }
 </script>
 <script>
     function selectClinicMain(name, id, element) {

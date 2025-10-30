@@ -67,17 +67,17 @@
                     </span>
                 </td>
                 <td>
-                    <!-- Trigger Button for Modal -->
-                    <button class="btn btn-sm btn-outline-success" 
-                            data-bs-toggle="modal" 
+                    <button class="btn btn-sm btn-outline-success"
+                            data-bs-toggle="modal"
                             data-bs-target="#whatsAppModal"
                             data-appointment-id="{{ $appointment->id }}"
                             data-patient-name="{{ $appointment->patient->full_name }}"
-                            data-patient-phone="{{ $appointment->patient->phone_number }}"
+                            data-patient-phone="{{ $appointment->patient->phone }}"
                             data-appointment-time="{{ $time }}">
                         <i class="fab fa-whatsapp"></i> Send Message
                     </button>
-                </td>
+                  </td>
+                  
                 <td>
                     <div class="dropdown">
                         <button class="btn btn-sm btn-light border dropdown-toggle" data-bs-toggle="dropdown">
