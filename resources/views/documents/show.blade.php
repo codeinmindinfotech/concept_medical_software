@@ -34,7 +34,7 @@
 
                         @if(isset($document) && $document->file_path)
                         <div style="width: 100%; height: 80vh;">
-                          <div id="onlyoffice-editor"></div>
+                          <div id="onlyoffice-viewer"></div>
                         </div>
                       @endif
                         {{-- <iframe src="http://137.184.194.64/onlyoffice/office/index.html?url=https://conceptmedicalpm.ie/storage/document_templates/KkqZ2ghGmwwaXBS1D1XmrOSVfZtopDuayNOqLpih.docx"
