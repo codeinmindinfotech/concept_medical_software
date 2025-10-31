@@ -34,10 +34,10 @@ class KeywordHelper
 
             // 🩺 Patient Info
             'Title'             => optional($patient->title)->value,
-            'FirstName'         => $patient->first_name ?? '',
-            'SurName'           => $patient->surname ?? '',
+            'PatientFirstName'         => $patient->first_name ?? '',
+            'PatientSurName'           => $patient->surname ?? '',
             'PatientName'       => $patient->full_name ?? '',
-            'PatientAddress1'   => $patient->address ?? '',
+            'PatientAddress'   => $patient->address ?? '',
             // 'PatientAddress2'   => $patient->address2 ?? '',
             // 'PatientAddress3'   => $patient->address3 ?? '',
             // 'PatientAddress4'   => $patient->address4 ?? '',
