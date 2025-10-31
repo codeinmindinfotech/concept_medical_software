@@ -31,9 +31,12 @@
                     <div class="mb-3">
                         <strong>File:</strong>
                         {{-- <textarea id="editor" name="content">{!! $html !!}</textarea> --}}
-                        <div id="onlyoffice-viewer" style="height: 100vh;"></div>
 
-
+                        @if(isset($document) && $document->file_path)
+                        <div style="width: 100%; height: 80vh;">
+                          <div id="onlyoffice-editor"></div>
+                        </div>
+                      @endif
                         {{-- <iframe src="http://137.184.194.64/onlyoffice/office/index.html?url=https://conceptmedicalpm.ie/storage/document_templates/KkqZ2ghGmwwaXBS1D1XmrOSVfZtopDuayNOqLpih.docx"
                             width="100%" height="600px" frameborder="0">
                         </iframe>                         --}}
