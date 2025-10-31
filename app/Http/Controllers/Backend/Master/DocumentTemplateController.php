@@ -113,7 +113,7 @@ class DocumentTemplateController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => url("/api/onlyoffice/callback/{$template->id}"),
+                'callbackUrl' => url("/api/onlyoffice/callback/template/{$template->id}"),
                 'user' => [
                     'id' => (string) $user->id ?? '1',
                     'name' => $user->name ?? 'Guest',
