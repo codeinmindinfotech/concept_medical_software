@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\KeywordHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
 use App\Models\PatientDocument;
@@ -51,32 +52,33 @@ class PatientDocumentController extends Controller
             return back()->with('error', 'Could not copy template file.');
         }
     
-        $replacements = [
-            'Consultant.Name' => $patient->consultant->name,
-            'Consultant.Description' => $patient->consultant->imc_no,
-            'Consultant.Address1' => $patient->consultant->address,
-            'Consultant.Address2' => $patient->consultant->address,
-            'Consultant.Address3' => $patient->consultant->address,
-            'Consultant.Address4' => $patient->consultant->address,
-            'Consultant.PhoneNo' => $patient->consultant->phone,
-            'Consultant.FaxNo' => $patient->consultant->fax,
+        // $replacements = [
+        //     'Consultant.Name' => $patient->consultant->name,
+        //     'Consultant.Description' => $patient->consultant->imc_no,
+        //     'Consultant.Address1' => $patient->consultant->address,
+        //     'Consultant.Address2' => $patient->consultant->address,
+        //     'Consultant.Address3' => $patient->consultant->address,
+        //     'Consultant.Address4' => $patient->consultant->address,
+        //     'Consultant.PhoneNo' => $patient->consultant->phone,
+        //     'Consultant.FaxNo' => $patient->consultant->fax,
             
-            'General.CurrentDate' => now()->format('d/m/Y'),
+        //     'General.CurrentDate' => now()->format('d/m/Y'),
         
-            'Patient.Salutation' => $patient->title->value,
-            'Patient.FirstName' => $patient->first_name,
-            'Patient.Surname' => $patient->surname,
-            'Patient.DOB' => $patient->dob->format('d/m/Y'),
-            'Patient.Address1' => $patient->address,
-            'Patient.Address2' => $patient->address,
-            'Patient.Address3' => $patient->address,
-            'Patient.Address4' => $patient->address,
-            'Patient.Address5' => $patient->address,
-        ];
+        //     'Patient.Salutation' => $patient->title->value,
+        //     'Patient.FirstName' => $patient->first_name,
+        //     'Patient.Surname' => $patient->surname,
+        //     'Patient.DOB' => $patient->dob->format('d/m/Y'),
+        //     'Patient.Address1' => $patient->address,
+        //     'Patient.Address2' => $patient->address,
+        //     'Patient.Address3' => $patient->address,
+        //     'Patient.Address4' => $patient->address,
+        //     'Patient.Address5' => $patient->address,
+        // ];
 
         
         // 🔁 Replace placeholders
-        $this->replaceDocxPlaceholders($newFullPath, $replacements);
+        // $this->replaceDocxPlaceholders($newFullPath, $replacements);
+        KeywordHelper::replaceKeywords($newFullPath, $patient);
 
     
         // 💾 Save in database
@@ -99,36 +101,12 @@ class PatientDocumentController extends Controller
             ->firstOrFail();
 
         abort_if($document->patient_id !== $patient->id, 403);
-
-        $replacements = [
-            'Consultant.Name' => $patient->consultant->name,
-            'Consultant.Description' => $patient->consultant->imc_no,
-            'Consultant.Address1' => $patient->consultant->address,
-            'Consultant.Address2' => $patient->consultant->address,
-            'Consultant.Address3' => $patient->consultant->address,
-            'Consultant.Address4' => $patient->consultant->address,
-            'Consultant.PhoneNo' => $patient->consultant->phone,
-            'Consultant.FaxNo' => $patient->consultant->fax,
-        
-            'General.CurrentDate' => now()->format('d/m/Y'),
-        
-            'Patient.Salutation' => $patient->title->value,
-            'Patient.FirstName' => $patient->first_name,
-            'Patient.Surname' => $patient->surname,
-            'Patient.DOB' => $patient->dob->format('d/m/Y'),
-            'Patient.Address1' => $patient->address,
-            'Patient.Address2' => $patient->address,
-            'Patient.Address3' => $patient->address,
-            'Patient.Address4' => $patient->address,
-            'Patient.Address5' => $patient->address,
-        ];
-        
         
         $filePath = $document->file_path;
         $fullPath = storage_path('app/public/' . $filePath);
 
-        $this->replaceDocxPlaceholders($fullPath, $replacements);
-      
+        // $this->replaceDocxPlaceholders($fullPath, $replacements);
+        KeywordHelper::replaceKeywords($fullPath, $patient);
         $fileUrl = secure_asset('storage/' . $filePath);
         // $key = 'test-document-key-123';
 
@@ -205,41 +183,42 @@ class PatientDocumentController extends Controller
     //     \Log::info("DOCX saved: {$filePath}");
 
     // }
-    protected function preprocessSmartQuotes($filePath)
-    {
-        $zip = new \ZipArchive;
-        $tmp = $filePath . '_tmp.zip';
+
+    // protected function preprocessSmartQuotes($filePath)
+    // {
+    //     $zip = new \ZipArchive;
+    //     $tmp = $filePath . '_tmp.zip';
     
-        copy($filePath, $tmp);
+    //     copy($filePath, $tmp);
     
-        if ($zip->open($tmp) === true) {
-            $content = $zip->getFromName('word/document.xml');
-            // Replace smart quotes with ${...} placeholders
-            $content = preg_replace('/«(.*?)»/', '${$1}', $content);
-            $zip->addFromString('word/document.xml', $content);
-            $zip->close();
+    //     if ($zip->open($tmp) === true) {
+    //         $content = $zip->getFromName('word/document.xml');
+    //         // Replace smart quotes with ${...} placeholders
+    //         $content = preg_replace(['/«(.*?)»/', '/\[(.*?)\]/'], ['${$1}', '${$1}'], $content);
+    //         $zip->addFromString('word/document.xml', $content);
+    //         $zip->close();
     
-            copy($tmp, $filePath);
-            unlink($tmp);
-        }
-    }
-    protected function replaceDocxPlaceholders($filePath, array $replacements)
-    {
-        \Log::info("🔧 Starting replacement for: {$filePath}");
+    //         copy($tmp, $filePath);
+    //         unlink($tmp);
+    //     }
+    // }
+    // protected function replaceDocxPlaceholders($filePath, array $replacements)
+    // {
+    //     \Log::info("🔧 Starting replacement for: {$filePath}");
 
-        // 🔁 Convert «... » → ${...}
-        $this->preprocessSmartQuotes($filePath);
+    //     // 🔁 Convert «... » → ${...}
+    //     $this->preprocessSmartQuotes($filePath);
 
-        $template = new TemplateProcessor($filePath);
+    //     $template = new TemplateProcessor($filePath);
 
-        foreach ($replacements as $key => $value) {
-            \Log::info("Replacing {$key} with: {$value}");
-            $template->setValue($key, $value);
-        }
+    //     foreach ($replacements as $key => $value) {
+    //         \Log::info("Replacing {$key} with: {$value}");
+    //         $template->setValue($key, $value);
+    //     }
 
-        $template->saveAs($filePath);
-        \Log::info("✅ Replacement completed and saved to: {$filePath}");
-    }
+    //     $template->saveAs($filePath);
+    //     \Log::info("✅ Replacement completed and saved to: {$filePath}");
+    // }
 
     // protected function replaceDocxPlaceholders($filePath, array $replacements)
     // {
