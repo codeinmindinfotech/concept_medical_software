@@ -124,30 +124,6 @@ class PatientDocumentController extends Controller
         return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
     }
 
-    // private function createJwtToken($document, $key, $url, $patient)
-    // {
-    //     $payload = [
-    //         "document" => [
-    //             "fileType" => "docx",
-    //             "key" => $key,
-    //             "title" => $document->title ?? 'Document',
-    //             "url" => $url,
-    //         ],
-    //         "editorConfig" => [
-    //             "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
-    //             "mode" => "edit",
-    //             "user" => [
-    //                 'id' => (string) $patient->id ?? '1',
-    //                 'name' => $patient->full_name ?? 'Guest',
-    //             ],
-    //         ],
-    //         "iat" => time(),
-    //         "exp" => time() + 3600,
-    //     ];
-        
-    //     return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
-    // }
-
     public function update(Request $request, Patient $patient, PatientDocument $document)
     {
 
@@ -163,18 +139,15 @@ class PatientDocumentController extends Controller
                 return response()->json(['error' => 'Template file does not exist.'], 500);
             }
 
-            // Prepare new file path
             $newFileName = uniqid('patient_doc_') . '.docx';
             $newStoragePath = "patient_docs/{$newFileName}";
             $newFullPath = storage_path("app/public/{$newStoragePath}");
     
-            // ✅ Ensure destination folder exists
             $directoryPath = storage_path('app/public/patient_docs');
             if (!file_exists($directoryPath)) {
                 mkdir($directoryPath, 0775, true);
             }
         
-            // ✅ Copy template to new file
             if (!copy($templatePath, $newFullPath)) {
                 return back()->with('error', 'Could not copy template file.');
             }

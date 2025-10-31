@@ -66,6 +66,9 @@ class DocumentTemplateController extends Controller
 
         $fileUrl = asset('storage/' . $document->file_path);
         $key = OnlyOfficeHelper::generateDocumentKey($document);
+        $user = current_user();
+        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $user);
+
         $config = [
             'document' => [
                 'fileType' => 'docx',
@@ -74,9 +77,10 @@ class DocumentTemplateController extends Controller
                 'url' => $fileUrl,
             ],
             'editorConfig' => [
-                'mode' => 'view', // ✅ View-only mode
-                'callbackUrl' => null, // no save actions
+                'mode' => 'view', 
+                'callbackUrl' => null,
             ],
+            'token' => $token, // your JWT token
         ];
 
         return view('documents.show', [
