@@ -128,7 +128,11 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     Route::post('/communications/{communication}/received', [CommunicationController::class, 'markAsReceived'])->name('communications.received');
 
     Route::prefix("$prefix")->group(function () {
-        Route::resource('patient-documents', PatientDocumentController::class)->except(['show'])->names('patient-documents');
+        Route::post('/documents/preview-template-create', [PatientDocumentController::class, 'previewTemplateCreate'])
+    ->name('patient-documents.previewTemplateCreate');
+
+        Route::post('/documents/{document}/change-template',[PatientDocumentController::class, 'changeTemplate'])->name('patient-documents.changeTemplate');
+        Route::resource('documents', PatientDocumentController::class)->except(['show'])->names('patient-documents');
     });
 
     // Follow-ups

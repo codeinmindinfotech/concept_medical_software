@@ -273,18 +273,3 @@ if (!function_exists('isDarkColor')) {
         return $brightness < 128;
     }
 }
-
-function generateDocumentKey($document): string
-{
-    $data = $document->id . '|' . $document->updated_at->timestamp; // use integer timestamp
-    return substr(hash('sha256', $data), 0, 128);
-}
-// function generateDocumentKey($document) {
-//     // Create a short unique key using document ID and last updated time
-//     return substr(md5($document->id . '_' . $document->updated_at), 0, 20);
-// }
-
-
-
-
-

@@ -42,12 +42,9 @@
             @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
-          <!-- Show Current File (Edit Only) -->
-          @if(!empty($template->file_path))
-            <div class="mb-3">
-              <a href="{{ asset('storage/' . $template->file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm">
-                View Current File
-              </a>
+          @if(isset($template) && $template->file_path)
+            <div style="width: 100%; height: 80vh;">
+              <div id="onlyoffice-editor"></div>
             </div>
           @endif
 
@@ -63,3 +60,12 @@
     </button>
   </div>
 </div>
+@push('scripts')
+<script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
+<script>
+    @if(isset($config))
+        let editorConfig = @json($config);
+        window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
+    @endif
+</script>
+@endpush

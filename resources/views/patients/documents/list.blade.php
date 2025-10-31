@@ -14,10 +14,10 @@
                 <td>{{ $doc->template->name }}</td>
                 <td>{{ $doc->created_at->format('Y-m-d') }}</td>
                 <td>
-                    <a href="{{ guard_route('patient-documents.edit', [$patient, $doc]) }}" class="btn btn-sm btn-success">Edit</a>
+                    <a href="{{ guard_route('patient-documents.edit', [$patient, $doc]) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-pen-to-square"></i></a>
                     <form action="{{ guard_route('patient-documents.destroy', [$patient, $doc]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete?')">
                         @csrf @method('DELETE')
-                        <button class="btn btn-sm btn-danger">Delete</button>
+                        <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
                     </form>
                 </td>
 

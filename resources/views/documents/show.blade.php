@@ -24,21 +24,19 @@
                     <h5 class="mb-0"><i class="fas fa-user-md me-2"></i>Document Panel</h5>
                 </div>
                 <div class="card-body">
-                    <h1>Preview: {{ $template->name }}</h1>
+                    <h1>Preview: {{ $document->name }}</h1>
                     <div class="mb-3">
-                        <strong>Type:</strong> {{ ucfirst($template->type) }}
+                        <strong>Type:</strong> {{ ucfirst($document->type) }}
                     </div>
                     <div class="mb-3">
                         <strong>File:</strong>
-                        <textarea id="editor" name="content">{!! $html !!}</textarea>
-                        {{-- <iframe src="http://137.184.194.64/onlyoffice/office/index.html?url={{asset('storage/' . $template->file_path)}}"
-                            width="100%" height="600px" frameborder="0">
-                        </iframe> --}}
+                        {{-- <textarea id="editor" name="content">{!! $html !!}</textarea> --}}
+                        <div id="onlyoffice-viewer" style="height: 100vh;"></div>
 
-                        <iframe src="http://137.184.194.64/onlyoffice/office/index.html?url=https://conceptmedicalpm.ie/storage/document_templates/KkqZ2ghGmwwaXBS1D1XmrOSVfZtopDuayNOqLpih.docx"
+
+                        {{-- <iframe src="http://137.184.194.64/onlyoffice/office/index.html?url=https://conceptmedicalpm.ie/storage/document_templates/KkqZ2ghGmwwaXBS1D1XmrOSVfZtopDuayNOqLpih.docx"
                             width="100%" height="600px" frameborder="0">
-                        </iframe>                        
-                        {{-- <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ urlencode(asset('storage/' . $template->file_path)) }}" width="100%" height="600px" frameborder="0"></iframe> --}}
+                        </iframe>                         --}}
                     </div>
                 </div>
             </div>
@@ -48,3 +46,11 @@
 
 </div>
 @endsection
+
+
+@push('scripts')
+<script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
+<script>
+    const docEditor = new DocsAPI.DocEditor("onlyoffice-viewer", {!! $config !!});
+</script>
+@endpush
