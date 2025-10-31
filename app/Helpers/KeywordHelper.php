@@ -21,7 +21,7 @@ class KeywordHelper
             return;
         }
 
-        $appointment = $patient->appointments->first(); // Or ->last(), or use ->latest()->first()
+        $appointment = optional($patient->appointments()->first());
 
         self::preprocessSmartQuotes($filePath);
 
@@ -76,60 +76,61 @@ class KeywordHelper
             'NOKAddress'        => $patient->kin_address ?? '',
 
             // ⚕️ Doctor / Consultant
-            'DoctorName'        => optional($patient->doctor->first())->name,
-            'DoctorTitle'       => optional($patient->doctor->first())->salutation,
+            'DoctorName'        => optional($patient->doctor)->name,
+            'DoctorTitle'       => optional($patient->doctor)->salutation,
             // 'DoctorFirstName'   => optional($patient->doctor)->first_name,
             // 'DoctorSurName'     => optional($patient->doctor)->surname,
-            'DoctorAddress1'    => optional($patient->doctor->first())->address,
-            'DoctorAddress2'    => optional($patient->doctor->first())->postcode,
+            'DoctorAddress1'    => optional($patient->doctor)->address,
+            'DoctorAddress2'    => optional($patient->doctor)->postcode,
             // 'DoctorAddress3'    => optional($patient->doctor)->address3,
             // 'DoctorAddress4'    => optional($patient->doctor)->address4,
-            'DoctorEmail'       => optional($patient->doctor->first())->email,
-            'SalutionDoctor'    => optional($patient->doctor->first())->salutation,
-            'GPPhone'           => optional($patient->doctor->first())->phone,
+            'DoctorEmail'       => optional($patient->doctor)->email,
+            'SalutionDoctor'    => optional($patient->doctor)->salutation,
+            'GPPhone'           => optional($patient->doctor)->phone,
 
             // 📩 Referral
-            'ReferralName'      => optional($patient->referralDoctor->first())->name,
-            'ReferralAddress1'  => optional($patient->referralDoctor->first())->address,
-            'ReferralAddress2'  => optional($patient->referralDoctor->first())->postcode,
+            'ReferralName'      => optional($patient->referralDoctor)->name,
+            'ReferralAddress1'  => optional($patient->referralDoctor)->address,
+            'ReferralAddress2'  => optional($patient->referralDoctor)->postcode,
             // 'ReferralAddress3'  => optional($patient->referralDoctor)->address3,
             // 'ReferralAddress4'  => optional($patient->referralDoctor)->address4,
             // 'ReferralRef'       => optional($patient->referralDoctor)->ref,
-            'ReferralEmail'     => optional($patient->referralDoctor->first())->email,
-            'SalutionReferral'  => optional($patient->referralDoctor->first())->salutation,
+            'ReferralEmail'     => optional($patient->referralDoctor)->email,
+            'SalutionReferral'  => optional($patient->referralDoctor)->salutation,
 
             // ⚖️ Legal
-            'LegalName'         => optional($patient->solicitorDoctor->first())->name,
-            'LegalAddress1'     => optional($patient->solicitorDoctor->first())->address,
-            'LegalAddress2'     => optional($patient->solicitorDoctor->first())->postcode,
+            'LegalName'         => optional($patient->solicitorDoctor)->name,
+            'LegalAddress1'     => optional($patient->solicitorDoctor)->address,
+            'LegalAddress2'     => optional($patient->solicitorDoctor)->postcode,
             // 'LegalAddress3'     => optional($patient->solicitorDoctor)->address3,
             // 'LegalAddress4'     => optional($patient->solicitorDoctor)->address4,
             // 'LegalRef'          => optional($patient->solicitorDoctor)->ref,
-            'LegalEmail'        => optional($patient->solicitorDoctor->first())->email,
-            'SalutionLegal'     => optional($patient->solicitorDoctor->first())->salutation,
+            'LegalEmail'        => optional($patient->solicitorDoctor)->email,
+            'SalutionLegal'     => optional($patient->solicitorDoctor)->salutation,
 
             // 🧑‍💼 Other Contact
-            'OtherTitle'        => optional($patient->otherDoctor->first())->title,
+            'OtherTitle'        => optional($patient->otherDoctor)->title,
             // 'OtherFirstName'    => optional($patient->otherDoctor)->first_name,
             // 'OtherSurName'      => optional($patient->otherDoctor)->surname,
-            'OtherName'         => optional($patient->otherDoctor->first())->name,
-            'OtherAddress1'     => optional($patient->otherDoctor->first())->address,
-            'OtherAddress2'     => optional($patient->otherDoctor->first())->postcode,
+            'OtherName'         => optional($patient->otherDoctor)->name,
+            'OtherAddress1'     => optional($patient->otherDoctor)->address,
+            'OtherAddress2'     => optional($patient->otherDoctor)->postcode,
             // 'OtherAddress3'     => optional($patient->otherDoctor)->address3,
             // 'OtherAddress4'     => optional($patient->otherDoctor)->address4,
             // 'OtherRef'          => optional($patient->otherDoctor)->ref,
-            'OtherEmail'        => optional($patient->otherDoctor->first())->email,
+            'OtherEmail'        => optional($patient->otherDoctor)->email,
 
             // 🩺 Appointment / Operation
-            'AppDate' => optional($patient->appointments->first())->appointment_date 
-                ? Carbon::parse($patient->appointments->first()->appointment_date)->format('d/m/Y') 
+            'AppDate' => $appointment->appointment_date 
+                ? Carbon::parse($appointment->appointment_date)->format('d/m/Y') 
                 : '',
-
-            'AppTime'           => optional($patient->appointments->first())->start_time,
-            'AppType'           => optional($patient->appointments->first())->appointment_type,
-            'AppLocation'       => optional($patient->appointments->first()->clinic)->name,
-            'AptFootNote'       => optional($patient->appointments->first())->appointment_note,
-            'OpDate'            => optional($patient->operation)->date
+            'AppTime' => $appointment->start_time,
+            'AppType' => $appointment->appointment_type,
+            'AppLocation' => optional($appointment->clinic)->name,
+            'AptFootNote' => $appointment->appointment_note,
+               
+                
+                'OpDate'            => optional($patient->operation)->date
                                     ? Carbon::parse($patient->operation->date)->format('d/m/Y') : '',
             'OpDateLong'        => optional($patient->operation)->date
                                     ? Carbon::parse($patient->operation->date)->format('l, d F Y') : '',
