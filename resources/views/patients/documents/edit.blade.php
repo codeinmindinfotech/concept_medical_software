@@ -29,7 +29,7 @@ $breadcrumbs = [
 </form>
 @endsection
 
-@push('scripts')
+{{-- @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 
 <script>
@@ -41,4 +41,4 @@ $breadcrumbs = [
     var docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
     console.log(docEditor);
 </script>
-@endpush
+@endpush --}}

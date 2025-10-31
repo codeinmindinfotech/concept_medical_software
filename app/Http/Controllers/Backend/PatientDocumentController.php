@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Helpers\KeywordHelper;
+use App\Helpers\OnlyOfficeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
 use App\Models\PatientDocument;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\DocumentTemplate;
 use Illuminate\Support\Facades\Storage;
 use Firebase\JWT\JWT;
+use Illuminate\Http\RedirectResponse;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 
@@ -52,30 +54,6 @@ class PatientDocumentController extends Controller
             return back()->with('error', 'Could not copy template file.');
         }
     
-        // $replacements = [
-        //     'Consultant.Name' => $patient->consultant->name,
-        //     'Consultant.Description' => $patient->consultant->imc_no,
-        //     'Consultant.Address1' => $patient->consultant->address,
-        //     'Consultant.Address2' => $patient->consultant->address,
-        //     'Consultant.Address3' => $patient->consultant->address,
-        //     'Consultant.Address4' => $patient->consultant->address,
-        //     'Consultant.PhoneNo' => $patient->consultant->phone,
-        //     'Consultant.FaxNo' => $patient->consultant->fax,
-            
-        //     'General.CurrentDate' => now()->format('d/m/Y'),
-        
-        //     'Patient.Salutation' => $patient->title->value,
-        //     'Patient.FirstName' => $patient->first_name,
-        //     'Patient.Surname' => $patient->surname,
-        //     'Patient.DOB' => $patient->dob->format('d/m/Y'),
-        //     'Patient.Address1' => $patient->address,
-        //     'Patient.Address2' => $patient->address,
-        //     'Patient.Address3' => $patient->address,
-        //     'Patient.Address4' => $patient->address,
-        //     'Patient.Address5' => $patient->address,
-        // ];
-
-        
         // 🔁 Replace placeholders
         // $this->replaceDocxPlaceholders($newFullPath, $replacements);
         KeywordHelper::replaceKeywords($newFullPath, $patient);
@@ -88,8 +66,10 @@ class PatientDocumentController extends Controller
             'file_path' => $newStoragePath,
         ]);
     
-        return redirect()->route('patient-documents.index', $patient)
-            ->with('success', 'Document created successfully.');
+        return response()->json([
+            'redirect' => guard_route('patient-documents.index', $patient),
+            'message' => 'Documents Created successfully',
+        ]);
     }
 
 
@@ -108,15 +88,14 @@ class PatientDocumentController extends Controller
         // $this->replaceDocxPlaceholders($fullPath, $replacements);
         KeywordHelper::replaceKeywords($fullPath, $patient);
         $fileUrl = secure_asset('storage/' . $filePath);
-        // $key = 'test-document-key-123';
 
         \Log::info("Replaced DOCX saved at: {$fullPath}, size: " . filesize($fullPath));
 
         // // Optional: return the file for download to manually check
         // return response()->download($fullPath);
 
-        $key = generateDocumentKey($document);
-        $token = $this->createJwtToken($document, $key, $fileUrl, $patient);
+        $key = OnlyOfficeHelper::generateDocumentKey($document);
+        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $patient);
         $config = [
             'document' => [
                 'storagePath' => storage_path('app/public'),
@@ -145,139 +124,148 @@ class PatientDocumentController extends Controller
         return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
     }
 
+    // private function createJwtToken($document, $key, $url, $patient)
+    // {
+    //     $payload = [
+    //         "document" => [
+    //             "fileType" => "docx",
+    //             "key" => $key,
+    //             "title" => $document->title ?? 'Document',
+    //             "url" => $url,
+    //         ],
+    //         "editorConfig" => [
+    //             "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
+    //             "mode" => "edit",
+    //             "user" => [
+    //                 'id' => (string) $patient->id ?? '1',
+    //                 'name' => $patient->full_name ?? 'Guest',
+    //             ],
+    //         ],
+    //         "iat" => time(),
+    //         "exp" => time() + 3600,
+    //     ];
+        
+    //     return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+    // }
+
     public function update(Request $request, Patient $patient, PatientDocument $document)
     {
-        // OnlyOffice should handle the save via callback
-        return back()->with('info', 'Documents are auto-saved via OnlyOffice.');
-    }
 
-    public function destroy(Patient $patient, PatientDocument $document)
+        // Only update if a new template is selected
+        if ($request->has('document_template_id') 
+            && $request->document_template_id != $document->document_template_id) {
+    
+                
+            $template = DocumentTemplate::findOrFail($request->document_template_id);
+            $templatePath = storage_path('app/public/' . $template->file_path);
+    
+            if (!is_file($templatePath)) {
+                return response()->json(['error' => 'Template file does not exist.'], 500);
+            }
+
+            // Prepare new file path
+            $newFileName = uniqid('patient_doc_') . '.docx';
+            $newStoragePath = "patient_docs/{$newFileName}";
+            $newFullPath = storage_path("app/public/{$newStoragePath}");
+    
+            // ✅ Ensure destination folder exists
+            $directoryPath = storage_path('app/public/patient_docs');
+            if (!file_exists($directoryPath)) {
+                mkdir($directoryPath, 0775, true);
+            }
+        
+            // ✅ Copy template to new file
+            if (!copy($templatePath, $newFullPath)) {
+                return back()->with('error', 'Could not copy template file.');
+            }
+    
+            KeywordHelper::replaceKeywords($newFullPath, $patient);
+    
+            // Update database
+            $document->update([
+                'document_template_id' => $template->id,
+            ]);
+        }
+    
+        return response()->json([
+            'redirect' => guard_route('patient-documents.index', $patient),
+            'message' => 'Document updated successfully and auto-saved via OnlyOffice',
+        ]);
+    }
+    
+    public function destroy(Patient $patient, PatientDocument $document): RedirectResponse
     {
         abort_if($document->patient_id !== $patient->id, 403);
 
         Storage::delete("public/" . $document->file_path);
         $document->delete();
 
-        return redirect()->route('patient-documents.index', $patient)
-            ->with('success', 'Document deleted.');
+        return redirect()
+            ->route('patient-documents.index', $patient)
+            ->with('success', 'Document deleted successfully.');
+
     }
 
-    // protected function replaceDocxPlaceholders($filePath, array $replacements)
-    // {
-    //     // Load the template
-    //     $template = new TemplateProcessor($filePath);
-    //     $tempPath = $filePath . '_temp.docx';
-
-    //     // Replace each placeholder
-    //     foreach ($replacements as $key => $value) {
-    //         $template->setValue($key, $value);
-    //         \Log::info("Replacing {$key} with {$value}");
-    //     }
-
-    //     // Save the updated file
-    //     $template->saveAs($filePath);
-
-    //     // Replace original
-    //     unlink($filePath); // delete old file
-    //     rename($tempPath, $filePath);
-    //     \Log::info("DOCX saved: {$filePath}");
-
-    // }
-
-    // protected function preprocessSmartQuotes($filePath)
-    // {
-    //     $zip = new \ZipArchive;
-    //     $tmp = $filePath . '_tmp.zip';
-    
-    //     copy($filePath, $tmp);
-    
-    //     if ($zip->open($tmp) === true) {
-    //         $content = $zip->getFromName('word/document.xml');
-    //         // Replace smart quotes with ${...} placeholders
-    //         $content = preg_replace(['/«(.*?)»/', '/\[(.*?)\]/'], ['${$1}', '${$1}'], $content);
-    //         $zip->addFromString('word/document.xml', $content);
-    //         $zip->close();
-    
-    //         copy($tmp, $filePath);
-    //         unlink($tmp);
-    //     }
-    // }
-    // protected function replaceDocxPlaceholders($filePath, array $replacements)
-    // {
-    //     \Log::info("🔧 Starting replacement for: {$filePath}");
-
-    //     // 🔁 Convert «... » → ${...}
-    //     $this->preprocessSmartQuotes($filePath);
-
-    //     $template = new TemplateProcessor($filePath);
-
-    //     foreach ($replacements as $key => $value) {
-    //         \Log::info("Replacing {$key} with: {$value}");
-    //         $template->setValue($key, $value);
-    //     }
-
-    //     $template->saveAs($filePath);
-    //     \Log::info("✅ Replacement completed and saved to: {$filePath}");
-    // }
-
-    // protected function replaceDocxPlaceholders($filePath, array $replacements)
-    // {
-    //     try {
-    //         \Log::info("🔧 Starting replacement for: {$filePath}");
-    
-    //         // Temporary file (to avoid Windows file lock)
-    //         $tempPath = $filePath . '_temp.docx';
-    
-    //         // Load the DOCX
-    //         $template = new TemplateProcessor($filePath);
-    
-    //         // Replace placeholders
-    //         foreach ($replacements as $key => $value) {
-    //             $template->setValue($key, $value ?? '');
-    //             \Log::info("Replacing {$key} with: {$value}");
-    //         }
-    
-    //         // Save to temp file first
-    //         $template->saveAs($tempPath);
-    
-    //         // ✅ Ensure the TemplateProcessor is fully released
-    //         unset($template);
-    //         gc_collect_cycles(); // force close any file handles
-    
-    //         // Replace original safely
-    //         if (file_exists($filePath)) {
-    //             unlink($filePath);
-    //         }
-    //         rename($tempPath, $filePath);
-    
-    //         \Log::info("✅ Replacement completed and saved to: {$filePath}");
-    //     } catch (\Throwable $e) {
-    //         \Log::error("❌ Error replacing DOCX: " . $e->getMessage());
-    //     }
-    // }
-    
-    private function createJwtToken($document, $key, $url, $patient)
+    public function previewTemplate(Request $request, Patient $patient, PatientDocument $document)
     {
-        $payload = [
-            "document" => [
-                "fileType" => "docx",
-                "key" => $key,
-                "title" => $document->title ?? 'Document',
-                "url" => $url,
-            ],
-            "editorConfig" => [
-                "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
-                "mode" => "edit",
-                "user" => [
-                    'id' => (string) $patient->id ?? '1',
-                    'name' => $patient->full_name ?? 'Guest',
-                ],
-            ],
-            "iat" => time(),
-            "exp" => time() + 3600,
-        ];
+        $request->validate([
+            'template_id' => 'required|exists:document_templates,id'
+        ]);
+
+        $template = DocumentTemplate::findOrFail($request->template_id);
         
-        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+        // Create a temporary copy for preview
+        $tempFileName = 'temp_preview_' . uniqid() . '.docx';
+        $tempFilePath = "patient_docs/temp/{$tempFileName}";
+        $fullTempPath = storage_path('app/public/' . $tempFilePath);
+
+        // Ensure temp folder exists
+        if (!file_exists(dirname($fullTempPath))) {
+            mkdir(dirname($fullTempPath), 0775, true);
+        }
+
+        copy(storage_path('app/public/' . $template->file_path), $fullTempPath);
+
+        // Replace placeholders
+        KeywordHelper::replaceKeywords($fullTempPath, $patient);
+
+        return response()->json([
+            'preview_url' => secure_asset('storage/' . $tempFilePath)
+        ]);
+    }
+
+    public function previewTemplateCreate(Request $request, Patient $patient)
+    {
+        $request->validate([
+            'template_id' => 'required|exists:document_templates,id',
+        ]);
+
+        $template = DocumentTemplate::findOrFail($request->template_id);
+        $templatePath = storage_path('app/public/' . $template->file_path);
+
+        // Create a temporary filename
+        $tempFileName = 'temp_preview_' . uniqid() . '.docx';
+        $tempStoragePath = "patient_docs/temp/{$tempFileName}";
+        $tempFullPath = storage_path('app/public/' . $tempStoragePath);
+
+        // Ensure temp folder exists
+        $directoryPath = storage_path('app/public/patient_docs/temp');
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0775, true);
+        }
+
+        // Copy template to temp location
+        if (!copy($templatePath, $tempFullPath)) {
+            return response()->json(['error' => 'Could not create preview file.'], 500);
+        }
+
+        // Optionally replace placeholders with patient info
+        KeywordHelper::replaceKeywords($tempFullPath, $patient);
+
+        // Return URL for OnlyOffice preview
+        return response()->json([
+            'preview_url' => secure_asset('storage/' . $tempStoragePath)
+        ]);
     }
 
 }

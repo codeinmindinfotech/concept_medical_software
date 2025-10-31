@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Master;
 
+use App\Helpers\OnlyOfficeHelper;
 use App\Http\Controllers\Controller;
 use App\Mail\PatientDocumentMail;
 use App\Models\DocumentTemplate;
@@ -12,6 +13,7 @@ use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\Response;
 use ZipArchive;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentTemplateController extends Controller
 {
@@ -54,30 +56,34 @@ class DocumentTemplateController extends Controller
         return redirect()->route('documents.index')->with('success', 'Template created');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $template = DocumentTemplate::findOrFail($id);
-        $path = $template->file_path ?? null;
-        if(\Storage::disk('public')->exists($path)) {
-            $fullInputPath = storage_path('app/public/' . $path);
-            // asset('storage/' . $fullInputPath)
-            $phpWord = IOFactory::load($fullInputPath);
-            $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
-        
-            ob_start();
-            $htmlWriter->save('php://output');
-            $htmlContent = ob_get_clean();
+        $document = DocumentTemplate::findOrFail($id);
+        // Check that the file exists
+        if (!Storage::disk('public')->exists($document->file_path)) {
+            abort(404, 'Document not found.');
         }
-    
+
+        $fileUrl = asset('storage/' . $document->file_path);
+        $key = OnlyOfficeHelper::generateDocumentKey($document);
+        $config = [
+            'document' => [
+                'fileType' => 'docx',
+                'key' => $key, 
+                'title' => basename($document->file_path),
+                'url' => $fileUrl,
+            ],
+            'editorConfig' => [
+                'mode' => 'view', // ✅ View-only mode
+                'callbackUrl' => null, // no save actions
+            ],
+        ];
+
         return view('documents.show', [
-            'html' => $htmlContent,
-            'template' => $template
+            'document' => $document,
+            'config' => json_encode($config),
         ]);
     }
-    
 
     /**
      * Show the form for editing the specified resource.
@@ -85,8 +91,36 @@ class DocumentTemplateController extends Controller
     public function edit(string $id)
     {
         $template = DocumentTemplate::findOrFail($id);
-        
-        return view('documents.edit', compact('template'));
+        $filePath = $template->file_path;
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        $fileUrl = secure_asset('storage/' . $filePath);
+        $key = OnlyOfficeHelper::generateDocumentKey($template);
+        $user = current_user();
+        $token = OnlyOfficeHelper::createJwtToken($template, $key, $fileUrl, $user );
+        $config = [
+            'document' => [
+                'storagePath' => storage_path('app/public'),
+                'fileType' => 'docx',
+                'key' => $key, // MUST be set
+                'title' => $template->title ?? 'Document',
+                'url' => $fileUrl, // full HTTPS URL
+            ],
+            'documentType' => 'word',
+            'editorConfig' => [
+                'mode' => 'edit',
+                'callbackUrl' => url("/api/onlyoffice/callback/{$template->id}"),
+                'user' => [
+                    'id' => (string) $user->id ?? '1',
+                    'name' => $user->name ?? 'Guest',
+                ],
+                'customization' => [
+                    'forcesave' => true,
+                ],
+            ],
+            'token' => $token, // your JWT token
+        ];
+        return view('documents.edit', compact('template','config'));
     }
 
     /**
