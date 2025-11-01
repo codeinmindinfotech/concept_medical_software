@@ -50,55 +50,55 @@ class OnlyOfficeController extends Controller
     //     return view('docs.editor', compact('config'));
     // }
 
-    public function callback(Request $request, $type, $fileId)
-    {
-        Log::info("OnlyOffice callback for {$type} received", $request->all());
+    // public function callback(Request $request, $type, $fileId)
+    // {
+    //     Log::info("OnlyOffice callback for {$type} received", $request->all());
 
-        $status = $request->get('status');
+    //     $status = $request->get('status');
 
-        if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
-            $url = $request->input('url');
+    //     if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
+    //         $url = $request->input('url');
 
-            if (!$url) {
-                Log::error("OnlyOffice callback missing file URL");
-                return response()->json(['error' => 1, 'message' => 'Missing file URL']);
-            }
+    //         if (!$url) {
+    //             Log::error("OnlyOffice callback missing file URL");
+    //             return response()->json(['error' => 1, 'message' => 'Missing file URL']);
+    //         }
 
-            try {
-                // 🔍 Dynamically load model based on type
-                switch ($type) {
-                    case 'patient-document':
-                        $document = PatientDocument::findOrFail($fileId);
-                        break;
+    //         try {
+    //             // 🔍 Dynamically load model based on type
+    //             switch ($type) {
+    //                 case 'patient-document':
+    //                     $document = PatientDocument::findOrFail($fileId);
+    //                     break;
 
-                    case 'template':
-                    case 'document-template':
-                        $document = DocumentTemplate::findOrFail($fileId);
-                        break;
+    //                 case 'template':
+    //                 case 'document-template':
+    //                     $document = DocumentTemplate::findOrFail($fileId);
+    //                     break;
 
-                    default:
-                        throw new \Exception("Invalid document type: {$type}");
-                }
+    //                 default:
+    //                     throw new \Exception("Invalid document type: {$type}");
+    //             }
 
-                // ✅ Fetch updated file from OnlyOffice
-                $newFile = file_get_contents($url);
+    //             // ✅ Fetch updated file from OnlyOffice
+    //             $newFile = file_get_contents($url);
 
-                // ✅ Save back to storage
-                Storage::disk('public')->put($document->file_path, $newFile);
+    //             // ✅ Save back to storage
+    //             Storage::disk('public')->put($document->file_path, $newFile);
 
-                Log::info("OnlyOffice document saved successfully: {$document->file_path}");
+    //             Log::info("OnlyOffice document saved successfully: {$document->file_path}");
 
-            } catch (\Exception $e) {
-                Log::error("OnlyOffice save failed: " . $e->getMessage());
-                return response()->json(['error' => 1, 'message' => $e->getMessage()]);
-            }
-        }
+    //         } catch (\Exception $e) {
+    //             Log::error("OnlyOffice save failed: " . $e->getMessage());
+    //             return response()->json(['error' => 1, 'message' => $e->getMessage()]);
+    //         }
+    //     }
 
-        return response()->json(['error' => 0]);
-    }
+    //     return response()->json(['error' => 0]);
+    // }
 
 
-    public function patient_callback(Request $request, $documentId = null)
+    public function callback(Request $request, $documentId = null)
     {
         Log::info('OnlyOffice callback received', $request->all());
 
