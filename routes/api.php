@@ -5,7 +5,7 @@ use App\Http\Controllers\Backend\Master\WhatsAppWebhookController;
 use App\Http\Controllers\OnlyOfficeController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/onlyoffice/patient_callback/{documentId}', [OnlyOfficeController::class, 'callback']);
+Route::post('/onlyoffice/callback/{documentId}', [OnlyOfficeController::class, 'callback']);
 Route::post('/onlyoffice/document_callback/{documentId}', [OnlyOfficeController::class, 'document_callback']);
 
 Route::post('/companies/{company}/whatsapp/send-text', [WhatsAppController::class, 'sendText']);

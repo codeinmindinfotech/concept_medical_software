@@ -107,7 +107,7 @@ class PatientDocumentController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => url("/api/onlyoffice/patient_callback/{$document->id}"),
+                'callbackUrl' => url("/api/onlyoffice/callback/{$document->id}"),
                 'user' => [
                     'id' => (string) $patient->id ?? '1',
                     'name' => $patient->full_name ?? 'Guest',
