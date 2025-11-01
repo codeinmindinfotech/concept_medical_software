@@ -12,45 +12,45 @@ use Firebase\JWT\Key;
 
 class OnlyOfficeController extends Controller
 {
-    public function editor($documentId)
-    {
-        $document = PatientDocument::where('id', $documentId)
-            ->firstOrFail();
-        $filePath = $document->file_path;
-        $fileUrl = secure_asset('storage/' . $filePath);
-        // $key = 'test-document-key-123';
+    // public function editor($documentId)
+    // {
+    //     $document = PatientDocument::where('id', $documentId)
+    //         ->firstOrFail();
+    //     $filePath = $document->file_path;
+    //     $fileUrl = secure_asset('storage/' . $filePath);
+    //     // $key = 'test-document-key-123';
 
-        $key = generateDocumentKey($document);
-        $token = $this->createJwtToken($document, $key, $fileUrl);
-        $config = [
-            'document' => [
-                'storagePath' => storage_path('app/public'),
-                'fileType' => 'docx',
-                'key' => $key, // MUST be set
-                'title' => $document->title ?? 'Document',
-                'url' => $fileUrl, // full HTTPS URL
-            ],
-            'documentType' => 'word',
-            'editorConfig' => [
-                'mode' => 'edit',
-                'callbackUrl' => url("/api/onlyoffice/callback/{$document->id}"),
-                'user' => [
-                    'id' => (string) auth()->user()?->id ?? '1',
-                    'name' => auth()->user()?->name ?? 'Guest',
-                ],
-                'customization' => [
-                    'forcesave' => true,
-                ],
-            ],
-            'token' => $token, // your JWT token
-        ];
-        \Log::info('ONLYOFFICE key: ' . $key);
-        \Log::info('ONLYOFFICE TOKEN: ' . $token);
+    //     $key = generateDocumentKey($document);
+    //     $token = $this->createJwtToken($document, $key, $fileUrl);
+    //     $config = [
+    //         'document' => [
+    //             'storagePath' => storage_path('app/public'),
+    //             'fileType' => 'docx',
+    //             'key' => $key, // MUST be set
+    //             'title' => $document->title ?? 'Document',
+    //             'url' => $fileUrl, // full HTTPS URL
+    //         ],
+    //         'documentType' => 'word',
+    //         'editorConfig' => [
+    //             'mode' => 'edit',
+    //             'callbackUrl' => url("/api/onlyoffice/callback/{$document->id}"),
+    //             'user' => [
+    //                 'id' => (string) auth()->user()?->id ?? '1',
+    //                 'name' => auth()->user()?->name ?? 'Guest',
+    //             ],
+    //             'customization' => [
+    //                 'forcesave' => true,
+    //             ],
+    //         ],
+    //         'token' => $token, // your JWT token
+    //     ];
+    //     \Log::info('ONLYOFFICE key: ' . $key);
+    //     \Log::info('ONLYOFFICE TOKEN: ' . $token);
 
-        return view('docs.editor', compact('config'));
-    }
+    //     return view('docs.editor', compact('config'));
+    // }
 
-    public function callback(Request $request, $type, $id)
+    public function callback(Request $request, $type, $fileId)
     {
         Log::info("OnlyOffice callback for {$type} received", $request->all());
 
@@ -68,12 +68,12 @@ class OnlyOfficeController extends Controller
                 // 🔍 Dynamically load model based on type
                 switch ($type) {
                     case 'patient-document':
-                        $document = PatientDocument::findOrFail($id);
+                        $document = PatientDocument::findOrFail($fileId);
                         break;
 
                     case 'template':
                     case 'document-template':
-                        $document = DocumentTemplate::findOrFail($id);
+                        $document = DocumentTemplate::findOrFail($fileId);
                         break;
 
                     default:
@@ -128,37 +128,37 @@ class OnlyOfficeController extends Controller
     //     return response()->json(['error' => 0]);
     // }
 
-    private function createJwtToken($document, $key, $url)
-    {
-        $payload = [
-            "document" => [
-                "fileType" => "docx",
-                "key" => $key,
-                "title" => $document->title ?? 'Document',
-                "url" => $url,
-            ],
-            "editorConfig" => [
-                "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
-                "mode" => "edit",
-                "user" => [
-                    "id" => (string)(auth()->id() ?? 1),
-                    "name" => auth()->user()?->name ?? 'Guest',
-                ],
-            ],
-            "iat" => time(),
-            "exp" => time() + 3600,
-        ];
+    // private function createJwtToken($document, $key, $url)
+    // {
+    //     $payload = [
+    //         "document" => [
+    //             "fileType" => "docx",
+    //             "key" => $key,
+    //             "title" => $document->title ?? 'Document',
+    //             "url" => $url,
+    //         ],
+    //         "editorConfig" => [
+    //             "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
+    //             "mode" => "edit",
+    //             "user" => [
+    //                 "id" => (string)(auth()->id() ?? 1),
+    //                 "name" => auth()->user()?->name ?? 'Guest',
+    //             ],
+    //         ],
+    //         "iat" => time(),
+    //         "exp" => time() + 3600,
+    //     ];
         
 
-        // $payload = [
-        //     "key" => $key,
-        //     "id" => (string)(auth()->id() ?? 1),
-        //     "iat" => time(),
-        //     "exp" => time() + 3600
-        // ];
+    //     // $payload = [
+    //     //     "key" => $key,
+    //     //     "id" => (string)(auth()->id() ?? 1),
+    //     //     "iat" => time(),
+    //     //     "exp" => time() + 3600
+    //     // ];
         
 
-        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
-    }
+    //     return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+    // }
 
 }
