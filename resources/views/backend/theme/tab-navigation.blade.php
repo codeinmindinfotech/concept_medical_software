@@ -93,7 +93,7 @@
                 </a>
 
                 <a href="{{ guard_route('patient-documents.index', ['patient' => $patient]) }}" class="{{ btnClass('patient-documents.*', 'warning') }}">
-                    <i class="fas fa-comments me-2"></i> Documents
+                    <i class="fas fa-file-alt me-2"></i> Documents
                     <span class="badge bg-warning  border border-white">
                         {{ $patients->documents_count??0}}
                     </span>

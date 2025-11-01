@@ -8,13 +8,13 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-            ['label' => 'Patients', 'url' =>guard_route('patients.index')],
-            ['label' => 'Patients List'],
+            ['label' => 'Patient Documents', 'url' =>guard_route('patients.index')],
+            ['label' => 'Documents List'],
         ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-        'pageTitle' => 'Patients List',
+        'pageTitle' => 'Documents List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' => guard_route('patient-documents.create', $patient),
         'isListPage' => true
@@ -27,8 +27,8 @@
     @endsession
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-notes-medical me-1"></i>
-            Patient Notes Management
+            <i class="fas fa-file-alt me-1"></i>
+            Patient Documents Management
         </div>
         <div class="card-body">
             <div id="patient-documents-list" data-pagination-container>
