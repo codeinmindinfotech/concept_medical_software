@@ -34,8 +34,8 @@ class KeywordHelper
 
             // 🩺 Patient Info
             'Title'             => optional($patient->title)->value,
-            'PatientFirstName'         => $patient->first_name ?? '',
-            'PatientSurName'           => $patient->surname ?? '',
+            'FirstName'         => $patient->first_name ?? '',
+            'SurName'           => $patient->surname ?? '',
             'PatientName'       => $patient->full_name ?? '',
             'PatientAddress'   => $patient->address ?? '',
             // 'PatientAddress2'   => $patient->address2 ?? '',
@@ -193,6 +193,9 @@ class KeywordHelper
         }
 
         $template->saveAs($filePath);
+
+        self::convertPlaceholdersToBrackets($filePath);
+
     }
 
     protected static function preprocessSmartQuotes(string $filePath): void
@@ -214,4 +217,25 @@ class KeywordHelper
             unlink($tmp);
         }
     }
+
+    protected static function convertPlaceholdersToBrackets(string $filePath): void
+    {
+        $zip = new ZipArchive;
+        $tmp = $filePath . '_brackets.zip';
+        copy($filePath, $tmp);
+
+        if ($zip->open($tmp) === true) {
+            $content = $zip->getFromName('word/document.xml');
+            if ($content !== false) {
+                // Convert ${Something} → [Something]
+                $content = preg_replace('/\$\{([^}]+)\}/', '[$1]', $content);
+                $zip->addFromString('word/document.xml', $content);
+            }
+            $zip->close();
+
+            copy($tmp, $filePath);
+            unlink($tmp);
+        }
+    }
+
 }

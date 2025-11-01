@@ -98,7 +98,7 @@
                             <x-nav.item icon="fas fa-file-medical" label="Insurance" route="insurances.index" permission="insurance-list" pattern="insurances*" />
                             <x-nav.item icon="fas fa-file-invoice-dollar" label="Charge Codes" route="chargecodes.index" permission="chargecode-list" pattern="chargecodes*" />
                             <x-nav.item icon="fas fa-clinic-medical" label="Clinic" route="clinics.index" permission="clinic-list" pattern="clinics*" />
-                            <x-nav.item icon="fas fa-comments" label="Document" route="documents.index" permission="document-list" pattern="documents*" />
+                            <x-nav.item icon="fas fa-file-alt" label="Document" route="documents.index" permission="document-list" pattern="documents*" />
 
                         </div>
                     </div>
