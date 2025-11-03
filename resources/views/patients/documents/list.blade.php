@@ -19,6 +19,8 @@
                         @csrf @method('DELETE')
                         <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></button>
                     </form>
+                    <a href="{{ guard_route('patient-documents.email.form', [$patient, $doc]) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-email"></i></a>
+
                 </td>
 
             </tr>

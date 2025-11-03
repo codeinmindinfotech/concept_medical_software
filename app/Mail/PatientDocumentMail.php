@@ -5,53 +5,34 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-
+use App\Models\PatientDocument;
 class PatientDocumentMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $patient;
-    public $documents; // array of file paths
-    public $messageContent; // optional body content
+    public $data;
+    public $pdfPath;
+    public $document;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct($patient, $documents = [], $messageContent = null)
+    public function __construct($data, $pdfPath, PatientDocument $document)
     {
-        $this->patient = $patient;
-        $this->documents = $documents;
-        $this->messageContent = $messageContent;
+        $this->data = $data;
+        $this->pdfPath = $pdfPath;
+        $this->document = $document;
     }
 
-    /**
-     * Build the message.
-     */
     public function build()
     {
-        $email = $this->subject("Your Documents from Concept Medical System")
-                      ->view('emails.patient_documents')
-                      ->with([
-                          'patient' => $this->patient,
-                          'messageContent' => $this->messageContent
-                      ]);
-    
-        // Attach documents if any
-        foreach ($this->documents as $doc) {
-            // $doc is a DocumentTemplate model
-            $filePath = storage_path('app/public/' . $doc->file_path);
-    
-            if (file_exists($filePath)) {
-                $email->attach($filePath, [
-                    'as' => $doc->name . '.' . pathinfo($doc->file_path, PATHINFO_EXTENSION),
-                    'mime' => \File::mimeType($filePath),
-                ]);
-            } else {
-                \Log::error("Attachment file not found: " . $filePath);
-            }
-        }
-    
-        return $email;
+        return $this->from($this->data['sender_email'])
+            ->subject($this->data['subject'])
+            ->view('emails.patient-document')
+            ->with([
+                'messageBody' => $this->data['message'] ?? '',
+                'documentName' => $this->document->name,
+            ])
+            ->attach($this->pdfPath, [
+                'as' => $this->document->name . '.pdf',
+                'mime' => 'application/pdf',
+            ]);
     }
-    
 }

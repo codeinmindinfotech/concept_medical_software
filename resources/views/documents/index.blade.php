@@ -375,32 +375,6 @@
                 </div>
                 
 
-               <!-- 4. Email Documents -->
-                <div class="tab-pane fade" id="email" role="tabpanel">
-                    <h5>Email / Attach Documents</h5>
-
-                    <form id="emailForm" method="POST" action="{{ guard_route('documents.email.send') }}">
-                        @csrf
-
-                        <div class="mb-3">
-                            <label for="email_to" class="form-label">Email to</label>
-                            <input type="email" class="form-control" name="email_to" id="email_to" placeholder="Enter recipient email" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email_docs" class="form-label">Select Documents</label>
-                            <select multiple class="form-control" name="email_docs[]" id="email_docs" required>
-                                @foreach($templates as $template)
-                                    <option value="{{ $template->id }}">{{ $template->name }}</option>
-                                @endforeach
-                            </select>
-                            <small class="text-muted">Hold Ctrl (Cmd on Mac) to select multiple documents.</small>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Send Email</button>
-                    </form>
-                </div>
-
             </div>
         </div>
     </div>

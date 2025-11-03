@@ -128,9 +128,9 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     Route::post('/communications/{communication}/received', [CommunicationController::class, 'markAsReceived'])->name('communications.received');
 
     Route::prefix("$prefix")->group(function () {
-        Route::post('/documents/preview-template-create', [PatientDocumentController::class, 'previewTemplateCreate'])
-    ->name('patient-documents.previewTemplateCreate');
-
+        Route::post('/documents/preview-template-create', [PatientDocumentController::class, 'previewTemplateCreate'])->name('patient-documents.previewTemplateCreate');
+        Route::get('/documents/{document}/email', [PatientDocumentController::class, 'emailForm'])->name('patient-documents.email.form');
+        Route::post('/documents/{document}/email/send', [PatientDocumentController::class, 'sendEmail'])->name('patient-documents.email.send');
         Route::post('/documents/{document}/change-template',[PatientDocumentController::class, 'changeTemplate'])->name('patient-documents.changeTemplate');
         Route::resource('documents', PatientDocumentController::class)->except(['show'])->names('patient-documents');
     });
@@ -205,7 +205,6 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
         // Basic resources
         Route::resource('documents', DocumentTemplateController::class);
         Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
-        Route::post('documents/email/send', [DocumentTemplateController::class, 'emailSelectedDocuments'])->name('documents.email.send');
 
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
         Route::resource('companies', CompanyController::class);
@@ -263,7 +262,6 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
             // Basic resources
         Route::resource('documents', DocumentTemplateController::class);
         Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
-        Route::post('documents/email/send', [DocumentTemplateController::class, 'emailSelectedDocuments'])->name('documents.email.send');
 
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

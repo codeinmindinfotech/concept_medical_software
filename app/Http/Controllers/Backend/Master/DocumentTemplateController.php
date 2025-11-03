@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Backend\Master;
 
 use App\Helpers\OnlyOfficeHelper;
 use App\Http\Controllers\Controller;
-use App\Mail\PatientDocumentMail;
 use App\Models\DocumentTemplate;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use PhpOffice\PhpWord\IOFactory;
@@ -214,29 +212,7 @@ class DocumentTemplateController extends Controller
 
         // return response()->download($zipPath)->deleteFileAfterSend(true);
 
-        public function emailSelectedDocuments(Request $request)
-        {
-            $request->validate([
-                'email_to' => 'required|email',
-                'email_docs' => 'required|array',
-                'email_docs.*' => 'exists:document_templates,id',
-            ]);
-        
-            $documents = DocumentTemplate::whereIn('id', $request->email_docs)->get();
-        
-            // Prepare a "dummy" patient object with name/email
-            $patient = (object)[
-                'first_name' => 'Valued',
-                'surname' => 'Patient',
-                'email' => $request->email_to,
-            ];
-        
-            $messageContent = "Please find your requested documents attached.";
-        
-            Mail::to($patient->email)->send(new PatientDocumentMail($patient, $documents, $messageContent));
-        
-            return redirect()->back()->with('success', 'Documents emailed successfully.');
-        }
+
         
 
 }
