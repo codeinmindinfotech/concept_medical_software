@@ -22,20 +22,10 @@
                     <!-- Body -->
                     <tr>
                         <td style="padding: 30px;">
-                            <h2 style="color: #333333;">Hello {{ $patient->first_name }} {{ $patient->surname }},</h2>
                             <p style="color: #555555; font-size: 16px; line-height: 1.5;">
-                                {!! $messageContent ?? 'Please find your documents attached.' !!}
+                                {!! nl2br(e($messageBody)) !!}
                             </p>
                 
-                            @if(!empty($documents))
-                            <p style="margin-top: 20px; color: #555555; font-size: 16px;">The following documents are attached:</p>
-                            <ul style="color: #555555; font-size: 16px;">
-                                @foreach($documents as $doc)
-
-                                    <li>{{ $doc->name }}: {{ basename($doc->file_path) }}</li>
-                                @endforeach
-                            </ul>
-                            @endif
                 
                             <p style="margin-top: 20px;">
                                 Thank you,<br>

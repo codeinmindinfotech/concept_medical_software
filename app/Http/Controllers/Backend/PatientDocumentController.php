@@ -10,9 +10,10 @@ use App\Models\PatientDocument;
 use Illuminate\Http\Request;
 use App\Models\DocumentTemplate;
 use Illuminate\Support\Facades\Storage;
-use Firebase\JWT\JWT;
 use Illuminate\Http\RedirectResponse;
-use PhpOffice\PhpWord\TemplateProcessor;
+use App\Mail\PatientDocumentMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 
 class PatientDocumentController extends Controller
@@ -241,5 +242,95 @@ class PatientDocumentController extends Controller
         ]);
     }
 
+    public function emailForm(Patient $patient, PatientDocument $document)
+    {
+        $doctorEmail = $patient->doctor?->email ?? '';
+        $referralEmail = $patient->referralDoctor?->email ?? '';
+        $otherEmail = $patient->otherDoctor?->email ?? '';
+        $patientEmail = $patient->email ?? '';
+        return view('patients.documents.email', compact(
+            'patient', 
+            'document',
+            'patientEmail',
+            'doctorEmail',
+            'referralEmail',
+            'otherEmail'
+        ));
+    }
+
+    public function sendEmail(Request $request, Patient $patient, PatientDocument $document)
+    {
+        $validated = $request->validate([
+            'sender_email' => 'nullable|email',
+            'to_email'     => 'required|email',
+            'subject'      => 'nullable|string|max:255',
+            'message'      => 'nullable|string',
+            'cc'           => 'nullable|string',
+            'bcc'          => 'nullable|string',
+        ]);
+
+        // Full path to stored .docx file
+        $docxPath = storage_path('app/' . $document->file_path);
+        if (!file_exists($docxPath)) {
+            return back()->with('error', 'Document file not found.');
+        }
+
+        // Convert DOCX to PDF via OnlyOffice
+        $pdfPath = $this->convertDocxToPdfUsingOnlyOffice($docxPath);
+
+        if (!$pdfPath || !file_exists($pdfPath)) {
+            return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
+        }
+
+        // Send email
+        Mail::to($validated['to_email'])
+            ->cc($this->parseEmails($validated['cc'] ?? ''))
+            ->bcc($this->parseEmails($validated['bcc'] ?? ''))
+            ->send(new PatientDocumentMail($validated, $pdfPath, $document));
+
+        // cleanup
+        unlink($pdfPath);
+
+        return redirect()
+            ->route('patient-documents.email.form', [$patient, $document])
+            ->with('success', 'Email sent successfully with attached PDF document!');
+    }
+
+    private function convertDocxToPdfUsingOnlyOffice(string $docxPath): ?string
+    {
+        $onlyOfficeUrl = rtrim(env('ONLYOFFICE_URL'), '/');
+        if (!$onlyOfficeUrl) {
+            return null;
+        }
+
+        $pdfDir = storage_path('app/temp');
+        if (!file_exists($pdfDir)) mkdir($pdfDir, 0777, true);
+        $pdfPath = $pdfDir . '/' . basename($docxPath, '.docx') . '.pdf';
+
+        try {
+            $response = Http::asMultipart()->post($onlyOfficeUrl . '/ConvertService.ashx', [
+                [
+                    'name'     => 'file',
+                    'contents' => fopen($docxPath, 'r'),
+                    'filename' => basename($docxPath),
+                ],
+                ['name' => 'outputtype', 'contents' => 'pdf'],
+            ]);
+
+            if ($response->successful()) {
+                file_put_contents($pdfPath, $response->body());
+                return $pdfPath;
+            }
+        } catch (\Exception $e) {
+            \Log::error('OnlyOffice conversion error: ' . $e->getMessage());
+        }
+
+        return null;
+    }
+
+    private function parseEmails(string $emails): array
+    {
+        return array_filter(array_map('trim', explode(',', $emails)));
+    }
 }
 
