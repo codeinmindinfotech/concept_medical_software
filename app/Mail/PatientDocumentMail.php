@@ -28,10 +28,10 @@ class PatientDocumentMail extends Mailable
             ->view('emails.patient-document')
             ->with([
                 'messageBody' => $this->data['message'] ?? '',
-                'documentName' => $this->document->name,
+                'documentName' => "documentName",//$this->document->name,
             ])
             ->attach($this->pdfPath, [
-                'as' => $this->document->name . '.pdf',
+                'as' => 'document.pdf',
                 'mime' => 'application/pdf',
             ]);
     }

@@ -14,7 +14,8 @@ use Illuminate\Http\RedirectResponse;
 use App\Mail\PatientDocumentMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
-
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
 
 class PatientDocumentController extends Controller
 {
@@ -275,9 +276,7 @@ class PatientDocumentController extends Controller
             return back()->with('error', 'Document file not found.');
         }
 
-        // Convert DOCX to PDF via OnlyOffice
-        // $pdfPath = $this->convertDocxToPdfUsingOnlyOffice($docxPath);
-        $pdfPath = OnlyOfficeHelper::convertDocxToPdf($docxPath);
+        $pdfPath = $this->downloadConvertedPdf($docxPath);
         if (!$pdfPath || !file_exists($pdfPath)) {
             return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
         }
@@ -301,18 +300,35 @@ class PatientDocumentController extends Controller
         return array_filter(array_map('trim', explode(',', $emails)));
     }
 
-    public function downloadConvertedPdf(Patient $patient, PatientDocument $document)
+
+    public function downloadConvertedPdf($docxPath)
     {
-       
-        $docxPath = storage_path('app/public/' . $document->file_path);
-        
-        $pdfPath = OnlyOfficeHelper::convertDocxToPdf($docxPath);
-        if (!$pdfPath || !file_exists($pdfPath)) {
-            return back()->with('error', 'Conversion to PDF failed.');
+        if (!file_exists($docxPath)) {
+            return back()->with('error', 'Document file not found.');
         }
+    
+        // Directory to save temporary PDFs
+        $pdfDir = storage_path('app/temp');
+        if (!file_exists($pdfDir)) mkdir($pdfDir, 0777, true);
+    
+        $pdfPath = $pdfDir . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
+    
+        try {
+            $pdfRendererName = Settings::PDF_RENDERER_DOMPDF;
+            $pdfRendererPath = base_path('vendor/dompdf/dompdf'); // DomPDF path
+            Settings::setPdfRenderer($pdfRendererName, $pdfRendererPath);
+    
+            // Load DOCX and save as PDF
+            $phpWord = IOFactory::load($docxPath);
+            $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
+            $pdfWriter->save($pdfPath);
+            return $pdfPath;
 
-        return response()->download($pdfPath, pathinfo($document->file_path, PATHINFO_FILENAME) . '.pdf')->deleteFileAfterSend(true);
+    
+        } catch (\Exception $e) {
+            \Log::error('DOCX to PDF conversion failed: ' . $e->getMessage());
+            return back()->with('error', 'Conversion to PDF failed: ' . $e->getMessage());
+        }
     }
-
 }
 
