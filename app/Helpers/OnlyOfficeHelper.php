@@ -3,6 +3,8 @@
 namespace App\Helpers;
 
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class OnlyOfficeHelper
 {
@@ -34,5 +36,48 @@ class OnlyOfficeHelper
     {
         $data = $document->id . '|' . $document->updated_at->timestamp; // use integer timestamp
         return substr(hash('sha256', $data), 0, 128);
+    }
+
+    /**
+     * Convert DOCX to PDF using OnlyOffice ConvertService
+     *
+     * @param string $docxPath  Local storage path of the DOCX
+     * @param string|null $fileName Optional filename for PDF
+     * @return string|null Full path to the converted PDF, or null on failure
+     */
+    public static function convertDocxToPdf(string $docxPath, ?string $fileName = null): ?string
+    {
+        // Make sure file exists
+        if (!file_exists($docxPath)) return null;
+
+        // Copy to public storage if not already
+        $fileName = $fileName ?? basename($docxPath, '.docx') . '.pdf';
+        $publicDocPath = 'public/temp/' . basename($docxPath);
+        Storage::putFileAs('public/temp', $docxPath, basename($docxPath));
+        $fileUrl = asset('storage/temp/' . basename($docxPath));
+
+        $convertServiceUrl = rtrim(env('ONLYOFFICE_DOC_SERVER'), '/') . '/ConvertService.ashx';
+
+        try {
+            $response = Http::asForm()->post($convertServiceUrl, [
+                'async' => false,
+                'filetype' => 'docx',
+                'key' => uniqid(),
+                'title' => basename($docxPath),
+                'url' => $fileUrl,
+                'outputtype' => 'pdf',
+            ]);
+
+            if ($response->successful()) {
+                $pdfPath = storage_path('app/temp/' . $fileName);
+                if (!file_exists(dirname($pdfPath))) mkdir(dirname($pdfPath), 0777, true);
+                file_put_contents($pdfPath, $response->body());
+                return $pdfPath;
+            }
+        } catch (\Exception $e) {
+            \Log::error("OnlyOffice DOCX → PDF conversion failed: " . $e->getMessage());
+        }
+
+        return null;
     }
 }

@@ -270,14 +270,14 @@ class PatientDocumentController extends Controller
         ]);
 
         // Full path to stored .docx file
-        $docxPath = storage_path('app/' . $document->file_path);
+        $docxPath = storage_path('app/public/' . $document->file_path);
         if (!file_exists($docxPath)) {
             return back()->with('error', 'Document file not found.');
         }
 
         // Convert DOCX to PDF via OnlyOffice
-        $pdfPath = $this->convertDocxToPdfUsingOnlyOffice($docxPath);
-
+        // $pdfPath = $this->convertDocxToPdfUsingOnlyOffice($docxPath);
+        $pdfPath = OnlyOfficeHelper::convertDocxToPdf($docxPath);
         if (!$pdfPath || !file_exists($pdfPath)) {
             return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
         }
@@ -296,38 +296,6 @@ class PatientDocumentController extends Controller
             ->with('success', 'Email sent successfully with attached PDF document!');
     }
 
-    private function convertDocxToPdfUsingOnlyOffice(string $docxPath): ?string
-    {
-        $onlyOfficeUrl = rtrim(env('ONLYOFFICE_DOC_SERVER'), '/');
-        if (!$onlyOfficeUrl) {
-            return null;
-        }
-
-        $pdfDir = storage_path('app/temp');
-        if (!file_exists($pdfDir)) mkdir($pdfDir, 0777, true);
-        $pdfPath = $pdfDir . '/' . basename($docxPath, '.docx') . '.pdf';
-
-        try {
-            $response = Http::asMultipart()->post($onlyOfficeUrl . '/ConvertService.ashx', [
-                [
-                    'name'     => 'file',
-                    'contents' => fopen($docxPath, 'r'),
-                    'filename' => basename($docxPath),
-                ],
-                ['name' => 'outputtype', 'contents' => 'pdf'],
-            ]);
-
-            if ($response->successful()) {
-                file_put_contents($pdfPath, $response->body());
-                return $pdfPath;
-            }
-        } catch (\Exception $e) {
-            \Log::error('OnlyOffice conversion error: ' . $e->getMessage());
-        }
-
-        return null;
-    }
-
     private function parseEmails(string $emails): array
     {
         return array_filter(array_map('trim', explode(',', $emails)));
@@ -335,20 +303,14 @@ class PatientDocumentController extends Controller
 
     public function downloadConvertedPdf(Patient $patient, PatientDocument $document)
     {
-        // Full path to stored .docx file
-        $docxPath = storage_path('app/' . $document->file_path);
-        if (!file_exists($docxPath)) {
-            return back()->with('error', 'Document file not found.');
-        }
-
-        // Convert DOCX to PDF via OnlyOffice
-        $pdfPath = $this->convertDocxToPdfUsingOnlyOffice($docxPath);
-
+       
+        $docxPath = storage_path('app/public/' . $document->file_path);
+        
+        $pdfPath = OnlyOfficeHelper::convertDocxToPdf($docxPath);
         if (!$pdfPath || !file_exists($pdfPath)) {
-            return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
+            return back()->with('error', 'Conversion to PDF failed.');
         }
 
-        // Force download
         return response()->download($pdfPath, pathinfo($document->file_path, PATHINFO_FILENAME) . '.pdf')->deleteFileAfterSend(true);
     }
 
