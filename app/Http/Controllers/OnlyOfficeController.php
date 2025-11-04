@@ -46,29 +46,80 @@ class OnlyOfficeController extends Controller
     {
         Log::info('OnlyOffice callback received', $request->all());
 
-        $status = $request->get('status');
+        $status = $request->get('status');           // OnlyOffice status code
+        $url = $request->input('url');               // URL of the updated document
+        $tempPath = $request->query('tempPath');     // temp path we sent to OnlyOffice
 
-        if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
-            $url = $request->input('url');
-            if ($url) {
-                try {
-                    $document = DocumentTemplate::findOrFail($documentId);
+        if (!$url || !$tempPath) {
+            return response()->json([
+                'error' => 1,
+                'message' => 'Missing URL or tempPath'
+            ]);
+        }
 
-                    // Save the new content
-                    $newFile = file_get_contents($url);
-                    Storage::disk('public')->put($document->file_path, $newFile);
-
-                    Log::info("Document saved: {$document->file_path}");
-                } catch (\Exception $e) {
-                    Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
-                    return response()->json(['error' => 1, 'message' => $e->getMessage()]);
+        // Status 2 = ready to save, 6 = closed
+        if (in_array($status, [2, 6])) {
+            try {
+                // Download the updated file from OnlyOffice
+                $fileContents = file_get_contents($url);
+                if (!$fileContents) {
+                    throw new \Exception("Failed to download file from OnlyOffice URL");
                 }
-            } else {
-                Log::error("OnlyOffice callback missing file URL");
-                return response()->json(['error' => 1, 'message' => 'Missing file URL']);
+
+                // Save the file to temporary storage instead of overwriting original
+                Storage::disk('public')->put($tempPath, $fileContents);
+
+                Log::info("OnlyOffice document saved to temp path: {$tempPath}");
+
+                // Optionally, you could store the temp path in DB or session
+                if ($documentId) {
+                    $document = DocumentTemplate::find($documentId);
+                    if ($document) {
+                        $document->file_path = $tempPath; // if you have this column
+                        $document->save();
+                    }
+                }
+
+            } catch (\Exception $e) {
+                Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
+                return response()->json([
+                    'error' => 1,
+                    'message' => $e->getMessage()
+                ]);
             }
         }
 
         return response()->json(['error' => 0]);
     }
+
+
+    // public function document_callback(Request $request, $documentId = null)
+    // {
+    //     Log::info('OnlyOffice callback received', $request->all());
+
+    //     $status = $request->get('status');
+
+    //     if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
+    //         $url = $request->input('url');
+    //         if ($url) {
+    //             try {
+    //                 $document = DocumentTemplate::findOrFail($documentId);
+
+    //                 // Save the new content
+    //                 $newFile = file_get_contents($url);
+    //                 Storage::disk('public')->put($document->file_path, $newFile);
+
+    //                 Log::info("Document saved: {$document->file_path}");
+    //             } catch (\Exception $e) {
+    //                 Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
+    //                 return response()->json(['error' => 1, 'message' => $e->getMessage()]);
+    //             }
+    //         } else {
+    //             Log::error("OnlyOffice callback missing file URL");
+    //             return response()->json(['error' => 1, 'message' => 'Missing file URL']);
+    //         }
+    //     }
+
+    //     return response()->json(['error' => 0]);
+    // }
 }

@@ -38,6 +38,7 @@ class KeywordHelper
             'SurName'           => $patient->surname ?? '',
             'PatientName'       => $patient->full_name ?? '',
             'PatientAddress'   => $patient->address ?? '',
+            'PatientAddress1'   => $patient->address ?? '',
             // 'PatientAddress2'   => $patient->address2 ?? '',
             // 'PatientAddress3'   => $patient->address3 ?? '',
             // 'PatientAddress4'   => $patient->address4 ?? '',
