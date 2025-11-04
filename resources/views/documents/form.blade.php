@@ -35,35 +35,34 @@
                 type="file" 
                 name="file" 
                 id="file" 
-                accept=".doc,.docx,.pdf" 
+                accept=".doc,.docx"
                 {{ empty($template->file_path) ? 'required' : '' }}
             >
-            <div class="form-text">Accepted file types: .doc, .docx, .pdf. Max size: 2MB.</div>
+            <div class="form-text">Accepted file types: .doc, .docx. Max size: 2MB.</div>
             @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
-          {{-- Tags Panel --}}
+
+          {{-- ▶ Tags Panel --}}
           <div class="col-12 mt-3">
             <div class="card shadow-sm">
-                <div class="card-header">
-                    <h6 class="mb-0"><strong>Insert Tags</strong></h6>
+              <div class="card-header">
+                <h6 class="mb-0"><strong>Insert Tags</strong></h6>
+              </div>
+              <div class="card-body">
+                <div id="tags-list" class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[FirstName]">[FirstName]</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[LastName]">[LastName]</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[DOB]">[DOB]</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[Gender]">[Gender]</button>
                 </div>
-                <div class="card-body">
-                    <div id="tags-list" class="d-flex flex-wrap gap-2">
-                        <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[FirstName]">[FirstName]</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[LastName]">[LastName]</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[DOB]">[DOB]</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[Gender]">[Gender]</button>
-                        <!-- Add more tags as needed -->
-                    </div>
-                </div>
+              </div>
             </div>
           </div>
 
-          {{-- @if(isset($template) && $template->file_path) --}}
-            <div style="width: 100%; height: 80vh;">
-              <div id="onlyoffice-editor"></div>
-            </div>
-          {{-- @endif --}}
+          {{-- ▶ OnlyOffice Editor --}}
+          <div id="onlyoffice-container" style="width: 100%; height: 80vh; display:none;">
+            <div id="onlyoffice-editor"></div>
+          </div>
 
         </div>
       </div>
@@ -77,72 +76,73 @@
     </button>
   </div>
 </div>
+
 @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 <script>
-  @if(isset($config))
-      let editorConfig = @json($config);
-      window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
-  @endif
-  document.getElementById('file').addEventListener('change', function(e){
-      let file = e.target.files[0];
-      if(!file) return;
+let editorReady = false;
 
-      let formData = new FormData();
-      formData.append('file', file);
+document.getElementById('file').addEventListener('change', function(e) {
+    let file = e.target.files[0];
+    if(!file) return;
 
-      fetch("{{ guard_route('documents.tempUpload') }}", {
-          method: "POST",
-          headers: {
-              'X-CSRF-TOKEN': "{{ csrf_token() }}"
-          },
-          body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-          if(data.success){
-              document.getElementById('onlyoffice-container').style.display = 'block';
+    let formData = new FormData();
+    formData.append('file', file);
 
-              let editorConfig = {
-                  document: {
-                      fileType: data.fileType,
-                      key: data.key,
-                      title: file.name,
-                      url: data.url,
-                  },
-                  editorConfig: {
-                      mode: 'edit',
-                      user: {id: '1', name: "{{ auth()->user()->name ?? 'Guest' }}"},
-                      customization: {forcesave: true},
-                  },
-                  token: data.token
-              };
+    fetch("{{ guard_route('documents.tempUpload') }}", {
+        method: "POST",
+        headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            document.getElementById('onlyoffice-container').style.display = 'block';
 
-              window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
-          }
-      })
-      .catch(err => console.error(err));
-  });
-  // Wait until the editor is ready
-  function insertTagAtCursor(tag) {
-    if (!window.docEditor) {
-        alert("Editor is not ready.");
-        return;
-    }
+            const config = {
+                document: {
+                    fileType: data.fileType,
+                    key: data.key,
+                    title: file.name,
+                    url: data.url,
+                },
+                documentType: 'word',
+                editorConfig: {
+                    mode: 'edit',
+                    user: { id: '1', name: "{{ auth()->user()->name ?? 'Guest' }}" },
+                    customization: { forcesave: true }
+                },
+                token: data.token,
+                events: {
+                    onAppReady: function() {
+                        editorReady = true;
+                        console.log("✅ OnlyOffice editor is ready.");
+                    }
+                }
+            };
 
-    // OnlyOffice method to insert text at the cursor
-    window.docEditor.executeCommand('insertText', tag);
-}
-
-  // Add click listeners to all tag buttons
-
-document.querySelectorAll('.tag-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const tag = this.getAttribute('data-tag');
-        insertTagAtCursor(tag);
-    });
+            window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+        } else {
+            alert("File upload failed.");
+        }
+    })
+    .catch(err => console.error(err));
 });
 
+function insertTagAtCursor(tag) {
+    if (!window.docEditor || !editorReady) {
+        alert("Editor not ready yet. Please wait...");
+        return;
+    }
+    // ✅ Correct way to insert text in OnlyOffice
+    window.docEditor.insertText(tag);
+}
 
+// Attach tag buttons
+document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        insertTagAtCursor(this.dataset.tag);
+    });
+});
 </script>
 @endpush
