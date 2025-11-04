@@ -37,61 +37,7 @@ class DocumentTemplateController extends Controller
 
     public function create()
     {
-        $templateName = 'New Document ' . now()->format('YmdHis');
-        
-        // Create a temporary DOCX using PhpWord
-        $phpWord = new PhpWord();
-        $section = $phpWord->addSection();
-        $section->addText("This is a new temporary document.");
-    
-        // Generate unique temp filename
-        $tempFileName = 'temp_' . Str::random(8) . '.docx';
-        $tempFilePath = storage_path('app/public/document_templates/' . $tempFileName);
-    
-        // Ensure folder exists
-        if (!file_exists(storage_path('app/public/document_templates'))) {
-            mkdir(storage_path('app/public/document_templates'), 0777, true);
-        }
-    
-        $phpWord->save($tempFilePath, 'Word2007');
-    
-        // Create a temporary DocumentTemplate record (optional, just for key/id)
-        $template = new DocumentTemplate();
-        $template->id = Str::random(32);//Str::uuid(); // Temporary ID for OnlyOffice
-        $template->name = $templateName;
-        $template->file_path = 'document_templates/' . $tempFileName;
-        $now = now();
-        $template->created_at = $now;
-        $template->updated_at = $now;
-        $fileUrl = secure_asset('storage/' . $template->file_path);
-        $key = OnlyOfficeHelper::generateDocumentKey($template);
-        $user = current_user();
-        $token = OnlyOfficeHelper::createJwtToken($template, $key, $fileUrl, $user);
-    
-        $config = [
-            'document' => [
-                'storagePath' => storage_path('app/public'),
-                'fileType' => 'docx',
-                'key' => $key,
-                'title' => $templateName,
-                'url' => $fileUrl,
-            ],
-            'documentType' => 'word',
-            'editorConfig' => [
-                'mode' => 'edit',
-                'callbackUrl' => url("/api/onlyoffice/document_callback/temporary"),
-                'user' => [
-                    'id' => (string) $user->id ?? '1',
-                    'name' => $user->name ?? 'Guest',
-                ],
-                'customization' => [
-                    'forcesave' => true,
-                ],
-            ],
-            'token' => $token,
-        ];
-    
-        return view('documents.create', compact('template','config'));
+        return view('documents.create');
     }
     
     /**
@@ -103,9 +49,19 @@ class DocumentTemplateController extends Controller
             'name' => 'required',
             'type' => 'required|in:letter,form',
             'file' => 'required|file|mimes:doc,docx,pdf|max:2048',
+            'tempPath' => 'nullable|string',
         ]);
-        $filePath = $request->file('file')->store('document_templates', 'public');
-
+        // $filePath = $request->file('file')->store('document_templates', 'public');
+        // Decide which file to use
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('document_templates', 'public');
+        } elseif ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
+            $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
+            $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
+            Storage::disk('public')->copy($request->tempPath, $filePath);
+        } else {
+            return back()->withErrors(['file' => 'Please upload a file or use the temp file.']);
+        }
         DocumentTemplate::create([
             'name' => $request->name,
             'type' => $request->type,
@@ -282,7 +238,8 @@ class DocumentTemplateController extends Controller
             'url' => $fileUrl,
             'key' => $key,
             'token' => $token,
-            'fileType' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION)
+            'fileType' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION),
+            'tempPath' => $tempPath
         ]);
     }
 

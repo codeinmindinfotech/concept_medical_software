@@ -36,10 +36,12 @@
                 name="file" 
                 id="file" 
                 accept=".doc,.docx"
-                {{ empty($template->file_path) ? 'required' : '' }}
+                {{ empty($tempPath) && empty($template->file_path) ? 'required' : '' }}
             >
             <div class="form-text">Accepted file types: .doc, .docx. Max size: 2MB.</div>
             @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            <input type="hidden" name="tempPath" id="tempPath" value="{{ old('tempPath', $tempPath ?? '') }}">
+
           </div>
 
           {{-- ▶ Tags Panel --}}
@@ -154,6 +156,8 @@ document.getElementById('file').addEventListener('change', function(e) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
+          document.getElementById('tempPath').value = data.tempPath || data.url;
+
             initEditor(data, file.name || "new Document");
           } else {
             alert("❌ File upload failed.");
