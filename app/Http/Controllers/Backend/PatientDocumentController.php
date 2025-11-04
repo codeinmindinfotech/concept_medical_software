@@ -298,7 +298,7 @@ class PatientDocumentController extends Controller
 
     private function convertDocxToPdfUsingOnlyOffice(string $docxPath): ?string
     {
-        $onlyOfficeUrl = rtrim(env('ONLYOFFICE_URL'), '/');
+        $onlyOfficeUrl = rtrim(env('ONLYOFFICE_DOC_SERVER'), '/');
         if (!$onlyOfficeUrl) {
             return null;
         }
@@ -332,5 +332,25 @@ class PatientDocumentController extends Controller
     {
         return array_filter(array_map('trim', explode(',', $emails)));
     }
+
+    public function downloadConvertedPdf(Patient $patient, PatientDocument $document)
+    {
+        // Full path to stored .docx file
+        $docxPath = storage_path('app/' . $document->file_path);
+        if (!file_exists($docxPath)) {
+            return back()->with('error', 'Document file not found.');
+        }
+
+        // Convert DOCX to PDF via OnlyOffice
+        $pdfPath = $this->convertDocxToPdfUsingOnlyOffice($docxPath);
+
+        if (!$pdfPath || !file_exists($pdfPath)) {
+            return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
+        }
+
+        // Force download
+        return response()->download($pdfPath, pathinfo($document->file_path, PATHINFO_FILENAME) . '.pdf')->deleteFileAfterSend(true);
+    }
+
 }
 

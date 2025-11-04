@@ -129,6 +129,7 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
     Route::prefix("$prefix")->group(function () {
         Route::post('/documents/preview-template-create', [PatientDocumentController::class, 'previewTemplateCreate'])->name('patient-documents.previewTemplateCreate');
+        Route::get('/documents/{document}/download-pdf', [PatientDocumentController::class, 'downloadConvertedPdf'])->name('patient-documents.download-pdf');
         Route::get('/documents/{document}/email', [PatientDocumentController::class, 'emailForm'])->name('patient-documents.email.form');
         Route::post('/documents/{document}/email/send', [PatientDocumentController::class, 'sendEmail'])->name('patient-documents.email.send');
         Route::post('/documents/{document}/change-template',[PatientDocumentController::class, 'changeTemplate'])->name('patient-documents.changeTemplate');
