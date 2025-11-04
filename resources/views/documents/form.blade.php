@@ -220,9 +220,17 @@ function insertTagAtCursor(tag) {
         alert("Editor not ready yet. Please wait...");
         return;
     }
-    // ✅ Insert text in OnlyOffice
-    docEditor.insertText(tag);
+
+    try {
+        // 👇 This is the correct command for inserting text
+        docEditor.executeCommand("PasteText", tag);
+        console.log(`✅ Inserted tag: ${tag}`);
+    } catch (err) {
+        console.error("❌ OnlyOffice API does not support PasteText directly:", err);
+        alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
+    }
 }
+
 
 // ✅ Tag buttons
 document.querySelectorAll('.tag-btn').forEach(btn => {
