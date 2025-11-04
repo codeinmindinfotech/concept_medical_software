@@ -166,9 +166,9 @@ class DocumentTemplateController extends Controller
             'document' => [
                 'storagePath' => storage_path('app/public'),
                 'fileType' => 'docx',
-                'key' => $key, // MUST be set
+                'key' => $key,
                 'title' => $template->title ?? 'Document',
-                'url' => $fileUrl, // full HTTPS URL
+                'url' => $fileUrl,
             ],
             'documentType' => 'word',
             'editorConfig' => [
@@ -223,6 +223,7 @@ class DocumentTemplateController extends Controller
         DocumentTemplate::destroy($id);
         return redirect()->route('documents.index')->with('success', 'Template deleted');
     }
+
     public function downloadSelectedDocuments(Request $request)
     {
         $request->validate([
@@ -258,22 +259,6 @@ class DocumentTemplateController extends Controller
         // return response()->download($fileFullPath, $fileName);
     }
     
-        // // Create ZIP
-        // $zipFileName = 'documents_' . now()->format('YmdHis') . '.zip';
-        // $zipPath = storage_path('app/public/' . $zipFileName);
-        // $zip = new ZipArchive;
-        // if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
-        //     foreach ($templates as $template) {
-        //         $file = storage_path('app/public/' . $template->file_path);
-        //         if(file_exists($file)){
-        //             $zip->addFile($file, basename($file));
-        //         }
-        //     }
-        //     $zip->close();
-        // }
-
-        // return response()->download($zipPath)->deleteFileAfterSend(true);
-
     public function tempUpload(Request $request)
     {
         $request->validate(['file' => 'required|file|mimes:doc,docx,pdf|max:2048']);
@@ -301,6 +286,53 @@ class DocumentTemplateController extends Controller
         ]);
     }
 
-        
+    public function loadFile($id)
+    {
+        $template = DocumentTemplate::find($id);
+        $filePath = $template->file_path;
 
+        if (!$template || !$filePath) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Template file not found'
+            ]);
+        }
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        $fileUrl = secure_asset('storage/' . $filePath);
+        $key = OnlyOfficeHelper::generateDocumentKey($template);
+        $user = current_user();
+        $token = OnlyOfficeHelper::createJwtToken($template, $key, $fileUrl, $user );
+        $config = [
+            'document' => [
+                'storagePath' => storage_path('app/public'),
+                'fileType' => 'docx',
+                'key' => $key, // MUST be set
+                'title' => $template->title ?? 'Document',
+                'url' => $fileUrl, // full HTTPS URL
+            ],
+            'documentType' => 'word',
+            'editorConfig' => [
+                'mode' => 'edit',
+                'callbackUrl' => url("/api/onlyoffice/document_callback/{$template->id}"),
+                'user' => [
+                    'id' => (string) $user->id ?? '1',
+                    'name' => $user->name ?? 'Guest',
+                ],
+                'customization' => [
+                    'forcesave' => true,
+                ],
+            ],
+            'token' => $token, // your JWT token
+        ];
+
+        return response()->json([
+            'success' => true,
+            'fileType' => pathinfo($template->file_path, PATHINFO_EXTENSION),
+            'key' => $key,
+            'title' => $template->name,
+            'url' => asset('storage/' . $template->file_path),
+            'token' => $token
+        ]);
+    }
 }
