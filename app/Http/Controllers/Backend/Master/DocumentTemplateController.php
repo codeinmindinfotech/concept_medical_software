@@ -57,7 +57,7 @@ class DocumentTemplateController extends Controller
     
         // Create a temporary DocumentTemplate record (optional, just for key/id)
         $template = new DocumentTemplate();
-        $template->id = 9999999999;//Str::uuid(); // Temporary ID for OnlyOffice
+        $template->id = Str::random(32);//Str::uuid(); // Temporary ID for OnlyOffice
         $template->name = $templateName;
         $template->file_path = 'document_templates/' . $tempFileName;
         $now = now();
