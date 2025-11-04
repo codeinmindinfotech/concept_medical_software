@@ -36,9 +36,6 @@
                 <li class="nav-item">
                     <a class="nav-link" id="library-tab" data-bs-toggle="tab" href="#library" role="tab">Online Forms Library</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="email-tab" data-bs-toggle="tab" href="#email" role="tab">Email Documents</a>
-                </li>
             </ul>
 
             <div class="tab-content mt-3" id="documentTabsContent">

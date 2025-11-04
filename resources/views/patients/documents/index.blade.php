@@ -8,7 +8,7 @@
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-            ['label' => 'Patient Documents', 'url' =>guard_route('patients.index')],
+            ['label' => 'Patient Documents', 'url' =>guard_route('patient-documents.index', $patient)],
             ['label' => 'Documents List'],
         ];
     @endphp
