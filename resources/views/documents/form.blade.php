@@ -125,20 +125,24 @@
   });
   // Wait until the editor is ready
   function insertTagAtCursor(tag) {
-      if (!window.docEditor) {
-          alert("Editor is not ready.");
-          return;
-      }
-      window.docEditor.insertText(tag); // Inserts tag at the cursor
-  }
+    if (!window.docEditor) {
+        alert("Editor is not ready.");
+        return;
+    }
+
+    // OnlyOffice method to insert text at the cursor
+    window.docEditor.executeCommand('insertText', tag);
+}
 
   // Add click listeners to all tag buttons
-  document.querySelectorAll('.tag-btn').forEach(button => {
-      button.addEventListener('click', function() {
-          const tag = this.getAttribute('data-tag');
-          insertTagAtCursor(tag);
-      });
-  });
+
+document.querySelectorAll('.tag-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const tag = this.getAttribute('data-tag');
+        insertTagAtCursor(tag);
+    });
+});
+
 
 </script>
 @endpush
