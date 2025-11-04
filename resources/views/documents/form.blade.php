@@ -60,7 +60,7 @@
           </div>
 
           {{-- ▶ OnlyOffice Editor --}}
-          <div id="onlyoffice-container" style="width: 100%; height: 80vh; display:none;">
+          <div id="onlyoffice-container" style="width: 100%; height: 90vh; display:none;">
             <div id="onlyoffice-editor"></div>
           </div>
 
@@ -80,75 +80,64 @@
 @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 <script>
-// let editorReady = false;
-
-// document.getElementById('file').addEventListener('change', function(e) {
-//     let file = e.target.files[0];
-//     if(!file) return;
-
-//     let formData = new FormData();
-//     formData.append('file', file);
-
-//     fetch("{{ guard_route('documents.tempUpload') }}", {
-//         method: "POST",
-//         headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
-//         body: formData
-//     })
-//     .then(res => res.json())
-//     .then(data => {
-//         if(data.success) {
-//             document.getElementById('onlyoffice-container').style.display = 'block';
-
-//             const config = {
-//                 document: {
-//                     fileType: data.fileType,
-//                     key: data.key,
-//                     title: file.name,
-//                     url: data.url,
-//                 },
-//                 documentType: 'word',
-//                 editorConfig: {
-//                     mode: 'edit',
-//                     user: { id: '1', name: "{{ auth()->user()->name ?? 'Guest' }}" },
-//                     customization: { forcesave: true }
-//                 },
-//                 token: data.token,
-//                 events: {
-//                     onAppReady: function() {
-//                         editorReady = true;
-//                         console.log("✅ OnlyOffice editor is ready.");
-//                     }
-//                 }
-//             };
-
-//             window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
-//         } else {
-//             alert("File upload failed.");
-//         }
-//     })
-//     .catch(err => console.error(err));
-// });
-
-// function insertTagAtCursor(tag) {
-//     if (!window.docEditor || !editorReady) {
-//         alert("Editor not ready yet. Please wait...");
-//         return;
-//     }
-//     // ✅ Correct way to insert text in OnlyOffice
-//     window.docEditor.insertText(tag);
-// }
-
-// // Attach tag buttons
-// document.querySelectorAll('.tag-btn').forEach(btn => {
-//     btn.addEventListener('click', function() {
-//         insertTagAtCursor(this.dataset.tag);
-//     });
-// });
-</script>
-<script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
-<script>
 let editorReady = false;
 let docEditor = null; // keep reference globally
+@if(!empty($template->file_path) && $template->id)
+  loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
+@endif
+
+function initEditor(data, title) {
+    if (docEditor) {
+        try {
+            docEditor.destroyEditor();
+            console.log("🧹 Previous OnlyOffice editor destroyed.");
+        } catch (err) {
+            console.warn("Failed to destroy old editor:", err);
+        }
+    }
+
+    document.getElementById('onlyoffice-container').style.display = 'block';
+
+    const config = {
+        document: {
+            fileType: data.fileType,
+            key: data.key,
+            title: title,
+            url: data.url,
+        },
+        documentType: 'word',
+        editorConfig: {
+            mode: 'edit',
+            user: {
+                id: '{{ auth()->id() ?? "1" }}',
+                name: "{{ auth()->user()->name ?? 'Guest' }}"
+            },
+            customization: { forcesave: true }
+        },
+        token: data.token,
+        events: {
+            onAppReady: function() {
+                editorReady = true;
+                console.log("OnlyOffice editor is ready.");
+            },
+            onDocumentStateChange: function(event) {
+                console.log("Document state:", event.data);
+            }
+        }
+    };
+
+    docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+}
+
+function loadExistingDocument(apiUrl) {
+    fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) initEditor(data, data.title || "Existing Document");
+            else console.error("Failed to load existing file.");
+        })
+        .catch(err => console.error("Error loading file:", err));
+}
 
 document.getElementById('file').addEventListener('change', function(e) {
     let file = e.target.files[0];
@@ -165,50 +154,8 @@ document.getElementById('file').addEventListener('change', function(e) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            // ✅ Destroy old editor instance (if any)
-            if (docEditor) {
-                try {
-                    docEditor.destroyEditor();
-                    console.log("🧹 Previous OnlyOffice editor destroyed.");
-                } catch (err) {
-                    console.warn("Failed to destroy old editor:", err);
-                }
-            }
-
-            // ✅ Show container
-            document.getElementById('onlyoffice-container').style.display = 'block';
-
-            const config = {
-                document: {
-                    fileType: data.fileType,
-                    key: data.key,
-                    title: file.name,
-                    url: data.url,
-                },
-                documentType: 'word',
-                editorConfig: {
-                    mode: 'edit',
-                    user: {
-                        id: '{{ auth()->id() ?? "1" }}',
-                        name: "{{ auth()->user()->name ?? 'Guest' }}"
-                    },
-                    customization: { forcesave: true }
-                },
-                token: data.token,
-                events: {
-                    onAppReady: function() {
-                        editorReady = true;
-                        console.log("✅ OnlyOffice editor is ready.");
-                    },
-                    onDocumentStateChange: function(event) {
-                        console.log("Document state:", event.data);
-                    }
-                }
-            };
-
-            // ✅ Initialize new editor
-            docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
-        } else {
+            initEditor(data, file.name || "new Document");
+          } else {
             alert("❌ File upload failed.");
         }
     })
@@ -239,5 +186,4 @@ document.querySelectorAll('.tag-btn').forEach(btn => {
     });
 });
 </script>
-
 @endpush

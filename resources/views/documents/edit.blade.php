@@ -29,23 +29,5 @@
 @endsection
 @push('scripts')
 <script src="{{ asset('theme/form-validation.js') }}"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
-<script>
-    ClassicEditor
-        .create(document.querySelector('#template_body'), {
-            toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo', 'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells' ]
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script>
-{{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-<script>
-  ClassicEditor
-    .create(document.querySelector('#template_body'))
-    .catch(error => {
-      console.error(error);
-    });
-</script> --}}
 @endpush
