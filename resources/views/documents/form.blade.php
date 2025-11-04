@@ -80,11 +80,79 @@
 @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 <script>
+// let editorReady = false;
+
+// document.getElementById('file').addEventListener('change', function(e) {
+//     let file = e.target.files[0];
+//     if(!file) return;
+
+//     let formData = new FormData();
+//     formData.append('file', file);
+
+//     fetch("{{ guard_route('documents.tempUpload') }}", {
+//         method: "POST",
+//         headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+//         body: formData
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         if(data.success) {
+//             document.getElementById('onlyoffice-container').style.display = 'block';
+
+//             const config = {
+//                 document: {
+//                     fileType: data.fileType,
+//                     key: data.key,
+//                     title: file.name,
+//                     url: data.url,
+//                 },
+//                 documentType: 'word',
+//                 editorConfig: {
+//                     mode: 'edit',
+//                     user: { id: '1', name: "{{ auth()->user()->name ?? 'Guest' }}" },
+//                     customization: { forcesave: true }
+//                 },
+//                 token: data.token,
+//                 events: {
+//                     onAppReady: function() {
+//                         editorReady = true;
+//                         console.log("✅ OnlyOffice editor is ready.");
+//                     }
+//                 }
+//             };
+
+//             window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+//         } else {
+//             alert("File upload failed.");
+//         }
+//     })
+//     .catch(err => console.error(err));
+// });
+
+// function insertTagAtCursor(tag) {
+//     if (!window.docEditor || !editorReady) {
+//         alert("Editor not ready yet. Please wait...");
+//         return;
+//     }
+//     // ✅ Correct way to insert text in OnlyOffice
+//     window.docEditor.insertText(tag);
+// }
+
+// // Attach tag buttons
+// document.querySelectorAll('.tag-btn').forEach(btn => {
+//     btn.addEventListener('click', function() {
+//         insertTagAtCursor(this.dataset.tag);
+//     });
+// });
+</script>
+<script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
+<script>
 let editorReady = false;
+let docEditor = null; // keep reference globally
 
 document.getElementById('file').addEventListener('change', function(e) {
     let file = e.target.files[0];
-    if(!file) return;
+    if (!file) return;
 
     let formData = new FormData();
     formData.append('file', file);
@@ -96,7 +164,18 @@ document.getElementById('file').addEventListener('change', function(e) {
     })
     .then(res => res.json())
     .then(data => {
-        if(data.success) {
+        if (data.success) {
+            // ✅ Destroy old editor instance (if any)
+            if (docEditor) {
+                try {
+                    docEditor.destroyEditor();
+                    console.log("🧹 Previous OnlyOffice editor destroyed.");
+                } catch (err) {
+                    console.warn("Failed to destroy old editor:", err);
+                }
+            }
+
+            // ✅ Show container
             document.getElementById('onlyoffice-container').style.display = 'block';
 
             const config = {
@@ -109,7 +188,10 @@ document.getElementById('file').addEventListener('change', function(e) {
                 documentType: 'word',
                 editorConfig: {
                     mode: 'edit',
-                    user: { id: '1', name: "{{ auth()->user()->name ?? 'Guest' }}" },
+                    user: {
+                        id: '{{ auth()->id() ?? "1" }}',
+                        name: "{{ auth()->user()->name ?? 'Guest' }}"
+                    },
                     customization: { forcesave: true }
                 },
                 token: data.token,
@@ -117,32 +199,37 @@ document.getElementById('file').addEventListener('change', function(e) {
                     onAppReady: function() {
                         editorReady = true;
                         console.log("✅ OnlyOffice editor is ready.");
+                    },
+                    onDocumentStateChange: function(event) {
+                        console.log("Document state:", event.data);
                     }
                 }
             };
 
-            window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+            // ✅ Initialize new editor
+            docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
         } else {
-            alert("File upload failed.");
+            alert("❌ File upload failed.");
         }
     })
-    .catch(err => console.error(err));
+    .catch(err => console.error("Upload error:", err));
 });
 
 function insertTagAtCursor(tag) {
-    if (!window.docEditor || !editorReady) {
+    if (!docEditor || !editorReady) {
         alert("Editor not ready yet. Please wait...");
         return;
     }
-    // ✅ Correct way to insert text in OnlyOffice
-    window.docEditor.insertText(tag);
+    // ✅ Insert text in OnlyOffice
+    docEditor.insertText(tag);
 }
 
-// Attach tag buttons
+// ✅ Tag buttons
 document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         insertTagAtCursor(this.dataset.tag);
     });
 });
 </script>
+
 @endpush
