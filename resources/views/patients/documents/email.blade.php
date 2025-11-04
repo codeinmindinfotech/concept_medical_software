@@ -31,9 +31,9 @@
             Email / Attach Documents
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ guard_route('patient-documents.email.send', [$patient, $document]) }}" class="validate-form">
+            <form method="POST" action="{{ guard_route('patient-documents.email.send', [$patient, $document]) }}" >
                 @csrf
-    
+                {{-- class="validate-form" --}}
                 <div class="mb-3">
                     <label for="sender_email" class="form-label">Sender Email:</label>
                     <input type="email" class="form-control" name="sender_email" id="sender_email" placeholder="Enter Sender email" required>
