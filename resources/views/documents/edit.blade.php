@@ -4,23 +4,22 @@
 <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-    ['label' => 'Documents', 'url' =>guard_route('documents.index')],
-    ['label' => 'Edit Document'],
+        ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+        ['label' => 'Documents', 'url' =>guard_route('documents.index')],
+        ['label' => 'Edit Document'],
     ];
     @endphp
 
     @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Edit Document',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('documents.index'),
-    'isListPage' => false
+        'pageTitle' => 'Edit Document',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' =>guard_route('documents.index'),
+        'isListPage' => false
     ])
 
     <form action="{{guard_route('documents.update', $template->id) }}" class="validate-form" method="POST">
         @csrf
         @method('PUT')
-
         @include('documents.form', [
         'template' => $template
         ])
