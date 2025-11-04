@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Response;
 use ZipArchive;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpWord\PhpWord;
+use Illuminate\Support\Str;
+
 
 class DocumentTemplateController extends Controller
 {
@@ -27,11 +30,70 @@ class DocumentTemplateController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    // public function create()
+    // {
+    //     return view('documents.create');
+    // }
+
     public function create()
     {
-        return view('documents.create');
+        $templateName = 'New Document ' . now()->format('YmdHis');
+        
+        // Create a temporary DOCX using PhpWord
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+        $section->addText("This is a new temporary document.");
+    
+        // Generate unique temp filename
+        $tempFileName = 'temp_' . Str::random(8) . '.docx';
+        $tempFilePath = storage_path('app/public/document_templates/' . $tempFileName);
+    
+        // Ensure folder exists
+        if (!file_exists(storage_path('app/public/document_templates'))) {
+            mkdir(storage_path('app/public/document_templates'), 0777, true);
+        }
+    
+        $phpWord->save($tempFilePath, 'Word2007');
+    
+        // Create a temporary DocumentTemplate record (optional, just for key/id)
+        $template = new DocumentTemplate();
+        $template->id = 9999999999;//Str::uuid(); // Temporary ID for OnlyOffice
+        $template->name = $templateName;
+        $template->file_path = 'document_templates/' . $tempFileName;
+        $now = now();
+        $template->created_at = $now;
+        $template->updated_at = $now;
+        $fileUrl = secure_asset('storage/' . $template->file_path);
+        $key = OnlyOfficeHelper::generateDocumentKey($template);
+        $user = current_user();
+        $token = OnlyOfficeHelper::createJwtToken($template, $key, $fileUrl, $user);
+    
+        $config = [
+            'document' => [
+                'storagePath' => storage_path('app/public'),
+                'fileType' => 'docx',
+                'key' => $key,
+                'title' => $templateName,
+                'url' => $fileUrl,
+            ],
+            'documentType' => 'word',
+            'editorConfig' => [
+                'mode' => 'edit',
+                'callbackUrl' => url("/api/onlyoffice/document_callback/temporary"),
+                'user' => [
+                    'id' => (string) $user->id ?? '1',
+                    'name' => $user->name ?? 'Guest',
+                ],
+                'customization' => [
+                    'forcesave' => true,
+                ],
+            ],
+            'token' => $token,
+        ];
+    
+        return view('documents.create', compact('template','config'));
     }
-
+    
     /**
      * Store a newly created resource in storage.
      */
@@ -212,6 +274,32 @@ class DocumentTemplateController extends Controller
 
         // return response()->download($zipPath)->deleteFileAfterSend(true);
 
+    public function tempUpload(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:doc,docx,pdf|max:2048']);
+
+        // Store temporary
+        $file = $request->file('file');
+        $tempPath = $file->store('temp', 'public');
+
+        $tempTemplate = new DocumentTemplate();
+        $tempTemplate->id = Str::random(32);
+        $tempTemplate->file_path = $tempPath;
+        $tempTemplate->created_at = now();
+        $tempTemplate->updated_at = now();
+
+        $fileUrl = asset('storage/' . $tempPath);
+        $key = OnlyOfficeHelper::generateDocumentKey($tempTemplate);
+        $token = OnlyOfficeHelper::createJwtToken($tempTemplate, $key, $fileUrl, current_user());
+
+        return response()->json([
+            'success' => true,
+            'url' => $fileUrl,
+            'key' => $key,
+            'token' => $token,
+            'fileType' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION)
+        ]);
+    }
 
         
 
