@@ -54,29 +54,7 @@
 let editorReady = false;
 let docEditor = null;
 
-document.getElementById('document_template_id').addEventListener('change', function() {
-    const templateId = this.value;
-    if (!templateId) return;
-
-    fetch("{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}", {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': "{{ csrf_token() }}",
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ template_id: templateId })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            initOnlyOfficeEditor(data);
-        } else {
-            alert(data.message || 'Failed to load template');
-        }
-    })
-    .catch(err => console.error('Preview error:', err));
-});
-
+// Function to initialize OnlyOffice editor
 function initOnlyOfficeEditor(data) {
     if (docEditor) {
         try { docEditor.destroyEditor(); } catch(e){ console.warn(e); }
@@ -111,7 +89,51 @@ function initOnlyOfficeEditor(data) {
 
     docEditor = new DocsAPI.DocEditor('onlyoffice-editor', config);
 }
+
+// Template change event
+document.getElementById('document_template_id').addEventListener('change', function() {
+    const templateId = this.value;
+    if (!templateId) return;
+
+    fetch("{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}", {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ template_id: templateId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            initOnlyOfficeEditor(data);
+        } else {
+            alert(data.message || 'Failed to load template');
+        }
+    })
+    .catch(err => console.error('Preview error:', err));
+});
+
+// ✅ Trigger for first time on page load
+window.addEventListener('DOMContentLoaded', function() {
+    const templateSelect = document.getElementById('document_template_id');
+    
+    // If an existing template/document is selected, trigger the change
+    if (templateSelect.value) {
+        templateSelect.dispatchEvent(new Event('change'));
+    } else if ("{{ isset($document) && $document->file_path ? $document->file_path : '' }}") {
+        // If there is an existing document, initialize it manually
+        initOnlyOfficeEditor({
+            fileType: 'docx',
+            key: "{{ $config['document']['key'] }}",
+            title: "{{ $config['document']['title'] ?? 'Document' }}",
+            url: "{{ secure_asset('storage/' . $document->file_path) }}",
+            token: "{{ $config['token'] }}"
+        });
+    }
+});
 @endif
+
 
     // const baseConfig = @json($config);
 
