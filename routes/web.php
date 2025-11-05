@@ -134,6 +134,8 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
         Route::post('/documents/{document}/email/send', [PatientDocumentController::class, 'sendEmail'])->name('patient-documents.email.send');
         Route::post('/documents/{document}/change-template',[PatientDocumentController::class, 'changeTemplate'])->name('patient-documents.changeTemplate');
         Route::resource('documents', PatientDocumentController::class)->except(['show'])->names('patient-documents');
+        // Route::post('/documents/temp-preview', [PatientDocumentController::class, 'previewTemplateCreate'])->name('patient-documents.tempPreview');
+        // Route::get('/documents/load-exiting-file/{id}', [PatientDocumentController::class, 'loadExitingFile'])->name('patient-documents.loadExitingFile');  
     });
 
     // Follow-ups
@@ -208,6 +210,7 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
         Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
         Route::post('documents/temp-upload', [DocumentTemplateController::class, 'tempUpload'])->name('documents.tempUpload');
         Route::get('documents/load-file/{id}', [DocumentTemplateController::class, 'loadFile'])->name('documents.loadFile');
+        
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
         Route::resource('companies', CompanyController::class);
         Route::resource('roles', RoleController::class);
