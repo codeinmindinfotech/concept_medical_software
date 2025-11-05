@@ -27,14 +27,6 @@ class DocumentTemplateController extends Controller
         return view('documents.index', compact('templates'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    // public function create()
-    // {
-    //     return view('documents.create');
-    // }
-
     public function create()
     {
         return view('documents.create');
