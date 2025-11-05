@@ -26,11 +26,15 @@
                   </div>
 
                   {{-- Only show editor when editing an actual patient document --}}
-                  @if(isset($document) && $document->file_path)
+                  {{-- @if(isset($document) && $document->file_path)
                     <div style="width: 100%; height: 80vh;">
                       <div id="onlyoffice-editor"></div>
                     </div>
-                  @endif
+                  @endif --}}
+                  <div style="width: 100%; height: 80vh; display: none;" id="onlyoffice-container">
+                    <div id="onlyoffice-editor"></div>
+                </div>
+                
               </div>
           </div>
       </div>
@@ -46,41 +50,92 @@
 @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 <script>
-    @if(isset($config))
-        let editorConfig = @json($config);
+ @if(isset($config))
+    let editorConfig = @json($config);
 
-        function initEditor(fileUrl) {
-            editorConfig.document.url = fileUrl;
-            if (window.docEditor) {
-                window.docEditor.destroyEditor();
-            }
-            window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
+    function initEditor(fileUrl) {
+        if (!fileUrl) return;
+
+        editorConfig.document.url = fileUrl;
+
+        // Destroy previous editor instance if any
+        if (window.docEditor) {
+            window.docEditor.destroyEditor();
         }
 
-        let currentFileUrl = "{{ secure_asset('storage/' . $document->file_path ?? '') }}";
-        if(currentFileUrl) initEditor(currentFileUrl);
+        // Show editor container if hidden
+        document.getElementById('onlyoffice-container').style.display = 'block';
 
-        document.getElementById('document_template_id').addEventListener('change', function() {
-            let templateId = this.value;
-            if (!templateId) return;
+        // Create new editor
+        window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
+    }
 
-            $.ajax({
-                url: "{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}",
-                method: "POST",
-                data: {
-                    template_id: templateId,
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(response) {
+    // Initialize if editing existing document
+    let currentFileUrl = "{{ isset($document) && $document->file_path ? secure_asset('storage/' . $document->file_path) : '' }}";
+    if (currentFileUrl) initEditor(currentFileUrl);
+
+    // Handle template change
+    document.getElementById('document_template_id').addEventListener('change', function() {
+        let templateId = this.value;
+        if (!templateId) return;
+
+        $.ajax({
+            url: "{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}",
+            method: "POST",
+            data: {
+                template_id: templateId,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(response) {
+                if (response.preview_url) {
                     initEditor(response.preview_url);
-                },
-                error: function(err) {
-                    console.error("Error loading template preview:", err);
-                    alert("Failed to load template preview.");
+                } else {
+                    alert("No preview URL received from server.");
                 }
-            });
+            },
+            error: function(err) {
+                console.error("Error loading template preview:", err);
+                alert("Failed to load template preview.");
+            }
         });
+    });
+
     @endif
+    // @if(isset($config))
+    //     let editorConfig = @json($config);
+
+    //     function initEditor(fileUrl) {
+    //         editorConfig.document.url = fileUrl;
+    //         if (window.docEditor) {
+    //             window.docEditor.destroyEditor();
+    //         }
+    //         window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
+    //     }
+
+    //     let currentFileUrl = "{{ secure_asset('storage/' . $document->file_path ?? '') }}";
+    //     if(currentFileUrl) initEditor(currentFileUrl);
+
+    //     document.getElementById('document_template_id').addEventListener('change', function() {
+    //         let templateId = this.value;
+    //         if (!templateId) return;
+
+    //         $.ajax({
+    //             url: "{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}",
+    //             method: "POST",
+    //             data: {
+    //                 template_id: templateId,
+    //                 _token: "{{ csrf_token() }}"
+    //             },
+    //             success: function(response) {
+    //                 initEditor(response.preview_url);
+    //             },
+    //             error: function(err) {
+    //                 console.error("Error loading template preview:", err);
+    //                 alert("Failed to load template preview.");
+    //             }
+    //         });
+    //     });
+    // @endif
 </script>
 @endpush
 

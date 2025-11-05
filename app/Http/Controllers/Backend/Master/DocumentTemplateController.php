@@ -51,7 +51,6 @@ class DocumentTemplateController extends Controller
             'file' => 'required|file|mimes:doc,docx,pdf|max:2048',
             'tempPath' => 'nullable|string',
         ]);
-        // $filePath = $request->file('file')->store('document_templates', 'public');
         // Decide which file to use
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('document_templates', 'public');

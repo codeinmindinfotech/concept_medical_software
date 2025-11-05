@@ -10,15 +10,24 @@ class OnlyOfficeHelper
 {
     public static function createJwtToken($document, $key, $url, $userOrPatient)
     {
+        $docId = is_object($document) && isset($document->id)
+        ? $document->id
+        : uniqid('temp_');
+
+        $title = is_object($document) && isset($document->title)
+            ? $document->title
+            : (is_string($document) ? basename($document) : 'Document');
+
+
         $payload = [
             "document" => [
                 "fileType" => "docx",
                 "key" => $key,
-                "title" => $document->title ?? 'Document',
+                "title" => $title,
                 "url" => $url,
             ],
             "editorConfig" => [
-                "callbackUrl" => url("/api/onlyoffice/callback/{$document->id}"),
+                "callbackUrl" => url("/api/onlyoffice/callback/{$docId}"),
                 "mode" => "edit",
                 "user" => [
                     'id' => (string) ($userOrPatient->id ?? '1'),
@@ -34,7 +43,14 @@ class OnlyOfficeHelper
 
     public static function generateDocumentKey($document): string
     {
-        $data = $document->id . '|' . $document->updated_at->timestamp; // use integer timestamp
+        if (is_object($document) && isset($document->id)) {
+            $data = $document->id . '|' . optional($document->updated_at)->timestamp;
+        } else {
+            $data = is_string($document)
+                ? md5($document . microtime())
+                : uniqid('temp_', true);
+        }
+        // $data = $document->id . '|' . $document->updated_at->timestamp; // use integer timestamp
         return substr(hash('sha256', $data), 0, 128);
     }
 
