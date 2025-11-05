@@ -114,130 +114,26 @@ document.getElementById('document_template_id').addEventListener('change', funct
     .catch(err => console.error('Preview error:', err));
 });
 
-// ✅ Trigger for first time on page load
-window.addEventListener('DOMContentLoaded', function() {
-    const templateSelect = document.getElementById('document_template_id');
-    
-    // If an existing template/document is selected, trigger the change
-    if (templateSelect.value) {
-        templateSelect.dispatchEvent(new Event('change'));
-    } else if ("{{ isset($document) && $document->file_path ? $document->file_path : '' }}") {
-        // If there is an existing document, initialize it manually
-        initOnlyOfficeEditor({
-            fileType: 'docx',
-            key: "{{ $config['document']['key'] }}",
-            title: "{{ $config['document']['title'] ?? 'Document' }}",
-            url: "{{ secure_asset('storage/' . $document->file_path) }}",
-            token: "{{ $config['token'] }}"
+    @if(isset($document))
+        window.addEventListener('DOMContentLoaded', function() {
+            const templateSelect = document.getElementById('document_template_id');
+            
+            // If an existing template/document is selected, trigger the change
+            if (templateSelect.value) {
+                templateSelect.dispatchEvent(new Event('change'));
+            } else if ("{{ isset($document) && $document->file_path ? $document->file_path : '' }}") {
+                // If there is an existing document, initialize it manually
+                initOnlyOfficeEditor({
+                    fileType: 'docx',
+                    key: "{{ $config['document']['key'] }}",
+                    title: "{{ $config['document']['title'] ?? 'Document' }}",
+                    url: "{{ secure_asset('storage/' . $document->file_path) }}",
+                    token: "{{ $config['token'] }}"
+                });
+            }
         });
-    }
-});
+    @endif
 @endif
-
-
-    // const baseConfig = @json($config);
-
-    // function initEditor(fileUrl) {
-    //     if (!fileUrl) return;
-
-    //     // Clone base config so we always have a fresh object
-    //     let editorConfig = JSON.parse(JSON.stringify(baseConfig));
-
-    //     // Update the document URL
-    //     editorConfig.document.url = fileUrl;
-
-    //     // Force reload by changing the document key (MUST be unique)
-    //     editorConfig.document.key = Date.now().toString();
-
-    //     // Cleanly destroy any previous editor instance
-    //     if (window.docEditor) {
-    //         try {
-    //             window.docEditor.destroyEditor();
-    //         } catch (e) {
-    //             console.warn("Error destroying old editor:", e);
-    //         }
-    //         window.docEditor = null;
-    //     }
-
-    //     // Make sure the container is visible
-    //     const container = document.getElementById('onlyoffice-container');
-    //     container.style.display = 'block';
-
-    //     // (Optional) Reset the inner HTML to avoid stale iframe
-    //     container.innerHTML = '<div id="onlyoffice-editor"></div>';
-
-    //     // Initialize new editor instance
-    //     window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
-    // }
-
-    // // Load initial document (if exists)
-    // const currentFileUrl = "{{ isset($document) && $document->file_path ? secure_asset('storage/' . $document->file_path) : '' }}";
-    // if (currentFileUrl) initEditor(currentFileUrl);
-
-    // // Listen for template change
-    // document.getElementById('document_template_id').addEventListener('change', function() {
-    //     const templateId = this.value;
-    //     if (!templateId) return;
-
-    //     $.ajax({
-    //         url: "{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}",
-    //         method: "POST",
-    //         data: {
-    //             template_id: templateId,
-    //             _token: "{{ csrf_token() }}"
-    //         },
-    //         success: function(response) {
-    //             if (response.preview_url) {
-    //                 console.log(response.preview_url);
-    //                 initEditor(response.preview_url);
-    //             } else {
-    //                 alert("No preview URL received from server.");
-    //             }
-    //         },
-    //         error: function(err) {
-    //             console.error("Error loading template preview:", err);
-    //             alert("Failed to load template preview.");
-    //         }
-    //     });
-    // });
-
-
-    // @if(isset($config))
-    //     let editorConfig = @json($config);
-
-    //     function initEditor(fileUrl) {
-    //         editorConfig.document.url = fileUrl;
-    //         if (window.docEditor) {
-    //             window.docEditor.destroyEditor();
-    //         }
-    //         window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
-    //     }
-
-    //     let currentFileUrl = "{{ secure_asset('storage/' . $document->file_path ?? '') }}";
-    //     if(currentFileUrl) initEditor(currentFileUrl);
-
-    //     document.getElementById('document_template_id').addEventListener('change', function() {
-    //         let templateId = this.value;
-    //         if (!templateId) return;
-
-    //         $.ajax({
-    //             url: "{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}",
-    //             method: "POST",
-    //             data: {
-    //                 template_id: templateId,
-    //                 _token: "{{ csrf_token() }}"
-    //             },
-    //             success: function(response) {
-    //                 initEditor(response.preview_url);
-    //             },
-    //             error: function(err) {
-    //                 console.error("Error loading template preview:", err);
-    //                 alert("Failed to load template preview.");
-    //             }
-    //         });
-    //     });
-    // @endif
-
 </script>
 @endpush
 
