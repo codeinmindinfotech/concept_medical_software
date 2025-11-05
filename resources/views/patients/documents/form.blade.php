@@ -46,37 +46,52 @@
       </button>
   </div>
 </div>
-
 @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 <script>
- @if(isset($config))
-    let editorConfig = @json($config);
+@if(isset($config))
+    const baseConfig = @json($config);
 
     function initEditor(fileUrl) {
         if (!fileUrl) return;
 
+        // Clone base config so we always have a fresh object
+        let editorConfig = JSON.parse(JSON.stringify(baseConfig));
+
+        // Update the document URL
         editorConfig.document.url = fileUrl;
 
-        // Destroy previous editor instance if any
+        // Force reload by changing the document key (MUST be unique)
+        editorConfig.document.key = Date.now().toString();
+
+        // Cleanly destroy any previous editor instance
         if (window.docEditor) {
-            window.docEditor.destroyEditor();
+            try {
+                window.docEditor.destroyEditor();
+            } catch (e) {
+                console.warn("Error destroying old editor:", e);
+            }
+            window.docEditor = null;
         }
 
-        // Show editor container if hidden
-        document.getElementById('onlyoffice-container').style.display = 'block';
+        // Make sure the container is visible
+        const container = document.getElementById('onlyoffice-container');
+        container.style.display = 'block';
 
-        // Create new editor
+        // (Optional) Reset the inner HTML to avoid stale iframe
+        container.innerHTML = '<div id="onlyoffice-editor"></div>';
+
+        // Initialize new editor instance
         window.docEditor = new DocsAPI.DocEditor("onlyoffice-editor", editorConfig);
     }
 
-    // Initialize if editing existing document
-    let currentFileUrl = "{{ isset($document) && $document->file_path ? secure_asset('storage/' . $document->file_path) : '' }}";
+    // Load initial document (if exists)
+    const currentFileUrl = "{{ isset($document) && $document->file_path ? secure_asset('storage/' . $document->file_path) : '' }}";
     if (currentFileUrl) initEditor(currentFileUrl);
 
-    // Handle template change
+    // Listen for template change
     document.getElementById('document_template_id').addEventListener('change', function() {
-        let templateId = this.value;
+        const templateId = this.value;
         if (!templateId) return;
 
         $.ajax({
@@ -88,6 +103,7 @@
             },
             success: function(response) {
                 if (response.preview_url) {
+                    console.log(response.preview_url);
                     initEditor(response.preview_url);
                 } else {
                     alert("No preview URL received from server.");
@@ -100,7 +116,7 @@
         });
     });
 
-    @endif
+
     // @if(isset($config))
     //     let editorConfig = @json($config);
 
@@ -136,6 +152,10 @@
     //         });
     //     });
     // @endif
+@endif
 </script>
 @endpush
+
+    
+
 
