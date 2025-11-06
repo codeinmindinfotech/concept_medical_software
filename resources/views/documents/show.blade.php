@@ -54,6 +54,33 @@
 @push('scripts')
 <script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
 <script>
-    const docEditor = new DocsAPI.DocEditor("onlyoffice-viewer", {!! $config !!});
+let docEditor = null;
+
+// Clean up before re-init or when navigating away
+window.addEventListener('beforeunload', function () {
+    if (docEditor) {
+        try {
+            docEditor.destroyEditor();
+            console.log("🧹 OnlyOffice editor destroyed before unload.");
+        } catch (err) {
+            console.warn("Failed to destroy editor:", err);
+        }
+    }
+});
+
+function initViewer() {
+    if (docEditor) {
+        try {
+            docEditor.destroyEditor();
+        } catch (err) {
+            console.warn("Error destroying old editor:", err);
+        }
+    }
+
+    const config = {!! $config !!};
+    docEditor = new DocsAPI.DocEditor("onlyoffice-viewer", config);
+}
+
+document.addEventListener("DOMContentLoaded", initViewer);
 </script>
 @endpush

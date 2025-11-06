@@ -72,7 +72,7 @@ class DocumentTemplateController extends Controller
         }
 
         $fileUrl = asset('storage/' . $document->file_path);
-        $key = OnlyOfficeHelper::generateDocumentKey($document);
+        $key = OnlyOfficeHelper::generateDocumentKey($document, true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($document, $key, $fileUrl, $user);
 
