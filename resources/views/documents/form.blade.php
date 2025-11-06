@@ -125,8 +125,13 @@ function initEditor(data, title) {
             },
             onDocumentStateChange: function(event) {
                 console.log("Document state:", event.data);
+            },
+            onRequestRefreshFile: function() {
+                console.log("Editor requested file refresh.");
+                docEditor.refreshFile(); // pull the latest version from your server
             }
         }
+
     };
 
     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
