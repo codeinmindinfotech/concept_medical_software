@@ -124,7 +124,20 @@ function initEditor(data, title) {
                 console.log("OnlyOffice editor is ready.");
             },
             onDocumentStateChange: function(event) {
+                let status = event.data.status;
                 console.log("Document state:", event.data);
+
+                if (status === 1) {
+                    // Editing in progress
+                    $('#globalLoader').show();
+                } else if (status === 2) {
+                    // Document saved
+                    $('#globalLoader').hide();
+                    console.log("✅ Document saved successfully.");
+                } else if (status === 6) {
+                    // Document closed
+                    $('#globalLoader').hide();
+                }
             },
             onRequestRefreshFile: function() {
                 console.log("Editor requested file refresh.");
