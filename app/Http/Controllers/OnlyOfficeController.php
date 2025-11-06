@@ -52,6 +52,8 @@ class OnlyOfficeController extends Controller
 
         // Only process when OnlyOffice says file is saved or closed
         if (!in_array($status, [2, 6]) || !$url) {
+            Log::info("Only process when OnlyOffice says file is saved or closed");
+
             return response()->json(['error' => 0]);
         }
 
