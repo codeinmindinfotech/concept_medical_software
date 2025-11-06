@@ -17,7 +17,7 @@ class OnlyOfficeController extends Controller
         Log::info('OnlyOffice callback received', $request->all());
 
         $status = $request->get('status');
-        Log::info("Onlyoffice callback status {$status}");
+        Log::info("Onlyoffice callback status document {$status}");
         if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
             $url = $request->input('url');
             if ($url) {
