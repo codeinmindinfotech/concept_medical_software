@@ -43,16 +43,21 @@ class DocumentTemplateController extends Controller
             'file' => 'required|file|mimes:doc,docx,pdf|max:2048',
             'tempPath' => 'nullable|string',
         ]);
+        
         // Decide which file to use
         if ($request->hasFile('file')) {
-            $filePath = $request->file('file')->store('document_templates', 'public');
+            echo "11----";
+            echo $filePath = $request->file('file')->store('document_templates', 'public');
         } elseif ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
+            echo "22----";
             $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
-            $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
+            echo $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
             Storage::disk('public')->copy($request->tempPath, $filePath);
         } else {
+            echo "33----";
             return back()->withErrors(['file' => 'Please upload a file or use the temp file.']);
         }
+        dd($request);
         DocumentTemplate::create([
             'name' => $request->name,
             'type' => $request->type,
