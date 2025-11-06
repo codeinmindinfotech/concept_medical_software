@@ -73,7 +73,7 @@ class OnlyOfficeHelper
 
         return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
     }
-    public static function generateDocumentKey($document): string
+    public static function generateDocumentKey($document, bool $forceUnique = false): string
     {
         if (is_object($document) && isset($document->id)) {
             $data = $document->id . '|' . optional($document->updated_at)->timestamp;
@@ -81,6 +81,9 @@ class OnlyOfficeHelper
             $data = is_string($document)
                 ? md5($document . microtime())
                 : uniqid('temp_', true);
+        }
+        if ($forceUnique) {
+            $data .= '|' . microtime(true); // add session-level randomness
         }
         // $data = $document->id . '|' . $document->updated_at->timestamp; // use integer timestamp
         return substr(hash('sha256', $data), 0, 128);
