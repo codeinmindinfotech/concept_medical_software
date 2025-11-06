@@ -28,7 +28,8 @@ class PatientDocumentController extends Controller
     public function create(Patient $patient)
     {
         $templates = DocumentTemplate::all();
-        return view('patients.documents.create', compact('patient', 'templates'));
+        $config = []; // 👈 define empty config to avoid undefined variable error
+        return view('patients.documents.create', compact('patient', 'templates', 'config'));
     }
 
     public function store(Request $request, Patient $patient)
@@ -181,79 +182,45 @@ class PatientDocumentController extends Controller
 
     }
 
-    // public function previewTemplateCreate(Request $request, Patient $patient)
-    // {
-    //     $request->validate([
-    //         'template_id' => 'required|exists:document_templates,id',
-    //     ]);
+    public function previewTemplateCreate(Request $request, Patient $patient)
+    {
+        $request->validate([
+            'template_id' => 'required|exists:document_templates,id',
+        ]);
 
-    //     $template = DocumentTemplate::findOrFail($request->template_id);
-    //     $templatePath = storage_path('app/public/' . $template->file_path);
+        $template = DocumentTemplate::findOrFail($request->template_id);
+        $templatePath = storage_path('app/public/' . $template->file_path);
 
-    //     // Create a temporary filename
-    //     $tempFileName = 'temp_preview_' . uniqid() . '.docx';
-    //     $tempStoragePath = "patient_docs/temp/{$tempFileName}";
-    //     $tempFullPath = storage_path('app/public/' . $tempStoragePath);
+        // Create temporary file
+        $tempFileName = 'temp_preview_' . uniqid() . '.docx';
+        $tempStoragePath = "patient_docs/temp/{$tempFileName}";
+        $tempFullPath = storage_path('app/public/' . $tempStoragePath);
 
-    //     // Ensure temp folder exists
-    //     $directoryPath = storage_path('app/public/patient_docs/temp');
-    //     if (!file_exists($directoryPath)) {
-    //         mkdir($directoryPath, 0775, true);
-    //     }
+        // Ensure temp folder exists
+        if (!file_exists(storage_path('app/public/patient_docs/temp'))) {
+            mkdir(storage_path('app/public/patient_docs/temp'), 0775, true);
+        }
 
-    //     // Copy template to temp location
-    //     if (!copy($templatePath, $tempFullPath)) {
-    //         return response()->json(['error' => 'Could not create preview file.'], 500);
-    //     }
+        if (!copy($templatePath, $tempFullPath)) {
+            return response()->json(['success' => false, 'message' => 'Could not copy template file.'], 500);
+        }
 
-    //     // Optionally replace placeholders with patient info
-    //     KeywordHelper::replaceKeywords($tempFullPath, $patient);
+        // Replace placeholders with patient data
+        KeywordHelper::replaceKeywords($tempFullPath, $patient);
 
-    //     // Return URL for OnlyOffice preview
-    //     return response()->json([
-    //         'preview_url' => secure_asset('storage/' . $tempStoragePath)
-    //     ]);
-    // }
-public function previewTemplateCreate(Request $request, Patient $patient)
-{
-    $request->validate([
-        'template_id' => 'required|exists:document_templates,id',
-    ]);
+        // Generate OnlyOffice key & token
+        $key = OnlyOfficeHelper::generateDocumentKey(['file_path' => $tempStoragePath]);
+        $token = OnlyOfficeHelper::createJwtToken(['file_path' => $tempStoragePath], $key, secure_asset('storage/' . $tempStoragePath), $patient);
 
-    $template = DocumentTemplate::findOrFail($request->template_id);
-    $templatePath = storage_path('app/public/' . $template->file_path);
-
-    // Create temporary file
-    $tempFileName = 'temp_preview_' . uniqid() . '.docx';
-    $tempStoragePath = "patient_docs/temp/{$tempFileName}";
-    $tempFullPath = storage_path('app/public/' . $tempStoragePath);
-
-    // Ensure temp folder exists
-    if (!file_exists(storage_path('app/public/patient_docs/temp'))) {
-        mkdir(storage_path('app/public/patient_docs/temp'), 0775, true);
+        return response()->json([
+            'success' => true,
+            'url' => secure_asset('storage/' . $tempStoragePath),
+            'fileType' => 'docx',
+            'key' => $key,
+            'token' => $token,
+            'title' => $template->name,
+        ]);
     }
-
-    if (!copy($templatePath, $tempFullPath)) {
-        return response()->json(['success' => false, 'message' => 'Could not copy template file.'], 500);
-    }
-
-    // Replace placeholders with patient data
-    KeywordHelper::replaceKeywords($tempFullPath, $patient);
-
-    // Generate OnlyOffice key & token
-    $key = OnlyOfficeHelper::generateDocumentKey(['file_path' => $tempStoragePath]);
-    $token = OnlyOfficeHelper::createJwtToken(['file_path' => $tempStoragePath], $key, secure_asset('storage/' . $tempStoragePath), $patient);
-
-    return response()->json([
-        'success' => true,
-        'url' => secure_asset('storage/' . $tempStoragePath),
-        'fileType' => 'docx',
-        'key' => $key,
-        'token' => $token,
-        'title' => $template->name,
-    ]);
-}
-
 
     public function emailForm(Patient $patient, PatientDocument $document)
     {
