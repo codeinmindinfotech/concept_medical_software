@@ -82,7 +82,14 @@ function initOnlyOfficeEditor(data) {
         events: {
             onAppReady: function() {
                 editorReady = true;
-                console.log('OnlyOffice ready');
+                console.log("OnlyOffice editor is ready.");
+            },
+            onDocumentStateChange: function(event) {
+                console.log("Document state:", event.data);
+            },
+            onRequestRefreshFile: function() {
+                console.log("Editor requested file refresh.");
+                docEditor.refreshFile(); // pull the latest version from your server
             }
         }
     };
