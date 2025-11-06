@@ -17,7 +17,7 @@ class OnlyOfficeController extends Controller
         Log::info('OnlyOffice callback received', $request->all());
 
         $status = $request->get('status');
-
+        Log::info("Onlyoffice callback status {$status}");
         if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
             $url = $request->input('url');
             if ($url) {
@@ -49,9 +49,9 @@ class OnlyOfficeController extends Controller
         $status = $request->input('status');
         $url = $request->input('url');
         $tempPath = $request->query('tempPath');
-
+        Log::info("Onlyoffice callback status {$status}");
         // Only process when OnlyOffice says file is saved or closed
-        if (!in_array($status, [2, 6]) || !$url) {
+        if (!in_array($status, [1, 2, 6]) || !$url) {
             Log::info("Only process when OnlyOffice says file is saved or closed");
 
             return response()->json(['error' => 0]);
