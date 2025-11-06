@@ -106,7 +106,7 @@ class DocumentTemplateController extends Controller
         $fullPath = storage_path('app/public/' . $filePath);
 
         $fileUrl = secure_asset('storage/' . $filePath);
-        $key = OnlyOfficeHelper::generateDocumentKey($template);
+        $key = OnlyOfficeHelper::generateDocumentKey($template,true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
         $config = [
@@ -248,7 +248,7 @@ class DocumentTemplateController extends Controller
         $fullPath = storage_path('app/public/' . $filePath);
 
         $fileUrl = secure_asset('storage/' . $filePath);
-        $key = OnlyOfficeHelper::generateDocumentKey($template);
+        $key = OnlyOfficeHelper::generateDocumentKey($template,true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
         $config = [
