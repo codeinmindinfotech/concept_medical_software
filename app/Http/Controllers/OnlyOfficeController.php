@@ -44,7 +44,7 @@ class OnlyOfficeController extends Controller
 
     public function document_callback(Request $request, $documentId = null)
     {
-        Log::info('OnlyOffice callback received', $request->all());
+        Log::info('OnlyOffice document callback received', $request->all());
 
         $status = $request->input('status');
         $url = $request->input('url');
@@ -69,7 +69,11 @@ class OnlyOfficeController extends Controller
                 }
 
                 $storagePath = 'public/' . $document->file_path;
-                Storage::put($storagePath, $fileContents);
+                Storage::disk('public')->put($document->file_path, $fileContents);
+                Log::info("Document saved: {$document->file_path}");
+
+                // Storage::put($storagePath, $fileContents);
+
                 Log::info("✅ Updated existing template: {$storagePath}");
             }
 
