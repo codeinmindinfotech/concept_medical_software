@@ -142,6 +142,8 @@ function initEditor(data, title) {
                     // Saved or closed
                     $('#globalLoader').hide();
                     console.log("✅ Document saved or closed.");
+                } else {
+                  $('#globalLoader').hide();
                 }
             },
             onRequestRefreshFile: function() {
