@@ -124,19 +124,24 @@ function initEditor(data, title) {
                 console.log("OnlyOffice editor is ready.");
             },
             onDocumentStateChange: function(event) {
-                let status = event.data.status;
-                console.log("Document state:", event.data);
+                let status = null;
+
+                // OnlyOffice sometimes returns a boolean instead of an object
+                if (typeof event.data === "object" && event.data.status !== undefined) {
+                    status = event.data.status;
+                } else if (typeof event.data === "boolean") {
+                    status = event.data ? 1 : 0; // treat 'true' as editing
+                }
+
+                console.log("Document state:", event.data, "Interpreted status:", status);
 
                 if (status === 1) {
                     // Editing in progress
                     $('#globalLoader').show();
-                } else if (status === 2) {
-                    // Document saved
+                } else if (status === 2 || status === 6) {
+                    // Saved or closed
                     $('#globalLoader').hide();
-                    console.log("✅ Document saved successfully.");
-                } else if (status === 6) {
-                    // Document closed
-                    $('#globalLoader').hide();
+                    console.log("✅ Document saved or closed.");
                 }
             },
             onRequestRefreshFile: function() {
