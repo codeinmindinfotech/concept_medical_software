@@ -14,8 +14,8 @@ class OnlyOfficeHelper
         ? $document->id
         : uniqid('temp_');
 
-        $title = is_object($document) && isset($document->title)
-            ? $document->title
+        $title = is_object($document) && isset($document->file_path)
+            ? $document->file_path
             : (is_string($document) ? basename($document) : 'Document');
 
 
@@ -41,6 +41,38 @@ class OnlyOfficeHelper
         return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
     }
 
+    public static function createJwtTokenDocumentTemplate($document, $key, $url, $userOrPatient)
+    {
+        $docId = is_object($document) && isset($document->id)
+        ? $document->id
+        : uniqid('temp_');
+
+        $title = is_object($document) && isset($document->name)
+            ? $document->name
+            : (is_string($document) ? basename($document) : 'Document');
+
+
+        $payload = [
+            "document" => [
+                "fileType" => "docx",
+                "key" => $key,
+                "title" => $title,
+                "url" => $url,
+            ],
+            "editorConfig" => [
+                "callbackUrl" => url("/api/onlyoffice/document_callback/{$docId}"),
+                "mode" => "edit",
+                "user" => [
+                    'id' => (string) ($userOrPatient->id ?? '1'),
+                    'name' => $userOrPatient->full_name ?? $userOrPatient->name ?? 'Guest',
+                ],
+            ],
+            "iat" => time(),
+            "exp" => time() + 3600,
+        ];
+
+        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+    }
     public static function generateDocumentKey($document): string
     {
         if (is_object($document) && isset($document->id)) {
