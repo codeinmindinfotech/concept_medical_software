@@ -7,9 +7,7 @@ use App\Models\PatientDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-
+use Illuminate\Support\Facades\Http;
 class OnlyOfficeController extends Controller
 {
     public function callback(Request $request, $documentId = null)
@@ -42,45 +40,104 @@ class OnlyOfficeController extends Controller
         return response()->json(['error' => 0]);
     }
 
-    public function document_callback(Request $request, $documentId = null)
-    {
-        $status = $request->input('status');
-        $url = $request->input('url');
-        $tempPath = $request->query('tempPath');
+public function document_callback(Request $request)
+{
+    // Log incoming request for debugging
+    Log::info('OnlyOffice Callback:', $request->all());
 
-        Log::info("OnlyOffice callback | status: {$status}, documentId: {$documentId}, tempPath: {$tempPath}");
+    $status = $request->input('status');
+    $documentId = $request->input('document_id');
+    $tempPath = $request->input('temp_path');
+    $url = $request->input('url'); // OnlyOffice may send a file URL
 
-        if (!in_array($status, [2, 4, 6])) {
-            Log::info("Ignoring status: {$status}");
-            return response()->json(['error' => 0]);
-        }
-
-        try {
-            $content = $url ? file_get_contents($url) : file_get_contents('php://input');
-            if (!$content) throw new \Exception("Empty file content");
-
-            if ($documentId) {
-                $document = DocumentTemplate::findOrFail($documentId);
-                $filePath = company_path($document->file_path); 
-                Storage::disk('public')->put(ltrim($filePath, '/'), $content);
-                // Storage::disk('public')->put(ltrim($document->file_path, '/'), $content);
-                Log::info("Updated existing template: {$document->file_path}");
-            } elseif ($tempPath) {
-                Storage::disk('public')->put(ltrim($tempPath, '/'), $content);
-                Log::info("Updated temp file: {$tempPath}");
-            } else {
-                throw new \Exception("No documentId or tempPath provided");
-            }
-
-            Log::info("Saved document (size: " . strlen($content) . " bytes)");
-
-        } catch (\Exception $e) {
-            Log::error("OnlyOffice callback failed: " . $e->getMessage());
-            return response()->json(['error' => 1, 'message' => $e->getMessage()]);
-        }
-
-        return response()->json(['error' => 0]);
+    // Only process statuses that indicate a save/finished document
+    if (!in_array($status, [2, 4, 6])) {
+        return response()->json(['error' => 'Status not processed'], 200);
     }
+
+    // Fetch the updated content
+    try {
+        if ($url) {
+            // Use Laravel HTTP client for better error handling
+            $response = Http::get($url);
+            if ($response->failed()) {
+                Log::error("Failed to fetch file from OnlyOffice URL: {$url}");
+                return response()->json(['error' => 'Failed to fetch file'], 500);
+            }
+            $content = $response->body();
+        } else {
+            $content = $request->getContent(); // Fallback to raw input
+        }
+    } catch (\Exception $e) {
+        Log::error("Error fetching content: " . $e->getMessage());
+        return response()->json(['error' => 'Content fetch failed'], 500);
+    }
+
+    // Save content to permanent document if document_id is provided
+    if ($documentId) {
+        $document = DocumentTemplate::find($documentId);
+        if (!$document) {
+            Log::error("Document not found: ID {$documentId}");
+            return response()->json(['error' => 'Document not found'], 404);
+        }
+
+        // Save using Storage disk 'public' (path is relative to storage/app/public)
+        Storage::disk('public')->put($document->file_path, $content);
+        Log::info("Updated document ID {$documentId} at path: {$document->file_path}");
+    }
+    // Save content to temporary path if provided
+    elseif ($tempPath) {
+        Storage::disk('public')->put($tempPath, $content);
+        Log::info("Updated temp file at path: {$tempPath}");
+    } else {
+        Log::warning('No document_id or temp_path provided in callback.');
+        return response()->json(['error' => 'No path to save'], 400);
+    }
+
+    // OnlyOffice expects a JSON response
+    return response()->json(['error' => 0], 200);
+}
+
+    // public function document_callback(Request $request, $documentId = null)
+    // {
+    //     $status = $request->input('status');
+    //     $url = $request->input('url');
+    //     $tempPath = $request->query('tempPath');
+
+    //     Log::info("OnlyOffice callback | status: {$status}, documentId: {$documentId}, tempPath: {$tempPath}");
+
+    //     if (!in_array($status, [2, 4, 6])) {
+    //         Log::info("Ignoring status: {$status}");
+    //         return response()->json(['error' => 0]);
+    //     }
+
+    //     try {
+            
+    //         $content = $url ? file_get_contents($url) : file_get_contents('php://input');
+    //         if (!$content) throw new \Exception("Empty file content");
+
+    //         if ($documentId) {
+    //             $document = DocumentTemplate::findOrFail($documentId);
+    //             $filePath = company_path($document->file_path); 
+    //             Storage::disk('public')->put(ltrim($filePath, '/'), $content);
+    //             // Storage::disk('public')->put(ltrim($document->file_path, '/'), $content);
+    //             Log::info("Updated existing template: {$document->file_path}");
+    //         } elseif ($tempPath) {
+    //             Storage::disk('public')->put(ltrim($tempPath, '/'), $content);
+    //             Log::info("Updated temp file: {$tempPath}");
+    //         } else {
+    //             throw new \Exception("No documentId or tempPath provided");
+    //         }
+
+    //         Log::info("Saved document (size: " . strlen($content) . " bytes)");
+
+    //     } catch (\Exception $e) {
+    //         Log::error("OnlyOffice callback failed: " . $e->getMessage());
+    //         return response()->json(['error' => 1, 'message' => $e->getMessage()]);
+    //     }
+
+    //     return response()->json(['error' => 0]);
+    // }
 
 
 
