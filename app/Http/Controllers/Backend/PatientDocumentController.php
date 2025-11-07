@@ -119,7 +119,7 @@ class PatientDocumentController extends Controller
                     'forcesave' => true,
                 ],
             ],
-            'token' => $token, // your JWT token
+            'token' => $token // your JWT token
         ];
         \Log::info('ONLYOFFICE key: ' . $key);
         \Log::info('patient ONLYOFFICE TOKEN: ' . $token);
