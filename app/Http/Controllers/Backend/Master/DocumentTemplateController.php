@@ -44,19 +44,29 @@ class DocumentTemplateController extends Controller
             'tempPath' => 'nullable|string',
         ]);
         
-        // Decide which file to use
-        if ($request->hasFile('file')) {
-            // echo "11----";
-            $filePath = $request->file('file')->store('document_templates', 'public');
-        } elseif ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
-            // echo "22----";
+        if ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
             $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
             $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
             Storage::disk('public')->copy($request->tempPath, $filePath);
+            Storage::disk('public')->delete($request->tempPath); // optional cleanup
         } else {
-            // echo "33----";
-            return back()->withErrors(['file' => 'Please upload a file or use the temp file.']);
+            // fallback: uploaded file
+            $filePath = $request->file('file')->store('document_templates', 'public');
         }
+        
+        // // Decide which file to use
+        // if ($request->hasFile('file')) {
+        //     // echo "11----";
+        //     $filePath = $request->file('file')->store('document_templates', 'public');
+        // } elseif ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
+        //     // echo "22----";
+        //     $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
+        //     $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
+        //     Storage::disk('public')->copy($request->tempPath, $filePath);
+        // } else {
+        //     // echo "33----";
+        //     return back()->withErrors(['file' => 'Please upload a file or use the temp file.']);
+        // }
         // dd($request);
         DocumentTemplate::create([
             'name' => $request->name,
@@ -242,7 +252,8 @@ class DocumentTemplateController extends Controller
             'key' => $key,
             'token' => $token,
             'fileType' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION),
-            'tempPath' => $tempPath
+            'tempPath' => $tempPath,
+            'callbackUrl' => url('/api/onlyoffice/document_callback') . '?tempPath=' . urlencode($tempPath)
         ]);
     }
 
