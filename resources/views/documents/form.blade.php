@@ -40,8 +40,7 @@
             >
             <div class="form-text">Accepted file types: .doc, .docx. Max size: 2MB.</div>
             @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            <input type="hidden" name="tempPath" id="tempPath" value="{{ old('tempPath', $tempPath ?? '') }}">
-
+            <input type="text" name="tempPath" id="tempPath" value="{{ old('tempPath', $tempPath ?? '') }}">
           </div>
 
           {{-- ▶ Tags Panel --}}
@@ -116,6 +115,8 @@ function initEditor(data, title) {
                 name: "{{ auth()->user()->name ?? 'Guest' }}"
             },
             customization: { forcesave: true }
+            callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
+
         },
         token: data.token,
         events: {
@@ -183,6 +184,7 @@ document.getElementById('file').addEventListener('change', function(e) {
     .then(data => {
         if (data.success) {
           document.getElementById('tempPath').value = data.tempPath || data.url;
+          console.log(data.tempPath || data.url);
 // ✅ Build callback URL for temp file
             const callbackUrl =
                 "{{ url('/api/onlyoffice/document_callback') }}" +
