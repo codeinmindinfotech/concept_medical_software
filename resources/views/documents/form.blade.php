@@ -114,7 +114,7 @@ function initEditor(data, title) {
                 id: '{{ auth()->id() ?? "1" }}',
                 name: "{{ auth()->user()->name ?? 'Guest' }}"
             },
-            customization: { forcesave: true }
+            customization: { forcesave: true },
             callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
 
         },
