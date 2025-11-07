@@ -46,28 +46,20 @@ class DocumentTemplateController extends Controller
         
         if ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
             $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
-            $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
+            $filePath = company_path('document_templates/' . uniqid('template_') . '.' . $extension);
+            // $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
             Storage::disk('public')->copy($request->tempPath, $filePath);
             Storage::disk('public')->delete($request->tempPath); // optional cleanup
         } else {
             // fallback: uploaded file
-            $filePath = $request->file('file')->store('document_templates', 'public');
+            $filePath = $request->file('file')->storeAs(
+                company_path('document_templates'),
+                uniqid('template_') . '.' . $request->file('file')->getClientOriginalExtension(),
+                'public'
+            );
+            // $filePath = $request->file('file')->store('document_templates', 'public');
         }
-        
-        // // Decide which file to use
-        // if ($request->hasFile('file')) {
-        //     // echo "11----";
-        //     $filePath = $request->file('file')->store('document_templates', 'public');
-        // } elseif ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
-        //     // echo "22----";
-        //     $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
-        //     $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
-        //     Storage::disk('public')->copy($request->tempPath, $filePath);
-        // } else {
-        //     // echo "33----";
-        //     return back()->withErrors(['file' => 'Please upload a file or use the temp file.']);
-        // }
-        // dd($request);
+
         DocumentTemplate::create([
             'name' => $request->name,
             'type' => $request->type,
@@ -166,14 +158,27 @@ class DocumentTemplateController extends Controller
 
         $data = $request->only('name', 'type');
 
-        if ($request->hasFile('file')) {
-            // Optionally delete old file
-            if ($document->file_path && \Storage::disk('public')->exists($document->file_path)) {
-                \Storage::disk('public')->delete($document->file_path);
-            }
+        // if ($request->hasFile('file')) {
+        //     // Optionally delete old file
+        //     if ($document->file_path && \Storage::disk('public')->exists($document->file_path)) {
+        //         \Storage::disk('public')->delete($document->file_path);
+        //     }
 
-            $data['file_path'] = $request->file('file')->store('document_templates', 'public');
+        //     $data['file_path'] = $request->file('file')->store('document_templates', 'public');
+        // }
+        if ($request->hasFile('file')) {
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                Storage::disk('public')->delete($document->file_path);
+            }
+        
+            $filePath = $request->file('file')->storeAs(
+                company_path('document_templates'),
+                uniqid('template_') . '.' . $request->file('file')->getClientOriginalExtension(),
+                'public'
+            );
+            $data['file_path'] = $filePath;
         }
+        
 
         $document->update($data);
 
@@ -212,12 +217,14 @@ class DocumentTemplateController extends Controller
     
             // Copy selected document as base
             $originalFile = $template->file_path;
-            $copyPath = 'document_templates/' . uniqid('template_') . '.' . pathinfo($originalFile, PATHINFO_EXTENSION);
-            \Storage::disk('public')->copy($originalFile, $copyPath);
+            // $copyPath = 'document_templates/' . uniqid('template_') . '.' . pathinfo($originalFile, PATHINFO_EXTENSION);
+            // \Storage::disk('public')->copy($originalFile, $copyPath);
+            // $newTemplate->update(['file_path' => $copyPath]);
     
+            $copyPath = company_path('document_templates/' . uniqid('template_') . '.' . pathinfo($originalFile, PATHINFO_EXTENSION));
+            Storage::disk('public')->copy($originalFile, $copyPath);
             $newTemplate->update(['file_path' => $copyPath]);
-    
-            // $template = $newTemplate; // Only download new template
+
         }
     
         // Return the file for download
@@ -234,7 +241,12 @@ class DocumentTemplateController extends Controller
 
         // Store temporary
         $file = $request->file('file');
-        $tempPath = $file->store('temp', 'public');
+        // $tempPath = $file->store('temp', 'public');
+        $tempPath = $file->storeAs(
+            company_path('temp'),
+            uniqid('temp_') . '.' . $file->getClientOriginalExtension(),
+            'public'
+        );
 
         $tempTemplate = new DocumentTemplate();
         $tempTemplate->id = Str::random(32);

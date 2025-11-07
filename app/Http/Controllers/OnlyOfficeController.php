@@ -61,7 +61,9 @@ class OnlyOfficeController extends Controller
 
             if ($documentId) {
                 $document = DocumentTemplate::findOrFail($documentId);
-                Storage::disk('public')->put(ltrim($document->file_path, '/'), $content);
+                $filePath = company_path($document->file_path); 
+                Storage::disk('public')->put(ltrim($filePath, '/'), $content);
+                // Storage::disk('public')->put(ltrim($document->file_path, '/'), $content);
                 Log::info("Updated existing template: {$document->file_path}");
             } elseif ($tempPath) {
                 Storage::disk('public')->put(ltrim($tempPath, '/'), $content);

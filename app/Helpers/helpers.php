@@ -273,3 +273,12 @@ if (!function_exists('isDarkColor')) {
         return $brightness < 128;
     }
 }
+
+if (!function_exists('company_path')) {
+    function company_path(string $subPath): string
+    {
+        $companyId = current_company_id() ?? 'common';
+        $basePath = "{$companyId}";
+        return rtrim($basePath, '/') . '/' . ltrim($subPath, '/');
+    }
+}
