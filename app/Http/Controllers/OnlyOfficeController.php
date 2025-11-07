@@ -44,55 +44,42 @@ class OnlyOfficeController extends Controller
 
     public function document_callback(Request $request, $documentId = null)
     {
-        Log::info('🟢 OnlyOffice document callback received', $request->all());
-
         $status = $request->input('status');
         $url = $request->input('url');
         $tempPath = $request->query('tempPath');
-        Log::info("Url: {$url}");
-        Log::info("tempPath: {$tempPath}");
-        // Save on status 2 (ready to save), 4 (must save), or 6 (closed)
+
+        Log::info("OnlyOffice callback | status: {$status}, documentId: {$documentId}, tempPath: {$tempPath}");
+
         if (!in_array($status, [2, 4, 6])) {
             Log::info("Ignoring status: {$status}");
             return response()->json(['error' => 0]);
         }
 
-        if (!$url) {
-            Log::error("❌ Missing OnlyOffice file URL in callback.");
-            return response()->json(['error' => 1, 'message' => 'Missing file URL']);
-        }
-
         try {
-            $fileContents = file_get_contents($url);
-            if (!$fileContents) {
-                throw new \Exception("Empty file from OnlyOffice URL");
-            }
+            $content = $url ? file_get_contents($url) : file_get_contents('php://input');
+            if (!$content) throw new \Exception("Empty file content");
 
-            // If editing an existing template
             if ($documentId) {
                 $document = DocumentTemplate::findOrFail($documentId);
-                $relativePath = ltrim($document->file_path, '/');
-                Storage::disk('public')->put($relativePath, $fileContents);
-                Log::info("✅ Updated existing template: {$relativePath}");
-            }
-            // If editing a temp file before save
-            elseif ($tempPath) {
-                $relativePath = ltrim($tempPath, '/');
-                Storage::disk('public')->put($relativePath, $fileContents);
-                Log::info("✅ Updated temp file: {$relativePath}");
+                Storage::disk('public')->put(ltrim($document->file_path, '/'), $content);
+                Log::info("Updated existing template: {$document->file_path}");
+            } elseif ($tempPath) {
+                Storage::disk('public')->put(ltrim($tempPath, '/'), $content);
+                Log::info("Updated temp file: {$tempPath}");
             } else {
                 throw new \Exception("No documentId or tempPath provided");
             }
 
-            Log::info("Saved updated document (size: " . strlen($fileContents) . " bytes)");
+            Log::info("Saved document (size: " . strlen($content) . " bytes)");
 
         } catch (\Exception $e) {
-            Log::error("❌ OnlyOffice callback failed: " . $e->getMessage());
+            Log::error("OnlyOffice callback failed: " . $e->getMessage());
             return response()->json(['error' => 1, 'message' => $e->getMessage()]);
         }
 
         return response()->json(['error' => 0]);
     }
+
 
 
     // public function document_callback(Request $request, $documentId = null)

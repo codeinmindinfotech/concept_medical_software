@@ -189,9 +189,16 @@ document.getElementById('file').addEventListener('change', function(e) {
             const callbackUrl =
                 "{{ url('/api/onlyoffice/document_callback') }}" +
                 "?tempPath=" + encodeURIComponent(data.tempPath);
-
+                initEditor({
+                    fileType: data.fileType,
+                    key: data.key,
+                    title: file.name,
+                    url: data.url,
+                    token: data.token,
+                    callbackUrl: data.callbackUrl // points to tempPath
+                }, file.name);
             // Pass callback URL into editor
-            initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
+            // initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
             // initEditor(data, file.name || "new Document");
           } else {
             alert("❌ File upload failed.");
