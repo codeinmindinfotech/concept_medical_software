@@ -49,7 +49,8 @@ class OnlyOfficeController extends Controller
         $status = $request->input('status');
         $url = $request->input('url');
         $tempPath = $request->query('tempPath');
-
+        Log::info("Url: {$url}");
+        Log::info("tempPath: {$tempPath}");
         // Save on status 2 (ready to save), 4 (must save), or 6 (closed)
         if (!in_array($status, [2, 4, 6])) {
             Log::info("Ignoring status: {$status}");
