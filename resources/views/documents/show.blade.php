@@ -52,7 +52,7 @@
 
 
 @push('scripts')
-<script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}web-apps/apps/api/documents/api.js"></script>
+<script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}/web-apps/apps/api/documents/api.js"></script>
 <script>
 let docEditor = null;
 
