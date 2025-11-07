@@ -38,7 +38,8 @@ class OnlyOfficeHelper
             "exp" => time() + 3600,
         ];
 
-        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+        $secret = rtrim(config('onlyoffice.jwt_secret'));
+        return JWT::encode($payload, $secret, 'HS256');
     }
 
     public static function createJwtTokenDocumentTemplate($document, $key, $url, $userOrPatient)
@@ -71,7 +72,8 @@ class OnlyOfficeHelper
             "exp" => time() + 3600,
         ];
 
-        return JWT::encode($payload, env('ONLYOFFICE_JWT_SECRET'), 'HS256');
+        $secret = rtrim(config('onlyoffice.jwt_secret'));
+        return JWT::encode($payload, $secret, 'HS256');
     }
     public static function generateDocumentKey($document, bool $forceUnique = false): string
     {

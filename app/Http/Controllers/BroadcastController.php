@@ -10,37 +10,37 @@ class BroadcastController extends Controller
 {
     public function authenticate(Request $request)
     {
-        \Log::info('Pusher auth called', [
-            'user' => auth()->user(),
-            'guard' => auth()->getDefaultDriver(),
-            'request' => $request->all(),
-        ]);
+        // \Log::info('Pusher auth called', [
+        //     'user' => auth()->user(),
+        //     'guard' => auth()->getDefaultDriver(),
+        //     'request' => $request->all(),
+        // ]);
 
         // Ensure the guard used is the same as the one in your middleware
         $guard = auth()->getDefaultDriver();
-        \Log::info('current auth guard', [
-            'guard' => auth()->getDefaultDriver(),
-        ]);
+        // \Log::info('current auth guard', [
+        //     'guard' => auth()->getDefaultDriver(),
+        // ]);
         if (!auth()->check()) {
             \Log::warning('Unauthorized');
             abort(403, 'Unauthorized');
         }
 
-        \Log::info('current auth guard end', [
-            'guard' => auth()->getDefaultDriver(),
-        ]);
+        // \Log::info('current auth guard end', [
+        //     'guard' => auth()->getDefaultDriver(),
+        // ]);
 
         // If needed, explicitly set guard before calling Broadcast::auth()
         auth()->shouldUse($guard);
 
-        \Log::info('shouldUse', [
-            'shouldUse' => auth()->shouldUse($guard),
-        ]);
+        // \Log::info('shouldUse', [
+        //     'shouldUse' => auth()->shouldUse($guard),
+        // ]);
 
         if ($request->hasSession()) {
-            \Log::info('hasSession', [
-                'hasSession' => $request->hasSession(),
-            ]);
+            // \Log::info('hasSession', [
+            //     'hasSession' => $request->hasSession(),
+            // ]);
     
             $request->session()->reflash();
         }

@@ -47,7 +47,7 @@
   </div>
 </div>
 @push('scripts')
-<script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
+<script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}web-apps/apps/api/documents/api.js"></script>
 <script>
 @if(isset($config))
 
@@ -78,7 +78,7 @@ function initOnlyOfficeEditor(data) {
             },
             customization: { forcesave: true },
         },
-        token: data.token,
+        // token: data.token,
         events: {
             onAppReady: function() {
                 editorReady = true;
@@ -135,7 +135,7 @@ document.getElementById('document_template_id').addEventListener('change', funct
                     key: "{{ $config['document']['key'] }}",
                     title: "{{ $config['document']['title'] ?? 'Document' }}",
                     url: "{{ secure_asset('storage/' . $document->file_path) }}",
-                    token: "{{ $config['token'] }}"
+                    // token: "{{ $config['token'] }}"
                 });
             }
         });
