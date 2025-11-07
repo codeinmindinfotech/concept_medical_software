@@ -78,7 +78,7 @@ function initOnlyOfficeEditor(data) {
             },
             customization: { forcesave: true },
         },
-        // token: data.token,
+        token: data.token,
         events: {
             onAppReady: function() {
                 editorReady = true;
@@ -135,7 +135,7 @@ document.getElementById('document_template_id').addEventListener('change', funct
                     key: "{{ $config['document']['key'] }}",
                     title: "{{ $config['document']['title'] ?? 'Document' }}",
                     url: "{{ secure_asset('storage/' . $document->file_path) }}",
-                    // token: "{{ $config['token'] }}"
+                    token: "{{ $config['token'] }}"
                 });
             }
         });
