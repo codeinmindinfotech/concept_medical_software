@@ -135,16 +135,16 @@ function initEditor(data, title) {
 
                 console.log("Document state:", event.data, "Interpreted status:", status);
 
-                if (status === 1) {
-                    // Editing in progress
-                    $('#globalLoader').show();
-                } else if (status === 2 || status === 6) {
-                    // Saved or closed
-                    $('#globalLoader').hide();
-                    console.log("✅ Document saved or closed.");
-                } else {
-                  $('#globalLoader').hide();
-                }
+                // if (status === 1) {
+                //     // Editing in progress
+                //     $('#globalLoader').show();
+                // } else if (status === 2 || status === 6) {
+                //     // Saved or closed
+                //     $('#globalLoader').hide();
+                //     console.log("✅ Document saved or closed.");
+                // } else {
+                //   $('#globalLoader').hide();
+                // }
             },
             onRequestRefreshFile: function() {
                 console.log("Editor requested file refresh.");
@@ -183,8 +183,14 @@ document.getElementById('file').addEventListener('change', function(e) {
     .then(data => {
         if (data.success) {
           document.getElementById('tempPath').value = data.tempPath || data.url;
+// ✅ Build callback URL for temp file
+            const callbackUrl =
+                "{{ url('/api/onlyoffice/document_callback') }}" +
+                "?tempPath=" + encodeURIComponent(data.tempPath);
 
-            initEditor(data, file.name || "new Document");
+            // Pass callback URL into editor
+            initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
+            // initEditor(data, file.name || "new Document");
           } else {
             alert("❌ File upload failed.");
         }
