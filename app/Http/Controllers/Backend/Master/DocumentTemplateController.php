@@ -46,18 +46,18 @@ class DocumentTemplateController extends Controller
         
         // Decide which file to use
         if ($request->hasFile('file')) {
-            echo "11----";
-            echo $filePath = $request->file('file')->store('document_templates', 'public');
+            // echo "11----";
+            $filePath = $request->file('file')->store('document_templates', 'public');
         } elseif ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
-            echo "22----";
+            // echo "22----";
             $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
-            echo $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
+            $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
             Storage::disk('public')->copy($request->tempPath, $filePath);
         } else {
-            echo "33----";
+            // echo "33----";
             return back()->withErrors(['file' => 'Please upload a file or use the temp file.']);
         }
-        dd($request);
+        // dd($request);
         DocumentTemplate::create([
             'name' => $request->name,
             'type' => $request->type,
@@ -65,7 +65,10 @@ class DocumentTemplateController extends Controller
             'company_id' => auth()->user()->company_id ?? null,
         ]);
 
-        return redirect()->route('documents.index')->with('success', 'Template created');
+        return response()->json([
+            'redirect' => guard_route('documents.index'),
+            'message' => 'Template created successfully',
+        ]);
     }
 
     public function show(string $id)
@@ -136,6 +139,7 @@ class DocumentTemplateController extends Controller
             ],
             'token' => $token, // your JWT token
         ];
+        
         return view('documents.edit', compact('template','config'));
     }
 
@@ -163,7 +167,10 @@ class DocumentTemplateController extends Controller
 
         $document->update($data);
 
-        return redirect()->route('documents.index')->with('success', 'Template updated successfully');
+        return response()->json([
+            'redirect' => guard_route('documents.index'),
+            'message' => 'Template updated successfully',
+        ]);
     }
 
 

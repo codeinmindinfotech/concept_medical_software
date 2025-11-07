@@ -122,7 +122,7 @@ class PatientDocumentController extends Controller
             'token' => $token, // your JWT token
         ];
         \Log::info('ONLYOFFICE key: ' . $key);
-        \Log::info('ONLYOFFICE TOKEN: ' . $token);
+        \Log::info('patient ONLYOFFICE TOKEN: ' . $token);
 
         return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
     }

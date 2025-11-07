@@ -30,11 +30,11 @@ $breadcrumbs = [
 @endsection
 
 {{-- @push('scripts')
-<script type="text/javascript" src="https://office.conceptmedicalpm.ie/web-apps/apps/api/documents/api.js"></script>
+<script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}/web-apps/apps/api/documents/api.js"></script>
 
 <script>
     var config = @json($config);
-    config.documentServerUrl = "https://office.conceptmedicalpm.ie";
+    config.documentServerUrl = "{{ rtrim(config('onlyoffice.server_url'), '/') }}";
 
     config.token = "{{ $token }}";
     console.log(config.token);
