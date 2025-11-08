@@ -38,6 +38,8 @@ class PatientController extends Controller
     public function index(Request $request): View|string
     {
         $this->authorize('viewAny',  Patient::class);
+        
+
         if (has_role('patient')) {
             $user = auth()->user();
             $patients = Patient::with('title')->companyOnly()->where('id', $user->id)->paginate(1);
@@ -68,6 +70,10 @@ class PatientController extends Controller
     
             if ($request->filled('dob')) {
                 $query->whereDate('dob', $request->dob);
+            }
+
+            if ($request->get('tab') === 'trashed') {
+                $query->onlyTrashed();
             }
 
             $patients = $query->paginate(10)->withQueryString();
@@ -247,5 +253,15 @@ class PatientController extends Controller
             'image_url' => asset('storage/' . $patient->patient_picture),
         ]);
     }
+
+    public function restore($id)
+    {
+        $patient = Patient::onlyTrashed()->findOrFail($id);
+        $patient->restore();
+
+        return redirect()->route('patients.index')
+            ->with('success','Patient restored successfully');
+    }
+
 
 }

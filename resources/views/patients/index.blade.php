@@ -92,9 +92,29 @@
                 </div>
             </div>
     
-            <div id="patients-list" data-pagination-container>
+            <ul class="nav nav-tabs mt-3" id="patientTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ request('tab') !== 'trashed' ? 'active' : '' }}"
+                       href="{{ guard_route('patients.index') }}">
+                       Active Patients
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ request('tab') === 'trashed' ? 'active' : '' }}"
+                       href="{{ guard_route('patients.index', ['tab' => 'trashed']) }}">
+                       Trashed Patients
+                    </a>
+                </li>
+            </ul>
+
+            {{-- <div id="patients-list" data-pagination-container>
                 @include('patients.list', ['patients' => $patients])
+            </div> --}}
+
+            <div id="patients-list" data-pagination-container>
+                @include('patients.list', ['patients' => $patients, 'trashed' => request('tab') === 'trashed'])
             </div>
+            
         </div>
     </div>
     
