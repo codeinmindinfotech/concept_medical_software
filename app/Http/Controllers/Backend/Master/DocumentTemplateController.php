@@ -116,7 +116,7 @@ class DocumentTemplateController extends Controller
         $fullPath = storage_path('app/public/' . $filePath);
 
         $fileUrl = secure_asset('storage/' . $filePath);
-        $key = OnlyOfficeHelper::generateDocumentKey($template,true);
+        $key = OnlyOfficeHelper::generateDocumentKey($template);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
         $config = [
@@ -255,7 +255,7 @@ class DocumentTemplateController extends Controller
         $tempTemplate->updated_at = now();
 
         $fileUrl = asset('storage/' . $tempPath);
-        $key = OnlyOfficeHelper::generateDocumentKey($tempTemplate);
+        $key = OnlyOfficeHelper::generateDocumentKey($tempTemplate,true);
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($tempTemplate, $key, $fileUrl, current_user());
 
         return response()->json([
@@ -283,7 +283,7 @@ class DocumentTemplateController extends Controller
         $fullPath = storage_path('app/public/' . $filePath);
 
         $fileUrl = secure_asset('storage/' . $filePath);
-        $key = OnlyOfficeHelper::generateDocumentKey($template,true);
+        $key = OnlyOfficeHelper::generateDocumentKey($template);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
         $config = [
