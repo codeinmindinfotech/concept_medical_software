@@ -128,6 +128,25 @@
             </div>
         </div>
 
+         <!-- Clinical -->
+         <div class="accordion-item">
+            <h2 class="accordion-header" id="headingConsultant">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConsultant">
+            🧑‍⚕️  Consultant
+            </button>
+            </h2>
+            <div id="collapseConsultant" class="accordion-collapse collapse" data-bs-parent="#accordionLeft">
+            <div class="accordion-body">
+                <ul class="mb-0">
+                <li><code>[ConsultantName]</code></li>
+                <li><code>[ConsultantAddress]</code></li>
+                <li><code>[ConsultantPhone]</code></li>
+                <li><code>[ConsultantFax]</code></li>
+                <li><code>[ConsultantEmail]</code></li>
+                </ul>
+            </div>
+            </div>
+        </div>
         </div>
     </div>
 
@@ -139,7 +158,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingDoctor">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDoctor">
-                🧑‍⚕️ Doctor / Consultant
+                🧑 Doctor 
             </button>
             </h2>
             <div id="collapseDoctor" class="accordion-collapse collapse" data-bs-parent="#accordionRight">

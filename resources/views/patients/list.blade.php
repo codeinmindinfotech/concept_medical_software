@@ -8,6 +8,10 @@
                 <th>Address</th>
                 <th>Phone</th>
                 <th style="width: 120px;">Date of Birth</th>
+                <th>Status</th>
+                @if(isset($trashed) && $trashed)
+                <th>action</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -31,6 +35,23 @@
                 <td>{{ $patient->address ?? '-' }}</td>
                 <td>{{ $patient->phone ?? '' }}</td>
                 <td>{{ format_date($patient->dob) }}</td>
+                <td>
+                    @if($patient->trashed())
+                        <span class="badge bg-danger">Trashed</span>
+                    @else
+                        <span class="badge bg-success">Active</span>
+                    @endif
+                </td>
+                @if(isset($trashed) && $trashed)
+                <td>
+                    <form action="{{ route('patients.restore', $patient->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="fas fa-undo"></i> Restore
+                        </button>
+                    </form>
+                </td>
+                @endif
             </tr>
             @endforeach
         </tbody>

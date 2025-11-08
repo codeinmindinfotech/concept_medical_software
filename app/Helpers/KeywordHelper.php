@@ -69,14 +69,14 @@ class KeywordHelper
             'InsuranceAddress'  => $patient->insurance_address ?? '',
             'PolicyNo'          => $patient->policy_no ?? '',
 
-            // 👪 Next of Kin
+            // Next of Kin
             'NextOfKin'         => $patient->next_of_kin ?? '',
             'NextOfKinEmail'    => $patient->kin_email ?? '',
             'NextOfKinContact'  => $patient->kin_contact_no ?? '',
             'NOKRelationship'   => $patient->relationship ?? '',
             'NOKAddress'        => $patient->kin_address ?? '',
 
-            // ⚕️ Doctor / Consultant
+            // Doctor / Consultant
             'DoctorName'        => optional($patient->doctor)->name,
             'DoctorTitle'       => optional($patient->doctor)->salutation,
             // 'DoctorFirstName'   => optional($patient->doctor)->first_name,
@@ -89,7 +89,7 @@ class KeywordHelper
             'SalutionDoctor'    => optional($patient->doctor)->salutation,
             'GPPhone'           => optional($patient->doctor)->phone,
 
-            // 📩 Referral
+            //Referral
             'ReferralName'      => optional($patient->referralDoctor)->name,
             'ReferralAddress1'  => optional($patient->referralDoctor)->address,
             'ReferralAddress2'  => optional($patient->referralDoctor)->postcode,
@@ -99,7 +99,7 @@ class KeywordHelper
             'ReferralEmail'     => optional($patient->referralDoctor)->email,
             'SalutionReferral'  => optional($patient->referralDoctor)->salutation,
 
-            // ⚖️ Legal
+            // Legal
             'LegalName'         => optional($patient->solicitorDoctor)->name,
             'LegalAddress1'     => optional($patient->solicitorDoctor)->address,
             'LegalAddress2'     => optional($patient->solicitorDoctor)->postcode,
@@ -109,7 +109,7 @@ class KeywordHelper
             'LegalEmail'        => optional($patient->solicitorDoctor)->email,
             'SalutionLegal'     => optional($patient->solicitorDoctor)->salutation,
 
-            // 🧑‍💼 Other Contact
+            // Other Contact
             'OtherTitle'        => optional($patient->otherDoctor)->title,
             // 'OtherFirstName'    => optional($patient->otherDoctor)->first_name,
             // 'OtherSurName'      => optional($patient->otherDoctor)->surname,
@@ -121,7 +121,7 @@ class KeywordHelper
             // 'OtherRef'          => optional($patient->otherDoctor)->ref,
             'OtherEmail'        => optional($patient->otherDoctor)->email,
 
-            // 🩺 Appointment / Operation
+            // Appointment / Operation
             'AppDate' => $appointment->appointment_date 
                 ? Carbon::parse($appointment->appointment_date)->format('d/m/Y') 
                 : '',
@@ -146,7 +146,7 @@ class KeywordHelper
             'DischargeDate'     => optional($patient->discharge_date)
                                     ? Carbon::parse($patient->discharge_date)->format('d/m/Y') : '',
 
-            // 🧾 Invoice / Financial
+            // Invoice / Financial
             'InvoiceDescription'    => optional($patient->invoice)->description,
             'InvoiceFee'            => optional($patient->invoice)->fee,
             'VAT'                   => optional($patient->invoice)->vat,
@@ -158,7 +158,7 @@ class KeywordHelper
             'InvoiceProcedureDate'  => optional($patient->invoice)->procedure_date,
             'AmountReceived'        => optional($patient->invoice)->amount_received,
 
-            // 🧠 Medical / Lab
+            // Medical / Lab
             'Diagnosis'         => $patient->diagnosis ?? '',
             'ClinicDiagnosis'   => $patient->clinic_diagnosis ?? '',
             'WT'                => $patient->wt ?? '',
@@ -176,7 +176,7 @@ class KeywordHelper
             'TSH'               => $patient->tsh ?? '',
             'OTHERDIAB'         => $patient->otherdiab ?? '',
 
-            // 🧾 Misc
+            // Misc
             'AltContact'        => $patient->alt_contact ?? '',
             'Label'             => $patient->label ?? '',
             'Envelope'          => $patient->envelope ?? '',
@@ -184,6 +184,14 @@ class KeywordHelper
             'AptTest'           => $patient->apt_test ?? '',
             'Date'              => now()->format('d/m/Y'),
             'CurrentDate'       => now()->format('d/m/Y'),
+
+
+            // Consultant
+            'ConsultantName'   => optional($patient->consultant)->name ?? '',
+            'ConsultantAddress'=> optional($patient->consultant)->address ?? '',
+            'ConsultantPhone'  => optional($patient->consultant)->phone ?? '',
+            'ConsultantFax'    => optional($patient->consultant)->fax ?? '',
+            'ConsultantEmail'  => optional($patient->consultant)->email ?? '',
         ];
 
         // ------------------------------------------------------------

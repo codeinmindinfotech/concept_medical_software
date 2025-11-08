@@ -198,6 +198,7 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     });
 
 
+
     Route::get("$prefix/upload-picture", [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
 };
 
@@ -216,6 +217,8 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);
         Route::resource('patients', PatientController::class);
+        Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
+
         Route::resource('doctors', DoctorController::class);
         Route::resource('insurances', InsuranceController::class);
         Route::resource('consultants', ConsultantController::class);
@@ -280,6 +283,8 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
         Route::resource('configurations', ConfigurationController::class)->except(['show']);
         Route::resource('users', UserController::class);
         Route::resource('patients', PatientController::class);
+        Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
+
         Route::resource('doctors', DoctorController::class);
         Route::resource('insurances', InsuranceController::class);
         Route::resource('consultants', ConsultantController::class);
