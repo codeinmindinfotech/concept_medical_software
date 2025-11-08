@@ -116,7 +116,7 @@ class DocumentTemplateController extends Controller
         $fullPath = storage_path('app/public/' . $filePath);
 
         $fileUrl = secure_asset('storage/' . $filePath);
-        $key = OnlyOfficeHelper::generateDocumentKey($template);
+        $key = OnlyOfficeHelper::generateDocumentKey($template, true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
         $config = [
@@ -158,14 +158,6 @@ class DocumentTemplateController extends Controller
 
         $data = $request->only('name', 'type');
 
-        // if ($request->hasFile('file')) {
-        //     // Optionally delete old file
-        //     if ($document->file_path && \Storage::disk('public')->exists($document->file_path)) {
-        //         \Storage::disk('public')->delete($document->file_path);
-        //     }
-
-        //     $data['file_path'] = $request->file('file')->store('document_templates', 'public');
-        // }
         if ($request->hasFile('file')) {
             if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
                 Storage::disk('public')->delete($document->file_path);
@@ -217,10 +209,6 @@ class DocumentTemplateController extends Controller
     
             // Copy selected document as base
             $originalFile = $template->file_path;
-            // $copyPath = 'document_templates/' . uniqid('template_') . '.' . pathinfo($originalFile, PATHINFO_EXTENSION);
-            // \Storage::disk('public')->copy($originalFile, $copyPath);
-            // $newTemplate->update(['file_path' => $copyPath]);
-    
             $copyPath = company_path('document_templates/' . uniqid('template_') . '.' . pathinfo($originalFile, PATHINFO_EXTENSION));
             Storage::disk('public')->copy($originalFile, $copyPath);
             $newTemplate->update(['file_path' => $copyPath]);
@@ -283,7 +271,7 @@ class DocumentTemplateController extends Controller
         $fullPath = storage_path('app/public/' . $filePath);
 
         $fileUrl = secure_asset('storage/' . $filePath);
-        $key = OnlyOfficeHelper::generateDocumentKey($template);
+        $key = OnlyOfficeHelper::generateDocumentKey($template,true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
         $config = [
