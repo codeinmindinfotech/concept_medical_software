@@ -88,14 +88,11 @@ class PatientDocumentController extends Controller
         $filePath = $document->file_path;
         $fullPath = storage_path('app/public/' . $filePath);
 
-        // $this->replaceDocxPlaceholders($fullPath, $replacements);
         KeywordHelper::replaceKeywords($fullPath, $patient);
         $fileUrl = secure_asset('storage/' . $filePath). '?v=' . time();
 
         \Log::info("Replaced DOCX saved at: {$fullPath}, size: " . filesize($fullPath));
 
-        // // Optional: return the file for download to manually check
-        // return response()->download($fullPath);
         $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
         $key = OnlyOfficeHelper::generateDocumentKey($document);
         $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $patient);
