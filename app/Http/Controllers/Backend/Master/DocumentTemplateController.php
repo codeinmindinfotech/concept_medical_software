@@ -309,28 +309,56 @@ class DocumentTemplateController extends Controller
 
     public function doc()
     {
-        $fileName = 'document_templates/k8YC2UPAFGsJbxU2EKSeSxc1CLVhfMgZANs9Cxu6.docx';
+        $id = 2;
+        $template = DocumentTemplate::findOrFail($id);
+        $fileName = $template->file_path;
         $callback=  url("/api/onlyoffice/callback_new");
 
         // Make sure this file exists in storage/app/public/
         $fileUrl = asset('storage/public/' . $fileName);
 
         // OnlyOffice config
+        // $config = [
+        //     "document" => [
+        //         "fileType" => "docx",
+        //         "key" => time(), // unique key for caching
+        //         "title" => $fileName,
+        //         "url" => $fileUrl,
+        //     ],
+        //     "documentType" => "word",
+        //     "editorConfig" => [
+        //         "callbackUrl" => $callback, // where OnlyOffice will send save requests
+        //         "user" => [
+        //             "id" => 1,
+        //             "name" => "Test User"
+        //         ]
+        //     ]
+        // ];
+
+        $key = OnlyOfficeHelper::generateDocumentKey($template, true);
+        $user = current_user();
+        $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
         $config = [
-            "document" => [
-                "fileType" => "docx",
-                "key" => time(), // unique key for caching
-                "title" => $fileName,
-                "url" => $fileUrl,
+            'document' => [
+                'storagePath' => storage_path('app/public'),
+                'fileType' => 'docx',
+                'key' => $key,
+                'title' => $template->title ?? 'Document',
+                'url' => $fileUrl,
             ],
-            "documentType" => "word",
-            "editorConfig" => [
-                "callbackUrl" => $callback, // where OnlyOffice will send save requests
-                "user" => [
-                    "id" => 1,
-                    "name" => "Test User"
-                ]
-            ]
+            'documentType' => 'word',
+            'editorConfig' => [
+                'mode' => 'edit',
+                'callbackUrl' => $callback,
+                'user' => [
+                    'id' => (string) $user->id ?? '1',
+                    'name' => $user->name ?? 'Guest',
+                ],
+                'customization' => [
+                    'forcesave' => true,
+                ],
+            ],
+            'token' => $token, // your JWT token
         ];
 
         return view('documents.doc', compact('config'));
