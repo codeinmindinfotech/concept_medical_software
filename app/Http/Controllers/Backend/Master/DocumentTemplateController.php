@@ -311,6 +311,8 @@ class DocumentTemplateController extends Controller
     {
         $id = 2;
         $template = DocumentTemplate::findOrFail($id);
+         // Update updated_at to generate a new key
+         $template->touch();
         $fileName = $template->file_path;
         $callback = url("/api/onlyoffice/callback_new?file=" . urlencode($fileName));
 

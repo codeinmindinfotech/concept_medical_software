@@ -166,6 +166,7 @@ class OnlyOfficeController extends Controller
 
            Log::info("OnlyOffice downloadUri", ['url' => $downloadUri]);
             if ($downloadUri) {
+                
                 $contents = file_get_contents($downloadUri);
                 Log::info("Downloaded content size", ['size' => strlen($contents)]);
             } else {
@@ -176,6 +177,8 @@ class OnlyOfficeController extends Controller
    
            if ($downloadUri) {
                copy($downloadUri, $savePath);
+               file_put_contents($savePath, $contents);
+
                Log::info("Copied updated file to: " . $savePath, ['size' => filesize($savePath)]);
            } else {
                Log::warning("Download URL empty, cannot save document", ['file' => $filePath]);
