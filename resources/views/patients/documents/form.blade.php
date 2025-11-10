@@ -126,9 +126,10 @@ document.getElementById('document_template_id').addEventListener('change', funct
             const templateSelect = document.getElementById('document_template_id');
             
             // If an existing template/document is selected, trigger the change
-            if (templateSelect.value) {
-                templateSelect.dispatchEvent(new Event('change'));
-            } else if ("{{ isset($document) && $document->file_path ? $document->file_path : '' }}") {
+            // if (templateSelect.value) {
+            //     templateSelect.dispatchEvent(new Event('change'));
+            // } else 
+            if ("{{ isset($document) && $document->file_path ? $document->file_path : '' }}") {
                 // If there is an existing document, initialize it manually
                 initOnlyOfficeEditor({
                     fileType: 'docx',
