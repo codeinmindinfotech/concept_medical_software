@@ -81,7 +81,7 @@ class DocumentTemplateController extends Controller
             abort(404, 'Document not found.');
         }
 
-        $fileUrl = asset('storage/' . $document->file_path);
+        $fileUrl = asset('storage/' . $document->file_path) . '?v=' . time();
         $key = OnlyOfficeHelper::generateDocumentKey($document, true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($document, $key, $fileUrl, $user);
@@ -113,9 +113,7 @@ class DocumentTemplateController extends Controller
     {
         $template = DocumentTemplate::findOrFail($id);
         $filePath = $template->file_path;
-        $fullPath = storage_path('app/public/' . $filePath);
-
-        $fileUrl = secure_asset('storage/' . $filePath);
+        $fileUrl = secure_asset('storage/' . $filePath) . '?v=' . time();
         $key = OnlyOfficeHelper::generateDocumentKey($template, true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
@@ -242,7 +240,7 @@ class DocumentTemplateController extends Controller
         $tempTemplate->created_at = now();
         $tempTemplate->updated_at = now();
 
-        $fileUrl = asset('storage/' . $tempPath);
+        $fileUrl = asset('storage/' . $tempPath). '?v=' . time();
         $key = OnlyOfficeHelper::generateDocumentKey($tempTemplate,true);
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($tempTemplate, $key, $fileUrl, current_user());
 
@@ -268,9 +266,8 @@ class DocumentTemplateController extends Controller
                 'message' => 'Template file not found'
             ]);
         }
-        $fullPath = storage_path('app/public/' . $filePath);
 
-        $fileUrl = secure_asset('storage/' . $filePath);
+        $fileUrl = secure_asset('storage/' . $filePath). '?v=' . time();
         $key = OnlyOfficeHelper::generateDocumentKey($template,true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
