@@ -176,7 +176,7 @@ class OnlyOfficeController extends Controller
            $savePath = storage_path('app/public/' . $filePath);
    
            if ($downloadUri) {
-               copy($downloadUri, $savePath);
+            //    copy($downloadUri, $savePath);
                file_put_contents($savePath, $contents);
 
                Log::info("Copied updated file to: " . $savePath, ['size' => filesize($savePath)]);
