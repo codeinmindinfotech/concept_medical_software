@@ -114,6 +114,9 @@ class DocumentTemplateController extends Controller
         $template = DocumentTemplate::findOrFail($id);
         $filePath = $template->file_path;
         $fileUrl = secure_asset('storage/' . $filePath) . '?v=' . time();
+
+        $callback = url("/api/onlyoffice/document_callback?document_id=" . $id);
+
         $key = OnlyOfficeHelper::generateDocumentKey($template, true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
@@ -128,7 +131,7 @@ class DocumentTemplateController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => url("/api/onlyoffice/document_callback/{$template->id}"),
+                'callbackUrl' => $callback,//url("/api/onlyoffice/document_callback/{$template->id}"),
                 'user' => [
                     'id' => (string) $user->id ?? '1',
                     'name' => $user->name ?? 'Guest',
@@ -268,6 +271,8 @@ class DocumentTemplateController extends Controller
         }
 
         $fileUrl = secure_asset('storage/' . $filePath). '?v=' . time();
+        
+        $callback = url("/api/onlyoffice/document_callback?document_id=" . $id);
         $key = OnlyOfficeHelper::generateDocumentKey($template,true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
@@ -282,7 +287,7 @@ class DocumentTemplateController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => url("/api/onlyoffice/document_callback/{$template->id}"),
+                'callbackUrl' => $callback,//url("/api/onlyoffice/document_callback/{$template->id}"),
                 'user' => [
                     'id' => (string) $user->id ?? '1',
                     'name' => $user->name ?? 'Guest',
