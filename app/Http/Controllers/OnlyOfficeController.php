@@ -100,10 +100,11 @@ class OnlyOfficeController extends Controller
 
     public function document_callback(Request $request, $documentId = null)
     {
-        Log::info('OnlyOffice Callback:', $request->all());
+       Log::info('OnlyOffice document Callback:', $request->all());
 
-       $status = $request->input('status');
-       $url = $request->input('url');
+       $data = json_decode($request->getContent(), true);
+       $status = $data['status'] ?? 0;
+       $downloadUri = $data['url'];
        $tempPath = $request->query('tempPath');
        $documentId = $documentId ?? $request->input('document_id');
        
@@ -115,16 +116,12 @@ class OnlyOfficeController extends Controller
        }
 
         try {
-            if ($url) {
-                // Use Laravel HTTP client for better error handling
-                $response = Http::get($url);
-                if ($response->failed()) {
-                    Log::error("Failed to fetch file from OnlyOffice URL: {$url}");
-                    return response()->json(['error' => 'Failed to fetch file'], 500);
-                }
-                $content = $response->body();
+            Log::info("OnlyOffice downloadUri", ['url' => $downloadUri]);
+            if ($downloadUri) {
+                $contents = file_get_contents($downloadUri);
+                Log::info("Downloaded content size", ['size' => strlen($contents)]);
             } else {
-                $content = $request->getContent(); // Fallback to raw input
+                Log::warning("Download URL empty, cannot save document", ['file' => $documentId]);
             }
         } catch (\Exception $e) {
             Log::error("Error fetching content: " . $e->getMessage());
@@ -138,16 +135,18 @@ class OnlyOfficeController extends Controller
                 return response()->json(['error' => 'Document not found'], 404);
             }
             $filePath = company_path($document->file_path); 
-            Storage::disk('public')->put(ltrim($filePath, '/'), $content);
+            file_put_contents($filePath, $contents);
+
+            // Storage::disk('public')->put(ltrim($filePath, '/'), $contents);
             Log::info("Updated existing template: {$document->file_path}");
         } elseif ($tempPath) {
-            Storage::disk('public')->put(ltrim($tempPath, '/'), $content);
+            Storage::disk('public')->put(ltrim($tempPath, '/'), $contents);
             Log::info("Updated temp file: {$tempPath}");
         } else {
             throw new \Exception("No documentId or tempPath provided");
         }
 
-           Log::info("Saved document (size: " . strlen($content) . " bytes)");
+           Log::info("Saved document (size: " . strlen($contents) . " bytes)");
        return response()->json(['error' => 0]);
    }
  
