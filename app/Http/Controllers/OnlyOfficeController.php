@@ -10,34 +10,68 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 class OnlyOfficeController extends Controller
 {
-    public function callback(Request $request, $documentId = null)
+    public function callback(Request $request)
     {
         Log::info('OnlyOffice callback received', $request->all());
 
-        $status = $request->get('status');
-        Log::info("Onlyoffice callback status document {$status}");
-        if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
-            $url = $request->input('url');
-            if ($url) {
-                try {
-                    $document = PatientDocument::findOrFail($documentId);
+        $data = json_decode($request->getContent(), true);
+        $status = $data['status'] ?? 0;
+        $downloadUrl = $data['url'] ?? null;
+        $documentId = $request->query('document_id');
+        $tempPath = $request->query('tempPath');
 
-                    // Save the new content
-                    $newFile = file_get_contents($url);
-                    Storage::disk('public')->put($document->file_path, $newFile);
+        
+        Log::info('OnlyOffice callback', ['status' => $status, 'url' => $downloadUrl]);
 
-                    Log::info("Document saved: {$document->file_path}");
-                } catch (\Exception $e) {
-                    Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
-                    return response()->json(['error' => 1, 'message' => $e->getMessage()]);
-                }
-            } else {
-                Log::error("OnlyOffice callback missing file URL");
-                return response()->json(['error' => 1, 'message' => 'Missing file URL']);
+        if (!in_array($status, [2, 6])) {
+            return response()->json(['error' => 0]);
+        }
+
+        $contents = file_get_contents($downloadUrl);
+
+        if ($documentId && $downloadUrl) {
+            $document = PatientDocument::findOrFail($documentId);
+            $filePath = storage_path('app/public/' . $document->file_path);
+            try {
+                file_put_contents($filePath, $contents);
+                Log::info("Saved document to {$filePath}, size=" . strlen($contents));
+            } catch (\Exception $e) {
+                Log::error("Failed to save document: " . $e->getMessage());
+                return response()->json(['error' => 1]);
             }
+        }
+        elseif ($tempPath) {
+            Storage::disk('public')->put(ltrim($tempPath, '/'), $contents);
+            Log::info("Updated temp file: {$tempPath}");
+        } else {
+            throw new \Exception("No documentId or tempPath provided");
         }
 
         return response()->json(['error' => 0]);
+
+        // Log::info("Onlyoffice callback status document {$status}");
+        // if (in_array($status, [2, 6])) { // 2 = ready to save, 6 = closed
+        //     $url = $request->input('url');
+        //     if ($url) {
+        //         try {
+        //             $document = PatientDocument::findOrFail($documentId);
+
+        //             // Save the new content
+        //             $newFile = file_get_contents($url);
+        //             Storage::disk('public')->put($document->file_path, $newFile);
+
+        //             Log::info("Document saved: {$document->file_path}");
+        //         } catch (\Exception $e) {
+        //             Log::error("Failed to save OnlyOffice document: " . $e->getMessage());
+        //             return response()->json(['error' => 1, 'message' => $e->getMessage()]);
+        //         }
+        //     } else {
+        //         Log::error("OnlyOffice callback missing file URL");
+        //         return response()->json(['error' => 1, 'message' => 'Missing file URL']);
+        //     }
+        // }
+
+        // return response()->json(['error' => 0]);
     }
 
     public function document_callback(Request $request)

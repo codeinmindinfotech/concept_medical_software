@@ -90,13 +90,13 @@ class PatientDocumentController extends Controller
 
         // $this->replaceDocxPlaceholders($fullPath, $replacements);
         KeywordHelper::replaceKeywords($fullPath, $patient);
-        $fileUrl = secure_asset('storage/' . $filePath);
+        $fileUrl = secure_asset('storage/' . $filePath). '?v=' . time();
 
         \Log::info("Replaced DOCX saved at: {$fullPath}, size: " . filesize($fullPath));
 
         // // Optional: return the file for download to manually check
         // return response()->download($fullPath);
-
+        $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
         $key = OnlyOfficeHelper::generateDocumentKey($document);
         $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $patient);
         $config = [
@@ -110,7 +110,7 @@ class PatientDocumentController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => url("/api/onlyoffice/callback/{$document->id}"),
+                'callbackUrl' => $callback,//url("/api/onlyoffice/callback/{$document->id}"),
                 'user' => [
                     'id' => (string) $patient->id ?? '1',
                     'name' => $patient->full_name ?? 'Guest',
