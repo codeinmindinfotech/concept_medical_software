@@ -218,4 +218,19 @@ class OnlyOfficeController extends Controller
     //     return response()->json(['error' => 0]);
     // }
   
+    public function save(Request $request)
+    {
+        // OnlyOffice sends a JSON payload
+        $data = json_decode($request->getContent(), true);
+        $status = $data['status'] ?? 0;
+
+        // When status == 2 or 6, file was successfully saved/closed
+        if (in_array($status, [2, 6])) {
+            $downloadUri = $data['url'];
+            $contents = file_get_contents($downloadUri);
+            Storage::disk('public')->put('demo.docx', $contents);
+        }
+
+        return response()->json(['error' => 0]);
+    }
 }

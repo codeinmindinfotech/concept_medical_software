@@ -306,4 +306,35 @@ class DocumentTemplateController extends Controller
             'token' => $token
         ]);
     }
+
+    public function doc()
+    {
+        $fileName = 'document_templates/k8YC2UPAFGsJbxU2EKSeSxc1CLVhfMgZANs9Cxu6.docx';
+        $callback=  url("/api/onlyoffice/callback_new");
+
+        // Make sure this file exists in storage/app/public/
+        $fileUrl = asset('storage/public/' . $fileName);
+
+        // OnlyOffice config
+        $config = [
+            "document" => [
+                "fileType" => "docx",
+                "key" => time(), // unique key for caching
+                "title" => $fileName,
+                "url" => $fileUrl,
+            ],
+            "documentType" => "word",
+            "editorConfig" => [
+                "callbackUrl" => $callback, // where OnlyOffice will send save requests
+                "user" => [
+                    "id" => 1,
+                    "name" => "Test User"
+                ]
+            ]
+        ];
+
+        return view('documents.doc', compact('config'));
+    }
+
+    
 }
