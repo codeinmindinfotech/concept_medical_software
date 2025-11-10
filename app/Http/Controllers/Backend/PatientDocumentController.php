@@ -82,47 +82,90 @@ class PatientDocumentController extends Controller
         $document = PatientDocument::where('id', $documentId)
             ->where('patient_id', $patient->id)
             ->firstOrFail();
-
-        abort_if($document->patient_id !== $patient->id, 403);
         
+        abort_if($document->patient_id !== $patient->id, 403);
+
         $filePath = $document->file_path;
-        $fullPath = storage_path('app/public/' . $filePath);
-
-        KeywordHelper::replaceKeywords($fullPath, $patient);
-        $fileUrl = secure_asset('storage/' . $filePath). '?v=' . time();
-
-        \Log::info("Replaced DOCX saved at: {$fullPath}, size: " . filesize($fullPath));
+        $fileUrl = secure_asset('storage/' . $filePath) . '?v=' . time();
 
         $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
-        $key = OnlyOfficeHelper::generateDocumentKey($document);
-        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $patient);
+
+        $key = OnlyOfficeHelper::generateDocumentKey($document, true);
+        $user = current_user();
+        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $user );
         $config = [
             'document' => [
                 'storagePath' => storage_path('app/public'),
                 'fileType' => 'docx',
-                'key' => $key, // MUST be set
+                'key' => $key,
                 'title' => $document->title ?? 'Document',
-                'url' => $fileUrl, // full HTTPS URL
+                'url' => $fileUrl,
             ],
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => $callback,//url("/api/onlyoffice/callback/{$document->id}"),
+                'callbackUrl' => $callback,//url("/api/onlyoffice/document_callback/{$template->id}"),
                 'user' => [
-                    'id' => (string) $patient->id ?? '1',
-                    'name' => $patient->full_name ?? 'Guest',
+                    'id' => (string) $user->id ?? '1',
+                    'name' => $user->name ?? 'Guest',
                 ],
                 'customization' => [
                     'forcesave' => true,
                 ],
             ],
-            'token' => $token // your JWT token
+            'token' => $token, // your JWT token
         ];
-        \Log::info('ONLYOFFICE key: ' . $key);
-        \Log::info('patient ONLYOFFICE TOKEN: ' . $token);
-
         return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
     }
+
+    // public function edit(Patient $patient, $documentId)
+    // {
+    //     $templates = DocumentTemplate::all();
+    //     $document = PatientDocument::where('id', $documentId)
+    //         ->where('patient_id', $patient->id)
+    //         ->firstOrFail();
+
+    //     abort_if($document->patient_id !== $patient->id, 403);
+        
+    //     $filePath = $document->file_path;
+    //     $fullPath = storage_path('app/public/' . $filePath);
+
+    //     KeywordHelper::replaceKeywords($fullPath, $patient);
+    //     $fileUrl = secure_asset('storage/' . $filePath). '?v=' . time();
+
+    //     \Log::info("Replaced DOCX saved at: {$fullPath}, size: " . filesize($fullPath));
+
+    //     $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
+
+    //     $key = OnlyOfficeHelper::generateDocumentKey($document);
+    //     $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $patient);
+    //     $config = [
+    //         'document' => [
+    //             'storagePath' => storage_path('app/public'),
+    //             'fileType' => 'docx',
+    //             'key' => $key, // MUST be set
+    //             'title' => $document->title ?? 'Document',
+    //             'url' => $fileUrl, // full HTTPS URL
+    //         ],
+    //         'documentType' => 'word',
+    //         'editorConfig' => [
+    //             'mode' => 'edit',
+    //             'callbackUrl' => $callback,//url("/api/onlyoffice/callback/{$document->id}"),
+    //             'user' => [
+    //                 'id' => (string) $patient->id ?? '1',
+    //                 'name' => $patient->full_name ?? 'Guest',
+    //             ],
+    //             'customization' => [
+    //                 'forcesave' => true,
+    //             ],
+    //         ],
+    //         'token' => $token // your JWT token
+    //     ];
+    //     \Log::info('ONLYOFFICE key: ' . $key);
+    //     \Log::info('patient ONLYOFFICE TOKEN: ' . $token);
+
+    //     return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
+    // }
 
     public function update(Request $request, Patient $patient, PatientDocument $document)
     {
