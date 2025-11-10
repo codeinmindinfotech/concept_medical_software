@@ -135,9 +135,11 @@ class OnlyOfficeController extends Controller
        Log::info("save function call");
    
        $data = json_decode($request->getContent(), true);
+       $documentId = $request->query('document_id');
        $status = $data['status'] ?? 0;
-       $filePath = $request->query('file'); // get ?file=... from URL
-   
+       $document = DocumentTemplate::findOrFail($documentId);
+       $filePath = $document->file_path ?? $request->query('file'); // get ?file=... from URL
+
        Log::info("save function call", ['status' => $status, 'file' => $filePath]);
    
        if (in_array($status, [2, 6])) {
