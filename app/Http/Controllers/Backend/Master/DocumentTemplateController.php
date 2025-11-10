@@ -317,26 +317,7 @@ class DocumentTemplateController extends Controller
         $callback = url("/api/onlyoffice/callback_new?file=" . urlencode($fileName));
 
         // Make sure this file exists in storage/app/public/
-        // $fileUrl = asset('storage/' . $fileName);
         $fileUrl = asset('storage/' . $fileName) . '?v=' . time();
-
-        // OnlyOffice config
-        // $config = [
-        //     "document" => [
-        //         "fileType" => "docx",
-        //         "key" => time(), // unique key for caching
-        //         "title" => $fileName,
-        //         "url" => $fileUrl,
-        //     ],
-        //     "documentType" => "word",
-        //     "editorConfig" => [
-        //         "callbackUrl" => $callback, // where OnlyOffice will send save requests
-        //         "user" => [
-        //             "id" => 1,
-        //             "name" => "Test User"
-        //         ]
-        //     ]
-        // ];
 
         $key = OnlyOfficeHelper::generateDocumentKey($template, true);
         $user = current_user();
