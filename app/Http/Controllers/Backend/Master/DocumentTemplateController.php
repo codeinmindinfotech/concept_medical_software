@@ -312,7 +312,6 @@ class DocumentTemplateController extends Controller
         $id = 2;
         $template = DocumentTemplate::findOrFail($id);
         $fileName = $template->file_path;
-        // $callback=  url("/api/onlyoffice/callback_new");
         $callback = url("/api/onlyoffice/callback_new?file=" . urlencode($fileName));
 
         // Make sure this file exists in storage/app/public/
@@ -338,7 +337,7 @@ class DocumentTemplateController extends Controller
 
         $key = OnlyOfficeHelper::generateDocumentKey($template, true);
         $user = current_user();
-        $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, $user );
+        $token = OnlyOfficeHelper::createJwtTokenDoc($template, $key, $fileUrl, $user );
         $config = [
             'document' => [
                 'storagePath' => storage_path('app/public'),
