@@ -40,64 +40,6 @@ class OnlyOfficeController extends Controller
         return response()->json(['error' => 0]);
     }
 
-    // public function document_callback(Request $request, $documentId = null)
-    // {
-    //     // Log incoming request for debugging
-    //     Log::info('OnlyOffice Callback:', $request->all());
-
-    //     $status = $request->input('status');
-    //     $documentId = $documentId ?? $request->input('document_id');
-    //     $tempPath = $request->input('temp_path');
-    //     $url = $request->input('url'); // OnlyOffice may send a file URL
-
-    //     // Only process statuses that indicate a save/finished document
-    //     if (!in_array($status, [2, 4, 6])) {
-    //         return response()->json(['error' => 'Status not processed'], 200);
-    //     }
-
-    //     // Fetch the updated content
-    //     try {
-    //         if ($url) {
-    //             // Use Laravel HTTP client for better error handling
-    //             $response = Http::get($url);
-    //             if ($response->failed()) {
-    //                 Log::error("Failed to fetch file from OnlyOffice URL: {$url}");
-    //                 return response()->json(['error' => 'Failed to fetch file'], 500);
-    //             }
-    //             $content = $response->body();
-    //         } else {
-    //             $content = $request->getContent(); // Fallback to raw input
-    //         }
-    //     } catch (\Exception $e) {
-    //         Log::error("Error fetching content: " . $e->getMessage());
-    //         return response()->json(['error' => 'Content fetch failed'], 500);
-    //     }
-
-    //     // Save content to permanent document if document_id is provided
-    //     if ($documentId) {
-    //         $document = DocumentTemplate::find($documentId);
-    //         if (!$document) {
-    //             Log::error("Document not found: ID {$documentId}");
-    //             return response()->json(['error' => 'Document not found'], 404);
-    //         }
-
-    //         // Save using Storage disk 'public' (path is relative to storage/app/public)
-    //         Storage::disk('public')->put($document->file_path, $content);
-    //         Log::info("Updated document ID {$documentId} at path: {$document->file_path}");
-    //     }
-    //     // Save content to temporary path if provided
-    //     elseif ($tempPath) {
-    //         Storage::disk('public')->put($tempPath, $content);
-    //         Log::info("Updated temp file at path: {$tempPath}");
-    //     } else {
-    //         Log::warning('No document_id or temp_path provided in callback.');
-    //         return response()->json(['error' => 'No path to save'], 400);
-    //     }
-
-    //     // OnlyOffice expects a JSON response
-    //     return response()->json(['error' => 0], 200);
-    // }
-
     public function document_callback(Request $request, $documentId = null)
     {
        Log::info('OnlyOffice document Callback:', $request->all());
@@ -149,6 +91,58 @@ class OnlyOfficeController extends Controller
            Log::info("Saved document (size: " . strlen($contents) . " bytes)");
        return response()->json(['error' => 0]);
    }
+
+//     public function document_callback(Request $request, $documentId = null)
+//     {
+//        Log::info('OnlyOffice document Callback:', $request->all());
+
+//        $data = json_decode($request->getContent(), true);
+//        $status = $data['status'] ?? 0;
+//        $downloadUri = $data['url'];
+//        $tempPath = $request->query('tempPath');
+//        $documentId = $documentId ?? $request->input('document_id');
+       
+//        Log::info("OnlyOffice callback | status: {$status}, documentId: {$documentId}, tempPath: {$tempPath}");
+
+//        if (!in_array($status, [2, 4, 6])) {
+//            Log::info("Ignoring status: {$status}");
+//            return response()->json(['error' => 0]);
+//        }
+
+//         try {
+//             Log::info("OnlyOffice downloadUri", ['url' => $downloadUri]);
+//             if ($downloadUri) {
+//                 $contents = file_get_contents($downloadUri);
+//                 Log::info("Downloaded content size", ['size' => strlen($contents)]);
+//             } else {
+//                 Log::warning("Download URL empty, cannot save document", ['file' => $documentId]);
+//             }
+//         } catch (\Exception $e) {
+//             Log::error("Error fetching content: " . $e->getMessage());
+//             return response()->json(['error' => 'Content fetch failed'], 500);
+//         }
+
+//         if ($documentId) {
+//             $document = DocumentTemplate::findOrFail($documentId);
+//             if (!$document) {
+//                 Log::error("Document not found: ID {$documentId}");
+//                 return response()->json(['error' => 'Document not found'], 404);
+//             }
+//             $filePath = company_path($document->file_path); 
+//             file_put_contents($filePath, $contents);
+
+//             // Storage::disk('public')->put(ltrim($filePath, '/'), $contents);
+//             Log::info("Updated existing template: {$document->file_path}");
+//         } elseif ($tempPath) {
+//             Storage::disk('public')->put(ltrim($tempPath, '/'), $contents);
+//             Log::info("Updated temp file: {$tempPath}");
+//         } else {
+//             throw new \Exception("No documentId or tempPath provided");
+//         }
+
+//            Log::info("Saved document (size: " . strlen($contents) . " bytes)");
+//        return response()->json(['error' => 0]);
+//    }
  
    public function save(Request $request)
    {
