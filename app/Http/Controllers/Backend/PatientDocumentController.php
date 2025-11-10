@@ -89,6 +89,7 @@ class PatientDocumentController extends Controller
         $fileUrl = secure_asset('storage/' . $filePath) . '?v=' . time();
 
         $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
+        \Log::info('OnlyOffice callback URL: ' . $callback);
 
         $key = OnlyOfficeHelper::generateDocumentKey($document, true);
         $user = current_user();
@@ -249,6 +250,7 @@ class PatientDocumentController extends Controller
         KeywordHelper::replaceKeywords($tempFullPath, $patient);
 
         // Generate OnlyOffice key & token
+        
         $key = OnlyOfficeHelper::generateDocumentKey(['file_path' => $tempStoragePath]);
         $token = OnlyOfficeHelper::createJwtToken(['file_path' => $tempStoragePath], $key, secure_asset('storage/' . $tempStoragePath), $patient);
 

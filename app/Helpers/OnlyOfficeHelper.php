@@ -19,6 +19,7 @@ class OnlyOfficeHelper
             : (is_string($document) ? basename($document) : 'Document');
 
         $callback = url("/api/onlyoffice/callback?document_id=" . $docId);
+        \Log::info('OnlyOffice callback URL: ' . $callback);
 
         $payload = [
             "document" => [
