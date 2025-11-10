@@ -226,25 +226,37 @@ class OnlyOfficeController extends Controller
 
         if (in_array($status, [2, 6])) {
             $downloadUri = $data['url'];
-
-            try {
-                $contents = file_get_contents($downloadUri);
-
-                if ($filePath) {
-                    // Ensure folder exists
-                    $dir = dirname($filePath);
-                    Storage::disk('public')->makeDirectory($dir);
-
-                    // Save with same path and filename
-                    Storage::disk('public')->put($filePath, $contents);
-                    Log::info("✅ Saved updated file: {$filePath} (" . strlen($contents) . " bytes)");
-                } else {
-                    Log::warning("⚠️ Missing file path in callback query.");
-                }
-            } catch (\Exception $e) {
-                Log::error("❌ Error saving OnlyOffice file: " . $e->getMessage());
+            // $filePath = $template->file_path; // original file
+            $savePath = storage_path('app/public/' . $filePath);
+        
+            if ($downloadUri) {
+                copy($downloadUri, $savePath);
+                Log::info("Copied updated file to: " . $savePath);
+            } else {
+                Log::warning("Download URL empty, cannot save document");
             }
         }
+        // if (in_array($status, [2, 6])) {
+        //     $downloadUri = $data['url'];
+
+        //     try {
+        //         $contents = file_get_contents($downloadUri);
+
+        //         if ($filePath) {
+        //             // Ensure folder exists
+        //             $dir = dirname($filePath);
+        //             Storage::disk('public')->makeDirectory($dir);
+
+        //             // Save with same path and filename
+        //             Storage::disk('public')->put($filePath, $contents);
+        //             Log::info("✅ Saved updated file: {$filePath} (" . strlen($contents) . " bytes)");
+        //         } else {
+        //             Log::warning("⚠️ Missing file path in callback query.");
+        //         }
+        //     } catch (\Exception $e) {
+        //         Log::error("❌ Error saving OnlyOffice file: " . $e->getMessage());
+        //     }
+        // }
 
         return response()->json(['error' => 0]);
     }
