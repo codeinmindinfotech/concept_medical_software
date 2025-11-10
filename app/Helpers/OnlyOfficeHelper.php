@@ -18,6 +18,7 @@ class OnlyOfficeHelper
             ? $document->file_path
             : (is_string($document) ? basename($document) : 'Document');
 
+        $callback = url("/api/onlyoffice/callback?document_id=" . $docId);
 
         $payload = [
             "document" => [
@@ -27,7 +28,7 @@ class OnlyOfficeHelper
                 "url" => $url,
             ],
             "editorConfig" => [
-                "callbackUrl" => url("/api/onlyoffice/callback/{$docId}"),
+                "callbackUrl" => $callback,//url("/api/onlyoffice/callback/{$docId}"),
                 "mode" => "edit",
                 "user" => [
                     'id' => (string) ($userOrPatient->id ?? '1'),
@@ -62,7 +63,7 @@ class OnlyOfficeHelper
                 "url" => $url,
             ],
             "editorConfig" => [
-                "callbackUrl" => $callback,//url("/api/onlyoffice/document_callback/{$docId}"),
+                "callbackUrl" => $callback,
                 "mode" => "edit",
                 "user" => [
                     'id' => (string) ($userOrPatient->id ?? '1'),
