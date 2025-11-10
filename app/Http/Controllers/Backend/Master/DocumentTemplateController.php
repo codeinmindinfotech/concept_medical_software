@@ -317,7 +317,8 @@ class DocumentTemplateController extends Controller
         $callback = url("/api/onlyoffice/callback_new?file=" . urlencode($fileName));
 
         // Make sure this file exists in storage/app/public/
-        $fileUrl = asset('storage/' . $fileName);
+        // $fileUrl = asset('storage/' . $fileName);
+        $fileUrl = asset('storage/' . $fileName) . '?v=' . time();
 
         // OnlyOffice config
         // $config = [
