@@ -220,10 +220,11 @@ class OnlyOfficeController extends Controller
   
     public function save(Request $request)
     {
+        Log::info("save function call ");
         $data = json_decode($request->getContent(), true);
         $status = $data['status'] ?? 0;
         $filePath = $request->query('file'); // get ?file=... from URL
-
+        Log::info("save function call ",$status);
         if (in_array($status, [2, 6])) {
             $downloadUri = $data['url'];
             // $filePath = $template->file_path; // original file
