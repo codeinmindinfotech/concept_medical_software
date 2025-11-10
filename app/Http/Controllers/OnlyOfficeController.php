@@ -163,6 +163,15 @@ class OnlyOfficeController extends Controller
    
        if (in_array($status, [2, 6])) {
            $downloadUri = $data['url'];
+
+           Log::info("OnlyOffice downloadUri", ['url' => $downloadUri]);
+            if ($downloadUri) {
+                $contents = file_get_contents($downloadUri);
+                Log::info("Downloaded content size", ['size' => strlen($contents)]);
+            } else {
+                Log::warning("Download URL empty, cannot save document", ['file' => $filePath]);
+            }
+
            $savePath = storage_path('app/public/' . $filePath);
    
            if ($downloadUri) {
