@@ -312,7 +312,8 @@ class DocumentTemplateController extends Controller
         $id = 2;
         $template = DocumentTemplate::findOrFail($id);
         $fileName = $template->file_path;
-        $callback=  url("/api/onlyoffice/callback_new");
+        // $callback=  url("/api/onlyoffice/callback_new");
+        $callback = url("/api/onlyoffice/callback_new?file=" . urlencode($fileName));
 
         // Make sure this file exists in storage/app/public/
         $fileUrl = asset('storage/' . $fileName);

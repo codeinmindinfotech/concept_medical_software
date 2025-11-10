@@ -220,17 +220,33 @@ class OnlyOfficeController extends Controller
   
     public function save(Request $request)
     {
-        // OnlyOffice sends a JSON payload
         $data = json_decode($request->getContent(), true);
         $status = $data['status'] ?? 0;
+        $filePath = $request->query('file'); // get ?file=... from URL
 
-        // When status == 2 or 6, file was successfully saved/closed
         if (in_array($status, [2, 6])) {
             $downloadUri = $data['url'];
-            $contents = file_get_contents($downloadUri);
-            Storage::disk('public')->put('demo.docx', $contents);
+
+            try {
+                $contents = file_get_contents($downloadUri);
+
+                if ($filePath) {
+                    // Ensure folder exists
+                    $dir = dirname($filePath);
+                    Storage::disk('public')->makeDirectory($dir);
+
+                    // Save with same path and filename
+                    Storage::disk('public')->put($filePath, $contents);
+                    Log::info("✅ Saved updated file: {$filePath} (" . strlen($contents) . " bytes)");
+                } else {
+                    Log::warning("⚠️ Missing file path in callback query.");
+                }
+            } catch (\Exception $e) {
+                Log::error("❌ Error saving OnlyOffice file: " . $e->getMessage());
+            }
         }
 
         return response()->json(['error' => 0]);
     }
+
 }
