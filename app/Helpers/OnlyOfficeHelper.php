@@ -75,6 +75,39 @@ class OnlyOfficeHelper
         $secret = rtrim(config('onlyoffice.jwt_secret'));
         return JWT::encode($payload, $secret, 'HS256');
     }
+
+    public static function createJwtTokenDoc($document, $key, $url, $userOrPatient)
+    {
+        $docId = is_object($document) && isset($document->id)
+        ? $document->id
+        : uniqid('temp_');
+
+        $title = is_object($document) && isset($document->name)
+            ? $document->name
+            : (is_string($document) ? basename($document) : 'Document');
+            $fileName = $document->file_path;
+        $payload = [
+            "document" => [
+                "fileType" => "docx",
+                "key" => $key,
+                "title" => $title,
+                "url" => $url,
+            ],
+            "editorConfig" => [
+                "callbackUrl" => url("/api/onlyoffice/callback_new/?file=" . urlencode($fileName)),
+                "mode" => "edit",
+                "user" => [
+                    'id' => (string) ($userOrPatient->id ?? '1'),
+                    'name' => $userOrPatient->full_name ?? $userOrPatient->name ?? 'Guest',
+                ],
+            ],
+            "iat" => time(),
+            "exp" => time() + 3600,
+        ];
+
+        $secret = rtrim(config('onlyoffice.jwt_secret'));
+        return JWT::encode($payload, $secret, 'HS256');
+    }
     public static function generateDocumentKey($document, bool $forceUnique = false): string
     {
         if (is_object($document) && isset($document->id)) {
