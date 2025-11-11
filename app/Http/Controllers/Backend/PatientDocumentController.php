@@ -241,7 +241,7 @@ class PatientDocumentController extends Controller
         // Create a unique new filename
         $newFileName = uniqid('document_') . '.' . pathinfo($sourcePath, PATHINFO_EXTENSION);
         $destinationPath = $destinationFolder . '/' . $newFileName;
-        $fullDestinationPath = asset('storage/' . $destinationPath). '?v=' . time();
+        $fullDestinationPath = asset('storage/' . $destinationPath);
 
         // $fullDestinationPath = storage_path('app/public/' . $destinationPath);
 
@@ -261,14 +261,20 @@ class PatientDocumentController extends Controller
         KeywordHelper::replaceKeywords($fullDestinationPath, $patient);
 
         // Generate OnlyOffice key & token
-        $key = OnlyOfficeHelper::generateDocumentKey($document, true);
-        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fullDestinationPath, $patient);
+        // $key = OnlyOfficeHelper::generateDocumentKey($document, true);
+        // $token = OnlyOfficeHelper::createJwtToken($document, $key, $fullDestinationPath, $patient);
 
-        \Log::info('preview ', [ 'documentId' => $documentId,'url' => $fullDestinationPath]);
+        // OnlyOffice URL
+        $fileUrl = asset('storage/' . $destinationPath) . '?v=' . time();
+        $key = OnlyOfficeHelper::generateDocumentKey($document, true);
+        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $patient);
+
+
+        \Log::info('preview ', [ 'documentId' => $documentId,'url' => $fileUrl]);
 
         return response()->json([
             'success' => true,
-            'url' => $fullDestinationPath,
+            'url' => $fileUrl,
             'fileType' => 'docx',
             'key' => $key,
             'token' => $token,
