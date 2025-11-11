@@ -73,6 +73,7 @@ console.log(data.url);
                 name: '{{ auth()->user()->name ?? "Guest" }}',
             },
             customization: { forcesave: true },
+            callbackUrl: data.callbackUrl 
         },
         token: data.token,
         events: {
@@ -98,6 +99,7 @@ document.getElementById('document_template_id').addEventListener('change', funct
     const templateId = this.value;
     const documentId = "{{ $document->id }}";
     if (!templateId) return;
+alert("changed");
 
     fetch("{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}", {
         method: 'POST',
@@ -109,6 +111,7 @@ document.getElementById('document_template_id').addEventListener('change', funct
     })
     .then(res => res.json())
     .then(data => {
+        console.log(data);
         if (data.success) {
             initOnlyOfficeEditor(data);
         } else {
