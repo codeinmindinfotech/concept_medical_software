@@ -80,37 +80,13 @@ class PatientDocumentController extends Controller
     {
         $request->validate([
             'document_template_id' => 'required|exists:document_templates,id',
+            'document_id' => 'required|exists:patient_documents,id',
         ]);
-    
-        $template = DocumentTemplate::findOrFail($request->document_template_id);
-        $templatePath = storage_path('app/public/' . $template->file_path);
-    
-        // Prepare new file path
-        $newFileName = uniqid('patient_doc_') . '.docx';
-        $newStoragePath = "patient_docs/{$newFileName}";
-        $newFullPath = storage_path("app/public/{$newStoragePath}");
-    
-        // ✅ Ensure destination folder exists
-        $directoryPath = storage_path('app/public/patient_docs');
-        if (!file_exists($directoryPath)) {
-            mkdir($directoryPath, 0775, true);
-        }
-    
-        // ✅ Copy template to new file
-        if (!copy($templatePath, $newFullPath)) {
-            return back()->with('error', 'Could not copy template file.');
-        }
-    
-        // 🔁 Replace placeholders
-        // $this->replaceDocxPlaceholders($newFullPath, $replacements);
-        KeywordHelper::replaceKeywords($newFullPath, $patient);
+        $documentId = $request->input('document_id'); // ✅ use input(), not query()
 
-    
-        // 💾 Save in database
-        PatientDocument::create([
-            'patient_id' => $patient->id,
-            'document_template_id' => $template->id,
-            'file_path' => $newStoragePath,
+        $document = PatientDocument::findOrFail($documentId);
+        $document->update([
+            'document_template_id' => $request->document_template_id,
         ]);
     
         return response()->json([
@@ -257,10 +233,6 @@ class PatientDocumentController extends Controller
 
         // Replace placeholders with patient data
         KeywordHelper::replaceKeywords($fullDestinationPath, $patient);
-
-        // Generate OnlyOffice key & token
-        // $key = OnlyOfficeHelper::generateDocumentKey($document, true);
-        // $token = OnlyOfficeHelper::createJwtToken($document, $key, $fullDestinationPath, $patient);
 
         // OnlyOffice URL
         $fileUrl = asset('storage/' . $destinationPath) . '?v=' . time();
