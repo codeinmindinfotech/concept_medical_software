@@ -293,7 +293,7 @@ class DocumentTemplateController extends Controller
         $template = DocumentTemplate::find($id);
         $filePath = $template->file_path;
 
-        Log::info('loadFile Function', ['documentId' => $id, 'filePath' => $filePath]);
+        \Log::info('loadFile Function', ['documentId' => $id, 'filePath' => $filePath]);
 
         if (!$template || !$filePath) {
             return response()->json([
