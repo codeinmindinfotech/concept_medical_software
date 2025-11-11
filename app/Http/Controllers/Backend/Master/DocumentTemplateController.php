@@ -29,7 +29,21 @@ class DocumentTemplateController extends Controller
 
     public function create()
     {
-        return view('documents.create');
+        $templates = DocumentTemplate::whereNull('file_path')->orWhere('file_path', '')->get();
+        foreach ($templates as $template) {
+            if ($template->tempPath && Storage::disk('public')->exists($template->tempPath)) {
+                Storage::disk('public')->delete($template->tempPath);
+            }
+            $template->delete();
+        }
+
+        $template = DocumentTemplate::create([
+            'name' => 'Untitled',
+            'type' => 'letter', // default type
+            'file_path' => '',   // empty initially
+            'company_id' => auth()->user()->company_id ?? null,
+        ]);
+        return view('documents.create', compact('template'));
     }
     
     /**
@@ -42,30 +56,44 @@ class DocumentTemplateController extends Controller
             'type' => 'required|in:letter,form',
             'file' => 'required|file|mimes:doc,docx,pdf|max:2048',
             'tempPath' => 'nullable|string',
+            'template_id' => 'required|exists:document_templates,id',
+
         ]);
         
-        if ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
-            $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
-            $filePath = company_path('document_templates/' . uniqid('template_') . '.' . $extension);
-            // $filePath = 'document_templates/' . uniqid('template_') . '.' . $extension;
-            Storage::disk('public')->copy($request->tempPath, $filePath);
-            Storage::disk('public')->delete($request->tempPath); // optional cleanup
-        } else {
-            // fallback: uploaded file
-            $filePath = $request->file('file')->storeAs(
-                company_path('document_templates'),
-                uniqid('template_') . '.' . $request->file('file')->getClientOriginalExtension(),
-                'public'
-            );
-            // $filePath = $request->file('file')->store('document_templates', 'public');
-        }
-
-        DocumentTemplate::create([
+        $template = DocumentTemplate::findOrFail($request->template_id);
+        $template->update([
             'name' => $request->name,
             'type' => $request->type,
-            'file_path' => $filePath,
-            'company_id' => auth()->user()->company_id ?? null,
+            // file_path is already updated by OnlyOffice callback
         ]);
+
+
+        // if ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
+        //     $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
+        //     $filePath = company_path('document_templates/' . uniqid('template_') . '.' . $extension);
+        
+        //     // Copy the latest version of tempPath
+        //     Storage::disk('public')->copy($request->tempPath, $filePath);
+        
+        //     // Optional: delete temp file after moving
+        //     Storage::disk('public')->delete($request->tempPath);
+        // } 
+        // else {
+        //     // fallback: uploaded file
+        //     $filePath = $request->file('file')->storeAs(
+        //         company_path('document_templates'),
+        //         uniqid('template_') . '.' . $request->file('file')->getClientOriginalExtension(),
+        //         'public'
+        //     );
+        //     // $filePath = $request->file('file')->store('document_templates', 'public');
+        // }
+
+        // DocumentTemplate::create([
+        //     'name' => $request->name,
+        //     'type' => $request->type,
+        //     'file_path' => $filePath,
+        //     'company_id' => auth()->user()->company_id ?? null,
+        // ]);
 
         return response()->json([
             'redirect' => guard_route('documents.index'),

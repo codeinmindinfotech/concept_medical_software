@@ -7,6 +7,7 @@
       </div>
       <div class="card-body">
         <div class="row g-3">
+          <input type="text" name="template_id" value="{{ $template->id }}">
 
           <!-- Template Name -->
           <div class="col-md-6">
@@ -167,13 +168,13 @@ function loadExistingDocument(apiUrl) {
         })
         .catch(err => console.error("Error loading file:", err));
 }
-
 document.getElementById('file').addEventListener('change', function(e) {
     let file = e.target.files[0];
     if (!file) return;
 
     let formData = new FormData();
     formData.append('file', file);
+    formData.append('document_id', "{{ $template->id }}"); // ✅ Pass the ID
 
     fetch("{{ guard_route('documents.tempUpload') }}", {
         method: "POST",
@@ -182,30 +183,59 @@ document.getElementById('file').addEventListener('change', function(e) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-          document.getElementById('tempPath').value = data.tempPath || data.url;
-          console.log(data.tempPath || data.url);
-// ✅ Build callback URL for temp file
-            const callbackUrl =
-                "{{ url('/api/onlyoffice/document_callback') }}" +
-                "?tempPath=" + encodeURIComponent(data.tempPath);
-                initEditor({
-                    fileType: data.fileType,
-                    key: data.key,
-                    title: file.name,
-                    url: data.url,
-                    token: data.token,
-                    callbackUrl: data.callbackUrl // points to tempPath
-                }, file.name);
-            // Pass callback URL into editor
-            // initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
-            // initEditor(data, file.name || "new Document");
-          } else {
-            alert("❌ File upload failed.");
-        }
+        if (!data.success) return alert("❌ File upload failed.");
+
+        initEditor({
+            fileType: data.fileType,
+            key: data.key,
+            title: file.name,
+            url: data.url,
+            token: data.token,
+            callbackUrl: "{{ url('/api/onlyoffice/document_callback') }}?document_id={{ $template->id }}" // ✅ Pass documentId
+        }, file.name);
     })
     .catch(err => console.error("Upload error:", err));
 });
+
+
+// document.getElementById('file').addEventListener('change', function(e) {
+//     let file = e.target.files[0];
+//     if (!file) return;
+
+//     let formData = new FormData();
+//     formData.append('file', file);
+
+//     fetch("{{ guard_route('documents.tempUpload') }}", {
+//         method: "POST",
+//         headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+//         body: formData
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         if (data.success) {
+//           document.getElementById('tempPath').value = data.tempPath || data.url;
+//           console.log(data.tempPath || data.url);
+//             // ✅ Build callback URL for temp file
+//             const callbackUrl =
+//                 "{{ url('/api/onlyoffice/document_callback') }}" +
+//                 "?tempPath=" + encodeURIComponent(data.tempPath);
+//                 initEditor({
+//                     fileType: data.fileType,
+//                     key: data.key,
+//                     title: file.name,
+//                     url: data.url,
+//                     token: data.token,
+//                     callbackUrl: data.callbackUrl // points to tempPath
+//                 }, file.name);
+//             // Pass callback URL into editor
+//             // initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
+//             // initEditor(data, file.name || "new Document");
+//           } else {
+//             alert("❌ File upload failed.");
+//         }
+//     })
+//     .catch(err => console.error("Upload error:", err));
+// });
 
 function insertTagAtCursor(tag) {
     if (!docEditor || !editorReady) {
