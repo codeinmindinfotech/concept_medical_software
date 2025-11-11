@@ -282,8 +282,8 @@ class PatientDocumentController extends Controller
         if (!file_exists($docxPath)) {
             return back()->with('error', 'Document file not found.');
         }
-        $pdfPath = $this->convertDocxToPdfOnlyOffice($docxPath);
-        dd($pdfPath);
+        // $pdfPath = $this->convertDocxToPdfOnlyOffice($docxPath);
+        // dd($pdfPath);
         $pdfPath = $this->downloadConvertedPdf($docxPath);
         
         if (!$pdfPath || !file_exists($pdfPath)) {
