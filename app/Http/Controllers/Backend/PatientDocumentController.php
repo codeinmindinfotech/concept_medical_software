@@ -262,9 +262,12 @@ class PatientDocumentController extends Controller
         $key = OnlyOfficeHelper::generateDocumentKey($document, true);
         $token = OnlyOfficeHelper::createJwtToken($document, $key, $fullDestinationPath, $patient);
 
+        $fileUrl = asset('storage/' . $destinationPath). '?v=' . time();
+        \Log::info('preview ', [ 'documentId' => $documentId,'url' => $fileUrl]);
+
         return response()->json([
             'success' => true,
-            'url' => $fullDestinationPath,
+            'url' => $fileUrl,
             'fileType' => 'docx',
             'key' => $key,
             'token' => $token,

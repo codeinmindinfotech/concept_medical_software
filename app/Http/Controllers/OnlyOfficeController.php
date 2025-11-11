@@ -27,10 +27,10 @@ class OnlyOfficeController extends Controller
             return response()->json(['error' => 0]);
         }
 
-        // $contents = file_get_contents($downloadUrl);
 
         if ($documentId && $downloadUrl) {
             $document = PatientDocument::findOrFail($documentId);
+            $contents = file_get_contents($downloadUrl);
 
             // First-time save: create file path if empty
             if (!$document->file_path) {
@@ -42,7 +42,7 @@ class OnlyOfficeController extends Controller
                 $filePath = storage_path('app/public/' . $document->file_path);
             }
 
-            file_put_contents($filePath, file_get_contents($downloadUrl));
+            file_put_contents($filePath, $contents);
             Log::info("Saved document to {$filePath}");
         } else {
             Log::error("No documentId provided to OnlyOffice callback");
