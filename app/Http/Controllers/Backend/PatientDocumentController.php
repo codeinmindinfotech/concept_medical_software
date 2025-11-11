@@ -82,8 +82,7 @@ class PatientDocumentController extends Controller
             'document_template_id' => 'required|exists:document_templates,id',
             'document_id' => 'required|exists:patient_documents,id',
         ]);
-        $documentId = $request->input('document_id'); // ✅ use input(), not query()
-
+        $documentId = $request->input('document_id'); 
         $document = PatientDocument::findOrFail($documentId);
         $document->update([
             'document_template_id' => $request->document_template_id,
@@ -124,7 +123,7 @@ class PatientDocumentController extends Controller
             'documentType' => 'word',
             'editorConfig' => [
                 'mode' => 'edit',
-                'callbackUrl' => $callback,//url("/api/onlyoffice/document_callback/{$template->id}"),
+                'callbackUrl' => $callback,
                 'user' => [
                     'id' => (string) $user->id ?? '1',
                     'name' => $user->name ?? 'Guest',
@@ -133,40 +132,38 @@ class PatientDocumentController extends Controller
                     'forcesave' => true,
                 ],
             ],
-            'token' => $token, // your JWT token
+            'token' => $token, 
         ];
         return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
     }
 
     public function update(Request $request, Patient $patient, PatientDocument $document)
     {
-
-        // Only update if a new template is selected
         if ($request->has('document_template_id') 
             && $request->document_template_id != $document->document_template_id) {
     
                 
             $template = DocumentTemplate::findOrFail($request->document_template_id);
-            $templatePath = storage_path('app/public/' . $template->file_path);
+            // $templatePath = storage_path('app/public/' . $template->file_path);
     
-            if (!is_file($templatePath)) {
-                return response()->json(['error' => 'Template file does not exist.'], 500);
-            }
+            // if (!is_file($templatePath)) {
+            //     return response()->json(['error' => 'Template file does not exist.'], 500);
+            // }
 
-            $newFileName = uniqid('patient_doc_') . '.docx';
-            $newStoragePath = "patient_docs/{$newFileName}";
-            $newFullPath = storage_path("app/public/{$newStoragePath}");
+            // $newFileName = uniqid('patient_doc_') . '.docx';
+            // $newStoragePath = "patient_docs/{$newFileName}";
+            // $newFullPath = storage_path("app/public/{$newStoragePath}");
     
-            $directoryPath = storage_path('app/public/patient_docs');
-            if (!file_exists($directoryPath)) {
-                mkdir($directoryPath, 0775, true);
-            }
+            // $directoryPath = storage_path('app/public/patient_docs');
+            // if (!file_exists($directoryPath)) {
+            //     mkdir($directoryPath, 0775, true);
+            // }
         
-            if (!copy($templatePath, $newFullPath)) {
-                return back()->with('error', 'Could not copy template file.');
-            }
+            // if (!copy($templatePath, $newFullPath)) {
+            //     return back()->with('error', 'Could not copy template file.');
+            // }
     
-            KeywordHelper::replaceKeywords($newFullPath, $patient);
+            // KeywordHelper::replaceKeywords($newFullPath, $patient);
     
             // Update database
             $document->update([
