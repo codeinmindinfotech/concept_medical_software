@@ -23,7 +23,7 @@ class DocumentTemplateController extends Controller
      */
     public function index()
     {
-        $templates = DocumentTemplate::all();
+        $templates = DocumentTemplate::whereNotNull('file_path')->where('file_path', '!=', '')->get();
         return view('documents.index', compact('templates'));
     }
 

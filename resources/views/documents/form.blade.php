@@ -7,7 +7,7 @@
       </div>
       <div class="card-body">
         <div class="row g-3">
-          <input type="text" name="template_id" value="{{ $template->id }}">
+          <input type="hidden" name="template_id" value="{{ $template->id }}">
 
           <!-- Template Name -->
           <div class="col-md-6">
@@ -185,7 +185,6 @@ document.getElementById('file').addEventListener('change', function(e) {
     .then(res => res.json())
     .then(data => {
         if (!data.success) return alert("❌ File upload failed.");
-alert({{ $template->id }});
         initEditor({
             fileType: data.fileType,
             key: data.key,
