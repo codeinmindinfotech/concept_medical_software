@@ -7,11 +7,10 @@
           <div class="card-body">
               <div class="row g-3">
                   <div class="col-md-6">
-                    <input type="text" name="document_id" value="{{ $document->id }}">
-
                       <label class="form-label"><strong>Patient</strong></label>
                       <input type="text" class="form-control" value="{{ $patient->full_name ?? 'N/A' }}" disabled>
                       <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                      <input type="hidden" name="document_id" value="{{ $document->id }}">
                   </div>
 
                   <div class="mb-3">
