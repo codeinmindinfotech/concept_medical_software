@@ -241,7 +241,9 @@ class PatientDocumentController extends Controller
         // Create a unique new filename
         $newFileName = uniqid('document_') . '.' . pathinfo($sourcePath, PATHINFO_EXTENSION);
         $destinationPath = $destinationFolder . '/' . $newFileName;
-        $fullDestinationPath = storage_path('app/public/' . $destinationPath);
+        $fullDestinationPath = asset('storage/' . $destinationPath). '?v=' . time();
+
+        // $fullDestinationPath = storage_path('app/public/' . $destinationPath);
 
         // Copy the file
         if (!copy($sourcePath, $fullDestinationPath)) {
@@ -251,9 +253,9 @@ class PatientDocumentController extends Controller
         // Update document with new path and template reference
         $data['file_path'] = $destinationPath;
         $data['document_template_id'] = $request->template_id ?? $template->id;
-        $document->update($data);
-
-        
+        $res = $document->update($data);
+        \Log::info('docuemnt updated : ' . $res);
+        \Log::info('docuemnt saved', $document);
 
         // Replace placeholders with patient data
         KeywordHelper::replaceKeywords($fullDestinationPath, $patient);
@@ -262,12 +264,11 @@ class PatientDocumentController extends Controller
         $key = OnlyOfficeHelper::generateDocumentKey($document, true);
         $token = OnlyOfficeHelper::createJwtToken($document, $key, $fullDestinationPath, $patient);
 
-        $fileUrl = asset('storage/' . $destinationPath). '?v=' . time();
-        \Log::info('preview ', [ 'documentId' => $documentId,'url' => $fileUrl]);
+        \Log::info('preview ', [ 'documentId' => $documentId,'url' => $fullDestinationPath]);
 
         return response()->json([
             'success' => true,
-            'url' => $fileUrl,
+            'url' => $fullDestinationPath,
             'fileType' => 'docx',
             'key' => $key,
             'token' => $token,
