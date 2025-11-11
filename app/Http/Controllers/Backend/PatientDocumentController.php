@@ -241,14 +241,12 @@ class PatientDocumentController extends Controller
         // Create a unique new filename
         $newFileName = uniqid('document_') . '.' . pathinfo($sourcePath, PATHINFO_EXTENSION);
         $destinationPath = $destinationFolder . '/' . $newFileName;
-        $fullDestinationPath = asset('storage/' . $destinationPath);
+        $fullDestinationPath = storage_path('app/public/' . $destinationPath); // Use filesystem path
 
-        // $fullDestinationPath = storage_path('app/public/' . $destinationPath);
-
-        // Copy the file
         if (!copy($sourcePath, $fullDestinationPath)) {
             return response()->json(['success' => false, 'message' => 'Could not copy file.'], 500);
         }
+
         
         // Update document with new path and template reference
         $data['file_path'] = $destinationPath;
