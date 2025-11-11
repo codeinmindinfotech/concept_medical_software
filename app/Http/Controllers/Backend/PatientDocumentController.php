@@ -282,8 +282,10 @@ class PatientDocumentController extends Controller
         if (!file_exists($docxPath)) {
             return back()->with('error', 'Document file not found.');
         }
-
+        $pdfPath = $this->convertDocxToPdfOnlyOffice($docxPath);
+        dd($pdfPath);
         $pdfPath = $this->downloadConvertedPdf($docxPath);
+        
         if (!$pdfPath || !file_exists($pdfPath)) {
             return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
         }
@@ -337,5 +339,46 @@ class PatientDocumentController extends Controller
             return back()->with('error', 'Conversion to PDF failed: ' . $e->getMessage());
         }
     }
+    public function convertDocxToPdfOnlyOffice($docxPath)
+    {
+        if (!file_exists($docxPath)) {
+            return back()->with('error', 'Document not found.');
+        }
+
+        $docxUrl = asset('storage/' . str_replace(storage_path('app/public') . '/', '', $docxPath)); 
+        $pdfDir = storage_path('app/public/patient_docs/pdf');
+        if (!file_exists($pdfDir)) mkdir($pdfDir, 0777, true);
+
+        $pdfPath = $pdfDir . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
+
+        $payload = [
+            'async' => false,
+            'filetype' => 'docx',
+            'key' => uniqid(),
+            'outputtype' => 'pdf',
+            'title' => pathinfo($pdfPath, PATHINFO_BASENAME),
+            'url' => $docxUrl,
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, rtrim(config('onlyoffice.server_url'), '/').'/web-apps/apps/api/documents/api/convert');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $result = json_decode($response, true);
+
+        if (isset($result['fileUrl'])) {
+            file_put_contents($pdfPath, fopen($result['fileUrl'], 'r'));
+            return response()->download($pdfPath);
+        }
+
+        \Log::error('OnlyOffice PDF conversion failed', $result);
+        return back()->with('error', 'OnlyOffice conversion failed.');
+    }
+
 }
 
