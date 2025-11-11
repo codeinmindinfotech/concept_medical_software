@@ -7,6 +7,8 @@
           <div class="card-body">
               <div class="row g-3">
                   <div class="col-md-6">
+                    <input type="text" name="document_id" value="{{ $document->id }}">
+
                       <label class="form-label"><strong>Patient</strong></label>
                       <input type="text" class="form-control" value="{{ $patient->full_name ?? 'N/A' }}" disabled>
                       <input type="hidden" name="patient_id" value="{{ $patient->id }}">
@@ -25,12 +27,6 @@
                       </select>
                   </div>
 
-                  {{-- Only show editor when editing an actual patient document --}}
-                  {{-- @if(isset($document) && $document->file_path)
-                    <div style="width: 100%; height: 80vh;">
-                      <div id="onlyoffice-editor"></div>
-                    </div>
-                  @endif --}}
                   <div style="width: 100%; height: 80vh; display: none;" id="onlyoffice-container">
                     <div id="onlyoffice-editor"></div>
                 </div>
@@ -100,6 +96,7 @@ function initOnlyOfficeEditor(data) {
 // Template change event
 document.getElementById('document_template_id').addEventListener('change', function() {
     const templateId = this.value;
+    const documentId = "{{ $document->id }}";
     if (!templateId) return;
 
     fetch("{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}", {
@@ -108,7 +105,7 @@ document.getElementById('document_template_id').addEventListener('change', funct
             'X-CSRF-TOKEN': "{{ csrf_token() }}",
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ template_id: templateId })
+        body: JSON.stringify({ template_id: templateId , document_id: documentId})
     })
     .then(res => res.json())
     .then(data => {

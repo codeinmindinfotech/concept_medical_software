@@ -134,20 +134,8 @@ function initEditor(data, title) {
                 } else if (typeof event.data === "boolean") {
                     status = event.data ? 1 : 0; // treat 'true' as editing
                 }
-
                 console.log("Document state:", event.data, "Interpreted status:", status);
-
-                // if (status === 1) {
-                //     // Editing in progress
-                //     $('#globalLoader').show();
-                // } else if (status === 2 || status === 6) {
-                //     // Saved or closed
-                //     $('#globalLoader').hide();
-                //     console.log("✅ Document saved or closed.");
-                // } else {
-                //   $('#globalLoader').hide();
-                // }
-            },
+             },
             onRequestRefreshFile: function() {
                 console.log("Editor requested file refresh.");
                 docEditor.refreshFile(); // pull the latest version from your server
@@ -155,7 +143,6 @@ function initEditor(data, title) {
         }
 
     };
-
     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
 }
 

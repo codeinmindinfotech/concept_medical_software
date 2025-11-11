@@ -28,8 +28,52 @@ class PatientDocumentController extends Controller
     public function create(Patient $patient)
     {
         $templates = DocumentTemplate::all();
-        $config = []; // 👈 define empty config to avoid undefined variable error
-        return view('patients.documents.create', compact('patient', 'templates', 'config'));
+
+        $documents = PatientDocument::whereNull('file_path')->orWhere('file_path', '')->where('patient_id', $patient->id)->get();
+        foreach ($documents as $document) {
+            if ($document->tempPath && Storage::disk('public')->exists($document->tempPath)) {
+                Storage::disk('public')->delete($document->tempPath);
+            }
+            $document->delete();
+        }
+
+        $document = PatientDocument::create([
+            'patient_id' => $patient->id,
+            'file_path' => '', 
+            'document_template_id' => 2,   
+            'company_id' => auth()->user()->company_id ?? null,
+        ]);
+
+        $fileUrl = '';
+
+        $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
+
+        $key = OnlyOfficeHelper::generateDocumentKey($document, true);
+        $user = current_user();
+        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $user );
+        $config = [
+            'document' => [
+                'storagePath' => storage_path('app/public'),
+                'fileType' => 'docx',
+                'key' => $key,
+                'title' => $document->title ?? 'Document',
+                'url' => $fileUrl,
+            ],
+            'documentType' => 'word',
+            'editorConfig' => [
+                'mode' => 'edit',
+                'callbackUrl' => $callback,//url("/api/onlyoffice/document_callback/{$template->id}"),
+                'user' => [
+                    'id' => (string) $user->id ?? '1',
+                    'name' => $user->name ?? 'Guest',
+                ],
+                'customization' => [
+                    'forcesave' => true,
+                ],
+            ],
+            'token' => $token, // your JWT token
+        ];
+        return view('patients.documents.create', compact('patient', 'templates', 'config', 'document', 'token'));
     }
 
     public function store(Request $request, Patient $patient)
@@ -74,7 +118,6 @@ class PatientDocumentController extends Controller
             'message' => 'Documents Created successfully',
         ]);
     }
-
 
     public function edit(Patient $patient, $documentId)
     {
@@ -178,40 +221,55 @@ class PatientDocumentController extends Controller
     {
         $request->validate([
             'template_id' => 'required|exists:document_templates,id',
+            'document_id' => 'required|exists:patient_documents,id',
         ]);
+        
+        $documentId = $request->input('document_id'); // ✅ use input(), not query()
+        $document = PatientDocument::findOrFail($documentId);
 
         $template = DocumentTemplate::findOrFail($request->template_id);
-        $templatePath = storage_path('app/public/' . $template->file_path);
-
-        // Create temporary file
-        $tempFileName = 'temp_preview_' . uniqid() . '.docx';
-        $tempStoragePath = "patient_docs/temp/{$tempFileName}";
-        $tempFullPath = storage_path('app/public/' . $tempStoragePath);
-
-        // Ensure temp folder exists
-        if (!file_exists(storage_path('app/public/patient_docs/temp'))) {
-            mkdir(storage_path('app/public/patient_docs/temp'), 0775, true);
+        $sourcePath = storage_path('app/public/' . $template->file_path);
+        
+        $destinationFolder = company_path('patient_docs');
+        
+        // Make sure the folder exists
+        $fullDestinationDir = storage_path('app/public/' . $destinationFolder);
+        if (!file_exists($fullDestinationDir)) {
+            mkdir($fullDestinationDir, 0775, true);
         }
+        
+        // Create a unique new filename
+        $newFileName = uniqid('document_') . '.' . pathinfo($sourcePath, PATHINFO_EXTENSION);
+        $destinationPath = $destinationFolder . '/' . $newFileName;
+        $fullDestinationPath = storage_path('app/public/' . $destinationPath);
 
-        if (!copy($templatePath, $tempFullPath)) {
-            return response()->json(['success' => false, 'message' => 'Could not copy template file.'], 500);
+        // Copy the file
+        if (!copy($sourcePath, $fullDestinationPath)) {
+            return response()->json(['success' => false, 'message' => 'Could not copy file.'], 500);
         }
+        
+        // Update document with new path and template reference
+        $data['file_path'] = $destinationPath;
+        $data['document_template_id'] = $request->template_id ?? $template->id;
+        $document->update($data);
+
+        
 
         // Replace placeholders with patient data
-        KeywordHelper::replaceKeywords($tempFullPath, $patient);
+        KeywordHelper::replaceKeywords($fullDestinationPath, $patient);
 
         // Generate OnlyOffice key & token
-        
-        $key = OnlyOfficeHelper::generateDocumentKey(['file_path' => $tempStoragePath]);
-        $token = OnlyOfficeHelper::createJwtToken(['file_path' => $tempStoragePath], $key, secure_asset('storage/' . $tempStoragePath), $patient);
+        $key = OnlyOfficeHelper::generateDocumentKey($document, true);
+        $token = OnlyOfficeHelper::createJwtToken($document, $key, $fullDestinationPath, $patient);
 
         return response()->json([
             'success' => true,
-            'url' => secure_asset('storage/' . $tempStoragePath),
+            'url' => $fullDestinationPath,
             'fileType' => 'docx',
             'key' => $key,
             'token' => $token,
             'title' => $template->name,
+            'callbackUrl' => url('/api/onlyoffice/callback') . '?document_id=' . $documentId
         ]);
     }
 
