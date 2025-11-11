@@ -57,7 +57,7 @@ function initOnlyOfficeEditor(data) {
     }
 
     document.getElementById('onlyoffice-container').style.display = 'block';
-
+console.log(data.url);
     const config = {
         document: {
             fileType: data.fileType,
