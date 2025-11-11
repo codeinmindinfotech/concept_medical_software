@@ -373,10 +373,15 @@ class PatientDocumentController extends Controller
 
         if (isset($result['fileUrl'])) {
             file_put_contents($pdfPath, fopen($result['fileUrl'], 'r'));
+            echo $pdfPath;
             return response()->download($pdfPath);
         }
 
+        if (!is_array($result)) {
+            $result = ['response' => $result];
+        }
         \Log::error('OnlyOffice PDF conversion failed', $result);
+
         return back()->with('error', 'OnlyOffice conversion failed.');
     }
 
