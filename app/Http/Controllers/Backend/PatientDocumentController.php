@@ -21,7 +21,12 @@ class PatientDocumentController extends Controller
 {
     public function index(Patient $patient)
     {
-        $documents = $patient->documents()->with('template')->get();
+        $documents = $patient->documents()
+                            ->whereNotNull('file_path')
+                            ->where('file_path', '!=', '')
+                            ->with('template')
+                            ->orderBy('id', 'desc')
+                            ->get();
         return view('patients.documents.index', compact('documents', 'patient'));
     }
 
@@ -144,27 +149,7 @@ class PatientDocumentController extends Controller
     
                 
             $template = DocumentTemplate::findOrFail($request->document_template_id);
-            // $templatePath = storage_path('app/public/' . $template->file_path);
-    
-            // if (!is_file($templatePath)) {
-            //     return response()->json(['error' => 'Template file does not exist.'], 500);
-            // }
-
-            // $newFileName = uniqid('patient_doc_') . '.docx';
-            // $newStoragePath = "patient_docs/{$newFileName}";
-            // $newFullPath = storage_path("app/public/{$newStoragePath}");
-    
-            // $directoryPath = storage_path('app/public/patient_docs');
-            // if (!file_exists($directoryPath)) {
-            //     mkdir($directoryPath, 0775, true);
-            // }
-        
-            // if (!copy($templatePath, $newFullPath)) {
-            //     return back()->with('error', 'Could not copy template file.');
-            // }
-    
-            // KeywordHelper::replaceKeywords($newFullPath, $patient);
-    
+           
             // Update database
             $document->update([
                 'document_template_id' => $template->id,
