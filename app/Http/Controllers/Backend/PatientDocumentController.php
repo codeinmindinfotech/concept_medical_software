@@ -253,7 +253,7 @@ class PatientDocumentController extends Controller
         $data['document_template_id'] = $request->template_id ?? $template->id;
         $res = $document->update($data);
         \Log::info('docuemnt updated : ' . $res);
-        \Log::info('docuemnt saved', $document);
+        \Log::info('document saved', $document->toArray());
 
         // Replace placeholders with patient data
         KeywordHelper::replaceKeywords($fullDestinationPath, $patient);
