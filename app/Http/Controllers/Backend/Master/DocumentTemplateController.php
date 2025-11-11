@@ -254,26 +254,28 @@ class DocumentTemplateController extends Controller
     
     public function tempUpload(Request $request)
     {
-        $request->validate(['file' => 'required|file|mimes:doc,docx,pdf|max:2048']);
+        
+        $request->validate([
+            'file' => 'required|file|mimes:doc,docx,pdf|max:2048'
+        ]);
 
+        $documentId = $request->input('document_id'); // ✅ use input(), not query()
+
+        $template = DocumentTemplate::findOrFail($documentId);
         // Store temporary
         $file = $request->file('file');
-        // $tempPath = $file->store('temp', 'public');
-        $tempPath = $file->storeAs(
-            company_path('temp'),
-            uniqid('temp_') . '.' . $file->getClientOriginalExtension(),
+
+        $filePath = $file->storeAs(
+            company_path('document_templates'),
+            uniqid('template_') . '.' . $file->getClientOriginalExtension(),
             'public'
         );
+        $data['file_path'] = $filePath;
+        $template->update($data);
 
-        $tempTemplate = new DocumentTemplate();
-        $tempTemplate->id = Str::random(32);
-        $tempTemplate->file_path = $tempPath;
-        $tempTemplate->created_at = now();
-        $tempTemplate->updated_at = now();
-
-        $fileUrl = asset('storage/' . $tempPath). '?v=' . time();
-        $key = OnlyOfficeHelper::generateDocumentKey($tempTemplate,true);
-        $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($tempTemplate, $key, $fileUrl, current_user());
+        $fileUrl = asset('storage/' . $filePath). '?v=' . time();
+        $key = OnlyOfficeHelper::generateDocumentKey($template,true);
+        $token = OnlyOfficeHelper::createJwtTokenDocumentTemplate($template, $key, $fileUrl, current_user());
 
         return response()->json([
             'success' => true,
@@ -281,8 +283,8 @@ class DocumentTemplateController extends Controller
             'key' => $key,
             'token' => $token,
             'fileType' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION),
-            'tempPath' => $tempPath,
-            'callbackUrl' => url('/api/onlyoffice/document_callback') . '?tempPath=' . urlencode($tempPath)
+            'tempPath' => $filePath,
+            'callbackUrl' => url('/api/onlyoffice/document_callback') . '?document_id=' . $documentId
         ]);
     }
 
@@ -290,6 +292,8 @@ class DocumentTemplateController extends Controller
     {
         $template = DocumentTemplate::find($id);
         $filePath = $template->file_path;
+
+        Log::info('loadFile Function', ['documentId' => $id, 'filePath' => $filePath]);
 
         if (!$template || !$filePath) {
             return response()->json([

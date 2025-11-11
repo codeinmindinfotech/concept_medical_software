@@ -163,6 +163,7 @@ function loadExistingDocument(apiUrl) {
     fetch(apiUrl)
         .then(res => res.json())
         .then(data => {
+          alert("ddd");
             if (data.success) initEditor(data, data.title || "Existing Document");
             else console.error("Failed to load existing file.");
         })
@@ -184,7 +185,7 @@ document.getElementById('file').addEventListener('change', function(e) {
     .then(res => res.json())
     .then(data => {
         if (!data.success) return alert("❌ File upload failed.");
-
+alert({{ $template->id }});
         initEditor({
             fileType: data.fileType,
             key: data.key,
