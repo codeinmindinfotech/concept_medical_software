@@ -151,13 +151,27 @@ function initEditor(data, title) {
     if (docEditor) {
         try {
             docEditor.destroyEditor();
-            console.log("🧹 Previous OnlyOffice editor destroyed.");
-        } catch (err) {
-            console.warn("Failed to destroy old editor:", err);
-        }
+        } catch (err) {}
     }
 
     document.getElementById('onlyoffice-container').style.display = 'block';
+
+    // ✅ Dynamic plugin buttons from #tags-list
+    const pluginButtons = [];
+    document.querySelectorAll('#tags-list .tag-btn').forEach(btn => {
+        const tag = btn.dataset.tag;
+        pluginButtons.push({
+            type: "action",
+            text: `Insert ${tag}`,
+            action: () => {
+                if (docEditor && editorReady) {
+                    docEditor.executeCommand("PasteText", tag);
+                } else {
+                    alert("Editor not ready yet.");
+                }
+            }
+        });
+    });
 
     const config = {
         document: {
@@ -171,11 +185,16 @@ function initEditor(data, title) {
             mode: 'edit',
             user: {
                 id: '{{ auth()->id() ?? "1" }}',
-                name: "{{ auth()->user()->name ?? 'Guest' }}",
+                name: "{{ auth()->user()->name ?? 'Guest' }}"
             },
             customization: {
                 forcesave: true,
-                plugins: [] // we'll add dynamic plugins below
+                plugins: [
+                    {
+                        name: "DynamicTags",
+                        buttons: pluginButtons
+                    }
+                ]
             },
             callbackUrl: data.callbackUrl
         },
@@ -184,39 +203,12 @@ function initEditor(data, title) {
             onAppReady: function() {
                 editorReady = true;
                 console.log("OnlyOffice editor is ready.");
-            },
-            onDocumentStateChange: function(event) {
-                console.log("Document state:", event.data);
-            },
-            onRequestRefreshFile: function() {
-                docEditor.refreshFile();
             }
         }
     };
 
-    // ✅ Dynamic plugin buttons from your #tags-list
-    const pluginButtons = [];
-    document.querySelectorAll('#tags-list .tag-btn').forEach(btn => {
-        const tag = btn.dataset.tag;
-        pluginButtons.push({
-            type: "action",
-            text: `Insert ${tag}`,
-            action: () => {
-                if (docEditor && editorReady) docEditor.executeCommand("PasteText", tag);
-            }
-        });
-    });
-
-    // Add dynamic plugin to editor config
-    config.editorConfig.customization.plugins.push({
-        name: "DynamicTags",
-        buttons: pluginButtons
-    });
-
     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
 }
-
-
 
 function loadExistingDocument(apiUrl) {
     fetch(apiUrl)
