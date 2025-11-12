@@ -80,10 +80,6 @@
   </div>
 </div>
 
-<div id="onlyoffice-container" style="width: 100%; height: 90vh; display:none;">
-  <div id="onlyoffice-editor"></div>
-</div>
-
 @push('scripts')
 <script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}/web-apps/apps/api/documents/api.js"></script>
 <script>
@@ -136,6 +132,17 @@ function initEditor(data, title) {
           },
           customization: {
               forcesave: true,
+              plugins: [
+                  {
+                      name: "InsertTags",
+                      buttons: [
+                          { type: "action", text: "[FirstName]", action: () => docEditor.executeCommand("PasteText", "[FirstName]") },
+                          { type: "action", text: "[LastName]", action: () => docEditor.executeCommand("PasteText", "[LastName]") },
+                          { type: "action", text: "[DOB]", action: () => docEditor.executeCommand("PasteText", "[DOB]") },
+                          { type: "action", text: "[Gender]", action: () => docEditor.executeCommand("PasteText", "[Gender]") }
+                      ]
+                  }
+              ],
               toolbar: {
                   tabs: [
                       {
