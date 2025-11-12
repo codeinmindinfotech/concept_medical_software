@@ -84,144 +84,6 @@
 <script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}/web-apps/apps/api/documents/api.js"></script>
 <script>
 let editorReady = false;
-let docEditor = null;
-
-// List of tags
-const tags = ["[FirstName]", "[LastName]", "[DOB]", "[Gender]"];
-
-// Load existing document if editing
-@if(!empty($template->file_path) && $template->id)
-  loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
-@endif
-
-function initEditor(data, title) {
-  if (docEditor) {
-      try { docEditor.destroyEditor(); } catch(e){ console.warn("Failed to destroy old editor", e); }
-  }
-
-  document.getElementById('onlyoffice-container').style.display = 'block';
-
-  // Build toolbar buttons dynamically
-  const tagButtons = tags.map(tag => ({
-      type: "button",
-      id: "insert" + tag.replace(/\[|\]/g,""),
-      text: tag,
-      onClick: function() {
-          if (docEditor && editorReady) {
-              docEditor.executeCommand("PasteText", tag);
-          } else {
-              alert("Editor not ready yet!");
-          }
-      }
-  }));
-
-  const config = {
-      document: {
-          fileType: data.fileType,
-          key: data.key,
-          title: title,
-          url: data.url
-      },
-      documentType: 'word',
-      token: data.token,
-      editorConfig: {
-          mode: 'edit',
-          user: {
-              id: '{{ auth()->id() ?? "1" }}',
-              name: '{{ auth()->user()->name ?? "Guest" }}'
-          },
-          customization: {
-              forcesave: true,
-              plugins: [
-                  {
-                      name: "InsertTags",
-                      buttons: [
-                          { type: "action", text: "[FirstName]", action: () => docEditor.executeCommand("PasteText", "[FirstName]") },
-                          { type: "action", text: "[LastName]", action: () => docEditor.executeCommand("PasteText", "[LastName]") },
-                          { type: "action", text: "[DOB]", action: () => docEditor.executeCommand("PasteText", "[DOB]") },
-                          { type: "action", text: "[Gender]", action: () => docEditor.executeCommand("PasteText", "[Gender]") }
-                      ]
-                  }
-              ],
-              toolbar: {
-                  tabs: [
-                      {
-                          name: "custom",
-                          groups: [
-                              {
-                                  name: "Tags",
-                                  items: tagButtons
-                              }
-                          ]
-                      }
-                  ]
-              }
-          },
-          callbackUrl: data.callbackUrl
-      },
-      events: {
-          onAppReady: function() {
-              editorReady = true;
-              console.log("OnlyOffice editor is ready.");
-          },
-          onDocumentStateChange: function(event) {
-              console.log("Document state:", event.data);
-          },
-          onRequestRefreshFile: function() {
-              if(docEditor) docEditor.refreshFile();
-          }
-      }
-  };
-
-  docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
-}
-
-// Load existing file
-function loadExistingDocument(apiUrl) {
-  fetch(apiUrl)
-      .then(res => res.json())
-      .then(data => {
-          if (data.success) initEditor(data, data.title || "Existing Document");
-          else console.error("Failed to load existing file.");
-      })
-      .catch(err => console.error("Error loading file:", err));
-}
-
-// Upload new file and initialize editor
-document.getElementById('file').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('document_id', "{{ $template->id }}");
-
-  fetch("{{ guard_route('documents.tempUpload') }}", {
-      method: "POST",
-      headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
-      body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-      if (!data.success) return alert("File upload failed!");
-      initEditor({
-          fileType: data.fileType,
-          key: data.key,
-          title: file.name,
-          url: data.url,
-          token: data.token,
-          callbackUrl: "{{ url('/api/onlyoffice/document_callback') }}?document_id={{ $template->id }}"
-      }, file.name);
-  })
-  .catch(err => console.error("Upload error:", err));
-});
-</script>
-@endpush
-{{-- 
-@push('scripts')
-<script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}/web-apps/apps/api/documents/api.js"></script>
-<script>
-let editorReady = false;
 let docEditor = null; // keep reference globally
 @if(!empty($template->file_path) && $template->id)
   loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
@@ -321,6 +183,46 @@ document.getElementById('file').addEventListener('change', function(e) {
     .catch(err => console.error("Upload error:", err));
 });
 
+
+// document.getElementById('file').addEventListener('change', function(e) {
+//     let file = e.target.files[0];
+//     if (!file) return;
+
+//     let formData = new FormData();
+//     formData.append('file', file);
+
+//     fetch("{{ guard_route('documents.tempUpload') }}", {
+//         method: "POST",
+//         headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+//         body: formData
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         if (data.success) {
+//           document.getElementById('tempPath').value = data.tempPath || data.url;
+//           console.log(data.tempPath || data.url);
+//             // ✅ Build callback URL for temp file
+//             const callbackUrl =
+//                 "{{ url('/api/onlyoffice/document_callback') }}" +
+//                 "?tempPath=" + encodeURIComponent(data.tempPath);
+//                 initEditor({
+//                     fileType: data.fileType,
+//                     key: data.key,
+//                     title: file.name,
+//                     url: data.url,
+//                     token: data.token,
+//                     callbackUrl: data.callbackUrl // points to tempPath
+//                 }, file.name);
+//             // Pass callback URL into editor
+//             // initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
+//             // initEditor(data, file.name || "new Document");
+//           } else {
+//             alert("❌ File upload failed.");
+//         }
+//     })
+//     .catch(err => console.error("Upload error:", err));
+// });
+
 function insertTagAtCursor(tag) {
     if (!docEditor || !editorReady) {
         alert("Editor not ready yet. Please wait...");
@@ -345,4 +247,4 @@ document.querySelectorAll('.tag-btn').forEach(btn => {
     });
 });
 </script>
-@endpush --}}
+@endpush
