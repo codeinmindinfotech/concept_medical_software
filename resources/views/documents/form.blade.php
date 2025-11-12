@@ -52,12 +52,12 @@
               </div>
               <div class="card-body">
                 @include('documents.keywords')
-                {{-- <div id="tags-list" class="d-flex flex-wrap gap-2">
+                <div id="tags-list" class="d-flex flex-wrap gap-2">
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[FirstName]">[FirstName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[LastName]">[LastName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[DOB]">[DOB]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[Gender]">[Gender]</button>
-                </div> --}}
+                </div>
               </div>
             </div>
           </div>
@@ -89,6 +89,64 @@ let docEditor = null; // keep reference globally
   loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
 @endif
 
+// function initEditor(data, title) {
+//     if (docEditor) {
+//         try {
+//             docEditor.destroyEditor();
+//             console.log("🧹 Previous OnlyOffice editor destroyed.");
+//         } catch (err) {
+//             console.warn("Failed to destroy old editor:", err);
+//         }
+//     }
+
+//     document.getElementById('onlyoffice-container').style.display = 'block';
+
+//     const config = {
+//         document: {
+//             fileType: data.fileType,
+//             key: data.key,
+//             title: title,
+//             url: data.url,
+//         },
+//         documentType: 'word',
+//         editorConfig: {
+//             mode: 'edit',
+//             user: {
+//                 id: '{{ auth()->id() ?? "1" }}',
+//                 name: "{{ auth()->user()->name ?? 'Guest' }}"
+//             },
+//             customization: { forcesave: true },
+//             callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
+
+//         },
+//         token: data.token,
+//         events: {
+//             onAppReady: function() {
+//                 editorReady = true;
+//                 console.log("OnlyOffice editor is ready.");
+//             },
+//             onDocumentStateChange: function(event) {
+//                 let status = null;
+
+//                 // OnlyOffice sometimes returns a boolean instead of an object
+//                 if (typeof event.data === "object" && event.data.status !== undefined) {
+//                     status = event.data.status;
+//                 } else if (typeof event.data === "boolean") {
+//                     status = event.data ? 1 : 0; // treat 'true' as editing
+//                 }
+//                 console.log("Document state:", event.data, "Interpreted status:", status);
+//              },
+//             onRequestRefreshFile: function() {
+//                 console.log("Editor requested file refresh.");
+//                 docEditor.refreshFile(); // pull the latest version from your server
+//             }
+//         }
+
+//     };
+//     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+// }
+
+
 function initEditor(data, title) {
     if (docEditor) {
         try {
@@ -113,11 +171,40 @@ function initEditor(data, title) {
             mode: 'edit',
             user: {
                 id: '{{ auth()->id() ?? "1" }}',
-                name: "{{ auth()->user()->name ?? 'Guest' }}"
+                name: "{{ auth()->user()->name ?? 'Guest' }}",
             },
-            customization: { forcesave: true },
-            callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
-
+            customization: {
+                forcesave: true,
+                plugins: [
+                    {
+                        name: "InsertTagPlugin",
+                        buttons: [
+                            {
+                                type: "action",
+                                text: "Insert [FirstName]",
+                                action: function () {
+                                    if (docEditor && editorReady) {
+                                        docEditor.executeCommand("PasteText", "[FirstName]");
+                                    } else {
+                                        alert("Editor not ready yet.");
+                                    }
+                                },
+                                icon: '<svg ...>...</svg>' // optional SVG icon
+                            },
+                            {
+                                type: "action",
+                                text: "Insert [LastName]",
+                                action: function () {
+                                    if (docEditor && editorReady) {
+                                        docEditor.executeCommand("PasteText", "[LastName]");
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            callbackUrl: data.callbackUrl
         },
         token: data.token,
         events: {
@@ -126,25 +213,17 @@ function initEditor(data, title) {
                 console.log("OnlyOffice editor is ready.");
             },
             onDocumentStateChange: function(event) {
-                let status = null;
-
-                // OnlyOffice sometimes returns a boolean instead of an object
-                if (typeof event.data === "object" && event.data.status !== undefined) {
-                    status = event.data.status;
-                } else if (typeof event.data === "boolean") {
-                    status = event.data ? 1 : 0; // treat 'true' as editing
-                }
-                console.log("Document state:", event.data, "Interpreted status:", status);
-             },
+                console.log("Document state:", event.data);
+            },
             onRequestRefreshFile: function() {
-                console.log("Editor requested file refresh.");
-                docEditor.refreshFile(); // pull the latest version from your server
+                docEditor.refreshFile();
             }
         }
-
     };
+
     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
 }
+
 
 function loadExistingDocument(apiUrl) {
     fetch(apiUrl)
@@ -183,46 +262,6 @@ document.getElementById('file').addEventListener('change', function(e) {
     .catch(err => console.error("Upload error:", err));
 });
 
-
-// document.getElementById('file').addEventListener('change', function(e) {
-//     let file = e.target.files[0];
-//     if (!file) return;
-
-//     let formData = new FormData();
-//     formData.append('file', file);
-
-//     fetch("{{ guard_route('documents.tempUpload') }}", {
-//         method: "POST",
-//         headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
-//         body: formData
-//     })
-//     .then(res => res.json())
-//     .then(data => {
-//         if (data.success) {
-//           document.getElementById('tempPath').value = data.tempPath || data.url;
-//           console.log(data.tempPath || data.url);
-//             // ✅ Build callback URL for temp file
-//             const callbackUrl =
-//                 "{{ url('/api/onlyoffice/document_callback') }}" +
-//                 "?tempPath=" + encodeURIComponent(data.tempPath);
-//                 initEditor({
-//                     fileType: data.fileType,
-//                     key: data.key,
-//                     title: file.name,
-//                     url: data.url,
-//                     token: data.token,
-//                     callbackUrl: data.callbackUrl // points to tempPath
-//                 }, file.name);
-//             // Pass callback URL into editor
-//             // initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
-//             // initEditor(data, file.name || "new Document");
-//           } else {
-//             alert("❌ File upload failed.");
-//         }
-//     })
-//     .catch(err => console.error("Upload error:", err));
-// });
-
 function insertTagAtCursor(tag) {
     if (!docEditor || !editorReady) {
         alert("Editor not ready yet. Please wait...");
@@ -238,7 +277,6 @@ function insertTagAtCursor(tag) {
         alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
     }
 }
-
 
 // ✅ Tag buttons
 document.querySelectorAll('.tag-btn').forEach(btn => {

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tag Inserter</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 10px; }
+    #tags-list { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag-btn { padding: 5px 10px; border: 1px solid #007bff; border-radius: 4px; background: white; color: #007bff; cursor: pointer; font-size: 14px; }
+    .tag-btn:hover { background: #007bff; color: white; }
+  </style>
+</head>
+<body>
+  <div id="tags-list">
+    <button class="tag-btn" onclick="insertTag('[FirstName]')">[FirstName]</button>
+    <button class="tag-btn" onclick="insertTag('[LastName]')">[LastName]</button>
+    <button class="tag-btn" onclick="insertTag('[DOB]')">[DOB]</button>
+    <button class="tag-btn" onclick="insertTag('[Gender]')">[Gender]</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
