@@ -175,34 +175,7 @@ function initEditor(data, title) {
             },
             customization: {
                 forcesave: true,
-                plugins: [
-                    {
-                        name: "InsertTagPlugin",
-                        buttons: [
-                            {
-                                type: "action",
-                                text: "Insert [FirstName]",
-                                action: function () {
-                                    if (docEditor && editorReady) {
-                                        docEditor.executeCommand("PasteText", "[FirstName]");
-                                    } else {
-                                        alert("Editor not ready yet.");
-                                    }
-                                },
-                                icon: '<svg ...>...</svg>' // optional SVG icon
-                            },
-                            {
-                                type: "action",
-                                text: "Insert [LastName]",
-                                action: function () {
-                                    if (docEditor && editorReady) {
-                                        docEditor.executeCommand("PasteText", "[LastName]");
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                ]
+                plugins: [] // we'll add dynamic plugins below
             },
             callbackUrl: data.callbackUrl
         },
@@ -221,8 +194,28 @@ function initEditor(data, title) {
         }
     };
 
+    // ✅ Dynamic plugin buttons from your #tags-list
+    const pluginButtons = [];
+    document.querySelectorAll('#tags-list .tag-btn').forEach(btn => {
+        const tag = btn.dataset.tag;
+        pluginButtons.push({
+            type: "action",
+            text: `Insert ${tag}`,
+            action: () => {
+                if (docEditor && editorReady) docEditor.executeCommand("PasteText", tag);
+            }
+        });
+    });
+
+    // Add dynamic plugin to editor config
+    config.editorConfig.customization.plugins.push({
+        name: "DynamicTags",
+        buttons: pluginButtons
+    });
+
     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
 }
+
 
 
 function loadExistingDocument(apiUrl) {
@@ -261,24 +254,6 @@ document.getElementById('file').addEventListener('change', function(e) {
     })
     .catch(err => console.error("Upload error:", err));
 });
-const pluginButtons = [];
-document.querySelectorAll('#tags-list .tag-btn').forEach(btn => {
-    const tag = btn.dataset.tag;
-    pluginButtons.push({
-        type: "action",
-        text: `Insert ${tag}`,
-        action: () => {
-            if (docEditor && editorReady) docEditor.executeCommand("PasteText", tag);
-        }
-    });
-});
-
-config.editorConfig.customization.plugins = [
-    {
-        name: "DynamicTags",
-        buttons: pluginButtons
-    }
-];
 
 // function insertTagAtCursor(tag) {
 //     if (!docEditor || !editorReady) {
