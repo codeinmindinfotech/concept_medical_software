@@ -261,28 +261,46 @@ document.getElementById('file').addEventListener('change', function(e) {
     })
     .catch(err => console.error("Upload error:", err));
 });
-
-function insertTagAtCursor(tag) {
-    if (!docEditor || !editorReady) {
-        alert("Editor not ready yet. Please wait...");
-        return;
-    }
-
-    try {
-        // 👇 This is the correct command for inserting text
-        docEditor.executeCommand("PasteText", tag);
-        console.log(`✅ Inserted tag: ${tag}`);
-    } catch (err) {
-        console.error("❌ OnlyOffice API does not support PasteText directly:", err);
-        alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
-    }
-}
-
-// ✅ Tag buttons
-document.querySelectorAll('.tag-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        insertTagAtCursor(this.dataset.tag);
+const pluginButtons = [];
+document.querySelectorAll('#tags-list .tag-btn').forEach(btn => {
+    const tag = btn.dataset.tag;
+    pluginButtons.push({
+        type: "action",
+        text: `Insert ${tag}`,
+        action: () => {
+            if (docEditor && editorReady) docEditor.executeCommand("PasteText", tag);
+        }
     });
 });
+
+config.editorConfig.customization.plugins = [
+    {
+        name: "DynamicTags",
+        buttons: pluginButtons
+    }
+];
+
+// function insertTagAtCursor(tag) {
+//     if (!docEditor || !editorReady) {
+//         alert("Editor not ready yet. Please wait...");
+//         return;
+//     }
+
+//     try {
+//         // 👇 This is the correct command for inserting text
+//         docEditor.executeCommand("PasteText", tag);
+//         console.log(`✅ Inserted tag: ${tag}`);
+//     } catch (err) {
+//         console.error("❌ OnlyOffice API does not support PasteText directly:", err);
+//         alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
+//     }
+// }
+
+// // ✅ Tag buttons
+// document.querySelectorAll('.tag-btn').forEach(btn => {
+//     btn.addEventListener('click', function() {
+//         insertTagAtCursor(this.dataset.tag);
+//     });
+// });
 </script>
 @endpush
