@@ -52,12 +52,12 @@
               </div>
               <div class="card-body">
                 @include('documents.keywords')
-                <div id="tags-list" class="d-flex flex-wrap gap-2">
+                {{-- <div id="tags-list" class="d-flex flex-wrap gap-2">
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[FirstName]">[FirstName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[LastName]">[LastName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[DOB]">[DOB]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[Gender]">[Gender]</button>
-                </div>
+                </div> --}}
               </div>
             </div>
           </div>
@@ -80,6 +80,137 @@
   </div>
 </div>
 
+<div id="onlyoffice-container" style="width: 100%; height: 90vh; display:none;">
+  <div id="onlyoffice-editor"></div>
+</div>
+
+@push('scripts')
+<script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}/web-apps/apps/api/documents/api.js"></script>
+<script>
+let editorReady = false;
+let docEditor = null;
+
+// List of tags
+const tags = ["[FirstName]", "[LastName]", "[DOB]", "[Gender]"];
+
+// Load existing document if editing
+@if(!empty($template->file_path) && $template->id)
+  loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
+@endif
+
+function initEditor(data, title) {
+  if (docEditor) {
+      try { docEditor.destroyEditor(); } catch(e){ console.warn("Failed to destroy old editor", e); }
+  }
+
+  document.getElementById('onlyoffice-container').style.display = 'block';
+
+  // Build toolbar buttons dynamically
+  const tagButtons = tags.map(tag => ({
+      type: "button",
+      id: "insert" + tag.replace(/\[|\]/g,""),
+      text: tag,
+      onClick: function() {
+          if (docEditor && editorReady) {
+              docEditor.executeCommand("PasteText", tag);
+          } else {
+              alert("Editor not ready yet!");
+          }
+      }
+  }));
+
+  const config = {
+      document: {
+          fileType: data.fileType,
+          key: data.key,
+          title: title,
+          url: data.url
+      },
+      documentType: 'word',
+      token: data.token,
+      editorConfig: {
+          mode: 'edit',
+          user: {
+              id: '{{ auth()->id() ?? "1" }}',
+              name: '{{ auth()->user()->name ?? "Guest" }}'
+          },
+          customization: {
+              forcesave: true,
+              toolbar: {
+                  tabs: [
+                      {
+                          name: "custom",
+                          groups: [
+                              {
+                                  name: "Tags",
+                                  items: tagButtons
+                              }
+                          ]
+                      }
+                  ]
+              }
+          },
+          callbackUrl: data.callbackUrl
+      },
+      events: {
+          onAppReady: function() {
+              editorReady = true;
+              console.log("OnlyOffice editor is ready.");
+          },
+          onDocumentStateChange: function(event) {
+              console.log("Document state:", event.data);
+          },
+          onRequestRefreshFile: function() {
+              if(docEditor) docEditor.refreshFile();
+          }
+      }
+  };
+
+  docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+}
+
+// Load existing file
+function loadExistingDocument(apiUrl) {
+  fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+          if (data.success) initEditor(data, data.title || "Existing Document");
+          else console.error("Failed to load existing file.");
+      })
+      .catch(err => console.error("Error loading file:", err));
+}
+
+// Upload new file and initialize editor
+document.getElementById('file').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('document_id', "{{ $template->id }}");
+
+  fetch("{{ guard_route('documents.tempUpload') }}", {
+      method: "POST",
+      headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+      body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+      if (!data.success) return alert("File upload failed!");
+      initEditor({
+          fileType: data.fileType,
+          key: data.key,
+          title: file.name,
+          url: data.url,
+          token: data.token,
+          callbackUrl: "{{ url('/api/onlyoffice/document_callback') }}?document_id={{ $template->id }}"
+      }, file.name);
+  })
+  .catch(err => console.error("Upload error:", err));
+});
+</script>
+@endpush
+{{-- 
 @push('scripts')
 <script type="text/javascript" src="{{ rtrim(config('onlyoffice.server_url'), '/') }}/web-apps/apps/api/documents/api.js"></script>
 <script>
@@ -89,89 +220,17 @@ let docEditor = null; // keep reference globally
   loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
 @endif
 
-// function initEditor(data, title) {
-//     if (docEditor) {
-//         try {
-//             docEditor.destroyEditor();
-//             console.log("🧹 Previous OnlyOffice editor destroyed.");
-//         } catch (err) {
-//             console.warn("Failed to destroy old editor:", err);
-//         }
-//     }
-
-//     document.getElementById('onlyoffice-container').style.display = 'block';
-
-//     const config = {
-//         document: {
-//             fileType: data.fileType,
-//             key: data.key,
-//             title: title,
-//             url: data.url,
-//         },
-//         documentType: 'word',
-//         editorConfig: {
-//             mode: 'edit',
-//             user: {
-//                 id: '{{ auth()->id() ?? "1" }}',
-//                 name: "{{ auth()->user()->name ?? 'Guest' }}"
-//             },
-//             customization: { forcesave: true },
-//             callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
-
-//         },
-//         token: data.token,
-//         events: {
-//             onAppReady: function() {
-//                 editorReady = true;
-//                 console.log("OnlyOffice editor is ready.");
-//             },
-//             onDocumentStateChange: function(event) {
-//                 let status = null;
-
-//                 // OnlyOffice sometimes returns a boolean instead of an object
-//                 if (typeof event.data === "object" && event.data.status !== undefined) {
-//                     status = event.data.status;
-//                 } else if (typeof event.data === "boolean") {
-//                     status = event.data ? 1 : 0; // treat 'true' as editing
-//                 }
-//                 console.log("Document state:", event.data, "Interpreted status:", status);
-//              },
-//             onRequestRefreshFile: function() {
-//                 console.log("Editor requested file refresh.");
-//                 docEditor.refreshFile(); // pull the latest version from your server
-//             }
-//         }
-
-//     };
-//     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
-// }
-
-
 function initEditor(data, title) {
     if (docEditor) {
         try {
             docEditor.destroyEditor();
-        } catch (err) {}
+            console.log("🧹 Previous OnlyOffice editor destroyed.");
+        } catch (err) {
+            console.warn("Failed to destroy old editor:", err);
+        }
     }
 
     document.getElementById('onlyoffice-container').style.display = 'block';
-
-    // ✅ Dynamic plugin buttons from #tags-list
-    const pluginButtons = [];
-    document.querySelectorAll('#tags-list .tag-btn').forEach(btn => {
-        const tag = btn.dataset.tag;
-        pluginButtons.push({
-            type: "action",
-            text: `Insert ${tag}`,
-            action: () => {
-                if (docEditor && editorReady) {
-                    docEditor.executeCommand("PasteText", tag);
-                } else {
-                    alert("Editor not ready yet.");
-                }
-            }
-        });
-    });
 
     const config = {
         document: {
@@ -187,26 +246,34 @@ function initEditor(data, title) {
                 id: '{{ auth()->id() ?? "1" }}',
                 name: "{{ auth()->user()->name ?? 'Guest' }}"
             },
-            customization: {
-                forcesave: true,
-                plugins: [
-                    {
-                        name: "DynamicTags",
-                        buttons: pluginButtons
-                    }
-                ]
-            },
-            callbackUrl: data.callbackUrl
+            customization: { forcesave: true },
+            callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
+
         },
         token: data.token,
         events: {
             onAppReady: function() {
                 editorReady = true;
                 console.log("OnlyOffice editor is ready.");
+            },
+            onDocumentStateChange: function(event) {
+                let status = null;
+
+                // OnlyOffice sometimes returns a boolean instead of an object
+                if (typeof event.data === "object" && event.data.status !== undefined) {
+                    status = event.data.status;
+                } else if (typeof event.data === "boolean") {
+                    status = event.data ? 1 : 0; // treat 'true' as editing
+                }
+                console.log("Document state:", event.data, "Interpreted status:", status);
+             },
+            onRequestRefreshFile: function() {
+                console.log("Editor requested file refresh.");
+                docEditor.refreshFile(); // pull the latest version from your server
             }
         }
-    };
 
+    };
     docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
 }
 
@@ -247,27 +314,28 @@ document.getElementById('file').addEventListener('change', function(e) {
     .catch(err => console.error("Upload error:", err));
 });
 
-// function insertTagAtCursor(tag) {
-//     if (!docEditor || !editorReady) {
-//         alert("Editor not ready yet. Please wait...");
-//         return;
-//     }
+function insertTagAtCursor(tag) {
+    if (!docEditor || !editorReady) {
+        alert("Editor not ready yet. Please wait...");
+        return;
+    }
 
-//     try {
-//         // 👇 This is the correct command for inserting text
-//         docEditor.executeCommand("PasteText", tag);
-//         console.log(`✅ Inserted tag: ${tag}`);
-//     } catch (err) {
-//         console.error("❌ OnlyOffice API does not support PasteText directly:", err);
-//         alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
-//     }
-// }
+    try {
+        // 👇 This is the correct command for inserting text
+        docEditor.executeCommand("PasteText", tag);
+        console.log(`✅ Inserted tag: ${tag}`);
+    } catch (err) {
+        console.error("❌ OnlyOffice API does not support PasteText directly:", err);
+        alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
+    }
+}
 
-// // ✅ Tag buttons
-// document.querySelectorAll('.tag-btn').forEach(btn => {
-//     btn.addEventListener('click', function() {
-//         insertTagAtCursor(this.dataset.tag);
-//     });
-// });
+
+// ✅ Tag buttons
+document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        insertTagAtCursor(this.dataset.tag);
+    });
+});
 </script>
-@endpush
+@endpush --}}
