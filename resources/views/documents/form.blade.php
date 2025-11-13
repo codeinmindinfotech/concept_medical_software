@@ -117,16 +117,18 @@ function initEditor(data, title) {
                 id: '{{ auth()->id() ?? "1" }}',
                 name: "{{ auth()->user()->name ?? 'Guest' }}"
             },
-            customization: { forcesave: true },
+            customization: { 
+              forcesave: true ,
+              plugins: {
+                    autoload: ['myplugin'] // <-- load your plugin
+                }
+            },
             callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
 
         },
         token: data.token,
         events: {
-            onAppReady: function() {
-              editorReady = true;
-              console.log("OnlyOffice editor is ready.");
-            },
+            onAppReady: () => console.log("OnlyOffice editor is ready"),
             onDocumentStateChange: function(event) {
                 let status = null;
 
@@ -224,13 +226,19 @@ document.getElementById('file').addEventListener('change', function(e) {
 //     })
 //     .catch(err => console.error("Upload error:", err));
 // });
+window.Asc.plugin.init = function() {
+    console.log("✅ Tag Inserter plugin initialized");
+};
 
-function onEditorReady() {
-    editorReady = true;
-    console.log("OnlyOffice editor is ready.");
-
-    // Enable tag buttons now that editor is ready
-    document.querySelectorAll('.tag-btn').forEach(btn => btn.disabled = false);
+// Insert a tag at the current cursor position
+function insertTag(tag) {
+    if (window.Asc.plugin) {
+        window.Asc.plugin.executeMethod("InsertText", [tag]);
+        console.log("Inserted tag:", tag);
+    } else {
+        console.error("Plugin API not available");
+        alert("Cannot insert tag. Make sure the OnlyOffice editor is loaded.");
+    }
 }
 
 
