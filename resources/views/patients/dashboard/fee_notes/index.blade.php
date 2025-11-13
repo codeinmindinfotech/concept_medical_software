@@ -25,7 +25,7 @@
                     <div class="card-body" id="FeeNoteListContainer">
                         @if($feeNotes->count())
                         <table class="table table-bordered" id="FeeNoteTable">
-                            <thead class="table-dark">
+                            <thead>
                                 <tr>
                                     <th>Id</th>
                                     <th>Date</th>

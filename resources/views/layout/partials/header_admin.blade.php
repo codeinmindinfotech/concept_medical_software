@@ -20,12 +20,12 @@
         <i class="fe fe-text-align-left"></i>
     </a>
     
-    <div class="top-nav-search">
+    {{-- <div class="top-nav-search">
         <form>
             <input type="text" class="form-control" placeholder="Search here">
             <button class="btn" type="submit"><i class="fa fa-search"></i></button>
         </form>
-    </div>
+    </div> --}}
     
     <!-- Mobile Menu Toggle -->
     <a class="mobile_btn" id="mobile_btn">
@@ -39,7 +39,7 @@
         <!-- Notifications -->
         <li class="nav-item dropdown noti-dropdown">
             <a href="javascript:;" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
-                <i class="fe fe-bell"></i> <span class="badge rounded-pill">3</span>
+                <i class="fe fe-bell"></i> <span class="badge rounded-pill" id="notification-count"></span>
             </a>
             <div class="dropdown-menu notifications">
                 <div class="topnav-dropdown-header">
@@ -47,63 +47,12 @@
                     <a href="javascript:void(0)" class="clear-noti"> Clear All </a>
                 </div>
                 <div class="noti-content">
-                    <ul class="notification-list">
-                        <li class="notification-message">
-                            <a href="javascript:;">
-                                <div class="notify-block d-flex">
-                                    <span class="avatar avatar-sm flex-shrink-0">
-                                        <img class="avatar-img rounded-circle" alt="User Image" src="{{ URL::asset('/assets_admin/img/doctors/doctor-thumb-01.jpg')}}">
-                                    </span>
-                                    <div class="media-body flex-grow-1">
-                                        <p class="noti-details"><span class="noti-title">Dr. Ruby Perrin</span> Schedule <span class="noti-title">her appointment</span></p>
-                                        <p class="noti-time"><span class="notification-time">4 mins ago</span></p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="notification-message">
-                            <a href="javascript:;">
-                                <div class="notify-block d-flex">
-                                    <span class="avatar avatar-sm flex-shrink-0">
-                                        <img class="avatar-img rounded-circle" alt="User Image" src="{{ URL::asset('/assets_admin/img/patients/patient1.jpg')}}">
-                                    </span>
-                                    <div class="media-body flex-grow-1">
-                                        <p class="noti-details"><span class="noti-title">Charlene Reed</span> has booked her appointment to <span class="noti-title">Dr. Ruby Perrin</span></p>
-                                        <p class="noti-time"><span class="notification-time">6 mins ago</span></p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="notification-message">
-                            <a href="javascript:;">
-                                <div class="notify-block d-flex">
-                                    <span class="avatar avatar-sm flex-shrink-0">
-                                        <img class="avatar-img rounded-circle" alt="User Image" src="{{ URL::asset('/assets_admin/img/patients/patient2.jpg')}}">
-                                    </span>
-                                    <div class="media-body flex-grow-1">
-                                    <p class="noti-details"><span class="noti-title">Travis Trimble</span> sent a amount of $210 for his <span class="noti-title">appointment</span></p>
-                                    <p class="noti-time"><span class="notification-time">8 mins ago</span></p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="notification-message">
-                            <a href="javascript:;">
-                                <div class="notify-block d-flex">
-                                    <span class="avatar avatar-sm flex-shrink-0">
-                                        <img class="avatar-img rounded-circle" alt="User Image" src="{{ URL::asset('/assets_admin/img/patients/patient3.jpg')}}">
-                                    </span>
-                                    <div class="media-body flex-grow-1">
-                                        <p class="noti-details"><span class="noti-title">Carl Kelly</span> send a message <span class="noti-title"> to his doctor</span></p>
-                                        <p class="noti-time"><span class="notification-time">12 mins ago</span></p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
+                    <ul class="notification-list" id="notification-list">
+                         <!-- Run time Notification Notifications -->                     
                     </ul>
                 </div>
                 <div class="topnav-dropdown-footer">
-                    <a href="javascript:;">View all Notifications</a>
+                    <a href="{{ guard_route('notifications.index') }}">View all Notifications</a>
                 </div>
             </div>
         </li>
@@ -120,13 +69,18 @@
                         <img src="{{ URL::asset('/assets_admin/img/profiles/avatar-01.jpg')}}" alt="User Image" class="avatar-img rounded-circle">
                     </div>
                     <div class="user-text">
-                        <h6>Ryan Taylor</h6>
+                        <h6>{{ Auth::user()->name ?? Auth::user()->full_name }}</h6>
                         <p class="text-muted mb-0">Administrator</p>
                     </div>
                 </div>
-                <a class="dropdown-item" href="{{url('admin/profile')}}">My Profile</a>
-                <a class="dropdown-item" href="{{url('admin/settings')}}">Settings</a>
-                <a class="dropdown-item" href="{{url('admin/login')}}">Logout</a>
+                <a class="dropdown-item" href="{{ guard_route('password.change') }}">Change Password</a>
+                {{-- <a class="dropdown-item" href="{{url('admin/settings')}}">Settings</a> --}}
+                <a class="dropdown-item" href="{{guard_route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    {{ __('Logout') }}
+                </a>
+                <form id="logout-form" action="{{guard_route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
             </div>
         </li>
         <!-- /User Menu -->

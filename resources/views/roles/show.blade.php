@@ -10,7 +10,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Show Role',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('roles.index'),

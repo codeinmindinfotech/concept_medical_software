@@ -11,7 +11,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Create Clinic',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('clinics.index'),

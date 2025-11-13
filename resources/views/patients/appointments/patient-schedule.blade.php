@@ -14,7 +14,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Patients Appointment ',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('patients.index'),

@@ -10,7 +10,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Send Notification to Patients or Doctors',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('notifications.index'),

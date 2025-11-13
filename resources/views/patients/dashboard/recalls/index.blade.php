@@ -22,7 +22,7 @@
             @endif
 
             <table class="table table-bordered" id="RecallTable">
-                <thead class="table-dark">
+                <thead>
                     <tr>
                         <th>Id</th>
                         <th>Date</th>

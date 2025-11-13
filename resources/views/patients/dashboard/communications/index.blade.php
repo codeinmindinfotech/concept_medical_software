@@ -19,7 +19,7 @@
 
             <table class="table table-hover table-bordered data-table align-middle mb-0" 
             data-route="{{guard_route('communications.received', ['communication' => '__ID__']) }}" id="CommunicationTable">
-                <thead class="table-dark">
+                <thead>
                     <tr>
                         <th>ID</th>
                         <th>Date</th>

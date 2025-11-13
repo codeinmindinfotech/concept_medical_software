@@ -192,6 +192,9 @@
         unreadUrl: "{{ guard_route('notifications.unread') }}"
     };
 </script>
+<script>
+    const defaultAvatar = "{{ URL::asset('/assets_admin/img/doctors/doctor-thumb-01.jpg') }}";
+</script>
 <script src="{{ asset('theme/main/js/notification.js') }}"></script>
 @endif
 </body>

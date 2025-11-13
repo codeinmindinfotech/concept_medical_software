@@ -1,5 +1,5 @@
 <table class="table table-hover align-middle text-nowrap" id="ClinicTable">
-    <thead class="table-dark">
+    <thead>
         <tr>
             <th style="width: 50px;">#</th>
             <th>Code</th>

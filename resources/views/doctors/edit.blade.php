@@ -10,7 +10,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
     'pageTitle' => 'Edit Doctor',
     'breadcrumbs' => $breadcrumbs,
     'backUrl' =>guard_route('doctors.index'),

@@ -21,7 +21,7 @@
             @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped mb-0" id="TaskTable">
-                    <thead class="table-dark">
+                    <thead>
                         <tr>
                             <th>Subject</th>
                             <th>Creator</th>

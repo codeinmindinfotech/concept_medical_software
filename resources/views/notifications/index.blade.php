@@ -24,7 +24,7 @@
         } 
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Notifictaion List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' => $backUrl,

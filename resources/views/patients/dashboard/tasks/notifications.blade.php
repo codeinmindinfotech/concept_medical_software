@@ -10,7 +10,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
     'pageTitle' => 'Task Notification List',
     'breadcrumbs' => $breadcrumbs,
     'backUrl' => guard_route('patients.index'),
@@ -107,7 +107,7 @@
             </div>
             <div id="recall-notification-list" data-pagination-container>
                 <table class="table table-bordered" id="recallNotificationTable">
-                    <thead class="table-dark">
+                    <thead>
                         <tr>
                             <th>Owner</th>
                             <th>Patient</th>

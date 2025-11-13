@@ -13,7 +13,7 @@ $breadcrumbs = [
 ];
 @endphp
 
-@include('backend.theme.breadcrumb', [
+@include('layout.partials.breadcrumb', [
 'pageTitle' => 'Patients List',
 'breadcrumbs' => $breadcrumbs,
 'backUrl' =>guard_route('patients.physical.create', $patient->id),

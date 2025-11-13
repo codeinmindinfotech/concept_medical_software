@@ -1,5 +1,5 @@
 <table class="table table-hover align-middle text-nowrap" id="PatientAudioTable">
-    <thead class="table-dark">
+    <thead>
         <tr>
             <th>#</th>
             <th>Audio</th>

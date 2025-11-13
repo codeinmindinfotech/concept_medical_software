@@ -9,7 +9,7 @@
     ];
 @endphp
 
-@include('backend.theme.breadcrumb', [
+@include('layout.partials.breadcrumb', [
     'pageTitle' => 'Change User Password',
     'breadcrumbs' => $breadcrumbs,
     'isListPage' => false

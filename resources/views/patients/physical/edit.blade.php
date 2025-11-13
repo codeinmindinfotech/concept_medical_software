@@ -13,7 +13,7 @@
             ['label' => 'Edit Physical Exam'],
         ];
     @endphp
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Edit Physical Exam',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('patients.physical.index', $patient->id),

@@ -13,7 +13,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Patients Audio Recording List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('patients.audio.index', $patient->id),

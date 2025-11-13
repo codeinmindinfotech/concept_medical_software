@@ -1,5 +1,5 @@
-<table class="table table-striped table-bordered" id="documentTable">
-    <thead class="table-dark">
+<table class="datatable table table-hover table-center mb-0" id="documentTable">
+    <thead>
         <tr>
             <th>No</th>
             <th>Name</th>

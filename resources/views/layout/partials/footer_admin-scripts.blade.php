@@ -59,5 +59,41 @@
      <script src="{{ URL::asset('/assets_admin/js/transactions-list.js') }}"></script>
  @endif
 
+ @if (Route::is('planner.index'))
+    <script src="{{ asset('theme/custom.js') }}"></script>
+    <script src="{{ asset('theme/patient-diary.js') }}"></script>
+@endif 
+
  <!-- Custom JS -->
  <script src="{{ URL::asset('/assets_admin/js/script.js') }}"></script>
+ @php
+ $guards = ['doctor', 'patient', 'clinic', 'web'];
+ $user = null;
+ $currentGuard = null;
+
+ foreach ($guards as $guard) {
+     if (auth($guard)->check()) {
+         $user = auth($guard)->user();
+         $currentGuard = $guard;
+         break;
+     }
+ }
+@endphp
+
+@if ($user)
+<script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+<script>
+window.NotificationConfig = {
+ pusherKey: "{{ config('broadcasting.connections.pusher.key') }}",
+ pusherCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
+ csrfToken: "{{ csrf_token() }}",
+ channelName: "private-{{ strtolower(class_basename(auth()->user())) }}.{{ auth()->id() }}",
+ markReadUrl: "{{ guard_route('notifications.markRead') }}",
+ unreadUrl: "{{ guard_route('notifications.unread') }}"
+};
+</script>
+<script>
+const defaultAvatar = "{{ URL::asset('/assets_admin/img/doctors/doctor-thumb-01.jpg') }}";
+</script>
+<script src="{{ URL::asset('/assets_admin/js/notification.js') }}"></script>
+@endif

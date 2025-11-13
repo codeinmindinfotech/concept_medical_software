@@ -13,7 +13,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Create Patient Document',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('patient-documents.index', $patient->id),

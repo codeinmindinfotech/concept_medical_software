@@ -10,7 +10,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Edit Company',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('companies.index'),

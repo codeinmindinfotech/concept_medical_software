@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table" id="DropdownValueTable">
-    <thead class="table-dark">
+<table class="datatable table table-hover table-center mb-0" id="DropdownValueTable">
+    <thead>
         <tr>
             <th>No</th>
             <th>Title</th>

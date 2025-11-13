@@ -10,7 +10,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Show Consultant',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('consultants.index'),

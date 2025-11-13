@@ -11,7 +11,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Adjust Prices',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('chargecodeprices.index'),

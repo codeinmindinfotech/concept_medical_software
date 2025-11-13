@@ -13,7 +13,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Show Clinic',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('clinics.index'),

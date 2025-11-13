@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table" id="ConfigurationTable">
-    <thead class="table-dark">
+<table class="datatable table table-hover table-center mb-0" id="ConfigurationTable">
+    <thead>
         <tr>
             <th>No</th>
             <th>Key</th>

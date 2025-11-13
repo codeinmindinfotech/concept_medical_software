@@ -86,6 +86,37 @@ class PatientController extends Controller
         return view('patients.index', compact('patients'));
     }
 
+    public function ajax(Request $request)
+    {
+        $query = Patient::with(['doctor'])
+            ->companyOnly()
+            ->latest();
+
+        if ($request->get('tab') === 'trashed') {
+            $query->onlyTrashed();
+        }
+
+        $patients = $query->get();
+
+        $data = $patients->map(function ($patient, $index) {
+            return [
+                'id'        => $patient->id,
+                'index'     => $index + 1,
+                'doctor'    => $patient->doctor?->name ?? '-',
+                'patient_name' => $patient->full_name,
+                'address'   => $patient->address ?? '-',
+                'phone'     => $patient->phone ?? '-',
+                'dob'       => format_date($patient->dob),
+                'status'    => $patient->trashed() ? 'Trashed' : 'Active',
+                'patient_picture' => $patient->patient_picture 
+                    ? asset('storage/' . $patient->patient_picture)
+                    : asset('assets_admin/img/patients/default.jpg'),
+            ];
+        });
+
+        return response()->json(['data' => $data]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

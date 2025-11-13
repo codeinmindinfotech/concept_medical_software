@@ -9,7 +9,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Maintain Prices',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('chargecodes.create'),

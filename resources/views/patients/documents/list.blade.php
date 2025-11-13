@@ -1,5 +1,5 @@
 <table class="table table-hover align-middle text-nowrap" id="PatientDocument">
-    <thead class="table-dark">
+    <thead>
         <tr>
             <th>#</th>
             <th>Template</th>

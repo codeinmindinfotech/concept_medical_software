@@ -10,7 +10,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
     'pageTitle' => 'View Charge Code',
     'breadcrumbs' => $breadcrumbs,
     'backUrl' =>guard_route('chargecodes.index'),

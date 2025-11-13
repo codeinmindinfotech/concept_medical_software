@@ -11,7 +11,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Create consultant',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('consultants.index'),

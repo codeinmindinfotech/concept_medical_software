@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
-
+<?php $page = 'dropdownvalues-list'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -10,7 +12,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Dropdownvalue List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('dropdownvalues.create',$dropDownId),
@@ -22,19 +24,23 @@
             {{ $value }}
         </div>
     @endsession
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-user-md"></i>
-            DropdownValues Management
-        </div>
-        
-        <div class="card-body">
-            <div id="dropdownvalue-list" data-pagination-container>
-                @include('dropdownvalues.list', ['values' => $values, 'dropDownId' => $dropDownId])
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        @include('dropdownvalues.list', ['values' => $values, 'dropDownId' => $dropDownId])
+                    </div>
+                </div>
             </div>
-        </div>      
+        </div>
     </div>
 </div>
+</div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
+
 @endsection
 @push('scripts')
 <script>

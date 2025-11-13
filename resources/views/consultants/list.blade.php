@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table" id="ConsultantTable">
-    <thead class="table-dark">
+<table class="datatable table table-hover table-center mb-0" id="ConsultantTable">
+    <thead>
         <tr>
             <th>No</th>
             <th>Code</th>
