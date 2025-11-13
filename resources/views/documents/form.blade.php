@@ -85,6 +85,8 @@
 <script>
 let editorReady = false;
 let docEditor = null; // keep reference globally
+document.querySelectorAll('.tag-btn').forEach(btn => btn.disabled = true);
+
 @if(!empty($template->file_path) && $template->id)
   loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
 @endif
@@ -122,8 +124,8 @@ function initEditor(data, title) {
         token: data.token,
         events: {
             onAppReady: function() {
-                editorReady = true;
-                console.log("OnlyOffice editor is ready.");
+              editorReady = true;
+              console.log("OnlyOffice editor is ready.");
             },
             onDocumentStateChange: function(event) {
                 let status = null;
@@ -223,37 +225,14 @@ document.getElementById('file').addEventListener('change', function(e) {
 //     .catch(err => console.error("Upload error:", err));
 // });
 
-function insertTagAtCursor(tag) {
-    if (!docEditor || !editorReady) {
-        alert("Editor not ready yet. Please wait...");
-        return;
-    }
+function onEditorReady() {
+    editorReady = true;
+    console.log("OnlyOffice editor is ready.");
 
-    try {
-        // 👇 This is the correct command for inserting text
-        docEditor.executeCommand("PasteText", tag);
-        console.log(`✅ Inserted tag: ${tag}`);
-    } catch (err) {
-        console.error("❌ OnlyOffice API does not support PasteText directly:", err);
-        alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
-    }
+    // Enable tag buttons now that editor is ready
+    document.querySelectorAll('.tag-btn').forEach(btn => btn.disabled = false);
 }
 
-
-// ✅ Tag buttons
-// document.querySelectorAll('.tag-btn').forEach(btn => {
-//     btn.addEventListener('click', function() {
-//         insertTagAtCursor(this.dataset.tag);
-//     });
-// });
-document.querySelectorAll('.tag-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        // Communicate with plugin iframe
-        const iframe = document.querySelector('#onlyoffice-editor iframe');
-        if (!iframe) return alert("Editor not ready");
-        iframe.contentWindow.insertTagFromParent(this.dataset.tag);
-    });
-});
 
 </script>
 @endpush
