@@ -1,12 +1,11 @@
 {
-    "name": "Tag Inserter",
-    "guid": "com.example.taginserter",
-    "version": "1.0",
-    "variations": [
-      {
-        "description": "Insert placeholder tags into document",
-        "url": "index.html"
-      }
-    ]
-  }
-  
+  "name": "Tag Inserter",
+  "guid": "com.conceptmedical.taginserter",
+  "version": "1.0",
+  "variations": [
+    {
+      "description": "Insert placeholder tags into document",
+      "url": "index.html"
+    }
+  ]
+}
