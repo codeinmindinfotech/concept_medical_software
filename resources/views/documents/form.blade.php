@@ -52,12 +52,12 @@
               </div>
               <div class="card-body">
                 @include('documents.keywords')
-                {{-- <div id="tags-list" class="d-flex flex-wrap gap-2">
+                <div id="tags-list" class="d-flex flex-wrap gap-2">
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[FirstName]">[FirstName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[LastName]">[LastName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[DOB]">[DOB]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[Gender]">[Gender]</button>
-                </div> --}}
+                </div>
               </div>
             </div>
           </div>
@@ -85,6 +85,8 @@
 <script>
 let editorReady = false;
 let docEditor = null; // keep reference globally
+document.querySelectorAll('.tag-btn').forEach(btn => btn.disabled = true);
+
 @if(!empty($template->file_path) && $template->id)
   loadExistingDocument("{{ guard_route('documents.loadFile', $template->id) }}");
 @endif
@@ -115,16 +117,18 @@ function initEditor(data, title) {
                 id: '{{ auth()->id() ?? "1" }}',
                 name: "{{ auth()->user()->name ?? 'Guest' }}"
             },
-            customization: { forcesave: true },
+            customization: { 
+              forcesave: true ,
+              plugins: {
+                    autoload: ['myplugin'] // <-- load your plugin
+                }
+            },
             callbackUrl: data.callbackUrl // ✅ This tells OnlyOffice where to send changes
 
         },
         token: data.token,
         events: {
-            onAppReady: function() {
-                editorReady = true;
-                console.log("OnlyOffice editor is ready.");
-            },
+            onAppReady: () => console.log("OnlyOffice editor is ready"),
             onDocumentStateChange: function(event) {
                 let status = null;
 
@@ -222,29 +226,36 @@ document.getElementById('file').addEventListener('change', function(e) {
 //     })
 //     .catch(err => console.error("Upload error:", err));
 // });
-
-function insertTagAtCursor(tag) {
-    if (!docEditor || !editorReady) {
-        alert("Editor not ready yet. Please wait...");
-        return;
-    }
-
-    try {
-        // 👇 This is the correct command for inserting text
-        docEditor.executeCommand("PasteText", tag);
-        console.log(`✅ Inserted tag: ${tag}`);
-    } catch (err) {
-        console.error("❌ OnlyOffice API does not support PasteText directly:", err);
-        alert("Your OnlyOffice setup does not allow direct text insertion. Use a plugin instead.");
-    }
-}
-
-
-// ✅ Tag buttons
 document.querySelectorAll('.tag-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        insertTagAtCursor(this.dataset.tag);
+    btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+
+        const iframe = document.querySelector('#onlyoffice-editor iframe');
+        if (!iframe) {
+            alert("Editor not ready yet.");
+            return;
+        }
+
+        iframe.contentWindow.postMessage({
+            type: "insert-tag",
+            tag: tag
+        }, "*");
     });
 });
+// [
+//         "ai",
+//         "deepl",
+//         "doc2md",
+//         "languagetool",
+//         "mathtype",
+//         "ocr",
+//         "photoeditor",
+//         "speechrecognition",
+//         "thesaurus",
+//         "typograf",
+//         "zotero"
+// ]
+
+
 </script>
 @endpush
