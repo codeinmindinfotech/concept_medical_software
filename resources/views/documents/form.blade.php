@@ -226,20 +226,22 @@ document.getElementById('file').addEventListener('change', function(e) {
 //     })
 //     .catch(err => console.error("Upload error:", err));
 // });
-window.Asc.plugin.init = function() {
-    console.log("✅ Tag Inserter plugin initialized");
-};
+document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const iframe = document.querySelector('#onlyoffice-editor iframe');
+        if (!iframe) {
+            return alert("Editor is not ready.");
+        }
 
-// Insert a tag at the current cursor position
-function insertTag(tag) {
-    if (window.Asc.plugin) {
-        window.Asc.plugin.executeMethod("InsertText", [tag]);
-        console.log("Inserted tag:", tag);
-    } else {
-        console.error("Plugin API not available");
-        alert("Cannot insert tag. Make sure the OnlyOffice editor is loaded.");
-    }
-}
+        iframe.contentWindow.postMessage({
+            type: "insert-tag",
+            tag: this.dataset.tag
+        }, "*");
+
+        console.log("Sent tag to plugin:", this.dataset.tag);
+    });
+});
+
 
 
 </script>
