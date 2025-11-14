@@ -227,21 +227,34 @@ document.getElementById('file').addEventListener('change', function(e) {
 //     .catch(err => console.error("Upload error:", err));
 // });
 document.querySelectorAll('.tag-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+
         const iframe = document.querySelector('#onlyoffice-editor iframe');
         if (!iframe) {
-            return alert("Editor is not ready.");
+            alert("Editor not ready yet.");
+            return;
         }
 
         iframe.contentWindow.postMessage({
             type: "insert-tag",
-            tag: this.dataset.tag
+            tag: tag
         }, "*");
-
-        console.log("Sent tag to plugin:", this.dataset.tag);
     });
 });
-
+// [
+//         "ai",
+//         "deepl",
+//         "doc2md",
+//         "languagetool",
+//         "mathtype",
+//         "ocr",
+//         "photoeditor",
+//         "speechrecognition",
+//         "thesaurus",
+//         "typograf",
+//         "zotero"
+// ]
 
 
 </script>
