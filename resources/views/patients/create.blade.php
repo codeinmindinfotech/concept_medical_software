@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
-
+<?php $page = 'patients-list'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -28,7 +30,7 @@
     </div>
     @endif
 
-    <form action="{{guard_route('patients.store') }}" method="POST" class="validate-form">
+    <form action="{{guard_route('patients.store') }}" method="POST" data-ajax class="needs-validation" novalidate>
         @csrf
         @include('patients.form', [
             'insurances' => $insurances,
@@ -39,8 +41,12 @@
 
     </form>
 </div>
+</div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
 @endsection
 
-@push('scripts')
+{{-- @push('scripts')
     <script src="{{ asset('theme/form-validation.js') }}"></script>
-@endpush
+@endpush --}}

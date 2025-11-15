@@ -4,7 +4,7 @@
 'backUrl' => null,
 'isListPage' => false, // New prop to determine if it's a list page
 ])
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center py-3 mb-4 border-bottom">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
 
     <!-- Page Header -->
     <div class="page-header">

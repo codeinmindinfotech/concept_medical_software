@@ -86,9 +86,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-12">
         <div class="card shadow-sm">
             <div class="card-header">
                 <h5 class="card-title mb-0"><strong>Assign Insurances</strong></h5>

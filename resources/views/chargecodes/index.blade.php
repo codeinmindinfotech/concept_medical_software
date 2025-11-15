@@ -1,4 +1,4 @@
-<?php $page = 'clinic-list'; ?>
+<?php $page = 'chargecodes-list'; ?>
 @extends('layout.mainlayout_admin')
 @section('content')
     <!-- Page Wrapper -->

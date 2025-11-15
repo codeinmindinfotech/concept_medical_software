@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -20,7 +20,7 @@
         'isListPage' => false
     ])
 
-    <form action="{{guard_route('patients.notes.store', $patient->id) }}" method="POST" class="validate-form">
+    <form action="{{guard_route('patients.notes.store', $patient->id) }}" method="POST" data-ajax class="needs-validation" novalidate>
         @csrf
         @include('patients.notes.form', [
                     'patient' => $patient,

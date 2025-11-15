@@ -124,6 +124,7 @@ class DoctorController extends Controller
         $this->authorize('update', $doctor);
         $validated = $request->validated();
         $doctor->update($validated);
+        
         return response()->json([
             'redirect' =>guard_route('doctors.index'),
             'message' => 'Doctor updated successfully',

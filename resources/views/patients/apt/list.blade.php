@@ -1,4 +1,4 @@
-<table class="table table-hover align-middle text-nowrap" id="PatientApt">
+<table class="table table-hover table-center mb-0" id="PatientApt">
     <thead>
         <tr>
             <th>#</th>

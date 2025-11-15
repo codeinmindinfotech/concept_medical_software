@@ -1,4 +1,4 @@
-<?php $page = 'roles-list'; ?>
+<?php $page = 'patients-list'; ?>
 @extends('layout.mainlayout_admin')
 @section('content')
 <!-- Page Wrapper -->

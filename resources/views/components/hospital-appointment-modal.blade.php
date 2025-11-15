@@ -1,7 +1,7 @@
 @props(['clinics', 'procedures', 'flag', 'action','patient','patients'])
 <div class="modal fade" id="manualBookingModal" tabindex="-1" aria-labelledby="manualBookingLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg"><!-- wider dialog -->
-        <form id="manualBookingForm">
+        <form id="manualBookingForm" class="needs-validation" novalidate>
             @csrf
             <div class="modal-content">
                 <div class="modal-header">

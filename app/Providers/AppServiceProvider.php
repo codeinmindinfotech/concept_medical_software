@@ -50,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive(); // 👈 This is the key line
 
-        View::composer('backend.theme.tab-navigation', function ($view) {
+        View::composer('layout.partials.tab-navigation', function ($view) {
             // Get today's date
             $today = Carbon::today();
 

@@ -10,7 +10,7 @@
           <div class="col-md-6">
             <label for="consultant_id" class="form-label"><strong>Consultant <span class="txt-error">*</span></strong></label>
             <select id="consultant_id" name="consultant_id"
-              class="select2 @error('consultant_id') is-invalid @enderror">
+              class="form-control select2 @error('consultant_id') is-invalid @enderror">
               <option value="">-- Select Consultant --</option>
               @foreach($consultants as $consultant)
                 <option value="{{ $consultant->id }}"
@@ -38,7 +38,7 @@
           <!-- Title -->
           <div class="col-md-4">
             <label for="title_id" class="form-label"><strong>Title<span class="txt-error">*</span></strong></label>
-            <select id="title_id" name="title_id" class="select2 @error('title_id') is-invalid @enderror" data-placeholder="-- Select --">
+            <select id="title_id" name="title_id" class="form-control select2 @error('title_id') is-invalid @enderror" data-placeholder="-- Select --">
               <option value=""></option>
               @foreach($titles as $title)
               <option value="{{ $title->id }}" {{ old('title_id', $patient->title_id ?? '') == $title->id ? 'selected' :
@@ -82,7 +82,7 @@
           <!-- Gender -->
           <div class="col-md-4">
             <label for="gender" class="form-label"><strong>Gender<span class="txt-error">*</span></strong></label>
-            <select id="gender" name="gender" class="select2 @error('gender') is-invalid @enderror">
+            <select id="gender" name="gender" class="form-control select2 @error('gender') is-invalid @enderror">
               <option value="">-- Select Gender --</option>
               <option value="Male" {{ old('gender', $patient->gender ?? '')=='Male'?'selected':'' }}>Male</option>
               <option value="Female" {{ old('gender', $patient->gender ?? '')=='Female'?'selected':'' }}>Female</option>
@@ -122,7 +122,7 @@
         <!-- Primary Doctor -->
         <div class="col-md-6">
           <label for="doctor_id" class="form-label"><strong>Primary Doctor<span class="txt-error">*</span></strong></label>
-          <select id="doctor_id" name="doctor_id" class="select2 @error('doctor_id') is-invalid @enderror">
+          <select id="doctor_id" name="doctor_id" class="form-control select2 @error('doctor_id') is-invalid @enderror">
             <option value="">-- Select Doctor --</option>
             @foreach($doctors as $doctor)
               <option value="{{ $doctor->id }}" {{ old('doctor_id', $patient->doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
@@ -136,7 +136,7 @@
         <!-- Referral Doctor -->
         <div class="col-md-6">
           <label for="referral_doctor_id" class="form-label"><strong>Referral Doctor</strong></label>
-          <select id="referral_doctor_id" name="referral_doctor_id" class="select2 @error('referral_doctor_id') is-invalid @enderror">
+          <select id="referral_doctor_id" name="referral_doctor_id" class="form-control select2 @error('referral_doctor_id') is-invalid @enderror">
             <option value="">-- Select Doctor --</option>
             @foreach($doctors as $doctor)
               <option value="{{ $doctor->id }}" {{ old('referral_doctor_id', $patient->referral_doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
@@ -150,7 +150,7 @@
         <!-- Other Doctor -->
         <div class="col-md-6">
           <label for="other_doctor_id" class="form-label"><strong>Other Doctor</strong></label>
-          <select id="other_doctor_id" name="other_doctor_id" class="select2 @error('other_doctor_id') is-invalid @enderror">
+          <select id="other_doctor_id" name="other_doctor_id" class="form-control select2 @error('other_doctor_id') is-invalid @enderror">
             <option value="">-- Select Doctor --</option>
             @foreach($doctors as $doctor)
               <option value="{{ $doctor->id }}" {{ old('other_doctor_id', $patient->other_doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
@@ -164,7 +164,7 @@
         <!-- Solicitor Doctor -->
         <div class="col-md-6">
           <label for="solicitor_doctor_id" class="form-label"><strong>Solicitor Doctor</strong></label>
-          <select id="solicitor_doctor_id" name="solicitor_doctor_id" class="select2  select2 @error('solicitor_doctor_id') is-invalid @enderror">
+          <select id="solicitor_doctor_id" name="solicitor_doctor_id" class="form-control  select2 @error('solicitor_doctor_id') is-invalid @enderror">
             <option value="">-- Select Doctor --</option>
             @foreach($doctors as $doctor)
               <option value="{{ $doctor->id }}" {{ old('solicitor_doctor_id', $patient->solicitor_doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
@@ -203,7 +203,7 @@
           <div class="col-md-4">
             <label for="preferred_contact_id" class="form-label"><strong>Preferred Contact Method</strong></label>
             <select id="preferred_contact_id" name="preferred_contact_id"
-              class="select2 @error('preferred_contact_id') is-invalid @enderror">
+              class="form-control select2 @error('preferred_contact_id') is-invalid @enderror">
               <option value="">-- Select --</option>
               @foreach($preferredContact as $method)
               <option value="{{ $method->id }}" {{ old('preferred_contact_id', $patient->preferred_contact_id ?? '') ==
@@ -236,7 +236,7 @@
           <div class="col-md-4">
             <label for="insurance_id" class="form-label"><strong>Insurance Provider</strong></label>
             <select id="insurance_id" name="insurance_id"
-              class="select2 @error('insurance_id') is-invalid @enderror">
+              class="form-control select2 @error('insurance_id') is-invalid @enderror">
               <option value="">-- Select Insurance --</option>
               @foreach($insurances as $insurance)
               <option value="{{ $insurance->id }}" {{ old('insurance_id', $patient->insurance_id ?? '') ==
@@ -422,7 +422,7 @@
   
         <div class="col-md-6">
           <label for="relationship" class="form-label"><strong>RelationShip</strong></label>
-          <select id="relationship" name="relationship" class="select2 @error('relationship') is-invalid @enderror" data-placeholder="-- Select --">
+          <select id="relationship" name="relationship" class="form-control select2 @error('relationship') is-invalid @enderror" data-placeholder="-- Select --">
             <option value=""></option>
             @foreach($relations as $relation)
             <option value="{{ $relation->id }}" {{ old('relationship', $patient->relationship ?? '') == $relation->id ? 'selected' :

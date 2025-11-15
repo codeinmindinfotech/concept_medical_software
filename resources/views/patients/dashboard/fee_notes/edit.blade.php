@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -17,7 +17,7 @@
         </div>
         <div class="card-body">
             <form action="{{guard_route('fee-notes.update', ['patient' => $patient->id, 'fee_note' => $feeNote]) }}"
-                class="validate-form" method="POST">
+                data-ajax class="needs-validation" novalidate method="POST">
                 @csrf
                 @method('PUT')
 

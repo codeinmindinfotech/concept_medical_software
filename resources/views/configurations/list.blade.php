@@ -1,4 +1,4 @@
-<table class="datatable table table-hover table-center mb-0" id="ConfigurationTable">
+<table class="table table-hover table-center mb-0" id="ConfigurationTable">
     <thead>
         <tr>
             <th>No</th>
@@ -14,16 +14,14 @@
             <td>{{ $config->key }}</td>
             <td>{{ $config->value }}</td>
             <td>
-                <a class="btn btn-primary btn-sm" href="{{guard_route('configurations.edit',$config->id) }}" title="Edit"><i
-                        class="fa-solid fa-pen-to-square"></i></a>
-
+                <a class="btn btn-sm bg-primary-light" href="{{guard_route('configurations.edit',$config->id) }}" class="btn btn-sm bg-primary-light" title="Edit">
+                    <i class="fe fe-pencil"></i> Edit
+                </a>
                 <form action="{{guard_route('configurations.destroy', $config->id) }}" method="POST" class="d-inline"
                     onsubmit="return confirm('Are you sure you want to delete this config? This will also delete the associated database.');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                 </form>
 
             </td>

@@ -1,4 +1,4 @@
-<table class="datatable table table-hover table-center mb-0" id="UserTable">
+<table class="table table-hover table-center mb-0" id="UserTable">
     <thead>
         <tr>
             <th>ID</th>
@@ -28,7 +28,7 @@
                     <a class="btn btn-sm bg-primary-light" href="{{guard_route('users.edit',$user->id) }}">
                         <i class="fe fe-pencil"></i> Edit
                     </a>
-                    <form method="POST" action="{{guard_route('users.destroy', $user->id) }}" style="display:inline">
+                    <form action="{{guard_route('users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>

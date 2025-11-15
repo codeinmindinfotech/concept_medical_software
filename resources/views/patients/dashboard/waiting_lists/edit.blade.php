@@ -1,21 +1,26 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
-<div class="tab-pane fade show active" id="tasks" role="tabpanel">
-  <div class="card mb-4 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center  ">
-        <h5 class="mb-0">
-            <i class="fas fa-user-clock me-2"></i> Waiting Management
-        </h5>
-        <a href="{{guard_route('waiting-lists.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-            <i class="fas fa-plus-circle me-1"></i> New Waiting
-        </a>
-    </div>
-    <div class="card-body">
+@php
+$breadcrumbs = [
+    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+    ['label' => 'Patients Waiting Management', 'url' =>guard_route('waiting-lists.index', $patient)],
+    ['label' => 'Edit Waiting'],
+];
+@endphp
+
+@include('layout.partials.breadcrumb', [
+'pageTitle' => 'Edit Waiting Management',
+'breadcrumbs' => $breadcrumbs,
+'backUrl' =>guard_route('waiting-lists.index', $patient),
+'isListPage' => false
+])
+
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -70,7 +75,4 @@
         <a href="{{guard_route('waiting-lists.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
 
     </form>
-  </div>
-</div>
-</div>
-@endsection
+  @endsection

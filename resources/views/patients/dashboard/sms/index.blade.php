@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -9,7 +9,7 @@
     @if(session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-    <form action="{{guard_route('sms.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
+    <form action="{{guard_route('sms.store', ['patient' => $patient->id]) }}" data-ajax class="needs-validation" novalidate method="POST">
     @csrf
     <div class="card mb-4 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">

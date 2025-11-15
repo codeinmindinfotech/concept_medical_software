@@ -1,4 +1,4 @@
-<table class="datatable table table-hover table-center mb-0" id="documentTable">
+<table class="table table-hover table-center mb-0" id="documentTable">
     <thead>
         <tr>
             <th>No</th>
@@ -12,23 +12,16 @@
             <td>{{ ++$i }}</td>
             <td>{{ $document->name }}</td>
             <td>
-                <form action="{{guard_route('documents.destroy',$document->id) }}" method="POST">
-                    {{-- @can('view', $document) --}}
-                        <a class="btn btn-info btn-sm" href="{{guard_route('documents.show',$document->id) }}" title="Show">
-                            <i class="fa-solid fa-eye text-white"></i>
-                        </a>
-                    {{-- @endcan
-                    @can('update', $document) --}}
-                        <a class="btn btn-primary btn-sm" href="{{guard_route('documents.edit',$document->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                    {{-- @endcan --}}
-
-
+                <a class="btn btn-sm bg-success-light" href="{{guard_route('documents.show',$document->id) }}">
+                    <i class="fe fe-eye"></i> Show
+                </a>
+                <a class="btn btn-sm bg-primary-light" href="{{guard_route('documents.edit',$document->id) }}">
+                    <i class="fe fe-pencil"></i> Edit
+                </a>
+                <form action="{{guard_route('documents.destroy', $document->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this document?');">
                     @csrf
                     @method('DELETE')
-
-                    {{-- @can('delete', $document) --}}
-                        <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
-                    {{-- @endcan --}}
+                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                 </form>
             </td>
         </tr>

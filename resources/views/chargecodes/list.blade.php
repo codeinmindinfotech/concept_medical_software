@@ -1,4 +1,4 @@
-<table class="datatable table table-hover table-center mb-0" id="ChargeCodeTable">
+<table class="table table-hover table-center mb-0" id="ChargeCodeTable">
     <thead>
         <tr>
             <th>No</th>
@@ -20,27 +20,27 @@
             <td>{{ $chargecode->vatrate }}%</td>
             <td>{{ number_format($chargecode->price, 2) }}</td>
             <td>
-                <form action="{{guard_route('chargecodes.destroy',$chargecode->id) }}" method="POST">
-                    @can('view', $chargecode)
-                        <a class="btn btn-info btn-sm" href="{{guard_route('chargecodes.show',$chargecode->id) }}" title="Show">
-                            <i class="fa-solid fa-eye text-white"></i>
-                        </a>
-                    @endcan    
-                
-                    @can('update', $chargecode)
-                        <a class="btn btn-primary btn-sm" href="{{guard_route('chargecodes.edit',$chargecode->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                    @endcan
+                @can('view', $chargecode)
+                <a class="btn btn-sm bg-success-light" href="{{guard_route('chargecodes.show',$chargecode->id) }}" title="Show">
+                    <i class="fe fe-eye"></i> Show
+                </a>
+                @endcan
+                @can('update', $chargecode)
+                <a class="btn btn-sm bg-primary-light" href="{{guard_route('chargecodes.edit',$chargecode->id) }}" title="Edit">
+                    <i class="fe fe-pencil"></i> Edit
+                </a>
+                @endcan
 
+                @can('delete', $chargecode)
+
+                <form action="{{guard_route('chargecodes.destroy', $chargecode->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this chargecode?');">
                     @csrf
                     @method('DELETE')
-
-                    @can('delete', $chargecode)
-                        <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
-                    @endcan
+                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                 </form>
+                @endcan
             </td>
         </tr>
         @endforeach
     </tbody>    
 </table>
-{{-- {!! $chargecodes->appends(request()->query())->links('pagination::bootstrap-5') !!} --}}

@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -27,7 +27,7 @@
 
           <div class="mb-3 col-md-4">
             <label>Charge Code<span class="txt-error">*</span></label>
-            <select name="chargecode_id" id="chargecode_id" class="select2">
+            <select name="chargecode_id" id="chargecode_id" class="form-control select2">
               <option value="">-- Charge Code --</option>
               @foreach($chargecodes as $code)
               <option value="{{ $code->id }}" data-code="{{ json_encode($code) }}">{{ $code->code }}</option>
@@ -79,7 +79,7 @@
           <!-- Narrative -->
           <div class="col-md-3">
             <label for="narrative" class="form-label">Narrative</label>
-            <select class="select2" id="narrative" name="narrative">
+            <select class="form-control select2" id="narrative" name="narrative">
               @foreach($narrative as $id => $value)
               <option value="{{ $id }}" {{ old('narrative')==$id ? 'selected' : '' }}>
                 {{ $value }}
@@ -132,7 +132,7 @@
         <div class="row g-3">
           <div class="col-md-3">
             <label>Clinic<span class="txt-error">*</span></label>
-            <select name="clinic_id" id="clinic_id" class="form-select select2">
+            <select name="clinic_id" id="clinic_id" class="form-control select2">
               <option value="">-- Select --</option>
               @foreach($clinics as $clinic)
               <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
@@ -142,7 +142,7 @@
 
           <div class="col-md-3">
             <label>Consultant<span class="txt-error">*</span></label>
-            <select name="consultant_id" id="consultant_id" class="select2">
+            <select name="consultant_id" id="consultant_id" class="form-control select2">
               <option value="">-- Consultant --</option>
               @foreach($consultants as $consultant)
               <option value="{{ $consultant->id }}">{{ $consultant->name }}</option>

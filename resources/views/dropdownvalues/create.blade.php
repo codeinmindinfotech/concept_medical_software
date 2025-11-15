@@ -1,48 +1,52 @@
-@extends('backend.theme.default')
-
+<?php $page = 'dropdownvalues-create'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
-    @php
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
+        @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-            ['label' => 'DropDownValues', 'url' =>guard_route('dropdownvalues.index',$dropdown->id)],
-            ['label' => 'Create DropDownValue'],
+        ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+        ['label' => 'DropDownValues', 'url' =>guard_route('dropdownvalues.index',$dropdown->id)],
+        ['label' => 'Create DropDownValue'],
         ];
-    @endphp
+        @endphp
 
-    @include('layout.partials.breadcrumb', [
+        @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Create DropDownValue',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('dropdownvalues.index',$dropdown->id),
         'isListPage' => false
-    ])
+        ])
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-        <ul>
-            @foreach ($errors->all() as $error)
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
-<form action="{{guard_route('dropdownvalues.store', $dropdown->id) }}" method="POST">
-    @csrf
+        <form action="{{guard_route('dropdownvalues.store', $dropdown->id) }}" method="POST">
+            @csrf
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <strong>Value:</strong>
-                <input type="text" name="value" class="form-control"  value="{{ old('value') }}" placeholder="value">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <strong>Value:</strong>
+                        <input type="text" name="value" class="form-control" value="{{ old('value') }}" placeholder="value">
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-sm mb-3 mt-2"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
+                </div>
             </div>
-        </div>
-            
-        <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                <button type="submit" class="btn btn-primary btn-sm mb-3 mt-2"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
-        </div>
+        </form>
     </div>
-</form>
+</div>
 </div>
 @endsection

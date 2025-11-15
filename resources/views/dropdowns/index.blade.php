@@ -4,36 +4,36 @@
 <!-- Page Wrapper -->
 <div class="page-wrapper">
     <div class="container-fluid px-4">
-    @php
+        @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-            ['label' => 'Dropdown List'],
+        ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+        ['label' => 'Dropdown List'],
         ];
-    @endphp
+        @endphp
 
-    @include('layout.partials.breadcrumb', [
+        @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Dropdown List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('dropdowns.create'),
         'isListPage' => true
-    ])
-    @session('success')
-        <div class="alert alert-success" role="alert"> 
+        ])
+        @session('success')
+        <div class="alert alert-success" role="alert">
             {{ $value }}
         </div>
-    @endsession
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        @include('dropdowns.list', ['dropdowns' => $dropdowns])
+        @endsession
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            @include('dropdowns.list', ['dropdowns' => $dropdowns])
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 <!-- /Page Wrapper -->
 </div>
@@ -42,18 +42,17 @@
 @push('scripts')
 <script>
     $('#DropdownTable').DataTable({
-     paging: true,
-     searching: true,
-     ordering: true,
-     info: true,
-     lengthChange: true,
-     pageLength: 10,
-     columnDefs: [
-       {
-         targets: 2, // column index for "Start Date" (0-based)
-         orderable: false   // Disable sorting
-       }
-     ]
-   });
-   </script>
-   @endpush
+        paging: true
+        , searching: true
+        , ordering: true
+        , info: true
+        , lengthChange: true
+        , pageLength: 10
+        , columnDefs: [{
+            targets: 2, // column index for "Start Date" (0-based)
+            orderable: false // Disable sorting
+        }]
+    });
+
+</script>
+@endpush

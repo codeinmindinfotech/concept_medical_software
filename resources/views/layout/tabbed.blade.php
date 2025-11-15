@@ -17,19 +17,35 @@
 		<meta name="twitter:title" content="Doctors Appointment HTML Website Templates | Doccure">
 		<meta name="twitter:description" content="The responsive professional Doccure template offers many features, like scheduling appointments with  top doctors, clinics, and hospitals via voice, video call & chat.">
 		<meta name="twitter:image" content="assets/img/preview-banner.jpg')}}">	
-		<meta name="csrf-token" content="{{ csrf_token() }}">
-
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>Doccure - Dashboard</title>
     @include('layout.partials.head_admin')
 </head>
-
 <body>
     @if (!Route::is(['superadmin.login', 'register', 'forgot-password', 'lock-screen', 'error-404', 'error-500']))
         @include('layout.partials.header_admin')
         @include('layout.partials.nav_admin')
     @endif
-    @yield('content')
+    <div class="page-wrapper">
+        <div class="container-fluid px-4">
+            <div class="row">
+                <div class="col-12 col-md-10">
+                    <div class="tab-content" id="tab-content">
+                        @yield('tab-content')
+                    </div>
+                </div>
+                {{-- Sidebar Tabs --}}
+                <div class="col-12 col-md-2">
+                    <div class="nav flex-column nav-pills position-sticky" id="tab-nav"
+                        style="z-index: 1020;top: 60px;"
+                        role="tablist" aria-orientation="vertical">
+                        @yield('tab-navigation')
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+    @stack('modals')    
     @include('layout.partials.footer_admin-scripts')
 </body>
-
 </html>

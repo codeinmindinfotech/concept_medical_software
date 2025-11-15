@@ -16,7 +16,11 @@
  <script src="{{ URL::asset('/assets_admin/js/jquery.maskedinput.min.js') }}"></script>
  <script src="{{ URL::asset('/assets_admin/js/mask.js') }}"></script>
  <!-- Select2 JS -->
- <script src="{{ URL::asset('/assets_admin/js/select2.min.js') }}"></script>
+ {{-- <script src="{{ URL::asset('/assets_admin/js/select2.min.js') }}"></script> --}}
+ <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+ <!-- alert box -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
  <!-- Datetimepicker JS -->
  <script src="{{ URL::asset('/assets_admin/js/moment.min.js') }}"></script>
@@ -31,6 +35,8 @@
  <script src="{{ URL::asset('/assets_admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
  <script src="{{ URL::asset('/assets_admin/plugins/datatables/datatables.min.js') }}"></script>
 
+ @stack('scripts')
+
  @if (Route::is(['tables-basic']))
      <script src="{{ URL::asset('/assets_admin/js/tables-basic.js') }}"></script>
  @endif
@@ -40,9 +46,7 @@
  @if (Route::is(['appointment-list', 'pagee']))
      <script src="{{ URL::asset('/assets_admin/js/appointment.js') }}"></script>
  @endif
- @if (Route::is(['doctor-list']))
-     <script src="{{ URL::asset('/assets_admin/js/doctor.js') }}"></script>
- @endif
+ 
  @if (Route::is(['patient-list']))
      <script src="{{ URL::asset('/assets_admin/js/patients.js') }}"></script>
  @endif
@@ -61,7 +65,7 @@
 
  @if (Route::is('planner.index'))
     <script src="{{ asset('theme/custom.js') }}"></script>
-    <script src="{{ asset('theme/patient-diary.js') }}"></script>
+    <script src="{{ asset('assets_admin/js/patient-diary.js') }}"></script>
 @endif 
 
  <!-- Custom JS -->
@@ -81,19 +85,19 @@
 @endphp
 
 @if ($user)
-<script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
-<script>
-window.NotificationConfig = {
- pusherKey: "{{ config('broadcasting.connections.pusher.key') }}",
- pusherCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
- csrfToken: "{{ csrf_token() }}",
- channelName: "private-{{ strtolower(class_basename(auth()->user())) }}.{{ auth()->id() }}",
- markReadUrl: "{{ guard_route('notifications.markRead') }}",
- unreadUrl: "{{ guard_route('notifications.unread') }}"
-};
-</script>
-<script>
-const defaultAvatar = "{{ URL::asset('/assets_admin/img/doctors/doctor-thumb-01.jpg') }}";
-</script>
-<script src="{{ URL::asset('/assets_admin/js/notification.js') }}"></script>
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    <script>
+    window.NotificationConfig = {
+    pusherKey: "{{ config('broadcasting.connections.pusher.key') }}",
+    pusherCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
+    csrfToken: "{{ csrf_token() }}",
+    channelName: "private-{{ strtolower(class_basename(auth()->user())) }}.{{ auth()->id() }}",
+    markReadUrl: "{{ guard_route('notifications.markRead') }}",
+    unreadUrl: "{{ guard_route('notifications.unread') }}"
+    };
+    </script>
+    <script>
+    const defaultAvatar = "{{ URL::asset('/assets_admin/img/doctors/doctor-thumb-01.jpg') }}";
+    </script>
+    <script src="{{ URL::asset('/assets_admin/js/notification.js') }}"></script>
 @endif

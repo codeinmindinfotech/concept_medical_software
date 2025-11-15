@@ -1,7 +1,10 @@
-@extends('backend.theme.default')
+@extends('layout.tabbed')
 
-@section('content')
-<div class="container-fluid px-4">
+@section('tab-navigation')
+@include('layout.partials.tab-navigation', ['patient' => $patient])
+@endsection
+
+@section('tab-content')
     @php
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -21,7 +24,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('patient.patient.notification.send') }}" method="POST">
+    <form action="{{ route('patient.patient.notification.send') }}" method="POST" data-ajax class="needs-validation" novalidate>
         @csrf
         <div class="mb-3">
             <label for="manager_id" class="form-label">Select Managers:<span class="txt-error">*</span></label>
@@ -56,5 +59,5 @@
 
         <button type="submit" class="btn btn-primary">Send</button>
     </form>
-</div>
+
 @endsection

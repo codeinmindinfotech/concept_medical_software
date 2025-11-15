@@ -1,37 +1,28 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
-<div class="tab-pane fade show active" id="tasks" role="tabpanel">
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center  ">
-            <h5 class="mb-0">
-                <i class="fas fa-user-clock me-2"></i> Task Management
-            </h5>
-            <a href="{{guard_route('tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                <i class="fas fa-plus-circle me-1"></i> New Task
-            </a>
-        </div>
-        <div class="card-body">
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
 
-    @if($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if($errors->any())
+<div class="alert alert-danger">
+    <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
     <form action="{{guard_route('tasks.update', ['patient' => $task->patient_id, 'task' => $task->id]) }}" method="POST" class="validate-form">
         @csrf
         @method('PUT')
@@ -117,7 +108,5 @@
         <a href="{{guard_route('tasks.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
     </form>
 
-</div>
-</div>
-</div>
+
 @endsection

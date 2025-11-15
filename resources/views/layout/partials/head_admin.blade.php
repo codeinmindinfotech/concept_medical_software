@@ -150,7 +150,11 @@
 <link rel="stylesheet" href="{{ url('assets_admin/css/feathericon.min.css') }}">
 <link rel="stylesheet" href="{{ url('assets_admin/plugins/morris/morris.css') }}">
 <!-- Select2 CSS -->
-<link rel="stylesheet" href="{{ url('assets_admin/css/select2.min.css') }}">
+<!-- Select2 Core + Bootstrap 5 Theme -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+{{-- <link rel="stylesheet" href="{{ url('assets_admin/css/select2.min.css') }}"> --}}
 <!-- Datetimepicker CSS -->
 <link rel="stylesheet" href="{{ url('assets_admin/css/bootstrap-datetimepicker.min.css') }}">
 

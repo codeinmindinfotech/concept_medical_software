@@ -1,44 +1,57 @@
-@extends('backend.theme.default')
-
+<?php $page = 'companies-edit'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
-    @php
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
+        @php
         $breadcrumbs = [
-            ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-            ['label' => 'Companies', 'url' =>guard_route('companies.index')],
-            ['label' => 'Edit Company'],
+        ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+        ['label' => 'Companies', 'url' =>guard_route('companies.index')],
+        ['label' => 'Edit Company'],
         ];
-    @endphp
+        @endphp
 
-    @include('layout.partials.breadcrumb', [
+        @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Edit Company',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('companies.index'),
         'isListPage' => false
-    ])
+        ])
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-        <ul>
-            @foreach ($errors->all() as $error)
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{{guard_route('companies.update', $company->id) }}" method="POST" data-ajax class="needs-validation" novalidate>
+                            @csrf
+                            @method('PUT')
+
+                            @include('companies.form', [
+                            'company' => $company
+                            ])
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-@endif
-
-    <form action="{{guard_route('companies.update', $company->id) }}" method="POST" class="validate-form">
-        @csrf
-        @method('PUT')
-    
-        @include('companies.form', [
-            'company' => $company
-            ])
-
-    </form>
 </div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
 @endsection
 @push('scripts')
-    <script src="{{ asset('theme/form-validation.js') }}"></script>
+{{-- <script src="{{ asset('theme/form-validation.js') }}"></script> --}}
 @endpush

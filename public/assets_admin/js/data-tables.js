@@ -17,7 +17,7 @@ fetch(jsonDataUrl)
         { data: 'salary' }
       ],
       paging: true,
-      searching: false,
+      searching: true,
       scrollY: false,
       scrollX: false,
       order: [[0, 'asc']]

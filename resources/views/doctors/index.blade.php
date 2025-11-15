@@ -27,9 +27,7 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="table-responsive">
                         @include('doctors.list', ['doctors' => $doctors])
-                    </div>
                 </div>
             </div>
         </div>
@@ -42,7 +40,7 @@
 @endsection
 @push('scripts')
 <script>
-    $('#doctorTable').DataTable({
+    $('#DoctorTable').DataTable({
      paging: true,
      searching: true,
      ordering: true,
@@ -56,5 +54,5 @@
        }
      ]
    });
-   </script>
-   @endpush
+</script>
+@endpush
