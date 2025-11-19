@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{guard_route('chargecodeprices.adjust-prices', $insurance->id) }}">
+                <form method="POST" action="{{guard_route('chargecodeprices.adjust-prices', $insurance->id) }}" data-ajax class="needs-validation" novalidate>
                     @csrf
 
                     <div class="card mb-4 border-success">

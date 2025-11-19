@@ -13,7 +13,7 @@
                         <label for="code" class="form-label">
                             <strong>Code<span class="txt-error">*</span></strong>
                         </label>
-                        <input id="code" name="code" type="text" class="form-control @error('code') is-invalid @enderror" value="{{ old('code', $consultant->code ?? '') }}" maxlength="50">
+                        <input id="code" name="code" type="text" class="form-control @error('code') is-invalid @enderror" value="{{ old('code', $consultant->code ?? '') }}" maxlength="50" required>
                         @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -22,7 +22,7 @@
                         <label for="name" class="form-label">
                             <strong>Name<span class="txt-error">*</span></strong>
                         </label>
-                        <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $consultant->name ?? '') }}" maxlength="255">
+                        <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $consultant->name ?? '') }}" maxlength="255" required>
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -31,7 +31,7 @@
                         <label for="address" class="form-label">
                             <strong>Address<span class="txt-error">*</span></strong>
                         </label>
-                        <textarea id="address" name="address" class="form-control @error('address') is-invalid @enderror" rows="2">{{ old('address', $consultant->address ?? '') }}</textarea>
+                        <textarea id="address" name="address" class="form-control @error('address') is-invalid @enderror" rows="2" required>{{ old('address', $consultant->address ?? '') }}</textarea>
                         @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -40,7 +40,7 @@
                         <label for="phone" class="form-label">
                             <strong>Phone<span class="txt-error">*</span></strong>
                         </label>
-                        <input id="phone" name="phone" type="text" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $consultant->phone ?? '') }}" maxlength="20">
+                        <input id="phone" name="phone" type="text" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $consultant->phone ?? '') }}" maxlength="20" required>
                         @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
@@ -56,7 +56,7 @@
                         <label for="email" class="form-label">
                             <strong>Email<span class="txt-error">*</span></strong>
                         </label>
-                        <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $consultant->email ?? '') }}" maxlength="255">
+                        <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $consultant->email ?? '') }}" maxlength="255" required>
                         @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -64,7 +64,7 @@
                         <label for="imc_no" class="form-label">
                             <strong>IMC No<span class="txt-error">*</span></strong>
                         </label>
-                        <input id="imc_no" name="imc_no" type="text" class="form-control @error('imc_no') is-invalid @enderror" value="{{ old('imc_no', $consultant->imc_no ?? '') }}" maxlength="50">
+                        <input id="imc_no" name="imc_no" type="text" class="form-control @error('imc_no') is-invalid @enderror" value="{{ old('imc_no', $consultant->imc_no ?? '') }}" maxlength="50" required>
                         @error('imc_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -93,10 +93,7 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="insurance_id" class="form-label"><strong>Insurance Provider<span class="txt-error">*</span></strong></label>
-                            <select id="insurance_id" name="insurance_id[]" multiple class="select2 @error('insurance_id') is-invalid @enderror" style="width:100%" data-placeholder="-- Select --">
-
-                                {{-- <select id="insurance_id" name="insurance_id[]" multiple
-                                    class="select2 @error('insurance_id') is-invalid @enderror"> --}}
+                            <select id="insurance_id" name="insurance_id[]" multiple class="form-control select2 @error('insurance_id') is-invalid @enderror" style="width:100%" data-placeholder="-- Select --" required>
                                 @php
                                 $selectedIds = old('insurance_id',
                                 isset($consultant)

@@ -22,9 +22,9 @@
 
             <div id="FeeNoteList">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-body" id="FeeNoteListContainer">
+                    <div class="table-responsive">
                         @if($feeNotes->count())
-                        <table class="table table-bordered" id="FeeNoteTable">
+                        <table class="table table-hover table-center mb-0" id="FeeNoteTable">
                             <thead>
                                 <tr>
                                     <th>Id</th>
@@ -47,26 +47,17 @@
                                     <td>{{ $note->charge_net }}</td>
                                     <td>{{ $note->line_total }}</td>
                                     <td>{{ $note->qty }}</td>
-                                    <td class="text-end">
-                                      <a href="{{guard_route('fee-notes.edit', ['patient' => $patient, 'fee_note' => $note]) }}" 
-                                         class="btn btn-sm btn-warning" 
-                                         title="Edit Fee Note">
-                                          <i class="fa fa-edit"></i>
-                                      </a>
-                                  
-                                      <form action="{{guard_route('fee-notes.destroy', ['patient' => $patient, 'fee_note' => $note]) }}" 
-                                            method="POST" 
-                                            style="display:inline;" 
-                                            onsubmit="return confirm('Are you sure you want to delete this fee note?');">
-                                          @csrf
-                                          @method('DELETE')
-                                          <button type="submit" 
-                                                  class="btn btn-sm btn-danger" 
-                                                  title="Delete Fee Note">
-                                              <i class="fa fa-trash"></i>
-                                          </button>
-                                      </form>
-                                  </td>
+                                    <td>
+                                        <a href="{{guard_route('fee-notes.edit', ['patient' => $patient, 'fee_note' => $note]) }}" class="btn btn-sm bg-primary-light" title="Edit">
+                                            <i class="fe fe-pencil"></i> Edit
+                                        </a>
+
+                                        <form action="{{guard_route('fee-notes.destroy', ['patient' => $patient, 'fee_note' => $note]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this fee note?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -100,4 +91,3 @@
 
 </script>
 @endpush
-

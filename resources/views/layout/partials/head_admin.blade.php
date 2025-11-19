@@ -166,7 +166,3 @@
 
 <!-- Main CSS -->
 <link rel="stylesheet" href="{{ url('assets_admin/css/custom.css') }}">
-
-@if (Route::is('planner.index'))
-    <link href="{{ asset('theme/main/css/custom_diary.css') }}" rel="stylesheet">
-@endif  

@@ -251,43 +251,95 @@ class PatientDocumentController extends Controller
         ));
     }
 
-    public function sendEmail(Request $request, Patient $patient, PatientDocument $document)
-    {
-        $validated = $request->validate([
-            'sender_email' => 'nullable|email',
-            'to_email'     => 'required|email',
-            'subject'      => 'nullable|string|max:255',
-            'message'      => 'nullable|string',
-            'cc'           => 'nullable|string',
-            'bcc'          => 'nullable|string',
-        ]);
+    // public function sendEmail(Request $request, Patient $patient, PatientDocument $document)
+    // {
+    //     $validated = $request->validate([
+    //         'sender_email' => 'nullable|email',
+    //         'to_email'     => 'required|email',
+    //         'subject'      => 'nullable|string|max:255',
+    //         'message'      => 'nullable|string',
+    //         'cc'           => 'nullable|string',
+    //         'bcc'          => 'nullable|string',
+    //     ]);
 
-        // Full path to stored .docx file
-        $docxPath = storage_path('app/public/' . $document->file_path);
-        if (!file_exists($docxPath)) {
-            return back()->with('error', 'Document file not found.');
-        }
-        // $pdfPath = $this->convertDocxToPdfOnlyOffice($docxPath);
-        // dd($pdfPath);
-        $pdfPath = $this->downloadConvertedPdf($docxPath);
+    //     // Full path to stored .docx file
+    //     $docxPath = storage_path('app/public/' . $document->file_path);
+    //     if (!file_exists($docxPath)) {
+    //         return back()->with('error', 'Document file not found.');
+    //     }
+    //     // $pdfPath = $this->convertDocxToPdfOnlyOffice($docxPath);
+    //     // dd($pdfPath);
+    //     $pdfPath = $this->downloadConvertedPdf($docxPath);
         
-        if (!$pdfPath || !file_exists($pdfPath)) {
-            return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
-        }
+    //     if (!$pdfPath || !file_exists($pdfPath)) {
+    //         return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
+    //     }
 
-        // Send email
+    //     // Send email
+    //     Mail::to($validated['to_email'])
+    //         ->cc($this->parseEmails($validated['cc'] ?? ''))
+    //         ->bcc($this->parseEmails($validated['bcc'] ?? ''))
+    //         ->send(new PatientDocumentMail($validated, $pdfPath, $document));
+
+    //     // cleanup
+    //     unlink($pdfPath);
+
+    //     return redirect()
+    //         ->route('patient-documents.email.form', [$patient, $document])
+    //         ->with('success', 'Email sent successfully with attached PDF document!');
+    // }
+public function sendEmail(Request $request, Patient $patient, PatientDocument $document)
+{
+    // 1. Validate input
+    $validated = $request->validate([
+        'sender_email' => 'nullable|email',
+        'to_email'     => 'required|email',
+        'subject'      => 'nullable|string|max:255',
+        'message'      => 'nullable|string',
+        'cc'           => 'nullable|string',
+        'bcc'          => 'nullable|string',
+    ]);
+
+    // 2. Get full path to the stored DOCX file
+    $docxPath = storage_path('app/public/' . $document->file_path);
+    if (!file_exists($docxPath)) {
+        return back()->with('error', 'Document file not found.');
+    }
+
+    // 3. Convert DOCX to PDF (your helper function)
+    $pdfPath = $this->downloadConvertedPdf($docxPath); 
+    if (!$pdfPath || !file_exists($pdfPath)) {
+        return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
+    }
+    
+    \Log::info('Sending email to: ' . $validated['to_email']);
+    \Log::info('From: ' . ($validated['sender_email'] ?? config('mail.from.address')));
+    
+    try {
         Mail::to($validated['to_email'])
             ->cc($this->parseEmails($validated['cc'] ?? ''))
             ->bcc($this->parseEmails($validated['bcc'] ?? ''))
             ->send(new PatientDocumentMail($validated, $pdfPath, $document));
 
-        // cleanup
-        unlink($pdfPath);
-
-        return redirect()
-            ->route('patient-documents.email.form', [$patient, $document])
-            ->with('success', 'Email sent successfully with attached PDF document!');
+    } catch (\Exception $e) {
+        dd([
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+    } finally {
+        // 6. Clean up temporary PDF
+        if (file_exists($pdfPath)) {
+            unlink($pdfPath);
+        }
     }
+    return redirect()
+        ->route('patient-documents.email.form', [$patient, $document])
+        ->with('success', 'Email sent successfully with attached PDF document!');
+}
+
+
 
     private function parseEmails(string $emails): array
     {

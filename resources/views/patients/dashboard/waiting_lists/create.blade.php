@@ -30,9 +30,8 @@ $breadcrumbs = [
 
       <div class="mb-3">
         <label for="editVisitDate" class="form-label">Visit Date<span class="txt-error">*</span></label>
-        <div class="input-group">
-          <input id="editVisitDate" name="visit_date" type="text" class="form-control flatpickr" placeholder="YYYY-MM-DD"  >
-          <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+        <div class="cal-icon">
+          <input id="editVisitDate" name="visit_date" type="text" class="form-control datetimepicker" placeholder="YYYY-MM-DD"  >
         </div>
       </div>
       <div class="mb-3">

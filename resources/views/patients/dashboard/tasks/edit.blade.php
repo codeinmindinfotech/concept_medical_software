@@ -90,12 +90,16 @@
 
             <div class="col-md-6 mb-3">
                 <label for="start_date" class="form-label">Start Date</label>
-                <input id="start_date" name="start_date" type="text" class="form-control flatpickr" value="{{ $task->start_date }}" placeholder="YYYY-MM-DD">
+                <div class="cal-icon">
+                    <input id="start_date" name="start_date" type="text" class="form-control datetimepicker" value="{{ $task->start_date }}" placeholder="YYYY-MM-DD">
+                </div>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label for="end_date" class="form-label">End Date</label>
-                <input id="end_date" name="end_date" type="text" class="form-control flatpickr" value="{{ $task->end_date }}" placeholder="YYYY-MM-DD">
+                <div class="cal-icon">
+                    <input id="end_date" name="end_date" type="text" class="form-control datetimepicker" value="{{ $task->end_date }}" placeholder="YYYY-MM-DD">
+                </div>
             </div>
 
             <div class="col-12 mb-3">

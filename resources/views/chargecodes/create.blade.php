@@ -23,7 +23,7 @@
         <!-- General -->
         <div class="card">
             <div class="card-body">
-                <form action="{{guard_route('chargecodes.store') }}" method="POST" class="validate-form">
+                <form action="{{guard_route('chargecodes.store') }}" method="POST" data-ajax class="needs-validation" novalidate>
                     @csrf
                     @include('chargecodes.form', [
                         'insurances' => $insurances,

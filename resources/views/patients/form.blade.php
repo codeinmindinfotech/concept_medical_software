@@ -9,7 +9,7 @@
         <div class="row g-3">
           <div class="col-md-6">
             <label for="consultant_id" class="form-label"><strong>Consultant <span class="txt-error">*</span></strong></label>
-            <select id="consultant_id" name="consultant_id"
+            <select id="consultant_id" required name="consultant_id"
               class="form-control select2 @error('consultant_id') is-invalid @enderror">
               <option value="">-- Select Consultant --</option>
               @foreach($consultants as $consultant)
@@ -38,7 +38,7 @@
           <!-- Title -->
           <div class="col-md-4">
             <label for="title_id" class="form-label"><strong>Title<span class="txt-error">*</span></strong></label>
-            <select id="title_id" name="title_id" class="form-control select2 @error('title_id') is-invalid @enderror" data-placeholder="-- Select --">
+            <select id="title_id" name="title_id" class="form-control select2 @error('title_id') is-invalid @enderror" data-placeholder="-- Select --" required>
               <option value=""></option>
               @foreach($titles as $title)
               <option value="{{ $title->id }}" {{ old('title_id', $patient->title_id ?? '') == $title->id ? 'selected' :
@@ -54,7 +54,7 @@
           <div class="col-md-4">
             <label for="surname" class="form-label"><strong>Surname<span class="txt-error">*</span></strong></label>
             <input id="surname" name="surname" type="text" class="form-control @error('surname') is-invalid @enderror"
-              value="{{ old('surname', $patient->surname ?? '') }}">
+              value="{{ old('surname', $patient->surname ?? '') }}" required>
             @error('surname') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
@@ -64,25 +64,24 @@
                   class="txt-error">*</span></strong></label>
             <input id="first_name" name="first_name" type="text"
               class="form-control @error('first_name') is-invalid @enderror"
-              value="{{ old('first_name', $patient->first_name ?? '') }}">
+              value="{{ old('first_name', $patient->first_name ?? '') }}" required>
             @error('first_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           <!-- DOB -->
           <div class="col-md-4">
             <label for="dob" class="form-label"><strong>Date of Birth<span class="txt-error">*</span></strong></label>
-            <div class="input-group">
-              <input id="dob" name="dob" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror"
-                placeholder="YYYY-MM-DD" value="{{ old('dob', $patient->dob ?? '') }}">
-              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-              @error('dob') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+            <div class="cal-icon">
+              <input id="dob" name="dob" type="text" class="form-control datetimepicker @error('dob') is-invalid @enderror"
+                placeholder="YYYY-MM-DD" value="{{ old('dob', $patient->dob ?? '') }}" required>
             </div>
+            @error('dob') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
           </div>
 
           <!-- Gender -->
           <div class="col-md-4">
             <label for="gender" class="form-label"><strong>Gender<span class="txt-error">*</span></strong></label>
-            <select id="gender" name="gender" class="form-control select2 @error('gender') is-invalid @enderror">
+            <select id="gender" name="gender" class="form-control select2 @error('gender') is-invalid @enderror" required>
               <option value="">-- Select Gender --</option>
               <option value="Male" {{ old('gender', $patient->gender ?? '')=='Male'?'selected':'' }}>Male</option>
               <option value="Female" {{ old('gender', $patient->gender ?? '')=='Female'?'selected':'' }}>Female</option>
@@ -122,7 +121,7 @@
         <!-- Primary Doctor -->
         <div class="col-md-6">
           <label for="doctor_id" class="form-label"><strong>Primary Doctor<span class="txt-error">*</span></strong></label>
-          <select id="doctor_id" name="doctor_id" class="form-control select2 @error('doctor_id') is-invalid @enderror">
+          <select id="doctor_id" name="doctor_id" class="form-control select2 @error('doctor_id') is-invalid @enderror" required>
             <option value="">-- Select Doctor --</option>
             @foreach($doctors as $doctor)
               <option value="{{ $doctor->id }}" {{ old('doctor_id', $patient->doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
@@ -191,13 +190,13 @@
           <div class="col-md-4">
             <label for="phone" class="form-label"><strong>Phone<span class="txt-error">*</span></strong></label>
             <input id="phone" name="phone" type="text" class="form-control @error('phone') is-invalid @enderror"
-              value="{{ old('phone', $patient->phone ?? '') }}">
+              value="{{ old('phone', $patient->phone ?? '') }}" required>
             @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
           <div class="col-md-4">
             <label for="email" class="form-label"><strong>Email<span class="txt-error">*</span></strong></label>
             <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror"
-              value="{{ old('email', $patient->email ?? '') }}">
+              value="{{ old('email', $patient->email ?? '') }}" required>
             @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
           <div class="col-md-4">
@@ -219,7 +218,7 @@
           <div class="col-12">
             <label for="address" class="form-label"><strong>Address<span class="txt-error">*</span></strong></label>
             <textarea id="address" name="address" class="form-control @error('address') is-invalid @enderror"
-              rows="2">{{ old('address', $patient->address ?? '') }}</textarea>
+              rows="2" required>{{ old('address', $patient->address ?? '') }}</textarea>
             @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
         </div>
@@ -342,13 +341,12 @@
           </div>
           <div class="col-md-8">
             <label for="rip_date" class="form-label"><strong>Date of RIP</strong></label>
-            <div class="input-group">
+            <div class="cal-icon">
               <input id="rip_date" name="rip_date" type="text"
-                class="form-control flatpickr @error('rip_date') is-invalid @enderror" placeholder="YYYY-MM-DD"
+                class="form-control datetimepicker @error('rip_date') is-invalid @enderror" placeholder="YYYY-MM-DD"
                 value="{{ old('rip_date', $patient->rip_date ?? '') }}">
-              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-              @error('rip_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
+            @error('rip_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
           </div>
           <div class="col-md-4 form-check">
             <input id="sms_consent" name="sms_consent" type="checkbox" class="form-check-input" value="1" {{
@@ -372,15 +370,14 @@
         <div class="row g-3">
           <div class="col-md-6">
             <label for="covid_19_vaccination_date" class="form-label"><strong>Vaccination Date</strong></label>
-            <div class="input-group">
+            <div class="cal-icon">
               <input type="date"
                     name="covid_19_vaccination_date"
                     id="covid_19_vaccination_date"
-                    class="form-control flatpickr @error('covid_19_vaccination_date') is-invalid @enderror"
+                    class="form-control datetimepicker @error('covid_19_vaccination_date') is-invalid @enderror"
                     value="{{ old('covid_19_vaccination_date', optional(optional($patient ?? null)->covid_19_vaccination_date)->format('Y-m-d')) }}">
-              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-              @error('covid_19_vaccination_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
+            @error('covid_19_vaccination_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
           </div>
           
           <div class="col-md-6 form-check mt-4 pt-2">
@@ -475,14 +472,3 @@
   </div>
 
 </div>
-@push('scripts')
-<script>
-// document.addEventListener("DOMContentLoaded", function () {
-//     flatpickr(".flatpickr", {
-//         dateFormat: "Y-m-d",
-//         maxDate: "today",
-//         allowInput: true
-//     });
-// });
-</script>
-@endpush

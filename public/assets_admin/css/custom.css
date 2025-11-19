@@ -3475,8 +3475,8 @@ a.bg-danger:focus, a.bg-danger:hover, button.bg-danger:focus, button.bg-danger:h
   font-size: 13px;
   text-align: center;
   border-radius: 2px;
-  margin: 1px 7px;
-  padding: 5px 5px;
+  /* margin: 1px 7px;
+  padding: 5px 5px; */
 }
 
 .event-form .input-group .form-control {

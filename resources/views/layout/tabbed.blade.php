@@ -21,7 +21,7 @@
         <title>Doccure - Dashboard</title>
     @include('layout.partials.head_admin')
 </head>
-<body>
+<body class="mini-sidebar">
     @if (!Route::is(['superadmin.login', 'register', 'forgot-password', 'lock-screen', 'error-404', 'error-500']))
         @include('layout.partials.header_admin')
         @include('layout.partials.nav_admin')
@@ -37,7 +37,7 @@
                 {{-- Sidebar Tabs --}}
                 <div class="col-12 col-md-2">
                     <div class="nav flex-column nav-pills position-sticky" id="tab-nav"
-                        style="z-index: 1020;top: 60px;"
+                        style="z-index: 989;top: 60px;"
                         role="tablist" aria-orientation="vertical">
                         @yield('tab-navigation')
                     </div>
@@ -47,5 +47,7 @@
     </div>    
     @stack('modals')    
     @include('layout.partials.footer_admin-scripts')
+    <script src="{{ asset('theme/patient-dashboard.js') }}"></script>
+
 </body>
 </html>

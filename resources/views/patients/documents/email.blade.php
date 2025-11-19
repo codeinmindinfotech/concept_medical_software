@@ -31,7 +31,7 @@
             Email / Attach Documents
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ guard_route('patient-documents.email.send', [$patient, $document]) }}"  data-ajax class="needs-validation" novalidate>
+            <form method="POST" action="{{ guard_route('patient-documents.email.send', [$patient, $document]) }}" data-ajax class="needs-validation" novalidate >
                 @csrf
                 {{-- class="validate-form" --}}
                 <div class="mb-3">

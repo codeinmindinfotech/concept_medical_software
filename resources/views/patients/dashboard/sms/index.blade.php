@@ -22,7 +22,7 @@
         <div class="card-body">
             <div class="mb-3">
                 <label for="sms_template" class="form-label">Select Template<span class="txt-error">*</span></label>
-                <select id="sms_template" class="form-select">
+                <select id="sms_template" class="form-select" required>
                     <option value="">-- Select --</option>
                     @foreach ($templates as $template)
                         <option value="{{ $template->id }}" data-description="{{ $template->description }}">
@@ -54,7 +54,7 @@
 
             <div class="mb-3">
                 <label for="sms_content" class="form-label">SMS Content<span class="txt-error">*</span></label>
-                <textarea id="sms_content" name="content" class="form-control @error('content') is-invalid @enderror" rows="5" oninput="updateCharCount()">{{ old('content') }}</textarea>
+                <textarea id="sms_content" name="content" class="form-control @error('content') is-invalid @enderror" rows="5" oninput="updateCharCount()" required>{{ old('content') }}</textarea>
                 <small class="text-muted mt-1 d-block">Character count: <span id="char_count">0</span></small>
                 
                 @error('content')

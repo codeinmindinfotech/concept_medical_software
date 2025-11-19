@@ -20,8 +20,8 @@
                 <li class="menu-title">
                     <span>Main</span>
                 </li>
-                <li class="{{ Request::is('admin/index_admin') ? 'active' : '' }}">
-                    <a href="{{ url('admin/index_admin') }}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+                <li class="{{ Request::is('dashboard') ? 'active' : '' }}">
+                    <a href="{{ guard_route('dashboard.index') }}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
                 </li>
                 @if ($hasUtilitiesPermission)
                     <li class="submenu">

@@ -23,7 +23,7 @@
         <!-- General -->
         <div class="card">
             <div class="card-body">
-                <form action="{{guard_route('chargecodes.update', $chargecode->id) }}" class="validate-form" method="POST">
+                <form action="{{guard_route('chargecodes.update', $chargecode->id) }}" data-ajax class="needs-validation" novalidate method="POST">
                     @csrf
                     @method('PUT')
 

@@ -77,24 +77,22 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="start_date" class="form-label">Start Date</label>
-                        <div class="input-group">
-                            <input id="start_date" name="start_date" type="text" class="form-control flatpickr @error('start_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('start_date') }}">
-                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            @error('start_date')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                        <div class="cal-icon">
+                            <input id="start_date" name="start_date" type="text" class="form-control datetimepicker @error('start_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('start_date') }}">
                         </div>
+                        @error('start_date')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="end_date" class="form-label">End Date</label>
-                        <div class="input-group">
-                            <input id="end_date" name="end_date" type="text" class="form-control flatpickr @error('end_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('end_date') }}">
-                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            @error('end_date')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                        <div class="cal-icon">
+                            <input id="end_date" name="end_date" type="text" class="form-control datetimepicker @error('end_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('end_date') }}">   
                         </div>
+                        @error('end_date')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-12 mb-3">

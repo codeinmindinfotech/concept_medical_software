@@ -437,6 +437,6 @@ $breadcrumbs = [
 
 @endsection
 @push('scripts')
-<script src="{{ asset('assets_admin/transcription.js') }}"></script>
+<script src="{{ asset('assets_admin/js/transcription.js') }}"></script>
 @endpush
 

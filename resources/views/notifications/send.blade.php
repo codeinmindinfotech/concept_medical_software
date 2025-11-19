@@ -29,7 +29,7 @@
                         <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
-                        <form method="POST" action="{{ guard_route('notifications.send') }}">
+                        <form method="POST" action="{{ guard_route('notifications.send') }}" data-ajax class="needs-validation" novalidate>
                             @csrf
 
                             @if (has_role('superadmin'))

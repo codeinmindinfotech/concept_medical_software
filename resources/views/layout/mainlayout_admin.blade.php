@@ -21,6 +21,7 @@
 
         <title>Doccure - Dashboard</title>
     @include('layout.partials.head_admin')
+	@stack('styles')
 </head>
 
 <body>
@@ -29,6 +30,7 @@
         @include('layout.partials.nav_admin')
     @endif
     @yield('content')
+	@stack('modals')
     @include('layout.partials.footer_admin-scripts')
 </body>
 

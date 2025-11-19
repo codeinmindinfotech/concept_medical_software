@@ -23,11 +23,14 @@ class PatientDocumentMail extends Mailable
 
     public function build()
     {
+        $message = $this->data['message'] ?? '';
+        \Log::info('Building email: ' . $message);
+
         return $this->from($this->data['sender_email'])
             ->subject($this->data['subject'])
             ->view('emails.patient-document')
             ->with([
-                'messageBody' => $this->data['message'] ?? '',
+                'messageBody' => $message,
                 'documentName' => "documentName",//$this->document->name,
             ])
             ->attach($this->pdfPath, [

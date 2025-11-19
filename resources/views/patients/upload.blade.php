@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -41,8 +41,8 @@
                 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
                 <div class="mb-3 position-relative d-inline-block">
-                    <input type="file" name="patient_picture" id="patient_picture_input" class="d-none" accept="image/*" onchange="previewPatientPicture(event)">
-                    
+                    <input type="file" name="patient_picture" id="patient_picture_input" class="d-none" accept="image/*" >
+                    {{-- onchange="previewPatientPicture(event)" --}}
                     <label for="patient_picture_input" style="cursor: pointer; display: inline-block; position: relative;">
                         <img id="patient_picture_preview"
                              src="{{ $patient->patient_picture ? asset('storage/' . $patient->patient_picture) : asset('default-avatar.png') }}"

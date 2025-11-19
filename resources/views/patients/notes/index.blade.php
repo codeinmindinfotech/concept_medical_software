@@ -31,7 +31,7 @@
             Patient Notes Management
         </div>
         <div class="card-body">
-            <div id="patient-notes-list" data-pagination-container>
+            <div class="table-responsive">
                 @include('patients.notes.list', [
                     'patient' => $patient,
                     'notes'=> $notes
@@ -39,7 +39,6 @@
             </div>
         </div> 
     </div>        
-
 @endsection
 @push('scripts')
 <script>
@@ -58,7 +57,7 @@
      ]
    });
     $(document).ready(function() {
-        $('.data-table').on('click', '.toggle-completed', function() {
+        $('#PatientNote').on('click', '.toggle-completed', function() {
             var badge = $(this);
             var toggleUrl = badge.data('url');
 

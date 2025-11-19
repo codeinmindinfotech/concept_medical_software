@@ -46,28 +46,26 @@
                             <td>{{ format_date($task->start_date) }}</td>
                             <td>{{ format_date($task->end_date) }}</td>
                             <td>
-                                <div class="d-flex justify-content-end gap-1">
-                                    <a href="{{guard_route('tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" class="btn btn-sm btn-warning">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <form action="{{guard_route('tasks.destroy', ['patient' => $patient, 'task' => $task->id]) }}" method="POST" class="m-0" onsubmit="return confirm('Are you sure to delete this Tasks?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                    <button type="button" class="btn btn-sm btn-success open-add-followup" data-task-id="{{ $task->id }}" data-task-subject="{{ $task->subject }}" data-bs-toggle="modal" data-bs-target="#addFollowupModal">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
+                                <a class="btn btn-sm bg-primary-light" href="{{guard_route('tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" title="Edit">
+                                    <i class="fe fe-pencil"></i> Edit
+                                </a>
+                                <button type="button" class="btn btn-sm bg-success-light open-add-followup" data-task-id="{{ $task->id }}" data-task-subject="{{ $task->subject }}" data-bs-toggle="modal" data-bs-target="#addFollowupModal">
+                                    <i class="fa fa-plus"></i>
+                                </button>
 
 
-                                    @if($task->followups->count())
-                                    <button class="btn btn-info btn-sm toggle-followups" data-task-id="{{ $task->id }}">
-                                        <i class="fa fa-comments"></i>
-                                    </button>
-                                    @endif
-                                </div>
+                                @if($task->followups->count())
+                                <button class="btn btn-sm bg-success-light toggle-followups" data-task-id="{{ $task->id }}">
+                                    <i class="fa fa-comments"></i>
+                                </button>
+                                @endif
+
+                                <form action="{{guard_route('tasks.destroy', ['patient' => $patient, 'task' => $task->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this Task?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
+                                </form>
+
                             </td>
                         </tr>
                         @endforeach
@@ -82,7 +80,7 @@
     <!-- Add Follow-up Modal -->
     <div class="modal fade" id="addFollowupModal" tabindex="-1" aria-labelledby="addFollowupModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form id="addFollowupForm" method="POST" action="" class="validate-form">
+            <form id="addFollowupForm" method="POST" action="" data-ajax class="needs-validation" novalidate>
                 @csrf
                 <input type="hidden" name="_method" value="POST" id="followupFormMethod">
 
@@ -94,13 +92,12 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="followup_date">Follow-up Date</label>
-                            <div class="input-group">
-                                <input id="followup_date" name="followup_date" type="text" class="form-control flatpickr @error('followup_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('followup_date') }}">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                                @error('followup_date')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                            <div class="cal-icon">
+                                <input id="followup_date" name="followup_date" type="text" class="form-control datetimepicker @error('followup_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('followup_date') }}">
                             </div>
+                            @error('followup_date')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="note">Note</label>

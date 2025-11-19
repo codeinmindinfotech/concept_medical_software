@@ -54,30 +54,27 @@
                     {{-- Procedure Date --}}
                     <div class="mb-3 col-md-4">
                         <label for="procedure_date" class="form-label"><strong>Procedure Date *</strong></label>
-                        <div class="input-group">
-                            <input id="procedure_date" name="procedure_date" type="text" class="form-control flatpickr"
+                        <div class="cal-icon">
+                            <input id="procedure_date" name="procedure_date" type="text" class="form-control datetimepicker"
                                 value="{{ old('procedure_date', $feeNote->procedure_date) }}" placeholder="YYYY-MM-DD">
-                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
                         </div>
                     </div>
 
                     {{-- Admission Date --}}
                     <div class="mb-3 col-md-4">
                         <label for="admission_date" class="form-label">Admission Date</label>
-                        <div class="input-group">
-                            <input id="admission_date" name="admission_date" type="text" class="form-control flatpickr"
+                        <div class="cal-icon">
+                            <input id="admission_date" name="admission_date" type="text" class="form-control datetimepicker"
                                 value="{{ old('admission_date', $feeNote->admission_date) }}" placeholder="YYYY-MM-DD">
-                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
                         </div>
                     </div>
 
                     {{-- Discharge Date --}}
                     <div class="mb-3 col-md-4">
                         <label for="discharge_date" class="form-label">Discharge Date</label>
-                        <div class="input-group">
-                            <input id="discharge_date" name="discharge_date" type="text" class="form-control flatpickr"
+                        <div class="cal-icon">
+                            <input id="discharge_date" name="discharge_date" type="text" class="form-control datetimepicker"
                                 value="{{ old('discharge_date', $feeNote->discharge_date) }}" placeholder="YYYY-MM-DD">
-                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
                         </div>
                     </div>
 
@@ -141,9 +138,9 @@
 
                 {{-- Clinic & Consultant --}}
                 <div class="row g-3">
-                    <div class="col-md-3">
+                    <div class="mb-3 col-md-4">
                         <label>Clinic<span class="txt-error">*</span></label>
-                        <select name="clinic_id" class="form-select select2">
+                        <select name="clinic_id" class="form-select select2" required>
                             <option value="">-- Select --</option>
                             @foreach($clinics as $clinic)
                             <option value="{{ $clinic->id }}" {{ old('clinic_id', $feeNote->clinic_id) == $clinic->id ?
@@ -154,9 +151,9 @@
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="mb-3 col-md-4">
                         <label>Consultant<span class="txt-error">*</span></label>
-                        <select name="consultant_id" class="select2">
+                        <select name="consultant_id" class="select2" required>
                             <option value="">-- Consultant --</option>
                             @foreach($consultants as $consultant)
                             <option value="{{ $consultant->id }}" {{ old('consultant_id', $feeNote->consultant_id) ==

@@ -77,18 +77,16 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="from" class="form-label"><strong>From <span class="txt-error">*</span></strong></label>
-                                        <div class="input-group">
-                                            <input id="from" name="from" type="text" class="form-control flatpickr"
+                                        <div class="cal-icon">
+                                            <input id="from" name="from" type="text" class="form-control datetimepicker"
                                                    placeholder="YYYY-MM-DD" value="{{ request('from') }}">
-                                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="to" class="form-label"><strong>To <span class="txt-error">*</span></strong></label>
-                                        <div class="input-group">
-                                            <input id="to" name="to" type="text" class="form-control flatpickr"
+                                        <div class="cal-icon">
+                                            <input id="to" name="to" type="text" class="form-control datetimepicker"
                                                    placeholder="YYYY-MM-DD" value="{{ request('to') }}">
-                                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
                                         </div>
                                     </div>
                                 </div>

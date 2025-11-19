@@ -86,7 +86,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('patients', $patients);
         });
 
-         View::composer('backend.theme.header', function ($view) {
+         View::composer('layout.partials.header_admin', function ($view) {
             $user = Auth::user();
 
             // === Recall Data ===

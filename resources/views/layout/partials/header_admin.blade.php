@@ -58,6 +58,82 @@
         </li>
         <!-- /Notifications -->
         
+        <li class="nav-item dropdown">
+            <a href="javascript:;" class="dropdown-toggle nav-link" data-bs-toggle="dropdown" id="recallsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fe fe-calendar"></i> 
+                @if(!empty($monthlyRecallCount) && $monthlyRecallCount > 0)
+                <span class="badge rounded-pill bg-primary text-dark" id="recall-count">{{ $monthlyRecallCount }}</span>
+                @endif
+            </a>
+           
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="recallsDropdown">
+                <li>
+                    <h6 class="dropdown-header">
+                        <i class="fas fa-calendar-alt me-2"></i> Recalls This Month
+                    </h6>
+                </li>
+
+                @forelse($recallsThisMonth as $recall)
+                <li>
+                    <a class="dropdown-item" href="{{guard_route('recalls.notifications') }}">
+                        <i class="fas fa-user me-2"></i>
+                        Patient #{{ $recall->patient_id }} – {{ \Carbon\Carbon::parse($recall->recall_date)->format('d M Y') }}
+                    </a>
+                </li>
+                @empty
+                <li><span class="dropdown-item-text">No recalls due</span></li>
+                @endforelse
+
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+
+                <li>
+                    <a class="dropdown-item text-center text-primary fw-bold" href="{{guard_route('recalls.notifications') }}">
+                        <i class="fas fa-folder-open me-2"></i> View All Recalls
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Tasks Notification Dropdown -->
+        <li class="nav-item dropdown me-3">
+            <a class="nav-link dropdown-toggle position-relative" href="#" id="tasksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-tasks"></i>
+                @if(!empty($taskCount) && $taskCount > 0)
+                <span class="badge rounded-pill bg-warning text-dark" id="recall-count">{{ $taskCount }}</span>
+                @endif
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="tasksDropdown">
+                <li>
+                    <h6 class="dropdown-header">
+                        <i class="fas fa-clipboard-list me-2"></i> Upcoming Tasks
+                    </h6>
+                </li>
+
+                @forelse($upcomingTasks as $task)
+                <li>
+                    <a class="dropdown-item" href="{{guard_route('tasks.edit', ['patient' => $task->patient_id, 'task' => $task->id]) }}">
+                        <i class="fas fa-file-alt me-2"></i>
+                        {{ $task->subject }} – {{ \Carbon\Carbon::parse($task->end_date)->format('d M Y') }}
+                    </a>
+                </li>
+                @empty
+                <li><span class="dropdown-item-text">No upcoming tasks</span></li>
+                @endforelse
+
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+
+                <li>
+                    <a class="dropdown-item text-center text-primary fw-bold" href="{{guard_route('tasks.notifications') }}">
+                        <i class="fas fa-folder-open me-2"></i> View All Tasks
+                    </a>
+                </li>
+            </ul>
+        </li>
         <!-- User Menu -->
         <li class="nav-item dropdown has-arrow">
             <a href="javascript:;" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">

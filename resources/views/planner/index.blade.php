@@ -1,9 +1,12 @@
 
-@extends('backend.theme.default')
-    @push('styles')
-        <link href="{{ asset('theme/main/css/custom_diary.css') }}" rel="stylesheet">
-    @endpush
+<?php $page = 'Planner-index'; ?>
+@extends('layout.mainlayout_admin')
+@push('styles')
+    <link href="{{ asset('assets_admin/css/custom_diary.css') }}" rel="stylesheet">
+@endpush
 @section('content')
+<!-- Page Wrapper -->
+<div class="page-wrapper">
     <div class="container-fluid px-4">
         @php
         $breadcrumbs = [
@@ -12,7 +15,7 @@
         ];
         @endphp
 
-        @include('backend.theme.breadcrumb', [
+        @include('layout.partials.breadcrumb', [
             'pageTitle' => 'Scheduled Appointment List',
             'breadcrumbs' => $breadcrumbs,
             'backUrl' => guard_route('patients.create'),
@@ -37,7 +40,9 @@
                         <!-- Date Filter -->
                         <div class="col-md-3 col-sm-6">
                             <label class="form-label">Select Date</label>
-                            <input type="date" name="date" value="{{ $date }}" class="form-control" onchange="this.form.submit()">
+                            <div class="cal-icon">
+                                <input type="text" name="date" value="{{ $date }}" class="form-control datetimepicker" onchange="this.form.submit()">
+                            </div>
                         </div>
                 
                         <!-- Clinic Filter -->
@@ -123,7 +128,7 @@
                                                     draggable="true"
                                                     data-id="{{ $appointment->id }}"
                                                     data-patient-id="{{ $appointment->patient_id }}"
-                                                    data-appointment_type="{{ $appointment->appointment_type }}"
+                                                    data-appointment-type="{{ $appointment->appointment_type }}"
                                                     data-procedure-id="{{ $appointment->procedure_id }}"
                                                     data-end-time="{{ $appointment->end_time }}"
                                                     data-hour="{{ $hour }}"
@@ -205,6 +210,13 @@
             </div>
         </div>
     </div>
+</div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
+@endsection
+
+@push('modals')
 
 <!-- Hospital Booking Modal -->
 <x-hospital-appointment-modal
@@ -227,10 +239,9 @@
     :flag="1"
     :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
-@endsection
+@endpush
 @push('scripts')
-    <script src="{{ asset('theme/custom.js') }}"></script>
-    <script src="{{ asset('theme/patient-diary.js') }}"></script>
+    <script src="{{ asset('assets_admin/js/patient-diary.js') }}"></script>
     <script>
         $(document).on('click', '.edit-appointment', function() {
             let btn = $(this);

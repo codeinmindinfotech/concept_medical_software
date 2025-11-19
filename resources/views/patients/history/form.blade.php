@@ -20,7 +20,7 @@
           {{-- historys --}}
           <div class="col-md-12">
             <label for="history_notes" class="form-label"><strong>History Notes</strong></label>
-            <textarea id="history_notes" name="history_notes" class="form-control @error('history_notes') is-invalid @enderror" rows="4">{{ old('history_notes', $history->history_notes ?? '') }}</textarea>
+            <textarea id="history_notes" name="history_notes" class="form-control @error('history_notes') is-invalid @enderror" rows="4" required>{{ old('history_notes', $history->history_notes ?? '') }}</textarea>
             @error('history_notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 

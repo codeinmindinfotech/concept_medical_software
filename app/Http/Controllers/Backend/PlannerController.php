@@ -20,7 +20,7 @@ class PlannerController extends Controller
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();
         $appointments = Appointment::companyOnly()->with(['patient', 'appointmentType','appointmentStatus','procedure'])
-            ->whereDate('start_time', $date);
+            ->whereDate('appointment_date', $date);
 
         if ($request->filled('clinic_id')) {
             $appointments->where('clinic_id', $request->clinic_id);

@@ -16,30 +16,30 @@
             @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-
-            <table class="table table-hover table-bordered data-table align-middle mb-0" 
-            data-route="{{guard_route('communications.received', ['communication' => '__ID__']) }}" id="CommunicationTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Method</th>
-                        <th>Received</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($communications as $communication)
-                    <tr data-id="{{ $communication->id }}">
-                        <td>{{ $communication->id }}</td>
-                        <td>{{ format_date($communication->created_at) }}</td>
-                        <td>{{ $communication->message ?? '-' }}</td>
-                        <td>{{ $communication->method ?? '-' }}</td>
-                        <td><input type="checkbox" onchange="markAsReceived({{ $communication->id }}, this)" /></td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered data-table align-middle mb-0" data-route="{{guard_route('communications.received', ['communication' => '__ID__']) }}" id="CommunicationTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Method</th>
+                            <th>Received</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($communications as $communication)
+                        <tr data-id="{{ $communication->id }}">
+                            <td>{{ $communication->id }}</td>
+                            <td>{{ format_date($communication->created_at) }}</td>
+                            <td>{{ $communication->message ?? '-' }}</td>
+                            <td>{{ $communication->method ?? '-' }}</td>
+                            <td><input type="checkbox" onchange="markAsReceived({{ $communication->id }}, this)" /></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -85,3 +85,4 @@
 
 </script>
 @endpush
+

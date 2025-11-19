@@ -46,7 +46,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('theme/transcription.js') }}"></script>
+<script src="{{ asset('assets_admin/js/transcription.js') }}"></script>
 <script>
     $(document).ready(function() {
     if ( $.fn.DataTable.isDataTable('#PatientAudioTable') ) {

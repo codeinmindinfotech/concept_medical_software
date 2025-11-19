@@ -45,9 +45,8 @@
 
                         <div class="col-md-6">
                             <label for="hospital_appointment_date" class="form-label">Procedure Date<span class="txt-error">*</span></label>
-                            <div class="input-group">
-                                <input id="hospital_appointment_date" name="appointment_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD" readonly>
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                            <div class="cal-icon">
+                                <input id="hospital_appointment_date" name="appointment_date" type="text" class="form-control datetimepicker @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD" readonly>
                             </div>
                         </div>
 
@@ -58,9 +57,8 @@
 
                         <div class="col-md-6">
                             <label for="admission_date" class="form-label">Admission Date<span class="txt-error">*</span></label>
-                            <div class="input-group">
-                                <input id="admission_date" name="admission_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                            <div class="cal-icon">
+                                <input id="admission_date" name="admission_date" type="text" class="form-control datetimepicker @error('admission_date') is-invalid @enderror" placeholder="YYYY-MM-DD">
                             </div>
                         </div>
 

@@ -169,38 +169,4 @@ $(document).ready(function () {
       $('#statusChangeModal').modal('show');
   };
 
-  // window.openClinicOverviewCountModal = function () {
-  
-  // }
-// function openClinicOverviewCountModal() {
-//     if (!selectedDate) {
-//         Swal.fire('Warning', 'Please select a date first.', 'info');
-//         return;
-//     }
-
-//     const modalBody = document.getElementById('clinic-overview-count-body');
-//     const dateText = document.getElementById('clinic-count-date');
-//     dateText.textContent = selectedDate;
-//     modalBody.innerHTML = '<p class="text-muted">Loading data...</p>';
-
-//     fetch(`{{ route('appointments.clinicOverviewCounts') }}`, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-//         },
-//         body: JSON.stringify({ date: selectedDate })
-//     })
-//     .then(res => res.text())
-//     .then(html => {
-//         modalBody.innerHTML = html;
-//         const modal = new bootstrap.Modal(document.getElementById('clinicOverviewCountModal'));
-//         modal.show();
-//     })
-//     .catch(err => {
-//         console.error(err);
-//         modalBody.innerHTML = '<p class="text-danger">Failed to load data.</p>';
-//     });
-// }
-
 });

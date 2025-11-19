@@ -42,15 +42,13 @@ $breadcrumbs = [
                 <td>{{ $recall->note }}</td>
                 <td>{{ $recall->status?->value }}</td>
                 <td>
-                    <a href="{{guard_route('recalls.edit', ['patient' => $patient, 'recall' => $recall]) }}" class="btn btn-sm btn-warning">
-                        <i class="fa fa-edit"></i>
+                    <a href="{{guard_route('recalls.edit', ['patient' => $patient, 'recall' => $recall]) }}" class="btn btn-sm bg-primary-light" title="Edit">
+                        <i class="fe fe-pencil"></i> Edit
                     </a>
                     <form action="{{guard_route('recalls.destroy', ['patient' => $patient, 'recall' => $recall]) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Delete this task?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fa fa-trash"></i>
-                        </button>
+                        <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                     </form>
                 </td>
             </tr>

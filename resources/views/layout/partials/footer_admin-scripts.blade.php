@@ -28,8 +28,19 @@
 
  <!-- Full Calendar JS -->
  <script src="{{ URL::asset('/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
- <script src="{{ URL::asset('/assets/plugins/fullcalendar/fullcalendar.min.js') }}"></script>
- <script src="{{ URL::asset('/assets/plugins/fullcalendar/jquery.fullcalendar.js') }}"></script>
+ 
+ @php
+    $excludedUrls = [
+        'patients/*/appointments/schedule', // matches patients/2/appointments/schedule
+        'appointments/schedule',            // matches appointments/schedule
+    ];
+@endphp
+
+@if (!collect($excludedUrls)->contains(fn($url) => request()->is($url)))
+    <script src="{{ asset('assets/plugins/fullcalendar/fullcalendar.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/fullcalendar/jquery.fullcalendar.js') }}"></script>
+@endif
+
 
  <!-- Datatables JS -->
  <script src="{{ URL::asset('/assets_admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
@@ -63,13 +74,8 @@
      <script src="{{ URL::asset('/assets_admin/js/transactions-list.js') }}"></script>
  @endif
 
- @if (Route::is('planner.index'))
-    <script src="{{ asset('theme/custom.js') }}"></script>
-    <script src="{{ asset('assets_admin/js/patient-diary.js') }}"></script>
-@endif 
-
- <!-- Custom JS -->
- <script src="{{ URL::asset('/assets_admin/js/script.js') }}"></script>
+<!-- Custom JS -->
+<script src="{{ URL::asset('/assets_admin/js/script.js') }}"></script>
  @php
  $guards = ['doctor', 'patient', 'clinic', 'web'];
  $user = null;

@@ -18,7 +18,7 @@ class TaskFollowupController extends Controller
         ]);
 
         if ($followupId) {
-            $followup = TaskFollowup::companyOnly()->where('task_id', $taskId)->findOrFail($followupId);
+            $followup = TaskFollowup::where('task_id', $taskId)->findOrFail($followupId);
             $followup->update([
                 'followup_date' => $request->followup_date,
                 'note' => $request->note,

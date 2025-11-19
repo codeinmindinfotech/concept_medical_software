@@ -27,7 +27,7 @@ $breadcrumbs = [
 
     <div class="mb-3">
         <label for="recall_interval" class="form-label">Interval<span class="txt-error">*</span></label>
-        <select name="recall_interval" id="recall_interval" class="form-select select2">
+        <select name="recall_interval" id="recall_interval" class="form-select select2" required>
             <option value="">-- Select --</option>
             <option value="Today">Today</option>
             <option value="6 weeks">6 weeks</option>
@@ -40,13 +40,13 @@ $breadcrumbs = [
     <div class="mb-3">
         <label for="recall_date" class="form-label">Recall Date<span class="txt-error">*</span></label>
         <div class="cal-icon">
-            <input id="recall_date" name="recall_date" type="text" class="form-control datetimepicker" placeholder="YYYY-MM-DD">
+            <input id="recall_date" name="recall_date" type="text" required class="form-control datetimepicker" placeholder="YYYY-MM-DD">
         </div>
     </div>
 
     <div class="mb-3">
         <label for="status_id" class="form-label">Status<span class="txt-error">*</span></label>
-        <select name="status_id" id="status_id" class="form-select select2">
+        <select name="status_id" id="status_id" class="form-select select2" required>
             @foreach($statuses as $id => $value)
             <option value="{{ $id }}" {{ old('status_id') == $id ? 'selected' : '' }}>
                 {{ $value }}
@@ -57,7 +57,7 @@ $breadcrumbs = [
 
     <div class="mb-3">
         <label for="note" class="form-label">Note<span class="txt-error">*</span></label>
-        <textarea name="note" id="note" class="form-control"></textarea>
+        <textarea name="note" id="note" class="form-control" required></textarea>
     </div>
 
     <div class="text-end">

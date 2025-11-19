@@ -5,11 +5,11 @@
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             
             <!-- Modal Header -->
-            <div class="modal-header bg-gradient-primary text-white py-3 px-4">
+            <div class="modal-header bg-gradient-primary py-3 px-4">
                 <h5 class="modal-title d-flex align-items-center mb-0">
                     <i class="bi bi-calendar2-range me-2 fs-4"></i> {{ $title ?? 'Move Appointment' }}
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <!-- Modal Body -->
@@ -35,10 +35,12 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Appointment Date</label>
-                                    <input type="text" id="fromDate" placeholder="Select Date" class="form-control" />
+                                    <div class="cal-icon">
+                                        <input type="text" id="fromDate" placeholder="Select Date" class="form-control datetimepicker" />
+                                    </div>
                                 </div>
 
-                                <div id="fromDateDisplay" class="border rounded p-3 bg-white text-muted small shadow-sm">
+                                <div id="fromDateDisplay" class="border rounded p-3  text-muted small shadow-sm">
                                     Please select a date.
                                 </div>
                             </div>
@@ -65,10 +67,12 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">New Date</label>
-                                    <input type="text" id="toDate" placeholder="Select Target Date" class="form-control" />
+                                    <div class="cal-icon">
+                                        <input type="text" id="toDate" placeholder="Select Target Date" class="form-control datetimepicker"  />
+                                    </div>
                                 </div>
 
-                                <div id="timeSlotsForTarget" class="border rounded p-3 bg-white text-muted small shadow-sm">
+                                <div id="timeSlotsForTarget" class="border rounded p-3  text-muted small shadow-sm">
                                     Please select a clinic and target date.
                                 </div>
 
@@ -89,7 +93,7 @@
 
                 <!-- Submit Button -->
                 <div class="mt-4 text-center">
-                    <button class="btn btn-gradient-primary btn-lg px-5 shadow-sm rounded-pill" onclick="submitMoveAppointment()">
+                    <button class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill" onclick="submitMoveAppointment()">
                         <i class="bi bi-arrow-repeat me-2"></i> Move Appointment
                     </button>
                 </div>
