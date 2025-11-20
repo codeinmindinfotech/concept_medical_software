@@ -15,7 +15,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
     </div>
     <div class="col-md-4">
         <label for="clinic_type"><strong>Clinic Type</strong></label>
-        <select name="clinic_type" id="clinic_type" class="select2 @error('clinic_type') is-invalid @enderror"">
+        <select name="clinic_type" id="clinic_type" class="form-control select2 @error('clinic_type') is-invalid @enderror"">
             <option value="clinic" {{ old('clinic_type', $clinic->clinic_type ?? '') === 'clinic' ? 'selected' : '' }}>Clinic</option>
             <option value="hospital" {{ old('clinic_type', $clinic->clinic_type ?? '') === 'hospital' ? 'selected' : '' }}>Hospital</option>
         </select>

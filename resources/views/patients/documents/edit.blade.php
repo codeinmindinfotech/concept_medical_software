@@ -1,6 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
+
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -11,7 +12,7 @@ $breadcrumbs = [
 ['label' => 'Edit Document'],
 ];
 @endphp
-@include('backend.theme.breadcrumb', [
+@include('layout.partials.breadcrumb', [
     'pageTitle' => 'Edit Document',
     'breadcrumbs' => $breadcrumbs,
     'backUrl' =>guard_route('patient-documents.index', $patient->id),

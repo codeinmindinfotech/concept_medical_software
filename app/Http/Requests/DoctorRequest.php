@@ -7,11 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class DoctorRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         $doctorId = $this->route('doctor')?->id;
@@ -27,7 +22,7 @@ class DoctorRequest extends FormRequest
             'fax'               => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'email'             => [
                                     'required',
-                                    'email:rfc,dns',
+                                    'email:rfc',
                                     'max:255',
                                     new UniquePerCompany('doctors', 'email', $companyId, $doctorId),
                                 ], 

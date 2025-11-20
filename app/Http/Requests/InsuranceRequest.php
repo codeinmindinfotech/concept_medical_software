@@ -17,7 +17,7 @@ class InsuranceRequest extends FormRequest
             'code'                  => 'required|string|max:50|unique:insurances,code,' . ($this->insurance->id ?? 'NULL') . ',id',
             'address'               => 'required|string|max:255',
             'contact_name'          => 'required|string|max:255',
-            'email'                 => ['required', 'email:rfc,dns', 'max:255'],
+            'email'                 => ['required', 'email:rfc', 'max:255'],
             'contact'               => ['required', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'postcode'              => 'required|string|max:10',
             'fax'                   => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],

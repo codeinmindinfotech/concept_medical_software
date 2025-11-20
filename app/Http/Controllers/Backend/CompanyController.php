@@ -143,7 +143,7 @@ class CompanyController extends Controller
             $company = Company::findOrFail($companyId);
             $company->delete();
 
-            return redirect()->route('companies.index')->with('success', 'Company deleted successfully.');
+            return redirect(guard_route('companies.index'))->with('success', 'Company deleted successfully.');
 
         } catch (\Exception $e) {
             \Log::error('Failed to delete company: ' . $e->getMessage());

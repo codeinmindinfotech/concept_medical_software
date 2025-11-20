@@ -72,8 +72,15 @@ class ChargeCodePriceController extends Controller
             );
         }
     
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Prices updated successfully!',
+                'redirect' => guard_route('chargecodeprices.adjust-prices', $insurance->id)
+            ]);
+        }
 
-        return redirect()->route('chargecodeprices.adjust-prices', $insurance->id)
+        return redirect(guard_route('chargecodeprices.adjust-prices', $insurance->id))
                         ->with('success', 'Prices updated successfully.');
     }
 

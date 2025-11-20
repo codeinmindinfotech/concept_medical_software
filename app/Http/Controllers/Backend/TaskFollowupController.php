@@ -18,7 +18,7 @@ class TaskFollowupController extends Controller
         ]);
 
         if ($followupId) {
-            $followup = TaskFollowup::companyOnly()->where('task_id', $taskId)->findOrFail($followupId);
+            $followup = TaskFollowup::where('task_id', $taskId)->findOrFail($followupId);
             $followup->update([
                 'followup_date' => $request->followup_date,
                 'note' => $request->note,
@@ -44,9 +44,8 @@ class TaskFollowupController extends Controller
     public function destroy($patientId, $taskId, TaskFollowup $followup) : RedirectResponse
     {
         $followup->delete();
-        return redirect()
-            ->route('tasks.index', ['patient' => $patientId])
-            ->with('success', 'Follow Up deleted successfully.');
+        return redirect(guard_route('tasks.index', ['patient' => $patientId]))
+        ->with('success', 'Follow Up deleted successfully.');
     }
 
 }

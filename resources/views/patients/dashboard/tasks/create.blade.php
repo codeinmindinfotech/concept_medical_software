@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -16,14 +16,14 @@
             </a>
         </div>
         <div class="card-body">
-            <form action="{{guard_route('tasks.store', ['patient' => $patient->id]) }}" class="validate-form" method="POST">
+            <form action="{{guard_route('tasks.store', ['patient' => $patient->id]) }}" data-ajax class="needs-validation" novalidate method="POST">
                 @csrf
                 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="task_creator_id" class="form-label">Task Creator</label>
-                        <select name="task_creator_id" id="task_creator_id" class="form-control" required>
+                        <select name="task_creator_id" id="task_creator_id" class="form-control select2" required>
                             <option value="">-- Select Creator --</option>
                             @foreach($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
@@ -33,7 +33,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="task_owner_id" class="form-label">Task Owner</label>
-                        <select name="task_owner_id" id="task_owner_id" class="form-control" required>
+                        <select name="task_owner_id" id="task_owner_id" class="form-control select2" required>
                             <option value="">-- Select Owner --</option>
                             @foreach($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
@@ -43,7 +43,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="category_id" class="form-label">Category</label>
-                        <select name="category_id" id="category_id" class="form-control" required>
+                        <select name="category_id" id="category_id" class="form-control select2" required>
                             <option value="">-- Select Category --</option>
                             @foreach($taskcategories as $id => $value)
                             <option value="{{ $id }}">{{ $value }}</option>
@@ -77,24 +77,22 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="start_date" class="form-label">Start Date</label>
-                        <div class="input-group">
-                            <input id="start_date" name="start_date" type="text" class="form-control flatpickr @error('start_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('start_date') }}">
-                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            @error('start_date')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                        <div class="cal-icon">
+                            <input id="start_date" name="start_date" type="text" class="form-control datetimepicker @error('start_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('start_date') }}">
                         </div>
+                        @error('start_date')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="end_date" class="form-label">End Date</label>
-                        <div class="input-group">
-                            <input id="end_date" name="end_date" type="text" class="form-control flatpickr @error('end_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('end_date') }}">
-                            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                            @error('end_date')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                        <div class="cal-icon">
+                            <input id="end_date" name="end_date" type="text" class="form-control datetimepicker @error('end_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('end_date') }}">   
                         </div>
+                        @error('end_date')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-12 mb-3">

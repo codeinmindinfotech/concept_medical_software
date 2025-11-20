@@ -20,7 +20,7 @@
           <!-- Template Type -->
           <div class="col-md-6">
             <label for="type" class="form-label"><strong>Template Type <span class="text-danger">*</span></strong></label>
-            <select name="type" id="type" class="form-select @error('type') is-invalid @enderror">
+            <select name="type" id="type" class="form-control select2 @error('type') is-invalid @enderror">
               <option value="">-- Select Type --</option>
               <option value="letter" {{ old('type', $template->type ?? '') == 'letter' ? 'selected' : '' }}>Letter</option>
               <option value="form" {{ old('type', $template->type ?? '') == 'form' ? 'selected' : '' }}>Form</option>
@@ -187,45 +187,6 @@ document.getElementById('file').addEventListener('change', function(e) {
     .catch(err => console.error("Upload error:", err));
 });
 
-
-// document.getElementById('file').addEventListener('change', function(e) {
-//     let file = e.target.files[0];
-//     if (!file) return;
-
-//     let formData = new FormData();
-//     formData.append('file', file);
-
-//     fetch("{{ guard_route('documents.tempUpload') }}", {
-//         method: "POST",
-//         headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
-//         body: formData
-//     })
-//     .then(res => res.json())
-//     .then(data => {
-//         if (data.success) {
-//           document.getElementById('tempPath').value = data.tempPath || data.url;
-//           console.log(data.tempPath || data.url);
-//             // ✅ Build callback URL for temp file
-//             const callbackUrl =
-//                 "{{ url('/api/onlyoffice/document_callback') }}" +
-//                 "?tempPath=" + encodeURIComponent(data.tempPath);
-//                 initEditor({
-//                     fileType: data.fileType,
-//                     key: data.key,
-//                     title: file.name,
-//                     url: data.url,
-//                     token: data.token,
-//                     callbackUrl: data.callbackUrl // points to tempPath
-//                 }, file.name);
-//             // Pass callback URL into editor
-//             // initEditor({ ...data, callbackUrl: callbackUrl }, file.name || "New Document");
-//             // initEditor(data, file.name || "new Document");
-//           } else {
-//             alert("❌ File upload failed.");
-//         }
-//     })
-//     .catch(err => console.error("Upload error:", err));
-// });
 document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const tag = btn.dataset.tag;

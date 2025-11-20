@@ -124,7 +124,7 @@ class InsuranceController extends Controller
     {
         $insurance->delete();
     
-        return redirect()->route('insurances.index')
+        return redirect(guard_route('insurances.index'))
                         ->with('success','Insurance deleted successfully');
     }
 }

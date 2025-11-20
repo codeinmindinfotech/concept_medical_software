@@ -70,7 +70,7 @@ class PatientHistoryController extends Controller
     {
         PatientHistory::destroy($noteId);
     
-        return redirect()->route('patients.history.index', $patientId)
+        return redirect(guard_route('patients.history.index', $patientId))
                         ->with('success','Note deleted successfully');
     }
 }

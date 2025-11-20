@@ -1,86 +1,85 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
-<div class="tab-pane fade show active" id="tasks" role="tabpanel">
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center  ">
-            <h5 class="mb-0">
-                <i class="fas fa-user-clock me-2"></i> Edit Recall
-            </h5>
-            <a href="{{guard_route('recalls.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                <i class="fas fa-plus-circle me-1"></i> Add Recall
-            </a>
-        </div>
-        <div class="card-body">
-            @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
+@php
+$breadcrumbs = [
+['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+['label' => 'Patients Recall List', 'url' =>guard_route('recalls.index', $patient)],
+['label' => 'Edit Recall'],
+];
+@endphp
 
-            @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-            <form action="{{guard_route('recalls.update', ['patient' => $patient->id, 'recall' => $recall->id]) }}" method="POST" class="validate-form">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+@include('layout.partials.breadcrumb', [
+'pageTitle' => 'Edit Recall Management',
+'breadcrumbs' => $breadcrumbs,
+'backUrl' =>guard_route('recalls.index', $patient),
+'isListPage' => false
+])
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
 
-                <div class="mb-3">
-                    <label for="recall_interval" class="form-label">Interval<span class="txt-error">*</span></label>
-                    <select name="recall_interval" id="recall_interval" class="form-select select2">
-                        <option value="">-- Select --</option>
-                        @php
-                        $intervals = ['Today', '6 weeks', '2 months', '3 months', '6 months', '1 year'];
-                        @endphp
-                        @foreach($intervals as $interval)
-                        <option value="{{ $interval }}" {{ old('recall_interval', $recall->recall_interval) === $interval ? 'selected' : '' }}>
-                            {{ $interval }}
-                        </option>
-                        @endforeach
-                    </select>
+@if($errors->any())
+<div class="alert alert-danger">
+    <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+<form action="{{guard_route('recalls.update', ['patient' => $patient->id, 'recall' => $recall->id]) }}" method="POST" data-ajax class="needs-validation" novalidate>
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
-                </div>
-                <div class="mb-3">
-                    <label for="recall_date" class="form-label">Recall Date<span class="txt-error">*</span></label>
-                    <div class="input-group">
-                        <input id="recall_date" name="recall_date" type="text" value="{{ old('recall_date', $recall->recall_date) }}" class="form-control flatpickr" placeholder="YYYY-MM-DD">
-                        <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
-                    </div>
-                </div>
+    <div class="mb-3">
+        <label for="recall_interval" class="form-label">Interval<span class="txt-error">*</span></label>
+        <select name="recall_interval" id="recall_interval" class="form-select select2" required>
+            <option value="">-- Select --</option>
+            @php
+            $intervals = ['Today', '6 weeks', '2 months', '3 months', '6 months', '1 year'];
+            @endphp
+            @foreach($intervals as $interval)
+            <option value="{{ $interval }}" {{ old('recall_interval', $recall->recall_interval) === $interval ? 'selected' : '' }}>
+                {{ $interval }}
+            </option>
+            @endforeach
+        </select>
 
-                <div class="mb-3">
-                    <label for="status_id" class="form-label">Status<span class="txt-error">*</span></label>
-                    <select name="status_id" id="status_id" class="form-select select2">
-                        @foreach($statuses as $id => $value)
-                        <option value="{{ $id }}" {{ old('status_id', $recall->status_id) == $id ? 'selected' : '' }}>
-                            {{ $value }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="note" class="form-label">Note<span class="txt-error">*</span></label>
-                    <textarea name="note" id="note" class="form-control">{{ old('note', $recall->note) }}</textarea>
-                </div>
-
-
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Task</button>
-                <a href="{{guard_route('recalls.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
-            </form>
+    </div>
+    <div class="mb-3">
+        <label for="recall_date" class="form-label">Recall Date<span class="txt-error">*</span></label>
+        <div class="cal-icon">
+            <input id="recall_date" name="recall_date" type="text" value="{{ old('recall_date', $recall->recall_date) }}" class="form-control datetimepicker" required placeholder="YYYY-MM-DD">
         </div>
     </div>
-</div>
+
+    <div class="mb-3">
+        <label for="status_id" class="form-label">Status<span class="txt-error">*</span></label>
+        <select name="status_id" id="status_id" class="form-select select2" required>
+            @foreach($statuses as $id => $value)
+            <option value="{{ $id }}" {{ old('status_id', $recall->status_id) == $id ? 'selected' : '' }}>
+                {{ $value }}
+            </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="note" class="form-label">Note<span class="txt-error">*</span></label>
+        <textarea name="note" id="note" class="form-control" required>{{ old('note', $recall->note) }}</textarea>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Recall</button>
+    <a href="{{guard_route('recalls.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
+</form>
 @endsection

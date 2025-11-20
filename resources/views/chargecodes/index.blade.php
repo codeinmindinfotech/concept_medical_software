@@ -1,49 +1,58 @@
-@extends('backend.theme.default')
-
+<?php $page = 'chargecodes-list'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
-    @php
-    $breadcrumbs = [
-    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-    ['label' => 'Charge Code List'],
-    ];
-    @endphp
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <div class="container-fluid px-4">
+            @php
+            $breadcrumbs = [
+                ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+                ['label' => 'Charge Code List'],
+            ];
+            @endphp
 
-    @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Charge Code List',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('chargecodes.create'),
-    'isListPage' => true
-    ])
+            @include('layout.partials.breadcrumb', [
+                'pageTitle' => 'Charge Code List',
+                'breadcrumbs' => $breadcrumbs,
+                'backUrl' =>guard_route('chargecodes.create'),
+                'isListPage' => true
+            ])
 
-    @session('success')
-    <div class="alert alert-success" role="alert">
-        {{ $value }}
-    </div>
-    @endsession
+            @session('success')
+                <div class="alert alert-success" role="alert">
+                    {{ $value }}
+                </div>
+            @endsession
 
-    @php
-    $hasFilters = request()->hasAny(['search']);
-    @endphp
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-table me-1"></i> Charge Codes Management
-            </div>
-            <div>
-                <a href="{{guard_route('chargecodeprices.index') }}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-dollar-sign"></i> Maintain Prices
-                </a>
+            @php
+                $hasFilters = request()->hasAny(['search']);
+            @endphp
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                </div>
+                                <div>
+                                    <a href="{{guard_route('chargecodeprices.index') }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-dollar-sign"></i> Maintain Prices
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                @include('chargecodes.list', ['chargecodes' => $chargecodes])
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="card-body ">
-            <div id="chargecode-list" data-pagination-container>
-                @include('chargecodes.list', ['chargecodes' => $chargecodes])
-            </div>
-        </div>
     </div>
+    <!-- /Page Wrapper -->
 </div>
+<!-- /Main Wrapper -->
 @endsection
 @push('scripts')
 <script>

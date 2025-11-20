@@ -219,7 +219,7 @@ class DocumentTemplateController extends Controller
     public function destroy(string $id)
     {
         DocumentTemplate::destroy($id);
-        return redirect()->route('documents.index')->with('success', 'Template deleted');
+        return redirect(guard_route('documents.index'))->with('success', 'Template deleted');
     }
 
     public function downloadSelectedDocuments(Request $request)
@@ -250,7 +250,7 @@ class DocumentTemplateController extends Controller
         // Return the file for download
         // $fileFullPath = storage_path('app/public/' . $template->file_path);
         // $fileName = $template->name . '.' . pathinfo($template->file_path, PATHINFO_EXTENSION);
-        return redirect()->route('documents.index')->with('success', 'Template updated successfully');
+        return redirect(guard_route('documents.index'))->with('success', 'Template updated successfully');
 
         // return response()->download($fileFullPath, $fileName);
     }

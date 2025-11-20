@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -13,7 +13,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Documents List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' => guard_route('patient-documents.create', $patient),
@@ -31,7 +31,7 @@
             Email / Attach Documents
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ guard_route('patient-documents.email.send', [$patient, $document]) }}" >
+            <form method="POST" action="{{ guard_route('patient-documents.email.send', [$patient, $document]) }}" data-ajax class="needs-validation" novalidate >
                 @csrf
                 {{-- class="validate-form" --}}
                 <div class="mb-3">

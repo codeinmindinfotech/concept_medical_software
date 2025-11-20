@@ -41,7 +41,7 @@ class PatientPhysicalController extends Controller
 
         return response()->json([
             'redirect' =>guard_route('patients.physical.index', $patient->id),
-            'message' => 'Physical Notes added successfully',
+            'message' => 'Patient Physical added successfully',
         ]);
     }
 
@@ -62,7 +62,7 @@ class PatientPhysicalController extends Controller
 
         return response()->json([
             'redirect' =>guard_route('patients.physical.index', $patient->id),
-            'message' => 'Note updated successfully',
+            'message' => 'Patient physical updated successfully',
         ]);
     }
 
@@ -70,7 +70,7 @@ class PatientPhysicalController extends Controller
     {
         PatientPhysical::destroy($noteId);
     
-        return redirect()->route('patients.physical.index', $patientId)
-                        ->with('success','Note deleted successfully');
+        return redirect(guard_route('patients.physical.index', $patientId))
+                        ->with('success','Patient physical deleted successfully');
     }
 }

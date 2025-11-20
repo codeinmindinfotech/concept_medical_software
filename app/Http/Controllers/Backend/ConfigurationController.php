@@ -39,7 +39,7 @@ class ConfigurationController extends Controller
 
         Configuration::create($request->only('key', 'value'));
 
-        return redirect()->route('configurations.index')
+        return redirect(guard_route('configurations.index'))
             ->with('success', 'Configuration created successfully.');
     }
 
@@ -65,7 +65,7 @@ class ConfigurationController extends Controller
         // Clear cache on update
         \Illuminate\Support\Facades\Cache::forget("config:{$configuration->key}");
 
-        return redirect()->route('configurations.index')
+        return redirect(guard_route('configurations.index'))
             ->with('success', 'Configuration updated successfully.');
     }
 
@@ -76,7 +76,7 @@ class ConfigurationController extends Controller
 
         $configuration->delete();
 
-        return redirect()->route('configurations.index')
+        return redirect(guard_route('configurations.index'))
             ->with('success', 'Configuration deleted successfully.');
     }
 }

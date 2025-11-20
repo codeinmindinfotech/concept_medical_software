@@ -91,8 +91,7 @@ class RecallController extends Controller
     {
         $recall->delete();
 
-        return redirect()
-            ->route('recalls.index', ['patient' => $patient->id])
+        return redirect(guard_route('recalls.index', ['patient' => $patient->id]))
             ->with('success', 'Recall deleted successfully.');
     }    
 }

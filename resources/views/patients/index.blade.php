@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
-
+<?php $page = 'patients-list'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -10,7 +12,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Patients List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' => guard_route('patients.create'),
@@ -22,168 +24,109 @@
             {{ $value }}
         </div>
     @endsession
-    @php
-        $hasFilters = request()->hasAny(['first_name', 'surname', 'phone', 'dob']);
-    @endphp
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-table me-1"></i> Patients Management
-            </div>
-            <div>
-                <button class="btn btn-sm btn-primary {{ $hasFilters ? '' : 'collapsed' }}" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#collapseSearch" 
-                        aria-expanded="{{ $hasFilters ? 'true' : 'false' }}" 
-                        aria-controls="collapseSearch">
-                    <i class="fas fa-filter me-1"></i> Advanced Search
-                </button>
-            </div>
-        </div>
-    
-        <div class="card-body">
-            <div class="accordion mb-4" id="searchAccordion">
-                <div class="accordion-item border-0 shadow-sm">
-                    <div id="collapseSearch"
-                         class="accordion-collapse collapse {{ $hasFilters ? 'show' : '' }}"
-                         data-bs-parent="#searchAccordion">
-                        <div class="accordion-body">
-                            <form method="GET" action="{{ guard_route('patients.index') }}">
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="first_name" class="form-label">First Name</label>
-                                        <input type="text" name="first_name" id="first_name" class="form-control"
-                                               placeholder="e.g. John" value="{{ request('first_name') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="surname" class="form-label">Surname</label>
-                                        <input type="text" name="surname" id="surname" class="form-control"
-                                               placeholder="e.g. Doe" value="{{ request('surname') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="phone" class="form-label">Phone</label>
-                                        <input type="text" name="phone" id="phone" class="form-control"
-                                               placeholder="e.g. 0123456789" value="{{ request('phone') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="pin" class="form-label">PIN</label>
-                                        <input type="text" name="pin" id="pin" class="form-control"
-                                               placeholder="e.g. 123456" value="{{ request('pin') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="dob" class="form-label">Date of Birth</label>
-                                        <input type="date" name="dob" id="dob" class="form-control"
-                                               value="{{ request('dob') }}">
-                                    </div>
-                                </div>
-    
-                                <div class="text-end mt-4">
-                                    <button type="submit" class="btn btn-primary me-2">
-                                        <i class="fas fa-search me-1"></i> Search
-                                    </button>
-                                    <a href="{{ guard_route('patients.index') }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-sync-alt me-1"></i> Reset
-                                    </a>
-                                </div>
-                            </form>
-                        </div>
+@php
+    $hasFilters = request()->hasAny(['first_name', 'surname', 'phone', 'dob']);
+@endphp
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-table me-1"></i> Patients Management
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-primary {{ $hasFilters ? '' : 'collapsed' }}" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#collapseSearch" 
+                                aria-expanded="{{ $hasFilters ? 'true' : 'false' }}" 
+                                aria-controls="collapseSearch">
+                            <i class="fas fa-filter me-1"></i> Advanced Search
+                        </button>
                     </div>
                 </div>
-            </div>
-    
-            <ul class="nav nav-tabs mt-3" id="patientTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link {{ request('tab') !== 'trashed' ? 'active' : '' }}"
-                       href="{{ guard_route('patients.index') }}">
-                       Active Patients
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link {{ request('tab') === 'trashed' ? 'active' : '' }}"
-                       href="{{ guard_route('patients.index', ['tab' => 'trashed']) }}">
-                       Trashed Patients
-                    </a>
-                </li>
-            </ul>
-
-            {{-- <div id="patients-list" data-pagination-container>
-                @include('patients.list', ['patients' => $patients])
-            </div> --}}
-
-            <div id="patients-list" data-pagination-container>
-                @include('patients.list', ['patients' => $patients, 'trashed' => request('tab') === 'trashed'])
-            </div>
+                <div class="card-body">
+                    <div class="accordion mb-4" id="searchAccordion">
+                        <div class="accordion-item border-0 shadow-sm">
+                            <div id="collapseSearch"
+                                 class="accordion-collapse collapse {{ $hasFilters ? 'show' : '' }}"
+                                 data-bs-parent="#searchAccordion">
+                                <div class="accordion-body">
+                                    <form method="GET" action="{{ guard_route('patients.index') }}">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label for="first_name" class="form-label">First Name</label>
+                                                <input type="text" name="first_name" id="first_name" class="form-control"
+                                                       placeholder="e.g. John" value="{{ request('first_name') }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="surname" class="form-label">Surname</label>
+                                                <input type="text" name="surname" id="surname" class="form-control"
+                                                       placeholder="e.g. Doe" value="{{ request('surname') }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="phone" class="form-label">Phone</label>
+                                                <input type="text" name="phone" id="phone" class="form-control"
+                                                       placeholder="e.g. 0123456789" value="{{ request('phone') }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="pin" class="form-label">PIN</label>
+                                                <input type="text" name="pin" id="pin" class="form-control"
+                                                       placeholder="e.g. 123456" value="{{ request('pin') }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="dob" class="form-label">Date of Birth</label>
+                                                <input type="date" name="dob" id="dob" class="form-control"
+                                                       value="{{ request('dob') }}">
+                                            </div>
+                                        </div>
             
-        </div>
-    </div>
-    
-    {{-- <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-table me-1"></i> Patients Management
-            </div>
-            <div>
-                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSearch" aria-expanded="{{ $hasFilters ? 'true' : 'false' }}" aria-controls="collapseSearch">
-                    <i class="fas fa-filter me-1"></i> Advanced Search
-                </button>
-            </div>
-        </div>
+                                        <div class="text-end mt-4">
+                                            <button type="submit" class="btn btn-primary me-2">
+                                                <i class="fas fa-search me-1"></i> Search
+                                            </button>
+                                            <a href="{{ guard_route('patients.index') }}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-sync-alt me-1"></i> Reset
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                
+                    <ul class="nav nav-tabs nav-tabs-bottom" id="patientTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link {{ request('tab') !== 'trashed' ? 'active' : '' }}"
+                               href="{{ guard_route('patients.index') }}">
+                               Active Patients
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link {{ request('tab') === 'trashed' ? 'active' : '' }}"
+                               href="{{ guard_route('patients.index', ['tab' => 'trashed']) }}">
+                               Trashed Patients
+                            </a>
+                        </li>
+                    </ul>
         
-        <div class="card-body">
-            <div class="accordion mb-4" id="searchAccordion">
-                <div class="accordion-item border-0 shadow-sm">
-                    <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : 'hide' }}" aria-labelledby="headingSearch"
-                         data-bs-parent="#searchAccordion">
-                        <div class="accordion-body">
-                            <form method="GET" action="{{guard_route('patients.index') }}">
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="first_name" class="form-label">First Name</label>
-                                        <input type="text" name="first_name" id="first_name" class="form-control"
-                                               placeholder="e.g. John" value="{{ request('first_name') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="surname" class="form-label">Surname</label>
-                                        <input type="text" name="surname" id="surname" class="form-control"
-                                               placeholder="e.g. Doe" value="{{ request('surname') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="phone" class="form-label">Phone</label>
-                                        <input type="text" name="phone" id="phone" class="form-control"
-                                               placeholder="e.g. 0123456789" value="{{ request('phone') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="pin" class="form-label">PIN</label>
-                                        <input type="text" name="pin" id="pin" class="form-control"
-                                               placeholder="e.g. 123456" value="{{ request('pin') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="dob" class="form-label">Date of Birth</label>
-                                        <input type="date" name="dob" id="dob" class="form-control"
-                                               value="{{ request('dob') }}">
-                                    </div>
-                                </div>
-            
-                                <div class="text-end mt-4">
-                                    <button type="submit" class="btn btn-primary me-2">
-                                        <i class="fas fa-search me-1"></i> Search
-                                    </button>
-                                    <a href="{{guard_route('patients.index') }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-sync-alt me-1"></i> Reset
-                                    </a>
-                                </div>
-                            </form>
-                        </div>
+        
+                    <div class="table-responsive">
+                        @include('patients.list', ['patients' => $patients, 'trashed' => request('tab') === 'trashed'])
                     </div>
+                    
                 </div>
             </div>
-            <div id="patients-list" data-pagination-container>
-                @include('patients.list', ['patients' => $patients])
-            </div>
-        </div> 
-    </div> --}}
+        </div>
+    </div>                    
 </div>
+</div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
+
+    
 @endsection
 @push('scripts')
 <script>

@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-4">
             <label><strong>Charge Group Type</strong></label>
-            <select name="chargeGroupType" class="select2" required>
+            <select name="chargeGroupType" class=" form-control select2" required>
                 @foreach($groupTypes as $id => $value)
                     <option value="{{ $id }}" {{ old('chargeGroupType', $chargecode->chargeGroupType ?? '') == $id ? 'selected' : '' }}>
                         {{ $value }}

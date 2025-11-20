@@ -10,11 +10,15 @@
           <!-- Name -->
           <div class="col-md-4">
             <label for="name" class="form-label"><strong>Name<span class="txt-error">*</span></strong></label>
-            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
-              value="{{ old('name', $doctor->name ?? '') }}">
+            <input type="text" name="name" id="name"
+                class="form-control @error('name') is-invalid @enderror"
+                value="{{ old('name', $doctor->name ?? '') }}" required>
             @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          </div>
-
+            <div class="invalid-feedback">
+                Please provide a valid name.
+            </div>
+        </div>
+        
           <!-- Company -->
           <div class="col-md-4">
             <label for="company" class="form-label"><strong>Company</strong></label>
@@ -75,11 +79,23 @@
 
           <!-- Email -->
           <div class="col-md-4">
-            <label for="email" class="form-label"><strong>Email</strong><span class="txt-error">*</span></label>
-            <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
-              value="{{ old('email', $doctor->email ?? '') }}">
-            @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+              <label for="email" class="form-label"><strong>Email</strong><span class="txt-error">*</span></label>
+              <input type="email" name="email" id="email" 
+                  class="form-control @error('email') is-invalid @enderror"
+                  value="{{ old('email', $doctor->email ?? '') }}" 
+                  required>
+              
+              {{-- Laravel server-side error --}}
+              @error('email')
+                  <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+          
+              {{-- Client-side validation message --}}
+              <div class="invalid-feedback">
+                  Please provide a valid email address.
+              </div>
           </div>
+        
 
           <!-- Contact -->
           <div class="col-md-6">
@@ -89,27 +105,36 @@
             @error('contact') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
-          <!-- Contact Type -->
           <div class="col-md-3">
             <label for="contact_type_id" class="form-label"><strong>Contact Type</strong></label>
-            <select name="contact_type_id" id="contact_type_id"
-              class="select2 @error('contact_type_id') is-invalid @enderror">
-              <option value="">-- Select Type --</option>
-              @foreach($contactTypes as $type)
-              <option value="{{ $type->id }}" {{ old('contact_type_id', $doctor->contact_type_id ?? '') == $type->id ?
-                'selected' : '' }}>
-                {{ $type->value }}
-              </option>
-              @endforeach
+            <select name="contact_type_id" id="contact_type_id" 
+                class="form-select form-control form-white select2 @error('contact_type_id') is-invalid @enderror"
+                >
+                <option value="">-- Select Type --</option>
+                @foreach($contactTypes as $type)
+                    <option value="{{ $type->id }}" 
+                        {{ old('contact_type_id', $doctor->contact_type_id ?? '') == $type->id ? 'selected' : '' }}>
+                        {{ $type->value }}
+                    </option>
+                @endforeach
             </select>
-            @error('contact_type_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          </div>
-
+        
+            {{-- Laravel server-side validation --}}
+            @error('contact_type_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        
+            {{-- Client-side validation --}}
+            <div class="invalid-feedback">
+                Please select a contact type.
+            </div>
+        </div>
+        
           <!-- Payment Method -->
           <div class="col-md-3">
             <label for="payment_method_id" class="form-label"><strong>Payment Method</strong></label>
             <select name="payment_method_id" id="payment_method_id"
-              class="select2 @error('payment_method_id') is-invalid @enderror">
+              class="form-select form-control form-white select2 @error('payment_method_id') is-invalid @enderror">
               <option value="">-- Select Method --</option>
               @foreach($paymentMethods as $method)
               <option value="{{ $method->id }}" {{ old('payment_method_id', $doctor->payment_method_id ?? '') ==

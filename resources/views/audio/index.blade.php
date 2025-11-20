@@ -10,7 +10,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Audio Recording List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('audios.create'),

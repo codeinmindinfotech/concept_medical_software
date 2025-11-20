@@ -1,5 +1,5 @@
-<table class="table table-bordered data-table" id="UserTable">
-    <thead class="table-dark">
+<table class="table table-hover table-center mb-0" id="UserTable">
+    <thead>
         <tr>
             <th>ID</th>
             <th>Name</th>
@@ -8,15 +8,6 @@
             <th width="280px">Action</th>
         </tr>
     </thead>
-    {{-- <tfoot>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th width="280px">Action</th>
-        </tr>
-    </tfoot> --}}
     <tbody>
         @forelse($data as $i =>$user)
             <tr>
@@ -31,13 +22,16 @@
                 @endif
                 </td>
                 <td>
-                    <a class="btn btn-info btn-sm" href="{{guard_route('users.show',$user->id) }}" title="Show"><i class="fa-solid fa-eye text-white"></i></a>
-                    <a class="btn btn-primary btn-sm" href="{{guard_route('users.edit',$user->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                    <form method="POST" action="{{guard_route('users.destroy', $user->id) }}" style="display:inline">
+                    <a class="btn btn-sm bg-success-light" href="{{guard_route('users.show',$user->id) }}">
+                        <i class="fe fe-eye"></i> Show
+                    </a>
+                    <a class="btn btn-sm bg-primary-light" href="{{guard_route('users.edit',$user->id) }}">
+                        <i class="fe fe-pencil"></i> Edit
+                    </a>
+                    <form action="{{guard_route('users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                         @csrf
                         @method('DELETE')
-
-                        <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                     </form>
                 </td>
             </tr>

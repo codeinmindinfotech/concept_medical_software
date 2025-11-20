@@ -1,6 +1,5 @@
-<div class="table-responsive">
     <table class="table table-hover align-middle text-nowrap" id="PatientTable">
-        <thead class="table-dark">
+        <thead>
             <tr>
                 <th style="width: 40px;">#</th>
                 <th>Doctor</th>
@@ -56,6 +55,6 @@
             @endforeach
         </tbody>
     </table>
-</div>
+
 
 {!! $patients->appends(request()->query())->links('pagination::bootstrap-5') !!}

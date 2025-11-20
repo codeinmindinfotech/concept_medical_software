@@ -218,6 +218,8 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
         Route::resource('roles', RoleController::class);
         Route::resource('users', UserController::class);
         Route::resource('patients', PatientController::class);
+        Route::get('/patients/ajax', [PatientController::class, 'ajax'])->name('patients.ajax');
+
         Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
 
         Route::resource('doctors', DoctorController::class);

@@ -1,76 +1,40 @@
-@extends('backend.theme.default')
+@extends('layout.tabbed')
 
-@section('content')
-<style>
-    #tab-nav {
-        position: sticky;
-        top: 20px;
-        z-index: 1020;
-        /* above content */
-    }
-</style>
-<div class="container-fluid">
-    <div class="row">
-        {{-- Tab Content --}}
-        <div class="col-12 col-md-10">
-            <div class="tab-content" id="tab-content">
-                @php
-                $breadcrumbs = [
-                ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
-                ['label' => 'Patients', 'url' => guard_route('patients.index')],
-                ['label' => 'Patients List'],
-                ];
-                @endphp
+@section('tab-navigation')
+@include('layout.partials.tab-navigation', ['patient' => $patient])
+@endsection
 
-                @include('backend.theme.breadcrumb', [
-                    'pageTitle' => 'Patients List',
-                    'breadcrumbs' => $breadcrumbs,
-                    'isListPage' => true
-                ])
+@section('tab-content')
 
-                @session('success')
-                <div class="alert alert-success" role="alert">
-                    {{ $value }}
-                </div>
-                @endsession
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-notes-medical me-1"></i>
-                        Patient Appointment Management
-                    </div>
-                    <div class="card-body">
-                        <div id="patient-apts-list" data-pagination-container>
-                            @include('patients.apt.list', [
-                            'patient' => $patient,
-                            'apts'=> $apts
-                            ])
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {{-- Sidebar Tabs --}}
-        <div class="col-12 col-md-2">
-            <div class="nav flex-column nav-pills position-sticky" id="tab-nav" style="z-index: 1020;top: 20px;"
-                role="tablist" aria-orientation="vertical">
-                @include('backend.theme.tab-navigation', ['patient' => $patient])
-            </div>
-        </div>
+    @php
+    $breadcrumbs = [
+    ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
+    ['label' => 'Patients', 'url' =>guard_route('patients.index')],
+    ['label' => 'Patient Apt/Surgery'],
+    ];
+    @endphp
 
-        <x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
-            :procedures="$procedures" :flag="1"
-            :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+    @include('layout.partials.breadcrumb', [
+    'pageTitle' => 'Patient Apt/Surgery',
+    'breadcrumbs' => $breadcrumbs,
+    'backUrl' =>guard_route('patients.index'),
+    'isListPage' => false
+    ])
 
-        <x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
-            :appointmentTypes="$appointmentTypes" :flag="1"
-            :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+
+<div class="card-body">
+    <div class="table-responsive">
+        @include('patients.apt.list', [
+        'patient' => $patient,
+        'apts'=> $apts
+        ])
     </div>
 </div>
+
 @endsection
 
 @push('scripts')
-<script src="{{ asset('theme/form-validation.js') }}"></script>
-<script src="{{ asset('theme/patient-diary.js') }}"></script>
+<script src="{{ asset('assets_admin/js/patient-diary.js') }}"></script>
 <script>
     const routes = {
         storeAppointment: "{{ $patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal') }}",
@@ -205,4 +169,14 @@
         }   
     });
 </script>
+@endpush
+@push('modals')
+
+<x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
+:procedures="$procedures" :flag="1"
+:action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+
+<x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
+:appointmentTypes="$appointmentTypes" :flag="1"
+:action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 @endpush

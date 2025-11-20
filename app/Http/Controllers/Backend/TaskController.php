@@ -98,8 +98,7 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return redirect()
-            ->route('tasks.index', ['patient' => $patient->id])
+        return redirect(guard_route('tasks.index', ['patient' => $patient->id]))
             ->with('success', 'Task deleted successfully.');
     }
 
@@ -110,7 +109,7 @@ class TaskController extends Controller
         $taskcategories = $this->getDropdownOptions('CATEGORY');
         $user = auth()->user();
 
-        $query = Task::with(['creator', 'owner', 'category', 'status','followups'])->latest();
+        $query = Task::companyOnly()->with(['creator', 'owner', 'category', 'status','followups'])->latest();
         
         if (has_role('patient')) {
             $user = auth()->user();

@@ -22,7 +22,7 @@ class ConsultantRequest extends FormRequest
             'address' => ['required', 'string'],
             'phone'   => ['required', 'string', 'max:20', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'fax'     => ['nullable', 'string', 'max:20', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
-            'email'   => ['required', 'email:rfc,dns', 'max:255',
+            'email'   => ['required', 'email:rfc', 'max:255',
                         Rule::unique('consultants', 'email')->ignore($consultantId)],
             'imc_no'  => ['required', 'string', 'max:50',
                         Rule::unique('consultants', 'imc_no')->ignore($consultantId)],
