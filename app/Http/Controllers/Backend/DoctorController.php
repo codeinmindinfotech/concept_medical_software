@@ -142,7 +142,7 @@ class DoctorController extends Controller
         $this->authorize('delete', $doctor);
         $doctor->delete();
     
-        return redirect()->route('doctors.index')
+        return redirect(guard_route('doctors.index'))
                         ->with('success','doctor deleted successfully');
     }
 }

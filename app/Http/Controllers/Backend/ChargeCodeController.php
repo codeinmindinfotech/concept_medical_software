@@ -145,7 +145,7 @@ class ChargeCodeController extends Controller
         $this->authorize('delete', $chargecode);
         $chargecode->delete();
     
-        return redirect()->route('chargecodes.index')
+        return redirect(guard_route('chargecodes.index'))
                         ->with('success','chargecode deleted successfully');
     }
 }

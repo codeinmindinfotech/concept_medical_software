@@ -49,7 +49,7 @@ class Task extends Model
 
     public function followups()
     {
-        return $this->hasMany(TaskFollowup::class);
+        return $this->hasMany(TaskFollowup::class, 'task_id');
     }
 
     public function company()

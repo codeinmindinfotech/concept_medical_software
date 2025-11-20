@@ -134,15 +134,12 @@
         'patient-register-step5',
         'pharmacy-index',
     ]))
-
     <body>
 @endif
 @if (Route::is(['onboarding-verification']))
-
     <body class="onboard-page">
 @endif
 @if (Route::is(['map-grid']))
-
     <body class="map-page">
 @endif
 @if (Route::is([

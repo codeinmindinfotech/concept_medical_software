@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
-
+<?php $page = 'notifications-list'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="content container-fluid">
     @php
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -125,23 +127,29 @@
                                     <td>{{ $recall->status->value }}</td>
                                     <td>{{ $recall->note }}</td>
                                     <td>
-                                        <a href="{{ guard_route('patients.show', $recall->patient_id) }}" class="btn btn-info btn-sm me-2">
+                                        <a href="{{ guard_route('patients.show', $recall->patient_id) }}" class="btn bg-info-light btn-sm me-2">
                                             <i class="fas fa-user"></i> View Patient
                                         </a>
-                                        <a href="{{ guard_route('recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn btn-warning btn-sm me-2">
+                                        <a href="{{ guard_route('recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn bg-warning-light btn-sm me-2">
                                             <i class="fas fa-edit"></i> Edit Recall
                                         </a>
-                                        <a href="{{ guard_route('recalls.email', $recall->id) }}" class="btn btn-primary btn-sm me-2">
+                                        <a href="{{ guard_route('recalls.email', $recall->id) }}" class="btn bg-primary-light btn-sm me-2">
                                             <i class="fas fa-envelope"></i> Email
                                         </a>
-                                        <a href="{{ guard_route('recalls.sms', $recall->id) }}" class="btn btn-success btn-sm">
+                                        <a href="{{ guard_route('recalls.sms', $recall->id) }}" class="btn bg-success-light btn-sm">
                                             <i class="fas fa-sms"></i> SMS
                                         </a>
                                     </td>
                                 </tr>
                             @endforeach
                         @else
-                            <tr><td colspan="5">No recalls found for this month.</td></tr>
+                        <tr>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
                         @endif
                     </tbody>
                 </table>
@@ -149,9 +157,29 @@
         </div>
     </div>
 </div>
+</div>
+<!-- /Page Wrapper -->
+
+</div>
+<!-- /Main Wrapper -->
 
 @endsection
 @push('scripts')
+<!-- Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+
+<!-- JSZip (Excel) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- pdfmake (PDF) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<!-- HTML5 Export Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -159,113 +187,143 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     });
-    $('#recallNotificationTable').DataTable({
-        paging: true
-        , searching: false
-        , ordering: true
-        , info: true
-        , lengthChange: true
-        , pageLength: 10
-        , columnDefs: [{
-            targets: 4, // Actions column - no sorting
+
+    $(document).ready(function () {
+
+$('#recallNotificationTable').DataTable({
+
+    paging: true,
+    searching: false,
+    ordering: true,
+    info: true,
+    lengthChange: true,
+    pageLength: 10,
+
+    columnDefs: [
+        {
+            targets: 4,     // disable sorting on last column
             orderable: false
-        }]
-        , dom: 'Bfrtip'
-        , buttons: [{
-                extend: 'print'
-                , text: '<i class="fa fa-print"></i> Print'
-                , className: 'btn btn-outline-secondary me-2',
+        }
+    ],
 
-                title: '', // remove default title
-                exportOptions: {
-                    columns: ':not(:last-child)'
-                }
-                , customize: function(win) {
-                    // Add custom header to print view
-                    $(win.document.body).prepend(
-                        '<h1 style="text-align:center; margin-bottom: 20px;">Recall Notification List</h1>' +
-                        '<p style="text-align:center;">Generated on: ' + new Date().toLocaleDateString() + '</p>'
-                    );
-                    // Optional: style the table header
-                    $(win.document.body).find('table thead th').css({
-                        'background-color': '#007bff'
-                        , 'color': 'white'
-                        , 'text-align': 'center'
+    dom: 'Bfrtip',
+
+    buttons: [
+
+        // ---------------- PRINT ----------------
+        {
+            extend: 'print',
+            text: '<i class="fa fa-print"></i> Print',
+            className: 'btn btn-sm bg-primary-light me-2',
+            title: '', // remove default title
+
+            exportOptions: {
+                columns: ':not(:last-child)' // exclude action column
+            },
+
+            customize: function (win) {
+
+                // Header
+                $(win.document.body).prepend(
+                    '<h1 style="text-align:center; margin-bottom: 20px;">Recall Notification List</h1>' +
+                    '<p style="text-align:center;">Generated on: ' +
+                    new Date().toLocaleDateString() +
+                    '</p>'
+                );
+
+                // Style table header
+                $(win.document.body)
+                    .find('table thead th')
+                    .css({
+                        'background-color': '#007bff',
+                        'color': 'white',
+                        'text-align': 'center'
                     });
-                }
             }
-            , {
-                extend: 'excelHtml5'
-                , text: '<i class="fa fa-file-excel"></i> Excel'
-                , className: 'btn btn-outline-success me-2'
-                , title: 'Recall Notification List'
-                , exportOptions: {
-                    columns: ':not(:last-child)'
-                }
+        },
+
+        // ---------------- EXCEL ----------------
+        {
+            extend: 'excelHtml5',
+            text: '<i class="fa fa-file-excel"></i> Excel',
+            className: 'btn btn-sm bg-success-light me-2',
+            title: 'Recall Notification List',
+
+            exportOptions: {
+                columns: ':not(:last-child)'
             }
-            , {
-                extend: 'pdfHtml5'
-                , text: '<i class="fa fa-file-pdf"></i> PDF'
-                , className: 'btn btn-outline-danger me-2'
-                , title: '', // remove default title for custom header
-                pageSize: 'A4'
-                , orientation: 'landscape'
-                , exportOptions: {
-                    columns: ':not(:last-child)'
-                }
-                , customize: function(doc) {
-                    // Custom header and date
-                    doc.content.splice(0, 0, {
-                        text: 'Recall Notification List'
-                        , style: 'header'
-                        , alignment: 'center'
-                        , margin: [0, 0, 0, 10]
-                    });
-                    doc.content.splice(1, 0, {
-                        text: 'Generated on: ' + new Date().toLocaleDateString()
-                        , style: 'subheader'
-                        , alignment: 'center'
-                        , margin: [0, 0, 0, 20]
-                    });
+        },
 
-                    // Equal column widths
-                    const columnCount = doc.content[doc.content.length - 1].table.body[0].length;
-                    doc.content[doc.content.length - 1].table.widths = Array(columnCount).fill('*');
+        // ---------------- PDF ----------------
+        {
+            extend: 'pdfHtml5',
+            text: '<i class="fa fa-file-pdf"></i> PDF',
+            className: 'btn btn-sm bg-danger-light me-2',
+            title: '', // remove default
+            pageSize: 'A4',
+            orientation: 'landscape',
 
-                    // Reduce default margins (top, left, right, bottom)
-                    doc.pageMargins = [40, 40, 40, 40]; // you can try smaller numbers like 20 or 30
+            exportOptions: {
+                columns: ':not(:last-child)'
+            },
 
-                    // Remove extra space below table if any by tweaking layout
-                    if (doc.content[doc.content.length - 1].table.layout === undefined) {
-                        doc.content[doc.content.length - 1].table.layout = {};
+            customize: function (doc) {
+
+                // Add header title
+                doc.content.splice(0, 0, {
+                    text: 'Recall Notification List',
+                    style: 'header',
+                    alignment: 'center',
+                    margin: [0, 0, 0, 10]
+                });
+
+                // Add date under title
+                doc.content.splice(1, 0, {
+                    text: 'Generated on: ' + new Date().toLocaleDateString(),
+                    style: 'subheader',
+                    alignment: 'center',
+                    margin: [0, 0, 0, 20]
+                });
+
+                // Equal column widths
+                const table = doc.content[doc.content.length - 1].table;
+                const columnCount = table.body[0].length;
+                table.widths = Array(columnCount).fill('*');
+
+                // Page margins
+                doc.pageMargins = [40, 40, 40, 40];
+
+                // Reduce row padding
+                table.layout = table.layout || {};
+                table.layout.paddingBottom = 0;
+
+                // Styles
+                doc.styles = {
+                    header: {
+                        fontSize: 18,
+                        bold: true
+                    },
+                    subheader: {
+                        fontSize: 12,
+                        italics: true
+                    },
+                    tableHeader: {
+                        bold: true,
+                        fontSize: 13,
+                        color: 'white',
+                        fillColor: '#007bff',
+                        alignment: 'center'
                     }
-
-                    // Remove padding below table rows (optional, adjust if needed)
-                    doc.content[doc.content.length - 1].table.layout.paddingBottom = 0;
-
-                    // Styles
-                    doc.styles = {
-                        header: {
-                            fontSize: 18
-                            , bold: true
-                        }
-                        , subheader: {
-                            fontSize: 12
-                            , italics: true
-                        }
-                        , tableHeader: {
-                            bold: true
-                            , fontSize: 13
-                            , color: 'white'
-                            , fillColor: '#007bff'
-                            , alignment: 'center'
-                        }
-                    };
-                }
-
+                };
             }
-        ]
-    });
+        }
+
+    ], // buttons ends
+    data: null // explicitly tell DataTables to use HTML
+
+}); // datatable ends
+
+}); // document.ready ends
 
 
     document.addEventListener("DOMContentLoaded", function() {

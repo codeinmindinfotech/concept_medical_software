@@ -138,12 +138,12 @@
                                 <td>{{ $task->task }}</td>
                                 <td>
                                     <a href="{{guard_route('patients.show', $task->patient_id) }}"
-                                    class="btn btn-info btn-sm me-2" 
+                                    class="btn bg-info-light btn-sm me-2" 
                                     title="View Patient">
                                     <i class="fas fa-user"></i> View Patient
                                     </a>
                                     <a href="{{guard_route('tasks.edit', ['patient' => $task->patient_id, 'task' => $task]) }}"
-                                    class="btn btn-warning btn-sm" 
+                                    class="btn bg-warning-light btn-sm" 
                                     title="Edit Task">
                                     <i class="fas fa-edit"></i> Edit Task
                                     </a>
@@ -166,7 +166,23 @@
 <!-- /Main Wrapper -->
 @endsection
 @push('scripts')
+<!-- Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+
+<!-- JSZip (Excel) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- pdfmake (PDF) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<!-- HTML5 Export Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
 <script>
+    
 document.addEventListener('DOMContentLoaded', function () {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -191,7 +207,7 @@ $('#recallNotificationTable').DataTable({
         {
             extend: 'print',
             text: '<i class="fa fa-print"></i> Print',
-            className: 'btn btn-outline-secondary me-2',
+            className: 'btn btn-sm bg-primary-light me-2',
 
             title: '',  // remove default title
             exportOptions: {
@@ -214,7 +230,7 @@ $('#recallNotificationTable').DataTable({
         {
             extend: 'excelHtml5',
             text: '<i class="fa fa-file-excel"></i> Excel',
-            className: 'btn btn-outline-success me-2',
+            className: 'btn btn-sm bg-success-light me-2',
             title: 'Task Notification List',
             exportOptions: {
                 columns: ':not(:last-child)'
@@ -223,7 +239,7 @@ $('#recallNotificationTable').DataTable({
         {
             extend: 'pdfHtml5',
             text: '<i class="fa fa-file-pdf"></i> PDF',
-            className: 'btn btn-outline-danger me-2',
+            className: 'btn btn-sm bg-danger-light me-2',
             title: '', // remove default title for custom header
             pageSize: 'A4',
             orientation: 'landscape',

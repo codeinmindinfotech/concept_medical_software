@@ -169,8 +169,7 @@ class PatientDocumentController extends Controller
         Storage::delete("public/" . $document->file_path);
         $document->delete();
 
-        return redirect()
-            ->route('patient-documents.index', $patient)
+        return redirect(guard_route('patient-documents.index', $patient))
             ->with('success', 'Document deleted successfully.');
 
     }
@@ -334,8 +333,7 @@ public function sendEmail(Request $request, Patient $patient, PatientDocument $d
             unlink($pdfPath);
         }
     }
-    return redirect()
-        ->route('patient-documents.email.form', [$patient, $document])
+    return redirect(guard_route('patient-documents.email.form', [$patient, $document]))
         ->with('success', 'Email sent successfully with attached PDF document!');
 }
 

@@ -70,7 +70,7 @@ class PatientPhysicalController extends Controller
     {
         PatientPhysical::destroy($noteId);
     
-        return redirect()->route('patients.physical.index', $patientId)
+        return redirect(guard_route('patients.physical.index', $patientId))
                         ->with('success','Patient physical deleted successfully');
     }
 }

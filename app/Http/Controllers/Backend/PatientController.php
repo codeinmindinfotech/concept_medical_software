@@ -239,7 +239,7 @@ class PatientController extends Controller
 
         $patient->delete();
     
-        return redirect()->route('patients.index')
+        return redirect(guard_route('patients.index'))
                         ->with('success','Patient deleted successfully');
     }
 
@@ -290,7 +290,7 @@ class PatientController extends Controller
         $patient = Patient::onlyTrashed()->findOrFail($id);
         $patient->restore();
 
-        return redirect()->route('patients.index')
+        return redirect(guard_route('patients.index'))
             ->with('success','Patient restored successfully');
     }
 

@@ -19,13 +19,18 @@
 		<meta name="twitter:image" content="assets/img/preview-banner.jpg')}}">	
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Doccure - Dashboard</title>
+        <title>Concept Medical - Dashboard</title>
     @include('layout.partials.head_admin')
 	@stack('styles')
 </head>
 
 <body>
-    @if (!Route::is(['superadmin.login', 'register', 'forgot-password', 'lock-screen', 'error-404', 'error-500']))
+	
+{{-- @php
+$currentRoute = Route::currentRouteName();
+dd($currentRoute);
+@endphp --}}
+    @if (!Route::is(['superadmin.login','login', 'register', 'forgot-password', 'password.request','lock-screen', 'error-404', 'error-500']))
         @include('layout.partials.header_admin')
         @include('layout.partials.nav_admin')
     @endif

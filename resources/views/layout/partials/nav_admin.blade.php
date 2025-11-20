@@ -36,14 +36,14 @@
                             @if ($currentGuard === 'doctor')
                                 <li>
                                     <a class="{{ Request::is('notification*') ? 'active' : '' }}" 
-                                    href="{{ route('notification.form') }}">
+                                    href="{{ guard_route('notification.form') }}">
                                     <i class="fe fe-bell"></i> Send Notification
                                     </a>
                                 </li>
                             @elseif ($currentGuard === 'clinic')
                                 <li>
                                     <a class="{{ Request::is('clinic.notification*') ? 'active' : '' }}" 
-                                    href="{{ route('clinic.notification.form') }}">
+                                    href="{{ guard_route('clinic.notification.form') }}">
                                     <i class="fe fe-bell"></i> Send Notification
                                     </a>
                                 </li>
@@ -87,7 +87,7 @@
                                 @can($item['permission'])
                                     <li>
                                         <a class="{{ Request::is($item['pattern']) ? 'active' : '' }}" 
-                                        href="{{ route($item['route']) }}">
+                                        href="{{ guard_route($item['route']) }}">
                                         <i class="{{ $item['icon'] }}"></i> {{ $item['label'] }}
                                         </a>
                                     </li>

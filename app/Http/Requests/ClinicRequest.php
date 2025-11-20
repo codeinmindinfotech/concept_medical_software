@@ -40,7 +40,7 @@ class ClinicRequest extends FormRequest
             'fax'          => 'nullable|string|max:20',
             'email'        => [
                                 'required',
-                                'email:rfc,dns',
+                                'email:rfc',
                                 'max:255',
                                 new UniquePerCompany('clinics', 'email', $companyId, $clinicId),
                             ],

@@ -33,7 +33,7 @@ class PatientRequest extends FormRequest
                                         //  Rule::unique('patients','email')->ignore($patientId)],
             'email'                 => [
                                         'required',
-                                        'email:rfc,dns',
+                                        'email:rfc',
                                         'max:255',
                                         new UniquePerCompany('patients', 'email', $companyId, $patientId),
                                     ],                             
@@ -62,7 +62,7 @@ class PatientRequest extends FormRequest
             'kin_contact_no' => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'kin_address' => 'nullable|string',
             'relationship' => 'nullable|exists:drop_down_values,id',
-            'kin_email' => ['nullable','email:rfc,dns']
+            'kin_email' => ['nullable','email:rfc']
         ];
     }
 }

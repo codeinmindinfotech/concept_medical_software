@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
             $today = Carbon::today();
 
             // Get patients with count of tasks, recalls, and appointments after today
-            $patients = Patient::withCount([
+            $patients = Patient::companyOnly()->withCount([
                 'tasks' => function($query) use ($today) {
                     $query->where('start_date', '>', $today);
                 },
@@ -93,11 +93,12 @@ class AppServiceProvider extends ServiceProvider
             $currentMonth = now()->month;
             $currentYear = now()->year;
 
-            $recallQuery = Recall::whereMonth('recall_date', $currentMonth)
+            $recallQuery = Recall::companyOnly()->whereMonth('recall_date', $currentMonth)
                 ->whereYear('recall_date', $currentYear);
 
-            if ($user && $user->hasRole('patient')) {
-                $recallQuery->where('patient_id', $user->userable_id);
+            if (has_role('patient')) {
+                $user = auth()->user();
+                $recallQuery->where('patient_id', $user->id);
             }
 
             $monthlyRecallCount = $recallQuery->count();
@@ -108,19 +109,20 @@ class AppServiceProvider extends ServiceProvider
                 ->get();
 
             // === Task Data ===
-            $taskQuery = Task::query();
+            $taskQuery = Task::companyOnly();
 
             // Optional: filter tasks by owner or creator based on role
             if ($user) {
                 if (has_role('patient')) {
                     $user = auth()->user();
                     $taskQuery->where('patient_id', $user->id);
-                } else {
-                    $taskQuery->where(function ($q) use ($user) {
-                        $q->where('task_owner_id', $user->id)
-                        ->orWhere('task_creator_id', $user->id);
-                    });
-                }
+                } 
+                // else {
+                //     $taskQuery->where(function ($q) use ($user) {
+                //         $q->where('task_owner_id', $user->id)
+                //         ->orWhere('task_creator_id', $user->id);
+                //     });
+                // }
             }
             $taskQuery->whereDate('start_date', '>=', now())
                     ->orderBy('start_date', 'asc');

@@ -23,7 +23,7 @@
 </div>
 @endif
 
-    <form action="{{guard_route('tasks.update', ['patient' => $task->patient_id, 'task' => $task->id]) }}" method="POST" class="validate-form">
+    <form action="{{guard_route('tasks.update', ['patient' => $task->patient_id, 'task' => $task->id]) }}" method="POST" data-ajax class="needs-validation" novalidate >
         @csrf
         @method('PUT')
         <input type="hidden" name="patient_id" value="{{ $task->patient_id }}">

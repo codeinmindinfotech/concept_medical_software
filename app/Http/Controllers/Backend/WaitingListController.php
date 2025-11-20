@@ -89,8 +89,7 @@ class WaitingListController extends Controller
     {
         $waitingList->delete();
 
-        return redirect()
-            ->route('waiting-lists.index', ['patient' => $patient->id])
+        return redirect(guard_route('waiting-lists.index', ['patient' => $patient->id]))
             ->with('success', 'WaitingList deleted successfully.');
     }
     

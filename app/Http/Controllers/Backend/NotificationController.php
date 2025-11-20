@@ -89,8 +89,7 @@ class NotificationController extends Controller
         }
 
     // Normal browser request → redirect
-    return redirect()
-        ->route('notifications.form')
+    return redirect(guard_route('notifications.form'))
         ->with('success', 'Notification sent successfully!');
     }
 

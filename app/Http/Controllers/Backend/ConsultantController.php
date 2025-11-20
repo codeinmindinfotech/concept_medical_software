@@ -102,6 +102,6 @@ class ConsultantController extends Controller
 
         $consultant->delete();
 
-        return redirect()->route('consultants.index')->with('success', 'Consultant deleted successfully');
+        return redirect(guard_route('consultants.index'))->with('success', 'Consultant deleted successfully');
     }
 }

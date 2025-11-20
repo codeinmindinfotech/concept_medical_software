@@ -22,7 +22,7 @@ class DoctorRequest extends FormRequest
             'fax'               => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],
             'email'             => [
                                     'required',
-                                    'email:rfc,dns',
+                                    'email:rfc',
                                     'max:255',
                                     new UniquePerCompany('doctors', 'email', $companyId, $doctorId),
                                 ], 

@@ -136,6 +136,19 @@ return [
     var tasksFollowups = @json($tasksFollowups);
     $(document).ready(function() {
 
+        const followupRouteTemplate = "{{ guard_route('followups.storeOrUpdate', [$patient->id, ':taskId', ':followupId']) }}";
+
+        function getFollowupUrl(taskId, followupId = '') {
+            let url = followupRouteTemplate.replace(':taskId', taskId);
+            if (followupId) {
+                url = url.replace(':followupId', followupId);
+            } else {
+                // Remove optional followupId from the URL if your route requires it
+                url = url.replace(/\/:followupId$/, '');
+            }
+            return url;
+        }
+
         var table = $('#TaskTable').DataTable({
             paging: true
             , searching: true
@@ -216,9 +229,9 @@ return [
             $('#addFollowupForm')[0].reset();
 
             const taskId = $(this).data('task-id');
-
-            const actionUrl = "{{ url('patients/'.$patient->id.'/tasks') }}/" + taskId + "/followups";
-            $('#addFollowupForm').attr('action', actionUrl);
+            const actionUrl = getFollowupUrl(taskId);
+ 
+           $('#addFollowupForm').attr('action', actionUrl);
         });
 
         // Edit existing follow-up

@@ -110,8 +110,7 @@ class FeeNoteController extends Controller
     {
         $feeNote->delete();
 
-        return redirect()
-            ->route('fee-notes.index', ['patient' => $patient->id])
+        return redirect(guard_route('fee-notes.index', ['patient' => $patient->id]))
             ->with('success', 'Fee Note deleted successfully.');
     } 
 }
