@@ -3,7 +3,7 @@
 	<head>
 		
         <meta charset="utf-8">
-		<title>Doccure</title>
+		<title>Doccure Patient</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="The responsive professional Doccure template offers many features, like scheduling appointments with  top doctors, clinics, and hospitals via voice, video call & chat.">
 		<meta name="keywords" content="practo clone, doccure, doctor appointment, Practo clone html template, doctor booking template">
@@ -459,12 +459,14 @@
         'reset-password',
         'terms-condition',
     ]))
-    @component('components.cursor')
-    @endcomponent
+    
+    
 @endif
+@component('components.admin.cursor')
+@endcomponent
 </div>
 <!-- /Main Wrapper -->
-@component('components.modalpopup')
+@component('components.admin.modalpopup')
 @endcomponent
 @include('layout.partials.footer-scripts')
 

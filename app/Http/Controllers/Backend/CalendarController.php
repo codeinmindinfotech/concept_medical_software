@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Clinic;
 use App\Models\CalendarDay;
+use Illuminate\View\View;
+
 
 class CalendarController extends Controller
 {
@@ -54,6 +56,13 @@ class CalendarController extends Controller
         );
     }
     
+
+    public function index(Request $request): View|string
+    {
+        $chargecodes = ChargeCode::companyOnly()->with('chargeGroup')->latest()->get();
+
+        return view('chargecodes.index', compact('chargecodes'));
+    }
 
 
 

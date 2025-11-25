@@ -86,19 +86,36 @@
                     <table class="table table-bordered align-middle text-center">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 100px;"><i class="far fa-clock me-1  text-primary"></i>Time</th>
+                                <th style="width: 100px;">
+                                    <i class="far fa-clock me-1 text-primary"></i> Time
+                                </th>
+                        
                                 @foreach($clinics as $clinic)
-                                    <th>
+                                    <th class="text-center">
+                        
+                                        {{-- Clinic Icon --}}
                                         @if(strtolower($clinic->clinic_type) === 'hospital')
                                             <i class="fas fa-hospital me-1 text-danger" title="Hospital"></i>
                                         @else
                                             <i class="fas fa-clinic-medical me-1 text-primary" title="Clinic"></i>
                                         @endif
+                        
+                                        {{-- Clinic Name --}}
                                         {{ $clinic->name }}
+                        
+                                        {{-- Create Appointment Button --}}
+                                        <br>
+                                        <a   href="{{ guard_route('appointments.schedule', ['clinic_id' => $clinic->id]) }}" 
+                                            class="badge bg-success mt-1"
+                                            title="Create New Appointment">
+                                            <i class="fa fa-plus-circle"></i> New
+                                        </a>
+                        
                                     </th>
                                 @endforeach
                             </tr>
                         </thead>
+                        
                         <tbody>
                             @for ($hour = 7; $hour <= 18; $hour++)
                                 <tr>

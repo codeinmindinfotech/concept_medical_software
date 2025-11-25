@@ -15,21 +15,21 @@
       const toggleMode = (isDarkMode) => {
           document.documentElement.classList.toggle('dark-mode', isDarkMode);
           localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
-          updateToggleButtons(isDarkMode);
+        //   updateToggleButtons(isDarkMode);
       };
 
-      const updateToggleButtons = (isDarkMode) => {
-          if (isDarkMode) {
-              darkModeToggle.classList.remove('activate');
-              lightModeToggle.classList.add('activate');
-          } else {
-              lightModeToggle.classList.remove('activate');
-              darkModeToggle.classList.add('activate');
-          }
-      };
+    //   const updateToggleButtons = (isDarkMode) => {
+    //       if (isDarkMode) {
+    //           darkModeToggle.classList.remove('activate');
+    //           lightModeToggle.classList.add('activate');
+    //       } else {
+    //         //   lightModeToggle.classList.remove('activate');
+    //           darkModeToggle.classList.add('activate');
+    //       }
+    //   };
 
       // Initial activation based on current theme
-      updateToggleButtons(themeClass === 'dark-mode');
+    //   updateToggleButtons(themeClass === 'dark-mode');
 
       // Add event listeners if elements are present
       if (darkModeToggle && lightModeToggle) {

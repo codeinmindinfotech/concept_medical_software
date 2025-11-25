@@ -49,6 +49,8 @@ use App\Http\Controllers\Backend\PatientMessageController;
 use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\OnlyOfficeController;
+use App\Http\Controllers\patient\AppointmentController as PatientAppointmentController;
+use App\Http\Controllers\patient\DashboardController as PatientDashboardController;
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -302,13 +304,33 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
     });
 });
 
+
 $roles = ['clinic', 'doctor', 'patient'];
 foreach ($roles as $role) {
     Route::prefix($role)
         ->name("$role.")
         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
         ->group(function () use ($role, $patientSubRoutes) {
-            Route::resource('dashboard', DashboardController::class);
+
+            Route::resource('dashboard', PatientDashboardController::class);
+            
+            // Demo FullCalendar page
+            Route::get('/calendar', function () {
+                return view('patient_admin/calendar'); // points to resources/views/demo-calendar.blade.php
+            })->name('calendar');
+
+
+            Route::prefix("patients/{patient}/appointments")->group(function () {
+                Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.index');
+                // Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
+                // Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
+                // Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
+                // Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
+                // Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
+                // Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
+            });
+
+            // Route::resource('dashboard', DashboardController::class);
             Route::resource('roles', RoleController::class);
             Route::resource('users', UserController::class);
             Route::resource('patients', PatientController::class);

@@ -134,13 +134,13 @@
                 className: 'bg-purple'
             },
             {
-                title: 'Test Event 1',
+                title: 'Test Event 1gyguj',
                 start: today,
                 end: today,
                 className: 'bg-success'
             },
             {
-                title: 'Test Event 2',
+                title: 'Test Event gfg',
                 start: new Date($.now() + 168000000),
                 className: 'bg-info'
             },

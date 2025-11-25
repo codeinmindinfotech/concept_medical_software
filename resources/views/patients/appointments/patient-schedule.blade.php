@@ -1,7 +1,7 @@
 <?php $page = 'appointment-list'; ?>
 @extends('layout.mainlayout_admin')
 @push('styles')
-    <link href="{{ asset('assets_admin/css/custom_diary.css') }}" rel="stylesheet">
+<link href="{{ asset('assets_admin/css/custom_diary.css') }}" rel="stylesheet">
 @endpush
 @section('content')
 <!-- Page Wrapper -->
@@ -16,49 +16,59 @@
         @endphp
 
         @include('layout.partials.breadcrumb', [
-            'pageTitle' => 'Patients Appointment ',
-            'breadcrumbs' => $breadcrumbs,
-            'backUrl' =>guard_route('patients.index'),
-            'isListPage' => false
+        'pageTitle' => 'Patients Appointment ',
+        'breadcrumbs' => $breadcrumbs,
+        'backUrl' =>guard_route('patients.index'),
+        'isListPage' => false
         ])
 
         <div class="card shadow-sm rounded-4 border-0">
             <div class="card-header  d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
                     <i class="fas fa-calendar-check me-2 fs-4"></i>
-                    <h5 class="mb-0">Patients Appointment Management @if($patient)  For {{ $patient->full_name }} @endif</h5>
+                    <h5 class="mb-0">Patients Appointment Management @if($patient) For {{ $patient->full_name }} @endif</h5>
                 </div>
-                <button id="reset-filters" class="btn bg-primary btn-sm" title="Reset filters">
-                    <i class="fas fa-undo"></i> Reset
+                
+                <button id="toggleLeftColumn" class="btn btn-secondary btn-sm d-flex align-items-center gap-1">
+                    <i id="toggleIcon" class="fe fe-text-align-left"></i>
+                    <span id="toggleText">Show Calendar</span>
                 </button>
+                
+                
             </div>
-
-            <div class="card-body">
+             <div class="card-body">
                 <div class="row gy-4">
                     <!-- Left Column -->
-                    <div class="col-md-3">
+                    <div id="leftColumn" class="col-md-3 d-none">
 
-                        
-                <form id="filter-form" class="row g-3 align-items-end mb-4">
-                    <!-- Patient select -->
-                    <div>
-                        <label for="patient-select" class="form-label fw-semibold">Select Patient</label>
-                        <select id="patient-select" name="patient-select" class="form-select" aria-label="Select Patient">
-                            <option value="">-- All Patients --</option>
-                            @foreach($patients as $patientItem)
-                            <option value="{{ $patientItem->id }}">
-                                {{ $patientItem->full_name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
 
-                    <!-- Date picker -->
-                    {{-- <div class="col-md-6 col-lg-4">
-                        <label for="appointment-date" class="form-label fw-semibold">Select Date</label>
-                        <input type="date" id="appointment-date" class="form-control" value="">
-                    </div> --}}
-                </form>
+                        <form id="filter-form" class="row g-3 align-items-end mb-4">
+                            <!-- Patient select -->
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <!-- Left: Label -->
+                                <label for="patient-select" class="form-label fw-semibold mb-0">
+                                    Select Patient
+                                </label>
+                            
+                                <!-- Right: Reset Button -->
+                                <button id="reset-filters" class="btn btn-sm btn-primary" title="Reset filters">
+                                    <i class="fas fa-undo"></i> Reset
+                                </button>
+                            
+                            </div>
+                            
+                            <!-- Dropdown Below -->
+                            <select id="patient-select" name="patient-select" 
+                                    class="form-select" aria-label="Select Patient">
+                                    <option value="">-- All Patients --</option>
+                                    @foreach($patients as $patientItem)
+                                        <option value="{{ $patientItem->id }}">
+                                            {{ $patientItem->full_name }}
+                                        </option>
+                                    @endforeach
+                            </select>
+                        </form>
                         <div id="calendar" class="border rounded p-3 shadow-sm" style="min-height: 300px;"></div>
 
                         <div class="mt-4">
@@ -74,8 +84,7 @@
                                         <label class="form-check-label" for="quick6m">+6 Months</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input quick-date" type="checkbox" value="today"
-                                            id="quickToday">
+                                        <input class="form-check-input quick-date" type="checkbox" value="today" id="quickToday">
                                         <label class="form-check-label" for="quickToday">Today</label>
                                     </div>
                                 </div>
@@ -99,53 +108,32 @@
                         @php
                         $groupedClinics = $clinics->groupBy('clinic_type');
                         @endphp
-                    <div class="mt-4">
-                        @foreach($groupedClinics as $type => $group)
-                        <div class="mb-3">
-                            <h6 class="fw-semibold text-uppercase text-secondary mb-2">{{ ucfirst($type) }}</h6>
-                            <div class="d-flex flex-wrap gap-2">
-                                @foreach($group as $clc)
-                                <div class="clinic-card d-flex align-items-center p-2 border rounded cursor-pointer
-                                        @if ($loop->first && $loop->parent->first) border-3 border-primary @endif"
-                                    data-id="{{ $clc->id }}" data-type="{{ $clc->clinic_type }}"
-                                    data-color="{{ $clc->color ?? '#000000' }}"
-                                    style="border-color: {{ $clc->color ?? '#000000' }} !important;"
-                                    onclick="selectClinicMain('{{ $clc->name }}', '{{ $clc->id }}', this)">
-                                    <div class="rounded-circle me-2"
-                                        style="width:12px; height:12px; background-color: {{ $clc->color ?? '#000000' }}; border:1px solid #000;">
-                                    </div>
-                                    <span class="clinic-name"
-                                        style="font-weight:bold; color: {{ $clc->color ?? '#000000' }};">{{ $clc->name
-                                        }}</span>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                        <input type="hidden" id="clinic-select"
-                            value="{{ optional($groupedClinics->first()->first())->id }}">
-
-                        {{-- @php
-                        $groupedClinics = $clinics->groupBy('clinic_type');
-                        @endphp
                         <div class="mt-4">
-                            <label for="clinic-select" class="form-label fw-semibold">Select Clinic:</label>
-                            <select id="clinic-select" class="form-select shadow-sm">
-                                <option value="">-- Choose Clinic --</option>
-                                @foreach($groupedClinics as $type => $group)
-                                <optgroup label="{{ ucfirst($type) }}">
-                                    @foreach($group as $clinic)
-                                    <option value="{{ $clinic->id }}" data-type="{{ $clinic->clinic_type }}"
-                                        style="background-color:{{ $clinic->color ?? '#ffffff' }} ; color: #000000;" @if
-                                        ($loop->first && $loop->parent->first) selected @endif>
-                                        {{ $clinic->name }}
-                                    </option>
+                            @foreach($groupedClinics as $type => $group)
+                            <div class="mb-3">
+                                <h6 class="fw-semibold text-uppercase text-secondary mb-2">{{ ucfirst($type) }}</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach($group as $clc)
+                                    <div class="clinic-card d-flex align-items-center p-2 border rounded cursor-pointer
+                                        @if ($loop->first && $loop->parent->first) border-3 border-primary @endif" data-id="{{ $clc->id }}" data-type="{{ $clc->clinic_type }}" data-color="{{ $clc->color ?? '#000000' }}" style="border-color: {{ $clc->color ?? '#000000' }} !important;" onclick="selectClinicMain('{{ $clc->name }}', '{{ $clc->id }}', this)">
+                                        <div class="rounded-circle me-2" style="width:12px; height:12px; background-color: {{ $clc->color ?? '#000000' }}; border:1px solid #000;">
+                                        </div>
+                                        <span class="clinic-name" style="font-weight:bold; color: {{ $clc->color ?? '#000000' }};">{{ $clc->name
+                                        }}</span>
+                                    </div>
                                     @endforeach
-                                </optgroup>
-                                @endforeach
-                            </select>
-                        </div> --}}
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @php
+                            // Get clinic_id from URL query parameter
+                            $urlClinicId = request()->query('clinic_id');
+
+                            // Fallback to first clinic ID if not in URL
+                            $selectedClinicId = $urlClinicId ?: optional($groupedClinics->first()->first())->id;
+                        @endphp
+                        <input type="hidden" id="clinic-select" value="{{ $selectedClinicId }}">
 
                         <div id="appointment-stats" class="border rounded p-3 bg-light mt-4 shadow-sm">
                             <h6 class="fw-bold mb-3 text-primary">Statistics</h6>
@@ -156,11 +144,10 @@
                     </div>
 
                     <!-- Right Column -->
-                    <div class="col-md-9 d-flex flex-column">
+                    <div id="rightColumn" class="col-md-12 d-flex flex-column">
                         <div class="d-flex align-items-center mb-3">
                             <div class="dropdown me-3">
-                                <button class="btn btn-primary dropdown-toggle shadow" type="button" id="todoDropdown"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-primary dropdown-toggle shadow" type="button" id="todoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     Diary Options
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="todoDropdown" style="z-index: 1055;">
@@ -171,8 +158,7 @@
                                             Appointment</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="openEntireDayReport()">Diary List</a>
                                     </li>
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                            data-bs-target="#setCalendarDaysModal">Set Calendar Days</a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">Set Calendar Days</a></li>
 
                                 </ul>
                             </div>
@@ -181,8 +167,8 @@
                                 <!-- Selected date or info here -->
                             </div>
                         </div>
-                        <div  id="slot-table" class="table-responsive">
-                        {{-- <div id="slot-table" class="table-responsive flex-grow-1 overflow-auto shadow-sm rounded border"> --}}
+                        <div id="slot-table" class="table-responsive">
+                            {{-- <div id="slot-table" class="table-responsive flex-grow-1 overflow-auto shadow-sm rounded border"> --}}
                             <table class="table table-hover table-center mb-0">
                                 <thead class="sticky-top">
                                     <tr class="align-middle">
@@ -202,8 +188,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="mb-3 justify-content-end p-3 border-bottom" id="manualSlotButton" class="d-flex "
-                                style="display: none;">
+                            <div class="mb-3 justify-content-end p-3 border-bottom" id="manualSlotButton" class="d-flex " style="display: none;">
                                 <button class="btn btn-sm btn-outline-primary" onclick="openManualBookingModal()">
                                     <i class="fas fa-plus me-1"></i> Add Manual Slot
                                 </button>
@@ -211,7 +196,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -223,8 +207,7 @@
 
 @push('modals')
 <!-- Modal -->
-<div class="modal fade" id="setCalendarDaysModal" tabindex="-1" aria-labelledby="setCalendarDaysModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="setCalendarDaysModal" tabindex="-1" aria-labelledby="setCalendarDaysModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header py-2">
@@ -238,10 +221,8 @@
                     <div class="col-md-3 border-end">
                         <h6 class="fw-semibold mb-2">Clinics</h6>
                         @foreach($clinics as $clinic)
-                        <div class="d-flex align-items-center mb-2" style="cursor:pointer;"
-                            onclick="selectClinic('{{ $clinic->name }}', '{{ $clinic->id }}')">
-                            <div class="me-2 rounded-circle"
-                                style="width:12px; height:12px; background:{{ $clinic->color }};"></div>
+                        <div class="d-flex align-items-center mb-2" style="cursor:pointer;" onclick="selectClinic('{{ $clinic->name }}', '{{ $clinic->id }}')">
+                            <div class="me-2 rounded-circle" style="width:12px; height:12px; background:{{ $clinic->color }};"></div>
                             <span>{{ $clinic->name }}</span>
                         </div>
                         @endforeach
@@ -274,7 +255,7 @@
 
                         <div class="mb-2">
                             <label class="form-label mb-1">Start Date</label>
-                            <input type="text" id="startDate" class="form-control form-control-sm">
+                            <input type="text" id="startDate" class="form-control form-control-sm datetimepicker">
                         </div>
 
                         <div class="mb-2">
@@ -291,8 +272,7 @@
 
                         <div class="mb-2">
                             <label class="form-label mb-1">Number of Weeks</label>
-                            <input type="number" id="repeatCount" class="form-control form-control-sm" min="1"
-                                value="5">
+                            <input type="number" id="repeatCount" class="form-control form-control-sm" min="1" value="5">
                         </div>
 
                         <button class="btn btn-success btn-sm w-100 mt-2" onclick="generateDates()">Generate
@@ -320,8 +300,7 @@
             </div>
             <div class="modal-body">
                 <!-- Custom Message Input -->
-                <textarea id="customMessage" class="form-control" rows="4"
-                    placeholder="Enter your message here...">Hello, I wanted to confirm my appointment for</textarea>
+                <textarea id="customMessage" class="form-control" rows="4" placeholder="Enter your message here...">Hello, I wanted to confirm my appointment for</textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -335,13 +314,11 @@
 <x-move-appointment-modal :clinics="$clinics" id="moveAppointmentModal" title="Reschedule Appointment" />
 
 <!-- Clinic Overview Count Modal -->
-<div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel"
-    aria-hidden="true">
+<div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="clinicOverviewCountLabel">Clinic Appointment Count for <span
-                        id="clinic-count-date"></span></h5>
+                <h5 class="modal-title" id="clinicOverviewCountLabel">Clinic Appointment Count for <span id="clinic-count-date"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="clinic-overview-count-body">
@@ -352,19 +329,14 @@
 </div>
 
 <!-- Hospital Booking Modal -->
-<x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
-    :procedures="$procedures" :flag="0"
-    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+<x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
 <!-- Status Change Modal -->
 <x-status-modal :diary_status="$diary_status" :flag="0" />
 
 <!-- Appointment Booking Modal -->
-<x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''"
-    :appointmentTypes="$appointmentTypes" :flag="0"
-    :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+<x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 @endpush
-
 
 
 @push('scripts')
@@ -373,12 +345,48 @@
 <script src="{{ asset('assets_admin/js/booking-diary.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
-    let calendar;
+    
+    // let calendar;
+    let calendar = null;
+    window.calendarInstance = null;
 
     let selectedClinic = document.getElementById('clinic-select').value || null;
     let selectedDate = null;
     const patientId = "{{ $patient ? $patient->id : '' }}";
     // Handle quick date checkboxes
+
+    document.getElementById('toggleLeftColumn').addEventListener('click', function () {
+
+        let left = document.getElementById('leftColumn');
+        let right = document.getElementById('rightColumn');
+        let text = document.getElementById('toggleText');
+
+        left.classList.toggle('d-none');
+
+        if (left.classList.contains('d-none')) {
+            // Expand calendar to full width
+            right.classList.remove('col-md-9');
+            right.classList.add('col-md-12');
+
+            // Change icon + text
+            text.innerText = "Show Calendar";
+        } else {
+            right.classList.remove('col-md-12');
+            right.classList.add('col-md-9');
+
+            text.innerText = "Hide Calendar";
+
+            // Re-render calendar when showing sidebar
+            setTimeout(() => {
+                if (window.calendarInstance) {
+                    window.calendarInstance.updateSize();
+                    window.calendarInstance.render();
+                }
+            }, 100);
+        }
+    });
+
+
     document.addEventListener('change', function(e) {
         if (e.target.classList.contains('quick-date')) {
             // Uncheck other boxes (only one selection at a time)
@@ -426,7 +434,9 @@
 
             // Load appointments
             refreshCalendarEvents();
-            loadSlotsAndAppointments();
+            loadSlotsAndAppointments(selectedClinic,selectedDate);
+
+            // loadSlotsAndAppointments();
         }
     });
 
@@ -439,7 +449,7 @@
         // Reset calendar & reload appointments for new patient
         initCalendar();
         refreshCalendarEvents();
-        loadSlotsAndAppointments();
+        loadSlotsAndAppointments(selectedClinic,selectedDate);
     });
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -452,7 +462,7 @@
             // Run your existing functions
             initCalendar();
             refreshCalendarEvents();
-            loadSlotsAndAppointments();
+            loadSlotsAndAppointments(selectedClinic);
 
             console.log('Clinic changed:', selectedClinic);
         });
@@ -498,14 +508,6 @@ document.addEventListener('DOMContentLoaded', function () {
     clinicSelect.addEventListener('change', window.toggleManualSlotButton);
     window.toggleManualSlotButton();
 });
-
-// document.addEventListener('DOMContentLoaded', function () {
-//     const clinicSelect = document.getElementById('clinic-select');
-//     if (clinicSelect) {
-//         clinicSelect.addEventListener('change', toggleManualSlotButton);
-//     }
-//     toggleManualSlotButton();
-// });
 
 
     function getLocalDateString() {
@@ -621,7 +623,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             , dateClick: function(info) {
                 selectedDate = info.dateStr;
-                loadSlotsAndAppointments();
+                loadSlotsAndAppointments(selectedClinic,selectedDate);
                 refreshCalendarEvents();
                 // Remove previous selection
                 document.querySelectorAll('.fc-daygrid-day.selected-date').forEach(el => {
@@ -642,6 +644,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 calendar.refetchEvents();
             }
         });
+
+        window.calendarInstance = calendar; // make it globally accessible
 
         calendar.render();
     }
@@ -949,7 +953,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.classList.add('mini-sidebar');
 
         initCalendar();
-        loadSlotsAndAppointments();
+        loadSlotsAndAppointments(selectedClinic,selectedDate);
         refreshCalendarEvents();
 
         const resetBtn = document.getElementById('reset-filters');
@@ -1126,7 +1130,7 @@ $('#whatsAppModal').on('show.bs.modal', function (event) {
 
 // Send WhatsApp message via AJAX
 function sendWhatsAppMessage() {
-    alert("ddddd");
+    // alert("sendWhatsAppMessage");
     const message = $('#customMessage').val();
 
     if (!currentPhoneNumber || !message.trim()) {
@@ -1203,7 +1207,9 @@ function sendWhatsAppMessage() {
         // refresh UI and data
         initCalendar();
         refreshCalendarEvents();
-        loadSlotsAndAppointments()
+        // loadSlotsAndAppointments(selectedClinic,selectedDate);
+
+        loadSlotsAndAppointments();
     }
 
     let selectedAppointments = [];
@@ -1514,5 +1520,4 @@ function sendWhatsAppMessage() {
     });
 
 </script>
-
 @endpush

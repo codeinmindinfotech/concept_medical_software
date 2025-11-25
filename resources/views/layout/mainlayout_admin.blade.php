@@ -30,7 +30,7 @@
 $currentRoute = Route::currentRouteName();
 dd($currentRoute);
 @endphp --}}
-    @if (!Route::is(['superadmin.login','login', 'register', 'forgot-password', 'password.request','lock-screen', 'error-404', 'error-500']))
+    @if (!Route::is(['superadmin.login','login', 'register', 'forgot-password', 'password.request']))
         @include('layout.partials.header_admin')
         @include('layout.partials.nav_admin')
     @endif

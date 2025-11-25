@@ -90,7 +90,7 @@ class ClinicController extends Controller
     {
         $clinic->delete();
 
-        return redirect()->route('clinics.index')->with('success', 'Clinic deleted successfully.');
+        return redirect(guard_route('clinics.index'))->with('success', 'Clinic deleted successfully.');
     }
 
     protected function extractDayFields(Request $request): array
