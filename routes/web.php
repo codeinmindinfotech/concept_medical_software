@@ -51,6 +51,10 @@ use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\OnlyOfficeController;
 use App\Http\Controllers\patient\AppointmentController as PatientAppointmentController;
 use App\Http\Controllers\patient\DashboardController as PatientDashboardController;
+use App\Http\Controllers\EmailTestController;
+
+Route::get('/email-test', [EmailTestController::class, 'showForm']);
+Route::post('/email-test', [EmailTestController::class, 'sendEmail'])->name('email.send');
 
 Route::get('/', function () {
     return view('frontend.index');
