@@ -29,7 +29,8 @@
 		<link rel="stylesheet" href="{{ url('/assets/plugins/apex/apexcharts.css') }}">
 		
 		<!-- Full Calander CSS -->
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet">
+		{{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet"> --}}
+		<link rel="stylesheet" href="{{ url('/assets/plugins/fullcalendar/3.10.2/fullcalendar.min.css') }}">
 
 		{{-- <link rel="stylesheet" href="{{ url('assets/css/fullcalendar.min.css') }}"> --}}
 

@@ -321,10 +321,11 @@ foreach ($roles as $role) {
             Route::get('/{clinic}/schedule', [ClinicController::class, 'schedule'])->name('clinic.schedule');
             Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
             Route::get('/appointmentindex', [CalendarController::class, 'appointmentindex'])->name('patients.appointments.index');
-            Route::post('/appointments', [CalendarController::class, 'appointmentstore'])->name('patients.appointments.store');
-            Route::put('/appointments/{id}', [CalendarController::class, 'update'])->name('patients.appointments.update');
-            Route::delete('/appointments/{id}', [CalendarController::class, 'destroy'])->name('patients.appointments.destroy');
-           
+            
+            Route::get('/appointment/check-slot', [AppointmentController::class, 'checkSlot'])->name('patients.appointments.checkSlot');
+            Route::put('/appointment/update-time/{appointment}', [AppointmentController::class, 'updateTime'])->name('patients.appointments.updateTime');
+
+
 
             // Route::prefix("patients/{patient}/appointments")->group(function () {
             //     // Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.index');

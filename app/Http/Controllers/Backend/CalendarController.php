@@ -66,21 +66,31 @@ class CalendarController extends Controller
     public function index(Request $request, ?Patient $patient = null): View|string
     {
         $this->authorize('viewAny', Appointment::class);
-        $patients = Patient::companyOnly()->latest()->get();
+        $user = auth()->user();
+        if((getCurrentGuard() == 'patient') ){
+            $patients = Patient::companyOnly()->where('id',$user->id)->get();
+        }else {
+            $patients = Patient::companyOnly()->latest()->get();
+
+        }
         $clinics = Clinic::companyOnly()->orderBy('planner_seq', 'asc')->get();
         $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();
         return view('patient_admin.calendar', compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));   
     }
-
-  
+ 
     public function appointmentindex(Request $request)
     {
+        $user = auth()->user();
         $query = Appointment::query();
 
         if ($request->has('clinic_id') && $request->clinic_id != '') {
             $query->where('clinic_id', $request->clinic_id);
+        }
+
+        if ((getCurrentGuard() == 'patient')) {
+            $query->where('patient_id', $user->id);
         }
 
         $appointments = $query->get();
@@ -104,7 +114,7 @@ class CalendarController extends Controller
                 // hospital
                 'procedure_id' => $apt->procedure_id,
                 'admission_date' => $apt->admission_date,
-                'admission_time' => $apt->admission_time,
+                'admission_time' => format_time($apt->admission_time),
                 'operation_duration' => $apt->operation_duration,
                 'ward' => $apt->ward,
                 'allergy' => $apt->allergy,
@@ -113,39 +123,5 @@ class CalendarController extends Controller
         });
         return response()->json($events);
     }
-    
-    public function appointmentstore(Request $request)
-    {
-        $apt = Appointment::create([
-            'title' => $request->title,
-            'start_time' => $request->start,
-            'end_time' => $request->end,
-            'category' => $request->category
-        ]);
-
-        return response()->json($apt);
-    }
-    
-    public function update(Request $request, $id)
-    {
-        $apt = Appointment::findOrFail($id);
-        $apt->update([
-            'title' => $request->title,
-            'start_time' => $request->start,
-            'end_time' => $request->end,
-            'category' => $request->category
-        ]);
-
-        return response()->json($apt);
-    }
-    
-    public function destroy($id)
-    {
-        $apt = Appointment::findOrFail($id);
-        $apt->delete();
-
-        return response()->json(['success' => true]);
-    }
-
-    
+  
 }

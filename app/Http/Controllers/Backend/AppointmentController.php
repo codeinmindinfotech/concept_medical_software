@@ -763,5 +763,58 @@ class AppointmentController extends Controller
         }
     }
 
+    public function checkSlot(Request $request)
+    {
+        $appointmentId = $request->appointment_id;
+    
+        $exists = Appointment::where('appointment_date', $request->date)
+            ->where('id', '!=', $appointmentId)
+            ->where(function ($q) use ($request) {
+    
+                // Rule 1: Clinic cannot double-book same time
+                $q->where('clinic_id', $request->clinic_id)
+                  ->orWhere('patient_id', $request->patient_id); // Rule 2: Patient cannot double book
+            })
+            ->where(function($q) use ($request) {
+                // Time overlap logic
+                $q->whereBetween('start_time', [$request->start_time, $request->end_time])
+                  ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
+                  ->orWhere(function ($q2) use ($request) {
+                        // Full overlap case
+                        $q2->where('start_time', '<', $request->start_time)
+                           ->where('end_time', '>', $request->end_time);
+                  });
+            })
+            ->exists();
+    
+        return response()->json(['available' => !$exists]);
+    }
+    
+
+    // public function checkSlot(Request $request)
+    // {
+    //     $exists = Appointment::where('clinic_id', $request->clinic_id)
+    //         ->where('appointment_date', $request->date)
+    //         ->where('id', '!=', $request->appointment_id)
+    //         ->where(function($q) use ($request) {
+    //             $q->whereBetween('start_time', [$request->start_time, $request->end_time])
+    //             ->orWhereBetween('end_time', [$request->start_time, $request->end_time]);
+    //         })
+    //         ->exists();
+
+    //     return response()->json(['available' => !$exists]);
+    // }
+
+    public function updateTime(Request $request, Appointment $appointment)
+    {
+        $appointment->update([
+            'appointment_date' => $request->date,
+            'start_time' => $request->start_time,
+            'end_time'   => $request->end_time,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
 
 }

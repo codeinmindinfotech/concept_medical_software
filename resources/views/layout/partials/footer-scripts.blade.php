@@ -28,6 +28,8 @@
 		<!-- Circle Progress JS -->
 		<script src="{{ URL::asset('/assets/js/circle-progress.min.js') }}"></script>
 		
+        <!-- sweetalert2 JS -->
+		<script src="{{ URL::asset('/assets/plugins/sweetalert/sweetalert2@11.js') }}"></script>
                 {{-- <!-- Full Calendar JS -->
                 <script src="{{ URL::asset('/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
                 <script src="{{ URL::asset('/assets/js/fullcalendar.min.js') }}"></script>
