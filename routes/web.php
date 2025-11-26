@@ -313,22 +313,24 @@ foreach ($roles as $role) {
         ->group(function () use ($role, $patientSubRoutes) {
 
             Route::resource('dashboard', PatientDashboardController::class);
-            
-            // Demo FullCalendar page
-            Route::get('/calendar', function () {
-                return view('patient_admin/calendar'); // points to resources/views/demo-calendar.blade.php
-            })->name('calendar');
+        
+            Route::get('/{clinic}/schedule', [ClinicController::class, 'schedule'])->name('clinic.schedule');
+            Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+            Route::get('/appointmentindex', [CalendarController::class, 'appointmentindex'])->name('patients.appointments.index');
+            Route::post('/appointments', [CalendarController::class, 'appointmentstore'])->name('patients.appointments.store');
+            Route::put('/appointments/{id}', [CalendarController::class, 'update'])->name('patients.appointments.update');
+            Route::delete('/appointments/{id}', [CalendarController::class, 'destroy'])->name('patients.appointments.destroy');
+           
 
-
-            Route::prefix("patients/{patient}/appointments")->group(function () {
-                Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.index');
-                // Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
-                // Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
-                // Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
-                // Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
-                // Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
-                // Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
-            });
+            // Route::prefix("patients/{patient}/appointments")->group(function () {
+            //     // Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.index');
+            //     // Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
+            //     // Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
+            //     // Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
+            //     // Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
+            //     // Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
+            //     // Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
+            // });
 
             // Route::resource('dashboard', DashboardController::class);
             Route::resource('roles', RoleController::class);

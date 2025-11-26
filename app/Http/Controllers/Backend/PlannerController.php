@@ -46,7 +46,7 @@ class PlannerController extends Controller
         return view('planner.index', [
             'appointments' => $appointments,
             'date' => $date,
-            'clinics' => Clinic::orderBy('planner_seq', 'asc')->get(),
+            'clinics' => Clinic::companyOnly()->orderBy('planner_seq', 'asc')->get(),
             'patients' => $patients, 
             'patient' => $patient, 
             'appointmentTypes' => $appointment_types,

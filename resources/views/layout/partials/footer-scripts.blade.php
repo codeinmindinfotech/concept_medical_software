@@ -28,16 +28,16 @@
 		<!-- Circle Progress JS -->
 		<script src="{{ URL::asset('/assets/js/circle-progress.min.js') }}"></script>
 		
-                <!-- Full Calendar JS -->
+                {{-- <!-- Full Calendar JS -->
                 <script src="{{ URL::asset('/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
                 <script src="{{ URL::asset('/assets/js/fullcalendar.min.js') }}"></script>
-                <script src="{{ URL::asset('/assets/js/jquery.fullcalendar.js') }}"></script>
+                <script src="{{ URL::asset('/assets/js/jquery.fullcalendar.js') }}"></script> --}}
         
                 
 		<!-- Custom JS -->
 		<script src="{{ URL::asset('/assets/js/script.js') }}"></script>
 		
-
+        @stack('scripts')
 @php
  $guards = ['doctor', 'patient', 'clinic', 'web'];
  $user = null;

@@ -98,6 +98,7 @@
     <link rel="icon" href="{{ URL::asset('/assets/img/favicon.png') }}" type="image/x-icon">
     @include('layout.partials.head')
 </head>
+@stack('styles')
 @if (
     !Route::is([
         'index-12',
@@ -466,8 +467,9 @@
 @endcomponent
 </div>
 <!-- /Main Wrapper -->
-@component('components.admin.modalpopup')
-@endcomponent
+@stack('modals')
+{{-- @component('components.admin.modalpopup')
+@endcomponent --}}
 @include('layout.partials.footer-scripts')
 
 </body>

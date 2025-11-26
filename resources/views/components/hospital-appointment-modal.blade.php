@@ -4,7 +4,7 @@
         <form id="manualBookingForm" class="needs-validation" novalidate>
             @csrf
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary-light">
                     <h5 class="modal-title" id="manualBookingLabel">Add Hospital Appointment</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
