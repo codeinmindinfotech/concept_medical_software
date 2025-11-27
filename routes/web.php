@@ -316,7 +316,11 @@ foreach ($roles as $role) {
         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
         ->group(function () use ($role, $patientSubRoutes) {
 
-            Route::resource('dashboard', PatientDashboardController::class);
+            if($role == 'patient'){
+                Route::resource('dashboard', PatientDashboardController::class);
+            } else {
+                Route::resource('dashboard', DashboardController::class);
+            }
         
             Route::get('/{clinic}/schedule', [ClinicController::class, 'schedule'])->name('clinic.schedule');
             Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
@@ -331,15 +335,8 @@ foreach ($roles as $role) {
 
             Route::prefix("patients/{patient}/appointments")->group(function () {
                 Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.main.index');
-                // Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
-                // Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
-                // Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
-                // Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
-                // Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
-                // Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
             });
 
-            // Route::resource('dashboard', DashboardController::class);
             Route::resource('roles', RoleController::class);
             Route::resource('users', UserController::class);
             Route::resource('patients', PatientController::class);

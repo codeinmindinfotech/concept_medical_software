@@ -245,12 +245,15 @@
                 }
 
                 // Pre-fill modal
+                $("#hospital_appointment_date").val(moment(start).format('YYYY-MM-DD'));
                 $("#modal-appointment-date").val(moment(start).format('YYYY-MM-DD'));
                 $("#start_time").val(start.format('HH:mm'));
                 $("#end_time").val(end.format('HH:mm'));
                 $("#appointment-clinic-id").val(selectedClinic);
+                $("#hospital-clinic-id").val(selectedClinic);
 
                 if (selectedClinicType === "hospital") {
+                    $('#manualBookingForm').attr('data-action', routes.storeHospitalAppointment);
                     $("#manualBookingModal").modal("show");
                 } else {
                     $("#bookAppointmentModal").modal("show");
@@ -330,8 +333,8 @@
 
 		function openEditModal(event) {
 			fillAppointmentModal(event, selectedClinicType);
-
 			if (selectedClinicType === "hospital") {
+                $('#manualBookingForm').attr('data-action', routes.storeHospitalAppointment);
 				$("#manualBookingModal").modal("show");
 			} else {
 				$("#bookAppointmentModal").modal("show");
