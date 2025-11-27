@@ -82,12 +82,11 @@ Version      : 1.3
 		$(this).addClass('active');
 	});
 
-	// Date Time Picker
-
+	// Date Time Picke
 	$(function () {
 	if ($('.datetimepicker').length > 0) {
 		$('.datetimepicker').datetimepicker({
-		format: 'DD/MM/YYYY',
+		format: 'YYYY-MM-DD',
 		icons: {
 			up: "fas fa-chevron-up",
 			down: "fas fa-chevron-down",

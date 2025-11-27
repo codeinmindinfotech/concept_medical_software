@@ -1,43 +1,84 @@
 @extends('layout.mainlayout')
 @section('content')
 @component('components.admin.breadcrumb')
-@slot('title')
-Patient
-@endslot
-@slot('li_1')
-Patient Diary
-@endslot
-@slot('li_2')
-Patient Diary
-@endslot
+    @slot('title') Patient @endslot
+    @slot('li_1') Patient Diary @endslot
+    @slot('li_2') Patient Diary @endslot
 @endcomponent
-<!-- Page Content -->
+@push('styles')
+<style>
+.fc-event {
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+</style>
+@endpush
+
 <div class="content">
     <div class="container mt-5">
-        <div class="row mb-3">
+        <!-- Top Controls -->
+        <div class="row mb-3 align-items-center">
+            <!-- Clinic Filter -->
             <div class="col-md-4">
-                <select id="clinicFilter" class="form-control">
-                    <option value="">--All Clinics--</option>
+                <select id="clinicFilter" class="form-select">
+                    <option value="">-- Select Clinic --</option>
                     @foreach($clinics as $clinic)
-                    <option value="{{ $clinic->id }}" data-type="{{ $clinic->clinic_type }}">{{ $clinic->name }}</option>
+                        <option value="{{ $clinic->id }}" data-type="{{ $clinic->clinic_type }}">{{ $clinic->name }}</option>
                     @endforeach
                 </select>
             </div>
+
+            <!-- Action Buttons -->
+            <div class="col-md-8 text-end">
+                <button class="btn btn-info me-2" onclick="openClinicOverviewCountModal()">
+                    Clinic Overview
+                </button>
+                <button class="btn btn-warning me-2" onclick="openMoveAppointmentModal()">
+                    Move Appointment
+                </button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">
+                    Set Calendar Days
+                </button>
+            </div>
         </div>
-        <div id="calendar"></div>
+
+        <!-- Calendar -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
 
 @push('modals')
+
+<!-- Status Change Modal -->
+<x-status-modal :diary_status="$diary_status" :flag="0" />
+
+
+<!-- Move Appointment Modal -->
+<x-move-appointment-modal :clinics="$clinics" id="moveAppointmentModal" title="Reschedule Appointment" />
+
+<!-- set caledar days Modal -->
+<x-set-calendar-days-modal :clinics="$clinics" />
+
+<!-- Clinic Overview Count Modal -->
+<x-clinic-overview-count-modal/>
+
 <!-- Hospital Booking Modal -->
 <x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
 <!-- Include your bookAppointmentModal component -->
 <x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
-<!-- Status Change Modal -->
-<x-status-modal :diary_status="$diary_status" :flag="0" />
+
+
 @endpush
 
 
@@ -45,6 +86,13 @@ Patient Diary
 <script src="{{ URL::asset('/assets/plugins/fullcalendar/3.10.2/fullcalendar.min.js') }}"></script>
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script> --}}
 <script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
+<script>
+    window.Laravel = {
+        csrfToken: "{{ csrf_token() }}"
+    };
+</script>
+<script src="{{ URL::asset('/assets/js/calendar.js') }}"></script>
+
 <script>
     const routes = {
         fetchAppointments: "{{ $patient ?guard_route('patients.appointments.byDate', ['patient' => $patient->id]) :guard_route('appointments.byDateGlobal') }}"
@@ -60,6 +108,18 @@ Patient Diary
             .replace('__PATIENT_ID__', patientId)
             .replace('__APPOINTMENT_ID__', appointmentId)
         , reportUrl: "{{ guard_route('reports.entire-day') }}",
+		
+		//set caledar days
+        calendarDays: "{{ guard_route('calendar.days') }}",
+		savecalendarDays: "{{ guard_route('calendar.store') }}",
+		
+		//move appoitnments
+		appointmentsForDate: "{{ guard_route('appointments.forDate') }}",
+        appointmentsAvailableSlots: "{{ guard_route('appointments.availableSlots') }}",
+        appointmentsMove: "{{ guard_route('appointments.move') }}",
+		
+		//Clinic overview appoitnments
+        appointmentsClinicOverviewCounts: "{{ guard_route('appointments.clinicOverviewCounts') }}",
 
 		// Check slot availability
 		checkSlot: (clinicId, appointmentId = '') =>
@@ -197,13 +257,68 @@ Patient Diary
                 }
             },
             // Click on existing event
-            eventClick: function(event) {
-                selectedClinicType = event.clinic_type;
-                selectedClinic = event.clinic_id;
+            // eventClick: function(event) {
+            //     selectedClinicType = event.clinic_type;
+            //     selectedClinic = event.clinic_id;
 
-                fillAppointmentModal(event, selectedClinicType);
+            //     fillAppointmentModal(event, selectedClinicType);
 
-            },
+            // },
+			eventClick: function(event) {
+				// Show options to user
+				Swal.fire({
+					title: 'Select Action',
+					showDenyButton: true,
+					showCancelButton: true,
+					confirmButtonText: 'Edit Appointment',
+					denyButtonText: 'Change Status',
+				}).then((result) => {
+					if (result.isConfirmed) {
+						// Edit appointment
+						fillAppointmentModal(event, event.clinic_type);
+					} else if (result.isDenied) {
+						// Change status
+						openStatusModal(event.id, event.patient_id, event.status);
+					}
+					// Cancel does nothing
+				});
+			},
+
+			eventSources: [
+				{
+					url: routes.calendarDays,
+					method: 'GET',
+				},
+				// {
+				// 	url: indexurl,
+				// 	type: "GET",
+				// 	data: function() {
+				// 		return {
+				// 			clinic_id: $('#clinicFilter').val()
+				// 		};
+				// 	}
+				// }
+			],
+			eventAfterRender: function(event, element) {
+
+				let selectedClinicId = $("#clinicFilter").val();
+
+				// Do NOT show border if no clinic is selected
+				if (!selectedClinicId) return;
+
+				// Only apply border if event's clinic matches selected clinic
+				if (event.clinic_id == selectedClinicId && event.allDay) {
+
+					let date = moment(event.start).format("YYYY-MM-DD");
+
+					let cell = $(".fc-day[data-date='" + date + "']");
+
+					cell.css({
+						"border": "2px solid " + event.clinicColor,
+						"box-sizing": "border-box"
+					});
+				}
+			},
             // ADD THESE
             eventDrop: function(event, delta, revertFunc) {
                 handleEventMoveOrResize(event, revertFunc);
@@ -212,6 +327,28 @@ Patient Diary
                 handleEventMoveOrResize(event, revertFunc);
             }
         });
+
+		function openEditModal(event) {
+			fillAppointmentModal(event, selectedClinicType);
+
+			if (selectedClinicType === "hospital") {
+				$("#manualBookingModal").modal("show");
+			} else {
+				$("#bookAppointmentModal").modal("show");
+			}
+		}
+
+		function openStatusModal(appointmentId, patientId, status)
+		{
+			$('#appointment_id').val(appointmentId);   
+			$('#patient_id').val(patientId);               
+			$('#appointment_status').val(status); 
+
+			let finalUrl = routes.statusAppointment(appointmentId, patientId); 
+			$('#statusChangeForm').attr('data-action', finalUrl);    
+
+			$('#statusChangeModal').modal('show'); 
+		}
 
         function fillAppointmentModal(event, selectedClinicType) {
             // Common fields
@@ -446,9 +583,5 @@ Patient Diary
         $('#hospital-dob').val(dob);
         $('#consultant').val(consultant);
     });
-    // $('#manualBookingModal .select2').select2({
-    // 	dropdownParent: $('#manualBookingModal')
-    // });
-
 </script>
 @endpush

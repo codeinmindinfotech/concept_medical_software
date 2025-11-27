@@ -29,8 +29,8 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="{{ Request::is('patient.patients.appointments.index','patient-upcoming-appointments','patient-completed-appointments','patient-cancelled-appointments','patient-appointments-grid','patient-appointment-details','patient-upcoming-appointment','patient-completed-appointment','patient-cancelled-appointment') ? 'active' : '' }}">
-                        <a href="{{ guard_route('patients.appointments.index',['patient'=>$patient]) }}">
+                    <li class="{{ Request::is('patient.patients.appointments.main.index','patient-upcoming-appointments','patient-completed-appointments','patient-cancelled-appointments','patient-appointments-grid','patient-appointment-details','patient-upcoming-appointment','patient-completed-appointment','patient-cancelled-appointment') ? 'active' : '' }}">
+                        <a href="{{ guard_route('patients.appointments.main.index',['patient'=>$patient]) }}">
                             <i class="isax isax-calendar-1"></i>
                             <span>My Appointments</span>
                         </a>

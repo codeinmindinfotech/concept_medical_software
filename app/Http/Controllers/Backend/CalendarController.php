@@ -61,7 +61,31 @@ class CalendarController extends Controller
             })
         );
     }
-    
+    public function getDays()
+    {
+        $days = CalendarDay::where('is_active', 1)->get();
+
+        $clinics = Clinic::pluck('color', 'id'); // clinic_id → color
+
+        $events = [];
+
+        foreach ($days as $day) {
+            $events[] = [
+                'id'        => $day->id,
+                'title'     => '',
+                'start'     => $day->date,
+                'allDay'    => true,
+                'color'     => 'transparent',   // no fill
+                'textColor' => 'transparent',
+                'clinic_id' => $day->clinic_id,
+                'borderColor' => $clinics[$day->clinic_id] ?? '#999',
+                'clinicColor' => $clinics[$day->clinic_id] ?? '#999', // custom field
+            ];
+        }
+
+        return response()->json($events);
+    }
+
 
     public function index(Request $request, ?Patient $patient = null): View|string
     {
@@ -118,7 +142,9 @@ class CalendarController extends Controller
                 'operation_duration' => $apt->operation_duration,
                 'ward' => $apt->ward,
                 'allergy' => $apt->allergy,
+                'status' => $apt->appointment_status,
                 'color' => $apt->clinic->color ?? '#007bff'
+                
             ];
         });
         return response()->json($events);

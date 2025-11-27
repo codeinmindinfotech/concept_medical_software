@@ -36,3 +36,4 @@
 
 		<!-- Main CSS -->
 		<link rel="stylesheet" href="{{ url('/assets/css/custom.css') }}">
+		@stack('styles')

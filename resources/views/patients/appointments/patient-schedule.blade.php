@@ -206,144 +206,56 @@
 @endsection
 
 @push('modals')
-<!-- Modal -->
-<div class="modal fade" id="setCalendarDaysModal" tabindex="-1" aria-labelledby="setCalendarDaysModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header py-2">
-                <h5 class="modal-title">Set Calendar Days</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+    <!-- Modal -->
+    <x-set-calendar-days-modal :clinics="$clinics" />
 
-            <div class="modal-body p-3">
-                <div class="row">
-                    <!-- LEFT: Clinic List -->
-                    <div class="col-md-3 border-end">
-                        <h6 class="fw-semibold mb-2">Clinics</h6>
-                        @foreach($clinics as $clinic)
-                        <div class="d-flex align-items-center mb-2" style="cursor:pointer;" onclick="selectClinic('{{ $clinic->name }}', '{{ $clinic->id }}')">
-                            <div class="me-2 rounded-circle" style="width:12px; height:12px; background:{{ $clinic->color }};"></div>
-                            <span>{{ $clinic->name }}</span>
-                        </div>
-                        @endforeach
-                    </div>
-
-                    <!-- MIDDLE: Generated Dates -->
-                    <div class="col-md-5 border-end">
-                        <h6 class="fw-semibold mb-2">Dates</h6>
-                        <table class="table table-sm table-bordered align-middle mb-0" id="dateTable">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Clinic</th>
-                                    <th>Select</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-
-                    <!-- RIGHT: Options -->
-                    <div class="col-md-4">
-                        <h6 class="fw-semibold mb-2">Options</h6>
-                        <input type="hidden" id="selectedClinicId">
-
-                        <div class="mb-2">
-                            <label class="form-label mb-1">Clinic Name</label>
-                            <input type="text" id="selectedClinic" class="form-control form-control-sm" readonly>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label mb-1">Start Date</label>
-                            <input type="text" id="startDate" class="form-control form-control-sm datetimepicker">
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label mb-1">Repeat</label><br>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="repeatType" value="weekly" checked>
-                                <label class="form-check-label">Weekly</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="repeatType" value="fortnightly">
-                                <label class="form-check-label">Fortnightly</label>
-                            </div>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label mb-1">Number of Weeks</label>
-                            <input type="number" id="repeatCount" class="form-control form-control-sm" min="1" value="5">
-                        </div>
-
-                        <button class="btn btn-success btn-sm w-100 mt-2" onclick="generateDates()">Generate
-                            Dates</button>
-                    </div>
+    <!-- WhatsApp Modal (Only One Modal for All Appointments) -->
+    <div class="modal fade" id="whatsAppModal" tabindex="-1" aria-labelledby="whatsAppModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="whatsAppModalLabel">Send WhatsApp Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Custom Message Input -->
+                    <textarea id="customMessage" class="form-control" rows="4" placeholder="Enter your message here...">Hello, I wanted to confirm my appointment for</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="sendWhatsAppMessage()">Send Message</button>
                 </div>
             </div>
-
-            <div class="modal-footer py-2">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-sm" onclick="saveCalendarDays()">Save</button>
-            </div>
         </div>
     </div>
-</div>
 
+    <!-- Move Appointment Modal -->
+    <x-move-appointment-modal :clinics="$clinics" id="moveAppointmentModal" title="Reschedule Appointment" />
 
-<!-- WhatsApp Modal (Only One Modal for All Appointments) -->
-<div class="modal fade" id="whatsAppModal" tabindex="-1" aria-labelledby="whatsAppModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="whatsAppModalLabel">Send WhatsApp Message</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Custom Message Input -->
-                <textarea id="customMessage" class="form-control" rows="4" placeholder="Enter your message here...">Hello, I wanted to confirm my appointment for</textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" onclick="sendWhatsAppMessage()">Send Message</button>
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Clinic Overview Count Modal -->
+    <x-clinic-overview-count-modal />
 
-<!-- Move Appointment Modal -->
-<x-move-appointment-modal :clinics="$clinics" id="moveAppointmentModal" title="Reschedule Appointment" />
+    <!-- Hospital Booking Modal -->
+    <x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
-<!-- Clinic Overview Count Modal -->
-<div class="modal fade" id="clinicOverviewCountModal" tabindex="-1" aria-labelledby="clinicOverviewCountLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="clinicOverviewCountLabel">Clinic Appointment Count for <span id="clinic-count-date"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="clinic-overview-count-body">
-                <p class="text-muted">Loading data...</p>
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Status Change Modal -->
+    <x-status-modal :diary_status="$diary_status" :flag="0" />
 
-<!-- Hospital Booking Modal -->
-<x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
-
-<!-- Status Change Modal -->
-<x-status-modal :diary_status="$diary_status" :flag="0" />
-
-<!-- Appointment Booking Modal -->
-<x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+    <!-- Appointment Booking Modal -->
+    <x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 @endpush
 
 
 @push('scripts')
-{{-- <script src="{{ asset('theme/form-validation.js') }}"></script> --}}
 <script src="{{ asset('assets_admin/js/patient-diary.js') }}"></script>
 <script src="{{ asset('assets_admin/js/booking-diary.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+    window.Laravel = {
+        csrfToken: "{{ csrf_token() }}"
+    };
+</script>
+<script src="{{ URL::asset('/assets/js/calendar.js') }}"></script>
 <script>
     
     // let calendar;
@@ -663,7 +575,21 @@ document.addEventListener('DOMContentLoaded', function () {
             `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
-        reportUrl: "{{ guard_route('reports.entire-day') }}"
+        reportUrl: "{{ guard_route('reports.entire-day') }}",
+
+        //set caledar days
+        calendarDays: "{{ guard_route('calendar.days') }}",
+		savecalendarDays: "{{ guard_route('calendar.store') }}",
+
+        //move appoitnments
+		appointmentsForDate: "{{ guard_route('appointments.forDate') }}",
+        appointmentsAvailableSlots: "{{ guard_route('appointments.availableSlots') }}",
+        appointmentsMove: "{{ guard_route('appointments.move') }}",
+
+        //Clinic overview appoitnments
+        appointmentsClinicOverviewCounts: "{{ guard_route('appointments.clinicOverviewCounts') }}",
+
+
 
     };
 
@@ -1060,49 +986,6 @@ document.addEventListener('DOMContentLoaded', function () {
             Swal.fire('Error', data.message || 'Error updating appointment.', 'error');
         });
     }
-
-    function openClinicOverviewCountModal() {
-        if (!selectedDate) {
-            Swal.fire('Warning', 'Please select a date first.', 'info');
-            return;
-        }
-
-        const modalBody = document.getElementById('clinic-overview-count-body');
-        modalBody.innerHTML = '<p class="text-muted">Loading data...</p>';
-
-        fetch(`{{ guard_route('appointments.clinicOverviewCounts') }}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-        })
-        .then(res => res.text())
-        .then(html => {
-            modalBody.innerHTML = html;
-
-            const modalElement = document.getElementById('clinicOverviewCountModal');
-            if (!modalElement) {
-                console.error("Modal element not found!");
-                return;
-            }
-
-            // Optional: manually hide it first if it exists
-            const existingModal = bootstrap.Modal.getInstance(modalElement);
-            if (existingModal) {
-                existingModal.hide();
-            }
-
-            // Then show it again
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-        })
-        .catch(err => {
-            // console.error(err);
-            modalBody.innerHTML = '<p class="text-danger">Failed to load data.</p>';
-        });
-    }
-
     function openEntireDayReport() {
         if (!selectedDate) {
             Swal.fire("Error", "Please select a date for the report.", "warning");
@@ -1211,290 +1094,6 @@ function sendWhatsAppMessage() {
 
         loadSlotsAndAppointments();
     }
-
-    let selectedAppointments = [];
-    let selectedTargetDate = null;
-
-    $('#fromDate').on("dp.change", function (e) {
-        let selectedDate = e.date.format("YYYY-MM-DD");
-        loadAppointmentsForDate(selectedDate);
-    });
-
-
-    document.getElementById('fromClinic').addEventListener('change', function() {
-        const selectedDate = document.getElementById('fromDate').value;
-        if (selectedDate) {
-            loadAppointmentsForDate(selectedDate);
-        } else {
-            document.getElementById('fromDateDisplay').innerHTML = `<div class="text-muted">Please select a date first.</div>`;
-        }
-    });
-
-    $('#toDate').on("dp.change", function (e) {
-        let selectedDate = e.date.format("YYYY-MM-DD");
-        selectedTargetDate = selectedDate;
-        console.log("Target Date selected:", selectedDate);
-
-        // Load available slots
-        loadAvailableTimeSlots(selectedDate);
-    });
-
-    document.getElementById('toClinic').addEventListener('change', function() {
-        const selectedTargetDate = document.getElementById('toDate').value;
-        if (selectedTargetDate) {
-            loadAvailableTimeSlots(selectedTargetDate);
-        } else {
-            document.getElementById('timeSlotsForTarget').innerHTML = `<div class="text-muted">Please select a date first.</div>`;
-        }
-    });
-
-    function loadAppointmentsForDate(date) {
-        const fromClinicSelect = document.getElementById('fromClinic');
-        const displayContainer = document.getElementById('fromDateDisplay');
-
-        displayContainer.innerHTML = `
-            <div class="text-center py-3 text-muted">
-                <div class="spinner-border text-primary me-2" role="status"></div>
-                Loading appointments for ${date}...
-            </div>
-        `;
-
-        fetch("{{ guard_route('appointments.forDate') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                date: date,
-                clinic_id: fromClinicSelect.value
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                displayContainer.innerHTML = data.appointments_html || 
-                    `<div class="text-center text-muted py-3">No appointments on ${date}.</div>`;
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            displayContainer.innerHTML = `<div class="text-center text-danger py-3">Failed to load appointments.</div>`;
-        });
-    }
-
-    function loadAvailableTimeSlots(date) {
-        const toClinicSelect = document.getElementById('toClinic');
-        const timeSlotsContainer = document.getElementById('timeSlotsForTarget');
-
-        if (!toClinicSelect.value) {
-            timeSlotsContainer.innerHTML = `<div class="text-danger">Please select a clinic first.</div>`;
-            return;
-        }
-
-        // Fetch available time slots for the selected "to" date
-        fetch("{{ guard_route('appointments.availableSlots') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                date: date,
-                clinic_id: toClinicSelect.value
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && data.slots.length > 0) {
-                const slotButtons = data.slots.map(slot => `
-                    <button 
-                        type="button" 
-                        class="btn btn-outline-success btn-sm slot-btn m-1 px-2 py-1" 
-                        style="min-width: 80px; font-size: 0.85rem;"
-                        data-slot="${slot}">
-                        ${slot}
-                    </button>
-                `).join('');
-
-                timeSlotsContainer.innerHTML = `
-                    <div class="fw-semibold mb-1" style="font-size: 0.9rem;">Available Slots:</div>
-                    <div class="d-flex flex-wrap justify-content-start">${slotButtons}</div>
-                    <input type="hidden" id="selectedSlot" name="selected_slot" value="">
-                `;
-
-                // Add event listeners for selecting a slot
-                document.querySelectorAll('.slot-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        // Remove "active" style from all buttons
-                        document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('active', 'btn-success'));
-                        document.querySelectorAll('.slot-btn').forEach(b => b.classList.add('btn-outline-success'));
-
-                        // Mark this button as selected
-                        this.classList.remove('btn-outline-success');
-                        this.classList.add('btn-success', 'active');
-
-                        // Store selected slot in hidden input
-                        document.getElementById('selectedSlot').value = this.dataset.slot;
-                    });
-                });
-
-            } else {
-                timeSlotsContainer.innerHTML = `<div class="text-muted">No time slots available for ${date}.</div>`;
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            timeSlotsContainer.innerHTML = `<div class="text-danger">Failed to load time slots.</div>`;
-        });
-    }
-
-    document.addEventListener("change", function(e) {
-        if (e.target && e.target.name === 'appointment_ids[]') {
-            selectedAppointments = Array.from(document.querySelectorAll('input[name="appointment_ids[]"]:checked')).map(cb => parseInt(cb.value));
-            console.log("Selected Appointments:", selectedAppointments);
-        }
-    });
-    // Submit the appointment move request
-    function submitMoveAppointment() {
-        const reason = document.getElementById('moveReason').value;
-        if (!reason.trim()) {
-            Swal.fire("Error", "Please provide a reason for moving the appointment.", "warning");
-            return;
-        }
-
-        if (!selectedAppointments.length || !selectedTargetDate) {
-            Swal.fire("Incomplete", "Please select at least one appointment and a new target date.", "warning");
-            return;
-        }
-
-        const toClinicSelect = document.getElementById('toClinic');
-
-        const selectedSlot = document.getElementById('selectedSlot')?.value || '';
-        if (!selectedSlot) {
-            Swal.fire("Incomplete", "Please select a time slot for the new appointment.", "warning");
-            return;
-        }
-        fetch("{{ guard_route('appointments.move') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                appointment_ids: selectedAppointments,
-                clinic_id: toClinicSelect.value,
-                new_date: selectedTargetDate,
-                time_slot: selectedSlot,
-                reason,
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire("Success", "Appointments moved successfully!", "success");
-                $('#moveAppointmentModal').modal('hide');
-                    initCalendar();
-                    refreshCalendarEvents();
-                    loadSlotsAndAppointments();
-                // Optionally, refresh other parts of the page here...
-            } else {
-                Swal.fire("Error", data.message || "Move failed.", "error");
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            Swal.fire("Error", "An error occurred while moving appointments.", "error");
-        });
-    }
-    function openMoveAppointmentModal() {
-        // Open the modal (this assumes you're using Bootstrap's modal)
-        const modal = new bootstrap.Modal(document.getElementById('moveAppointmentModal'));
-        modal.show();
-        
-        // Optionally, you can clear selections or do additional actions here
-        clearSelections();
-    }
-
-    function clearSelections() {
-        document.getElementById('fromClinic').value = '';
-        document.getElementById('fromDate').value = '';
-        document.getElementById('toClinic').value = '';
-        document.getElementById('toDate').value = '';
-        document.getElementById('moveReason').value = '';
-        document.getElementById('fromDateDisplay').innerHTML = '<div class="text-muted">No appointments selected</div>';
-        document.getElementById('timeSlotsForTarget').innerHTML = '<div class="text-muted">Please select clinic and date</div>';
-    }
-
-    function selectClinic(name, id) {
-        document.getElementById('selectedClinic').value = name;
-        document.getElementById('selectedClinicId').value = id;
-    }
-
-    function generateDates() {
-        const startDateInput = document.getElementById('startDate').value;
-        const repeatType = document.querySelector('input[name="repeatType"]:checked').value;
-        const repeatCount = parseInt(document.getElementById('repeatCount').value);
-        const clinicName = document.getElementById('selectedClinic').value;
-
-        if (!startDateInput || !clinicName) {
-            Swal.fire("Error", "Please select a clinic and start date.", "error");
-            return;
-        }
-
-        const startDate = new Date(startDateInput);
-        const tbody = document.querySelector('#dateTable tbody');
-        tbody.innerHTML = '';
-
-        for (let i = 0; i < repeatCount; i++) {
-            const date = new Date(startDate);
-            date.setDate(startDate.getDate() + i * (repeatType === 'weekly' ? 7 : 14));
-            const formattedDate = date.toISOString().split('T')[0];
-            tbody.innerHTML += `
-            <tr>
-                <td>${formattedDate}</td>
-                <td>${clinicName}</td>
-                <td><input type="checkbox" value="${formattedDate}" checked></td>
-            </tr>`;
-        }
-    }
-
-    function saveCalendarDays() {
-        const clinicId = document.getElementById('selectedClinicId').value;
-        const dates = Array.from(document.querySelectorAll('#dateTable tbody input[type="checkbox"]:checked'))
-            .map(cb => cb.value);
-
-        if (!clinicId || dates.length === 0) {
-            Swal.fire("Error", "Select a clinic and at least one date.", "error");
-            return;
-        }
-
-        fetch('{{ guard_route('calendar.store') }}', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ clinic_id: clinicId, dates })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire("Success", data.message, "success");
-                $('#setCalendarDaysModal').modal('hide');
-                // Example usage:
-                initCalendar();
-                refreshCalendarEvents();
-                loadSlotsAndAppointments();
-                document.querySelector('#dateTable tbody').innerHTML = '';
-                document.getElementById('startDate').value = '';
-            }
-        })
-        .catch(err => console.error('Error:', err));
-    }
-    
-
-
 
     // Helper function to check if color is dark
     function isDarkColor(color) {

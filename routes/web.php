@@ -320,6 +320,8 @@ foreach ($roles as $role) {
         
             Route::get('/{clinic}/schedule', [ClinicController::class, 'schedule'])->name('clinic.schedule');
             Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+            Route::get('/calendar-days', [CalendarController::class, 'getDays'])->name('calendar.days');
+
             Route::get('/appointmentindex', [CalendarController::class, 'appointmentindex'])->name('patients.appointments.index');
             
             Route::get('/appointment/check-slot', [AppointmentController::class, 'checkSlot'])->name('patients.appointments.checkSlot');
@@ -327,15 +329,15 @@ foreach ($roles as $role) {
 
 
 
-            // Route::prefix("patients/{patient}/appointments")->group(function () {
-            //     // Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.index');
-            //     // Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
-            //     // Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
-            //     // Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
-            //     // Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
-            //     // Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
-            //     // Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
-            // });
+            Route::prefix("patients/{patient}/appointments")->group(function () {
+                Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.main.index');
+                // Route::get('/create', [PatientNoteController::class, 'create'])->name('patients.notes.create');
+                // Route::post('/', [PatientNoteController::class, 'store'])->name('patients.notes.store');
+                // Route::get('/{note}/edit', [PatientNoteController::class, 'edit'])->name('patients.notes.edit');
+                // Route::put('/{note}', [PatientNoteController::class, 'update'])->name('patients.notes.update');
+                // Route::post('/{note}/toggle-completed', [PatientNoteController::class, 'toggleCompleted'])->name('patients.notes.toggleCompleted');
+                // Route::delete('/{note}', [PatientNoteController::class, 'destroy'])->name('patients.notes.destroy');
+            });
 
             // Route::resource('dashboard', DashboardController::class);
             Route::resource('roles', RoleController::class);
