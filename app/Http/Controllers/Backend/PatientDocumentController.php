@@ -336,6 +336,54 @@ public function sendEmail(Request $request, Patient $patient, PatientDocument $d
     return redirect(guard_route('patient-documents.email.form', [$patient, $document]))
         ->with('success', 'Email sent successfully with attached PDF document!');
 }
+private function downloadConvertedPdf($docxPath)
+{
+    $client = new \GuzzleHttp\Client([
+        'base_uri' => rtrim(config('onlyoffice.server_url'), '/'),
+        'verify'   => false, // set TRUE if your SSL cert is valid
+    ]);
+
+    try {
+        $payload = [
+            "async"      => false,
+            "filetype"   => "docx",
+            "outputtype" => "pdf",
+            "title"      => "Converted PDF",
+            "key"        => uniqid(),
+            "url"        => null,
+            "file"       => base64_encode(file_get_contents($docxPath)),
+        ];
+
+        $response = $client->post('ConvertService.ashx', [
+            'headers' => [
+                'Accept' => 'application/json'
+            ],
+            'json' => $payload,
+        ]);
+
+        $result = json_decode($response->getBody(), true);
+
+        if (!isset($result['fileUrl'])) {
+            \Log::error('OnlyOffice conversion failed', $result);
+            return null;
+        }
+
+        // Download converted PDF
+        $pdfData = file_get_contents($result['fileUrl']);
+
+        // Create a temporary file in storage
+        $tempPdf = storage_path('app/temp_pdf_' . uniqid() . '.pdf');
+
+        file_put_contents($tempPdf, $pdfData);
+
+        return $tempPdf;
+
+    } catch (\Exception $e) {
+        \Log::error('OnlyOffice conversion exception: ' . $e->getMessage());
+        return null;
+    }
+}
+
 
 
 
@@ -345,35 +393,35 @@ public function sendEmail(Request $request, Patient $patient, PatientDocument $d
     }
 
 
-    public function downloadConvertedPdf($docxPath)
-    {
-        if (!file_exists($docxPath)) {
-            return back()->with('error', 'Document file not found.');
-        }
+    // public function downloadConvertedPdf($docxPath)
+    // {
+    //     if (!file_exists($docxPath)) {
+    //         return back()->with('error', 'Document file not found.');
+    //     }
     
-        // Directory to save temporary PDFs
-        $pdfDir = storage_path('app/temp');
-        if (!file_exists($pdfDir)) mkdir($pdfDir, 0777, true);
+    //     // Directory to save temporary PDFs
+    //     $pdfDir = storage_path('app/temp');
+    //     if (!file_exists($pdfDir)) mkdir($pdfDir, 0777, true);
     
-        $pdfPath = $pdfDir . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
+    //     $pdfPath = $pdfDir . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
     
-        try {
-            $pdfRendererName = Settings::PDF_RENDERER_DOMPDF;
-            $pdfRendererPath = base_path('vendor/dompdf/dompdf'); // DomPDF path
-            Settings::setPdfRenderer($pdfRendererName, $pdfRendererPath);
+    //     try {
+    //         $pdfRendererName = Settings::PDF_RENDERER_DOMPDF;
+    //         $pdfRendererPath = base_path('vendor/dompdf/dompdf'); // DomPDF path
+    //         Settings::setPdfRenderer($pdfRendererName, $pdfRendererPath);
     
-            // Load DOCX and save as PDF
-            $phpWord = IOFactory::load($docxPath);
-            $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
-            $pdfWriter->save($pdfPath);
-            return $pdfPath;
+    //         // Load DOCX and save as PDF
+    //         $phpWord = IOFactory::load($docxPath);
+    //         $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
+    //         $pdfWriter->save($pdfPath);
+    //         return $pdfPath;
 
     
-        } catch (\Exception $e) {
-            \Log::error('DOCX to PDF conversion failed: ' . $e->getMessage());
-            return back()->with('error', 'Conversion to PDF failed: ' . $e->getMessage());
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         \Log::error('DOCX to PDF conversion failed: ' . $e->getMessage());
+    //         return back()->with('error', 'Conversion to PDF failed: ' . $e->getMessage());
+    //     }
+    // }
     public function convertDocxToPdfOnlyOffice($docxPath)
     {
         if (!file_exists($docxPath)) {

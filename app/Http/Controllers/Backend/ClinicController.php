@@ -90,7 +90,7 @@ class ClinicController extends Controller
     {
         $clinic->delete();
 
-        return redirect()->route('clinics.index')->with('success', 'Clinic deleted successfully.');
+        return redirect(guard_route('clinics.index'))->with('success', 'Clinic deleted successfully.');
     }
 
     protected function extractDayFields(Request $request): array
@@ -103,5 +103,58 @@ class ClinicController extends Controller
         }
 
         return $data;
+    }
+
+    public function schedule(Clinic $clinic)
+    {
+        $days = [
+            'mon' => 1, 'tue' => 2, 'wed' => 3,
+            'thu' => 4, 'fri' => 5, 'sat' => 6, 'sun' => 0
+        ];
+
+        $result = [];
+
+        foreach ($days as $day => $dow) {
+
+            // If clinic not active this day → block
+            if ($clinic->$day == 0) {
+                $result[$day] = [
+                    'active'      => false,
+                    'interval'    => null,
+                    'slots'       => [],
+                    'business'    => [],
+                ];
+                continue;
+            }
+
+            $interval = intval($clinic->{$day . '_interval'} ?? 15);
+
+            $ranges = [];
+
+            // AM
+            if ($clinic->{$day.'_start_am'} && $clinic->{$day.'_finish_am'}) {
+                $ranges[] = [
+                    'start' => $clinic->{$day.'_start_am'},
+                    'end'   => $clinic->{$day.'_finish_am'},
+                ];
+            }
+
+            // PM
+            if ($clinic->{$day.'_start_pm'} && $clinic->{$day.'_finish_pm'}) {
+                $ranges[] = [
+                    'start' => $clinic->{$day.'_start_pm'},
+                    'end'   => $clinic->{$day.'_finish_pm'},
+                ];
+            }
+
+            $result[$day] = [
+                'active'      => true,
+                'interval'    => $interval,
+                'business'    => $ranges,
+                'dow'         => $dow,
+            ];
+        }
+
+        return response()->json($result);
     }
 }

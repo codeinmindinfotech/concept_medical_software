@@ -5,7 +5,7 @@
         <form id="bookAppointmentForm" data-action="{{ $action }}" class="needs-validation" novalidate>
             @csrf
             <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header bg-primary-light">
                     <h5 class="modal-title" id="bookAppointmentLabel">Book Appointment</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -104,6 +104,8 @@
                             @endforeach
                         </select>
                     </div>
+                    @else
+                    <input type="hidden" name="clinic_id" id="appointment-clinic-id">
                     @endif
 
                 </div>

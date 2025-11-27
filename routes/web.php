@@ -49,11 +49,12 @@ use App\Http\Controllers\Backend\PatientMessageController;
 use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\OnlyOfficeController;
+use App\Http\Controllers\patient\AppointmentController as PatientAppointmentController;
+use App\Http\Controllers\patient\DashboardController as PatientDashboardController;
 use App\Http\Controllers\EmailTestController;
 
 Route::get('/email-test', [EmailTestController::class, 'showForm']);
 Route::post('/email-test', [EmailTestController::class, 'sendEmail'])->name('email.send');
-
 
 Route::get('/', function () {
     return view('frontend.index');
@@ -307,13 +308,35 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
     });
 });
 
+
 $roles = ['clinic', 'doctor', 'patient'];
 foreach ($roles as $role) {
     Route::prefix($role)
         ->name("$role.")
         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
         ->group(function () use ($role, $patientSubRoutes) {
-            Route::resource('dashboard', DashboardController::class);
+
+            if($role == 'patient'){
+                Route::resource('dashboard', PatientDashboardController::class);
+            } else {
+                Route::resource('dashboard', DashboardController::class);
+            }
+        
+            Route::get('/{clinic}/schedule', [ClinicController::class, 'schedule'])->name('clinic.schedule');
+            Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+            Route::get('/calendar-days', [CalendarController::class, 'getDays'])->name('calendar.days');
+
+            Route::get('/appointmentindex', [CalendarController::class, 'appointmentindex'])->name('patients.appointments.index');
+            
+            Route::get('/appointment/check-slot', [AppointmentController::class, 'checkSlot'])->name('patients.appointments.checkSlot');
+            Route::put('/appointment/update-time/{appointment}', [AppointmentController::class, 'updateTime'])->name('patients.appointments.updateTime');
+
+
+
+            Route::prefix("patients/{patient}/appointments")->group(function () {
+                Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.main.index');
+            });
+
             Route::resource('roles', RoleController::class);
             Route::resource('users', UserController::class);
             Route::resource('patients', PatientController::class);

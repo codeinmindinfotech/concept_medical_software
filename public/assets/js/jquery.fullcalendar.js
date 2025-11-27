@@ -134,7 +134,7 @@
                 className: 'bg-danger'
             },
             {
-                title: 'Test Event 2',
+                title: 'JIyaan',
                 start: today,
                 end: today,
                 className: 'bg-success'

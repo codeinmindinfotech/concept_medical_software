@@ -76,9 +76,7 @@ class CompanyController extends Controller
 
             $recipients = globalNotificationRecipients();
             if (!empty($recipients) && filter_var($company->email, FILTER_VALIDATE_EMAIL)) {
-                if (App::environment('local')) {
-                    Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
-                }
+                Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
             } else {
                 \Log::error('Invalid recipients or company email', [
                     'to' => $company->email,

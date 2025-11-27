@@ -5,7 +5,7 @@
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             
             <!-- Modal Header -->
-            <div class="modal-header bg-gradient-primary py-3 px-4">
+            <div class="modal-header bg-primary-light py-3 px-4">
                 <h5 class="modal-title d-flex align-items-center mb-0">
                     <i class="bi bi-calendar2-range me-2 fs-4"></i> {{ $title ?? 'Move Appointment' }}
                 </h5>
@@ -13,7 +13,7 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body bg-light p-4">
+            <div class="modal-body p-4">
                 <div class="row g-4">
                     <!-- Left Section -->
                     <div class="col-md-6">
@@ -101,3 +101,4 @@
         </div>
     </div>
 </div>
+
