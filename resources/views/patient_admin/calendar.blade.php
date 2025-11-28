@@ -140,7 +140,7 @@
 			// Use named route for index
 			const base = "{{ guard_route('patients.appointments.index') }}";
 			return appointmentId ? `${base}/${appointmentId}` : base;
-    },
+        },
 
     };
     let selectedClinic = null;
@@ -341,17 +341,17 @@
 			}
 		}
 
-		function openStatusModal(appointmentId, patientId, status)
-		{
-			$('#appointment_id').val(appointmentId);   
-			$('#patient_id').val(patientId);               
-			$('#appointment_status').val(status); 
+		// function openStatusModal(appointmentId, patientId, status)
+		// {
+		// 	$('#appointment_id').val(appointmentId);   
+		// 	$('#patient_id').val(patientId);               
+		// 	$('#appointment_status').val(status); 
 
-			let finalUrl = routes.statusAppointment(appointmentId, patientId); 
-			$('#statusChangeForm').attr('data-action', finalUrl);    
+		// 	let finalUrl = routes.statusAppointment(appointmentId, patientId); 
+		// 	$('#statusChangeForm').attr('data-action', finalUrl);    
 
-			$('#statusChangeModal').modal('show'); 
-		}
+		// 	$('#statusChangeModal').modal('show'); 
+		// }
 
         function fillAppointmentModal(event, selectedClinicType) {
             // Common fields

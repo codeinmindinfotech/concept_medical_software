@@ -82,7 +82,7 @@ class AppointmentController extends Controller
                 $patient = null;
             }
             
-            $appointmentsQuery = Appointment::companyOnly()->with('appointmentType', 'patient','appointmentStatus')
+            $appointmentsQuery = Appointment::companyOnly()->with('appointmentType', 'patient','appointmentStatus','clinic')
                 ->whereDate('appointment_date', $request->date);
 
             if ($request->filled('patientSelect')) {
