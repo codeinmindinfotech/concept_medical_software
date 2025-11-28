@@ -20,7 +20,7 @@
         'isListPage' => false
     ])
 
-    <form action="{{guard_route('patient-documents.store', $patient->id) }}" method="POST" class="validate-form">
+    <form action="{{guard_route('patient-documents.store', $patient->id) }}" method="POST" data-ajax class="needs-validation" novalidate >
         @csrf
         @include('patients.documents.form', [
                     'patient' => $patient,

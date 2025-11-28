@@ -18,7 +18,7 @@ $breadcrumbs = [
     'backUrl' =>guard_route('patient-documents.index', $patient->id),
     'isListPage' => false
 ])
-<form action="{{guard_route('patient-documents.update',[$patient->id, $document->id]) }}" method="POST" class="validate-form">
+<form action="{{guard_route('patient-documents.update',[$patient->id, $document->id]) }}" method="POST" data-ajax class="needs-validation" novalidate>
     @csrf
     @method('PUT')
 

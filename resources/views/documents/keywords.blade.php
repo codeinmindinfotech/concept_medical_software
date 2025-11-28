@@ -19,6 +19,7 @@
             <div id="collapsePatient" class="accordion-collapse collapse" data-bs-parent="#accordionLeft">
             <div class="accordion-body">
                 <ul class="mb-0">
+                <li><code>[Signature]</code></li>
                 <li><code>[Title]</code></li>
                 <li><code>[FirstName]</code></li>
                 <li><code>[SurName]</code></li>

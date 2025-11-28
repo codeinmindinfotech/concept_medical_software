@@ -52,12 +52,12 @@
               </div>
               <div class="card-body">
                 @include('documents.keywords')
-                <div id="tags-list" class="d-flex flex-wrap gap-2">
+                {{-- <div id="tags-list" class="d-flex flex-wrap gap-2">
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[FirstName]">[FirstName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[LastName]">[LastName]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[DOB]">[DOB]</button>
                   <button type="button" class="btn btn-outline-primary btn-sm tag-btn" data-tag="[Gender]">[Gender]</button>
-                </div>
+                </div> --}}
               </div>
             </div>
           </div>
