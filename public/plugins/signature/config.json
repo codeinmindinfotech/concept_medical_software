@@ -1,6 +1,6 @@
 {
   "name": "Signature",
-  "guid": "signature-plugin",
+  "guid": "signature",
   "version": "1.0",
   "description": "Add handwritten or uploaded signatures",
   "isViewer": false,
