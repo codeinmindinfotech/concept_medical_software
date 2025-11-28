@@ -47,23 +47,23 @@ class AppointmentController extends Controller
             ->simplePaginate(6)
             ->appends(['type' => $type]);   // ← FIXED
 
-            // Count upcoming
-    $upcomingCount = Appointment::companyOnly()
-    ->where('patient_id', $patient->id)
-    ->whereDate('appointment_date', '>=', now())
-    ->count();
+        // Count upcoming
+        $upcomingCount = Appointment::companyOnly()
+            ->where('patient_id', $patient->id)
+            ->whereDate('appointment_date', '>=', now())
+            ->count();
 
-// Count completed
-$completedCount = Appointment::companyOnly()
-    ->where('patient_id', $patient->id)
-    ->whereDate('appointment_date', '<', now())
-    ->count();
+        // Count completed
+        $completedCount = Appointment::companyOnly()
+            ->where('patient_id', $patient->id)
+            ->whereDate('appointment_date', '<', now())
+            ->count();
         // If AJAX request → return only the appointment cards
         if ($request->ajax()) {
             return view('patient_admin.appointment.partials.cards', compact('appointments'))->render();
         }
 
 
-        return view('patient_admin.appointment.index', compact('patient', 'appointments', 'type', 'procedures', 'patients', 'diary_status', 'clinics', 'appointmentTypes','upcomingCount','completedCount'));
+        return view('patient_admin.appointment.index', compact('patient', 'appointments', 'type', 'procedures', 'patients', 'diary_status', 'clinics', 'appointmentTypes', 'upcomingCount', 'completedCount'));
     }
 }

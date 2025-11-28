@@ -47,13 +47,7 @@ Appointments
 							</li>
 						</ul>
 					</div>
-					<div class="filter-head">
-						<div class="position-relative daterange-wraper me-2">
-							<div class="input-groupicon calender-input">
-								<input type="text" class="form-control  date-range bookingrange" placeholder="From Date - To Date ">
-							</div>
-							<i class="isax isax-calendar-1"></i>
-						</div>
+					{{-- <div class="filter-head">
 						<div class="form-sorts dropdown">
 							<a href="javascript:void(0);" class="dropdown-toggle" id="table-filter"><i class="isax isax-filter me-2"></i>Filter By</a>
 							<div class="filter-dropdown-menu">
@@ -74,17 +68,129 @@ Appointments
 												</ul>
 											</div>
 										</div>
-																						
+										<div class="filter-set-content">
+											<div class="filter-set-content-head">
+												<a href="#" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Appointment Type<i class="fa-solid fa-chevron-right"></i></a>
+											</div>
+											<div class="filter-set-contents accordion-collapse collapse show" id="collapseOne" data-bs-parent="#accordionExample">
+												<ul>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox" checked>
+																<span class="checkmarks"></span>
+																<span class="check-title">All Type</span>
+															</label>
+														</div>																
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">Video Call</span>
+															</label>
+														</div>																
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">Audio Call</span>
+															</label>
+														</div>																
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">Chat</span>
+															</label>
+														</div>																
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">Direct Visit</span>
+															</label>
+														</div>																
+													</li>
+												</ul>
+											</div>
+										</div>												
+										<div class="filter-set-content">
+											<div class="filter-set-content-head">
+												<a href="#" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Visit Type<i class="fa-solid fa-chevron-right"></i></a>
+											</div>
+											<div class="filter-set-contents accordion-collapse collapse show" id="collapseThree" data-bs-parent="#accordionExample">
+												<ul>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox" checked>
+																<span class="checkmarks"></span>
+																<span class="check-title">All Visit</span>
+															</label>
+														</div>
+														
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">General</span>
+															</label>
+														</div>
+														
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">Consultation</span>
+															</label>
+														</div>
+														
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">Follow-up</span>
+															</label>
+														</div>
+														
+													</li>
+													<li>
+														<div class="filter-checks">
+															<label class="checkboxs">
+																<input type="checkbox">
+																<span class="checkmarks"></span>
+																<span class="check-title">Direct Visit</span>
+															</label>
+														</div>
+														
+													</li>
+												</ul>
+											</div>
+										</div>
 									</div>
 									
 									<div class="filter-reset-btns">
-										<a href="appointments.html" class="btn btn-md btn-light rounded-pill">Reset</a>
-										<a href="appointments.html" class="btn btn-md btn-primary-gradient rounded-pill">Filter Now</a>
+										<a href="#" class="btn btn-light">Reset</a>
+										<a href="#" class="btn btn-primary">Filter Now</a>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					</div> --}}
 				</div>
 
 				<div class="tab-content appointment-tab-content appoint-patient">
