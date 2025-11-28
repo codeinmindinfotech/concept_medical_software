@@ -98,7 +98,6 @@ document.getElementById('document_template_id').addEventListener('change', funct
     const templateId = this.value;
     const documentId = "{{ $document->id }}";
     if (!templateId) return;
-alert("changed");
 
     fetch("{{ guard_route('patient-documents.previewTemplateCreate', $patient) }}", {
         method: 'POST',
