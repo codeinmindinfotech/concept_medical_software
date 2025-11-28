@@ -35,6 +35,10 @@
                 <script src="{{ URL::asset('/assets/js/fullcalendar.min.js') }}"></script>
                 <script src="{{ URL::asset('/assets/js/jquery.fullcalendar.js') }}"></script> --}}
         
+        <!-- Daterangepikcer JS -->
+        <script src="{{ URL::asset('/assets/js/moment.min.js') }}"></script>
+        <script src="{{ URL::asset('/assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
+
                 
 		<!-- Custom JS -->
 		<script src="{{ URL::asset('/assets/js/script.js') }}"></script>

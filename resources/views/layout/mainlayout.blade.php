@@ -466,6 +466,9 @@
 @component('components.admin.cursor')
 @endcomponent
 </div>
+<div class="load-more-spinner">
+    <i class="fa fa-spinner"></i>
+</div>
 <!-- /Main Wrapper -->
 @stack('modals')
 {{-- @component('components.admin.modalpopup')

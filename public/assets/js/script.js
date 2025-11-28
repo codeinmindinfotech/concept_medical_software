@@ -3947,3 +3947,30 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 });
+
+$(document).on('click', '.load-more', function () {
+
+    let btn = $(this);
+    let nextUrl = btn.data('next-page');
+
+    if (!nextUrl) return;
+
+    // Get parent container
+    let container = btn.closest('.load-container');
+
+    $.ajax({
+        url: nextUrl,
+        type: "GET",
+        success: function (html) {
+            // Append new cards
+            container.append(html);
+
+            // Remove this load more button
+            btn.remove();
+        },
+        error: function () {
+            alert("Unable to load more items.");
+        }
+    });
+
+});
