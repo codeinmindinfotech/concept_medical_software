@@ -39,6 +39,7 @@ class KeywordHelper
             'PatientName'       => $patient->full_name ?? '',
             'PatientAddress'   => $patient->address ?? '',
             'PatientAddress1'   => $patient->address ?? '',
+            'Signature'         =>  public_path('assets/img/banner-lief-img.png'),//$patient->signature_url ??
             // 'PatientAddress2'   => $patient->address2 ?? '',
             // 'PatientAddress3'   => $patient->address3 ?? '',
             // 'PatientAddress4'   => $patient->address4 ?? '',
@@ -194,11 +195,29 @@ class KeywordHelper
             'ConsultantEmail'  => optional($patient->consultant)->email ?? '',
         ];
 
+        $signaturePath = public_path('assets/img/banner-lief-img.png');
+        // $signaturePath = $patient->signature_file
+        // ? public_path('storage/patient_pictures/' . $patient->signature_file)
+        // : public_path('assets/img/banner-lief-img.png');
+    
+
         // ------------------------------------------------------------
         // 3️⃣ Replace placeholders dynamically
         // ------------------------------------------------------------
         foreach ($data as $key => $value) {
-            $template->setValue($key, $value ?? '');
+            if ($key !== 'Signature') { // skip signature here
+                $template->setValue($key, $value ?? '');
+            }
+        }
+
+        // Replace [Signature] placeholder with image
+        if (file_exists($signaturePath)) {
+            $template->setImageValue('Signature', [
+                'path' => $signaturePath,
+                'width' => 200,
+                'height' => 100,
+                'ratio' => true
+            ]);
         }
 
         $template->saveAs($filePath);
