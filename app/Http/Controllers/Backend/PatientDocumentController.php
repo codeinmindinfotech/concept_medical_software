@@ -114,6 +114,8 @@ class PatientDocumentController extends Controller
         $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
         \Log::info('OnlyOffice callback URL: ' . $callback);
 
+        
+
         $key = OnlyOfficeHelper::generateDocumentKey($document, true);
         $user = current_user();
         $token = OnlyOfficeHelper::createJwtToken($document, $key, $fileUrl, $user );
@@ -144,6 +146,11 @@ class PatientDocumentController extends Controller
 
     public function update(Request $request, Patient $patient, PatientDocument $document)
     {
+        $filePath = $document->file_path;
+        $fullDestinationPath = storage_path('app/public/' . $filePath); // Use filesystem path
+        // Replace placeholders with patient data
+        KeywordHelper::replaceKeywords($fullDestinationPath, $patient);
+        
         if ($request->has('document_template_id') 
             && $request->document_template_id != $document->document_template_id) {
     
