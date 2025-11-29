@@ -130,7 +130,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $consultants = Consultant::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get(); 
-        return view('patients.create', compact('pageTitle','titles','insurances','relations','consultants', 'preferredContact','doctors'));
+        return view(guard_view('patients.create', 'patient_admin.profile.create'), compact('pageTitle','titles','insurances','relations','consultants', 'preferredContact','doctors'));
     }
     
     /**
@@ -179,7 +179,7 @@ class PatientController extends Controller
     {
         $this->authorize('viewAny', $patient);
         $pageTitle = "Show Patient";
-        return view('patients.show',compact('patient','pageTitle'));
+        return view(guard_view('patients.show', 'patient_admin.profile.view'),compact('patient','pageTitle'));
     }
     
     /**
@@ -196,7 +196,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get();
         $consultants = Consultant::companyOnly()->orderBy('name')->get();
-        return view('patients.edit',compact('patient','pageTitle','titles','relations','consultants','insurances', 'preferredContact','doctors'));
+        return view(guard_view('patients.edit', 'patient_admin.profile.edit'), compact('patient', 'pageTitle', 'titles', 'relations', 'consultants', 'insurances', 'preferredContact','doctors'));
     }
     
     /**

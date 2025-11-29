@@ -39,59 +39,25 @@
 
 
                 <div class="main-menu-wrapper">
-                    
+                    @php
+                        $dashboardRoutes = ['patient.dashboard', 'doctor.dashboard', 'clinic.dashboard'];
+                        $calendarRoutes = ['patient.calendar', 'doctor.calendar', 'clinic.calendar'];
+                    @endphp
                     <ul class="main-nav">
-                        <li class="has-submenu megamenu {{ Request::is('/', 'index') ? 'active' : '' }}">
-                            <a href="javascript:void(0);">Dashboard</a>
+                        <li class="has-submenu megamenu {{ in_array(Route::currentRouteName(), $dashboardRoutes) ? 'active' : '' }}">
+                            <a href="{{ guard_route('dashboard.index') }}">Dashboard</a> {{-- default link for all roles --}}
                         </li>
+
                         <li class="has-submenu megamenu {{ Request::is('/', 'index') ? 'active' : '' }}">
                             <a href="javascript:void(0);">Planner</a>
                         </li>
-                        <li class="has-submenu megamenu {{ Request::is('calendar') ? 'active' : '' }}">
-                            <a href="{{guard_route('calendar')}}">Diary</a>
+                       
+
+                        <li class="has-submenu megamenu {{ in_array(Route::currentRouteName(), $calendarRoutes) ? 'active' : '' }}">
+                            <a href="{{ guard_route('calendar') }}">Diary</a> {{-- default link for all roles --}}
                         </li>
-                        <li class="has-submenu {{ Request::is('map-grid', 'map-list', 'search', 'search-2', 'doctor-profile', 'doctor-profile-2','booking', 'booking-2', 'checkout', 'booking-success', 'patient-dashboard', 'favourites', 'chat', 'profile-settings', 'change-password', 'add-dependent', 'dependent', 'edit-dependent', 'patient-upcoming-appointment') ? 'active' : '' }}">
+                         <li class="has-submenu {{ Request::is('map-grid', 'map-list', 'search', 'search-2', 'doctor-profile', 'doctor-profile-2','booking', 'booking-2', 'checkout', 'booking-success', 'patient-dashboard', 'favourites', 'chat', 'profile-settings', 'change-password', 'add-dependent', 'dependent', 'edit-dependent', 'patient-upcoming-appointment') ? 'active' : '' }}">
                             <a href="javascript:void(0);">Patients <i class="fas fa-chevron-down"></i></a>
-                            <ul class="submenu">
-                                <li class="{{ Request::is('patient-dashboard') ? 'active' : '' }}"><a href="{{url('patient-dashboard')}}">Patient Dashboard</a></li>
-                                <li class="has-submenu {{ Request::is('map-grid', 'map-list','map-list-availability') ? 'active' : '' }}">
-                                    <a href="javascript:void(0);">Doctors</a>
-                                    <ul class="submenu inner-submenu">
-                                        <li class="{{ Request::is('map-grid') ? 'active' : '' }}"><a href="{{url('map-grid')}}">Map Grid</a></li>
-                                        <li class="{{ Request::is('map-list') ? 'active' : '' }}"><a href="{{url('map-list')}}">Map List</a></li>
-                                        <li class="{{ Request::is('map-list-availability') ? 'active' : '' }}"><a href="{{url('map-list-availability')}}">Map with Availability</a></li>
-                                    </ul>
-                                </li>
-                                <li class="has-submenu {{ Request::is('search', 'search-2') ? 'active' : '' }}">
-                                    <a href="javascript:void(0);">Search Doctor</a>
-                                    <ul class="submenu inner-submenu">
-                                        <li class="{{ Request::is('search') ? 'active' : '' }}"><a href="{{url('search')}}">Search Doctor 1</a></li>
-                                        <li class="{{ Request::is('search-2') ? 'active' : '' }}"><a href="{{url('search-2')}}">Search Doctor 2</a></li>
-                                    </ul>
-                                </li>
-                                <li class="has-submenu {{ Request::is('doctor-profile', 'doctor-profile-2') ? 'active' : '' }}">
-                                    <a href="javascript:void(0);">Doctor Profile</a>
-                                    <ul class="submenu inner-submenu">
-                                        <li class="{{ Request::is('doctor-profile') ? 'active' : '' }}"><a href="{{url('doctor-profile')}}">Doctor Profile 1</a></li>
-                                        <li class="{{ Request::is('doctor-profile-2') ? 'active' : '' }}"><a href="{{url('doctor-profile-2')}}">Doctor Profile 2</a></li>
-                                    </ul>
-                                </li>
-                                <li class="has-submenu {{ Request::is('booking','booking-1', 'booking-2','booking-popup') ? 'active' : '' }}">
-                                    <a href="javascript:void(0);">Booking</a>
-                                    <ul class="submenu inner-submenu">
-                                        <li class="{{ Request::is('booking') ? 'active' : '' }}"><a href="{{url('booking')}}">Booking</a></li>
-                                        <li class="{{ Request::is('booking-1') ? 'active' : '' }}"><a href="{{url('booking-1')}}">Booking 1</a></li>
-                                        <li class="{{ Request::is('booking-2') ? 'active' : '' }}"><a href="{{url('booking-2')}}">Booking 2</a></li>
-                                        <li class="{{ Request::is('booking-popup') ? 'active' : '' }}"><a href="{{url('booking-popup')}}">Booking Popup</a></li>
-                                    </ul>
-                                </li>
-                                <li class="{{ Request::is('checkout') ? 'active' : '' }}"><a href="{{url('checkout')}}">Checkout</a></li>
-                                <li class="{{ Request::is('booking-success') ? 'active' : '' }}"><a href="{{url('booking-success')}}">Booking Success</a></li>
-                                <li class="{{ Request::is('favourites') ? 'active' : '' }}"><a href="{{url('favourites')}}">Favourites</a></li>
-                                <li class="{{ Request::is('chat') ? 'active' : '' }}"><a href="{{url('chat')}}">Chat</a></li>
-                                <li class="{{ Request::is('profile-settings') ? 'active' : '' }}"><a href="{{url('profile-settings')}}">Profile Settings</a></li>
-                                <li class="{{ Request::is('change-password') ? 'active' : '' }}"><a href="{{url('change-password')}}">Change Password</a></li>
-                            </ul>
                         </li>
                        
                     </ul>
