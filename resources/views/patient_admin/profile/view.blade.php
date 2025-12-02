@@ -2,22 +2,17 @@
 
 @section('content')
 
-@component('components.admin.breadcrumb')
-    @slot('title') View Patient @endslot
-    @slot('li_1') Patients @endslot
-    @slot('li_2') View @endslot
-@endcomponent
+{{-- @component('components.admin.breadcrumb')
+@slot('title') Edit History @endslot
+@slot('li_1') Patients @endslot
+@slot('li_2') Edit @endslot
+@endcomponent --}}
 
 <div class="content">
     <div class="container">
 
         <div class="row">
-
-            {{-- Patient Dashboard Sidebar --}}
-            @component('components.admin.sidebar_patient', ['patient' => $patient])
-            @endcomponent
-
-            <div class="col-lg-8 col-xl-9">
+            <div class="col-lg-9 col-xl-10">
 
                 <ul class="nav nav-tabs nav-tabs-bottom">
                     <li class="nav-item" role="presentation">
@@ -434,6 +429,9 @@
                 </div>
                 
             </div>
+             {{-- Patient Dashboard Sidebar --}}
+             @component('components.admin.tab-navigation', ['patient' => $patient])
+             @endcomponent
         </div>
 
     </div>

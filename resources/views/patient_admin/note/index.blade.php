@@ -1,40 +1,39 @@
 <?php $page = 'patient-dashboard'; ?>
 @extends('layout.mainlayout')
 @section('content')
-@component('components.admin.breadcrumb')
-@slot('title')
-Patient
-@endslot
-@slot('li_1')
-Appointments 
-@endslot
-@slot('li_2')
-Appointments
-@endslot
-@endcomponent
+{{-- @component('components.admin.breadcrumb')
+@slot('title') Edit History @endslot
+@slot('li_1') Patients @endslot
+@slot('li_2') Edit @endslot
+@endcomponent --}}
 <!-- Page Content -->
 <div class="content">
     <div class="container">
 
         <div class="row">
-
-            <!-- Profile Sidebar -->
-            @component('components.admin.sidebar_patient', ['patient' => $patient])
-			@endcomponent
-
-            <!-- / Profile Sidebar -->
-
-            <div class="col-lg-8 col-xl-9">
-				<div class="card-body">
-                    <div class="table-responsive">
-                        @include('patients.notes.list', [
-                            'patient' => $patient,
-                            'notes'=> $notes
-                            ])
+            <div class="col-lg-9 col-xl-10">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user-clock me-2"></i> Note Management
+                        </h5>
+                        <a href="{{guard_route('patients.notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+                            <i class="fas fa-plus-circle me-1"></i> Note Add
+                        </a>
                     </div>
-                </div> 
-				
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            @include('patients.notes.list', [
+                                'patient' => $patient,
+                                'notes'=> $notes
+                                ])
+                        </div>
+                    </div> 
+                </div>
 			</div>
+            <!-- Profile Sidebar -->
+            @component('components.admin.tab-navigation', ['patient' => $patient])
+            @endcomponent
         </div>
 
     </div>

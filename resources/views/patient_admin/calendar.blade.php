@@ -1,10 +1,10 @@
 @extends('layout.mainlayout')
 @section('content')
-@component('components.admin.breadcrumb')
+{{-- @component('components.admin.breadcrumb')
     @slot('title') Patient @endslot
     @slot('li_1') Patient Diary @endslot
     @slot('li_2') Patient Diary @endslot
-@endcomponent
+@endcomponent --}}
 @push('styles')
 <style>
 .fc-event {
@@ -200,7 +200,7 @@
             , header: {
                 left: 'prev,next today'
                 , center: 'title'
-                , right: 'month,agendaWeek,agendaDay' // Month, Week, Day views
+                , right: 'month' // Month, Week, Day views ,agendaWeek,agendaDay
             }
             , events: {
                 url: indexurl

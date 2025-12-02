@@ -35,7 +35,8 @@ class AppointmentController extends Controller
         $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();
-        return view('patients.appointments.patient-schedule', compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));
+        
+        return view(guard_view('patients.appointments.patient-schedule', 'patient_admin.appointment.patient-schedule'), compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));
     }
 
     public function calendarEvents(Request $request, ?Patient $patient = null)

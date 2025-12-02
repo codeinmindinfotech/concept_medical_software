@@ -34,11 +34,16 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets_admin/js/patient-diary.js') }}"></script>
+<script src="{{ asset('assets_admin/js/booking-diary.js') }}"></script>
 <script>
     const routes = {
         storeAppointment: "{{ $patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal') }}",
         storeHospitalAppointment: "{{ $patient ?guard_route('hospital_appointments.store', ['patient' => $patient->id]) :guard_route('hospital_appointments.storeGlobal') }}",
+        destroyAppointment: (appointmentId, patientId) =>
+            `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+            .replace('__PATIENT_ID__', patientId)
+            .replace('__APPOINTMENT_ID__', appointmentId),
+
     };
 
     $('#PatientApt').DataTable({

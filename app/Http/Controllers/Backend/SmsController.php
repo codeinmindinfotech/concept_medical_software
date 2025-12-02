@@ -15,7 +15,7 @@ class SmsController extends Controller
     public function index(Patient $patient)
     {
         $templates = SmsDefaultMessage::all(); 
-        return view('patients.dashboard.sms.index', compact('templates','patient'));
+        return view(guard_view('patients.dashboard.sms.index', 'patient_admin.sms.index'), compact('templates','patient'));
     }
 
     public function store(Request $request) : JsonResponse

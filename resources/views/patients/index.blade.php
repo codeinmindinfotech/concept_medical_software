@@ -103,12 +103,14 @@
                                Active Patients
                             </a>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link {{ request('tab') === 'trashed' ? 'active' : '' }}"
-                               href="{{ guard_route('patients.index', ['tab' => 'trashed']) }}">
-                               Trashed Patients
-                            </a>
-                        </li>
+                        @if (has_role('superadmin') || has_role('manager'))
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {{ request('tab') === 'trashed' ? 'active' : '' }}"
+                                href="{{ guard_route('patients.index', ['tab' => 'trashed']) }}">
+                                Trashed Patients
+                                </a>
+                            </li>
+                        @endif
                     </ul>
         
         

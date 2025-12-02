@@ -83,7 +83,8 @@ class PatientController extends Controller
             return view('patients.list', compact('patients'))->render();
         }
 
-        return view('patients.index', compact('patients'));
+        
+        return view(guard_view('patients.index', 'patient_admin.profile.index'), compact('patients'));
     }
 
     public function ajax(Request $request)

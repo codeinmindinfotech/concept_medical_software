@@ -24,7 +24,8 @@ class TaskController extends Controller
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
-        return view('patients.dashboard.tasks.index', compact('patient', 'tasks', 'users', 'taskcategories', 'statuses'));
+        
+        return view(guard_view('patients.dashboard.tasks.index', 'patient_admin.task.index'), compact('patient', 'tasks', 'users', 'taskcategories', 'statuses'));
     }
 
     public function create(Patient $patient)
@@ -35,7 +36,7 @@ class TaskController extends Controller
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
-        return view('patients.dashboard.tasks.create', compact('patient', 'users', 'taskcategories', 'statuses'));
+        return view(guard_view('patients.dashboard.tasks.create', 'patient_admin.task.create'), compact('patient', 'users', 'taskcategories', 'statuses'));
     }
 
 
@@ -70,7 +71,7 @@ class TaskController extends Controller
         $taskCategories = $this->getDropdownOptions('CATEGORY');
 
 
-        return view('patients.dashboard.tasks.edit', compact('patient','task', 'users', 'statuses', 'taskCategories'));
+        return view(guard_view('patients.dashboard.tasks.edit', 'patient_admin.task.edit'), compact('patient','task', 'users', 'statuses', 'taskCategories'));
     }
 
     public function update(Request $request, Patient $patient, $taskId): JsonResponse
@@ -154,9 +155,9 @@ class TaskController extends Controller
                     ->orderBy('start_date', 'asc');
         $tasks = $query->get();
         if ($request->ajax()) {
-            return view('patients.dashboard.tasks.notifications', compact('tasks','users', 'taskcategories', 'statuses'))->render();
+            return view(guard_view('patients.dashboard.tasks.notifications', 'patient_admin.task.notifications'), compact('tasks','users', 'taskcategories', 'statuses'))->render();
         }
-
-        return view('patients.dashboard.tasks.notifications', compact('tasks','users', 'taskcategories', 'statuses'));
+        
+        return view(guard_view('patients.dashboard.tasks.notifications', 'patient_admin.task.notifications'), compact('tasks','users', 'taskcategories', 'statuses'));
     }
 }

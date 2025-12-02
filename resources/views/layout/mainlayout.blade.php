@@ -19,6 +19,8 @@
 		<meta name="twitter:title" content="Doctors Appointment HTML Website Templates | Doccure">
 		<meta name="twitter:description" content="The responsive professional Doccure template offers many features, like scheduling appointments with  top doctors, clinics, and hospitals via voice, video call & chat.">
 		<meta name="twitter:image" content="assets/img/preview-banner.jpg">	
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
     @if (
         !Route::is(

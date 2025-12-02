@@ -51,10 +51,9 @@ class RecallNotificationController extends Controller
         //->withQueryString()
         $recalls = $query->get();
         if ($request->ajax()) {
-            return view('patients.dashboard.recalls.notifications', compact('recalls'))->render();
+            return view(guard_view('patients.dashboard.recalls.notifications', 'patient_admin.recall.notifications'), compact('recalls'))->render();
         }
-
-        return view('patients.dashboard.recalls.notifications', compact('recalls'));
+        return view(guard_view('patients.dashboard.recalls.notifications', 'patient_admin.recall.notifications'), compact('recalls'));
     }
 
     public function sendEmail($id)

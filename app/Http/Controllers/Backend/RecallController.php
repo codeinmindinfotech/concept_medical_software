@@ -19,16 +19,17 @@ class RecallController extends Controller
         $recalls = $patient->recall()->companyOnly()->with('status')->latest()->get();
         $statuses = $this->getDropdownOptions('STATUS');
         if (request()->ajax()) {
-            return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
+            return view(guard_view('patients.dashboard.recalls.index', 'patient_admin.recall.index'), compact('recalls', 'statuses', 'patient'));
         }
-        return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
+        
+        return view(guard_view('patients.dashboard.recalls.index', 'patient_admin.recall.index'), compact('recalls', 'statuses', 'patient'));
     }
 
     public function create(Patient $patient)
     {
         $patient = Patient::findOrFail($patient->id); 
         $statuses = $this->getDropdownOptions('STATUS');
-        return view('patients.dashboard.recalls.create', compact('patient','statuses'));
+        return view(guard_view('patients.dashboard.recalls.create', 'patient_admin.recall.create'), compact('patient','statuses'));
     }
 
     public function store(Request $request, Patient $patient): JsonResponse
@@ -60,7 +61,7 @@ class RecallController extends Controller
         $recall = Recall::findOrFail($recallId);
         $patient = Patient::findOrFail($patient->id); 
         $statuses = $this->getDropdownOptions('STATUS');
-        return view('patients.dashboard.recalls.edit', compact('patient','recall', 'statuses'));
+        return view(guard_view('patients.dashboard.recalls.edit', 'patient_admin.recall.edit'), compact('patient','recall', 'statuses'));
     }
 
     public function show(Recall $recall)
