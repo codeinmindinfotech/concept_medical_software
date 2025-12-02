@@ -29,6 +29,22 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    @can('view', $patient)
+                    <li class="{{ Request::is('patient.patients.appointments.main.index') ? 'active' : '' }}">
+                        <a href="{{ guard_route('patients.show', $patient->id) }}">
+                            <i class="isax isax-eye4"></i>
+                            <span>View Patient</span>
+                        </a>
+                    </li>
+                    @endcan
+                    @can('update', $patient)
+                    <li class="{{ Request::is('patient.patients') ? 'active' : '' }}">
+                        <a href="{{ guard_route('patients.edit', $patient->id) }}">
+                            <i class="isax isax-edit-2"></i>
+                            <span>Edit Patient</span>
+                        </a>
+                    </li>
+                    @endcan
                     <li class="{{ Request::is('patient.patients.appointments.main.index','patient-upcoming-appointments','patient-completed-appointments','patient-cancelled-appointments','patient-appointments-grid','patient-appointment-details','patient-upcoming-appointment','patient-completed-appointment','patient-cancelled-appointment') ? 'active' : '' }}">
                         <a href="{{ guard_route('patients.appointments.main.index',['patient'=>$patient]) }}">
                             <i class="isax isax-calendar-1"></i>

@@ -85,10 +85,13 @@ function clearSelections() {
 let selectedAppointments = [];
 let selectedTargetDate = null;
 
-$('#fromDate').on("dp.change", function (e) {
-    let selectedDate = e.date.format("YYYY-MM-DD");
-    loadAppointmentsForDate(selectedDate);
-});
+const fromDate = document.getElementById('fromDate');
+if (fromDate) {
+    $('#fromDate').on("dp.change", function (e) {
+        let selectedDate = e.date.format("YYYY-MM-DD");
+        loadAppointmentsForDate(selectedDate);
+    });
+}
 
 
 const fromClinic = document.getElementById('fromClinic');
@@ -103,15 +106,17 @@ if (fromClinic) {
     });
 
 }
-$('#toDate').on("dp.change", function (e) {
-    let selectedDate = e.date.format("YYYY-MM-DD");
-    selectedTargetDate = selectedDate;
-    console.log("Target Date selected:", selectedDate);
+const toDate = document.getElementById('toDate');
+if (toDate) {
+    $('#toDate').on("dp.change", function (e) {
+        let selectedDate = e.date.format("YYYY-MM-DD");
+        selectedTargetDate = selectedDate;
+        console.log("Target Date selected:", selectedDate);
 
-    // Load available slots
-    loadAvailableTimeSlots(selectedDate);
-});
-
+        // Load available slots
+        loadAvailableTimeSlots(selectedDate);
+    });
+}
 const toClinic = document.getElementById('fromClinic');
 if (toClinic) {
     toClinic.addEventListener('change', function () {
@@ -327,7 +332,9 @@ function openClinicOverviewCountModal() {
         });
 }
 
-document.getElementById('statusChangeForm').addEventListener('submit', function (e) {
+const statusChangeForm = document.getElementById('statusChangeForm');
+if (statusChangeForm) {
+    statusChangeForm.addEventListener('submit', function (e) {
     e.preventDefault();
     const flag = document.getElementById('flag').value;
     const appointment_status = document.getElementById('appointment_status').value;
@@ -367,7 +374,7 @@ document.getElementById('statusChangeForm').addEventListener('submit', function 
             Swal.fire('Error', 'Something went wrong.', 'error');
         });
 });
-
+}
 function deleteAppointment(appointmentId, patientId, flag) {
     const url = routes.destroyAppointment(appointmentId, patientId);
     Swal.fire({

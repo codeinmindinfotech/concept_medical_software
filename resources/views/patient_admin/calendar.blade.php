@@ -1,10 +1,10 @@
 @extends('layout.mainlayout')
 @section('content')
-@component('components.admin.breadcrumb')
+{{-- @component('components.admin.breadcrumb')
     @slot('title') Patient @endslot
     @slot('li_1') Patient Diary @endslot
     @slot('li_2') Patient Diary @endslot
-@endcomponent
+@endcomponent --}}
 @push('styles')
 <style>
 .fc-event {
@@ -34,6 +34,9 @@
 
             <!-- Action Buttons -->
             <div class="col-md-8 text-end">
+                <a class="btn btn-md btn-primary-gradient me-2" href="{{ guard_route('appointments.schedule') }}">
+                    <i class="fa-solid fa-circle-plus"></i> New Appointment
+                </a>
                 <button class="btn btn-info me-2" onclick="openClinicOverviewCountModal()">
                     Clinic Overview
                 </button>
@@ -200,7 +203,7 @@
             , header: {
                 left: 'prev,next today'
                 , center: 'title'
-                , right: 'month,agendaWeek,agendaDay' // Month, Week, Day views
+                , right: 'month' // Month, Week, Day views ,agendaWeek,agendaDay
             }
             , events: {
                 url: indexurl

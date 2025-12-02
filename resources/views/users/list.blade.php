@@ -5,6 +5,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Created By</th>
             <th width="280px">Action</th>
         </tr>
     </thead>
@@ -21,6 +22,8 @@
                     @endforeach
                 @endif
                 </td>
+                <td>{{ $user->creator?->name ?? '—' }}</td>
+
                 <td>
                     <a class="btn btn-sm bg-success-light" href="{{guard_route('users.show',$user->id) }}">
                         <i class="fe fe-eye"></i> Show

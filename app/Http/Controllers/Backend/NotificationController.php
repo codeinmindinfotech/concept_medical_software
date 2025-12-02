@@ -24,8 +24,8 @@ class NotificationController extends Controller
         if ($request->ajax()) {
             return view('notifications.list', compact('notifications'))->render();
         }
-
-        return view('notifications.index',compact('notifications'));
+        
+        return view(guard_view('notifications.index', 'patient_admin.notification.index'),compact('notifications'));
 
     }
 

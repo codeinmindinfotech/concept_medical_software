@@ -36,4 +36,8 @@
 
 		<!-- Main CSS -->
 		<link rel="stylesheet" href="{{ url('/assets/css/custom.css') }}">
+
+		<!-- Datatables CSS -->
+		<link rel="stylesheet" href="{{ url('assets_admin/plugins/datatables/datatables.min.css') }}">
+
 		@stack('styles')

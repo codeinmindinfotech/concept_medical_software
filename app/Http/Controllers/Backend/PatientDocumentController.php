@@ -27,7 +27,8 @@ class PatientDocumentController extends Controller
                             ->with('template')
                             ->orderBy('id', 'desc')
                             ->get();
-        return view('patients.documents.index', compact('documents', 'patient'));
+                            
+        return view(guard_view('patients.documents.index', 'patient_admin.document.index'), compact('documents', 'patient'));
     }
 
     public function create(Patient $patient)
@@ -78,7 +79,7 @@ class PatientDocumentController extends Controller
             ],
             'token' => $token, // your JWT token
         ];
-        return view('patients.documents.create', compact('patient', 'templates', 'config', 'document', 'token'));
+        return view(guard_view('patients.documents.create', 'patient_admin.document.create'), compact('patient', 'templates', 'config', 'document', 'token'));
     }
 
     public function store(Request $request, Patient $patient)
@@ -141,7 +142,7 @@ class PatientDocumentController extends Controller
             ],
             'token' => $token, 
         ];
-        return view('patients.documents.edit', compact('patient', 'document', 'templates', 'config', 'token'));
+        return view(guard_view('patients.documents.edit', 'patient_admin.document.edit'), compact('patient', 'document', 'templates', 'config', 'token'));
     }
 
     public function update(Request $request, Patient $patient, PatientDocument $document)
@@ -247,7 +248,7 @@ class PatientDocumentController extends Controller
         $referralEmail = $patient->referralDoctor?->email ?? '';
         $otherEmail = $patient->otherDoctor?->email ?? '';
         $patientEmail = $patient->email ?? '';
-        return view('patients.documents.email', compact(
+        return view(guard_view('patients.documents.email', 'patient_admin.document.email'), compact(
             'patient', 
             'document',
             'patientEmail',

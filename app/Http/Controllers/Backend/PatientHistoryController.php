@@ -18,12 +18,13 @@ class PatientHistoryController extends Controller
         if ($request->ajax()) {
             return view('patients.history.list', compact('patient', 'historys'))->render();
         }
-        return view('patients.history.index', compact('patient', 'historys'));
+        
+        return view(guard_view('patients.history.index', 'patient_admin.history.index'), compact('patient', 'historys'));
     }
 
     public function create(Patient $patient): View
     {
-        return view('patients.history.create', [
+        return view(guard_view('patients.history.create', 'patient_admin.history.create'), [
             'patient' => $patient,
             'history' => null,
         ]);
@@ -47,7 +48,7 @@ class PatientHistoryController extends Controller
 
     public function edit(Patient $patient, PatientHistory $history): View
     {
-        return view('patients.history.edit', compact('patient', 'history'));
+        return view(guard_view('patients.history.edit', 'patient_admin.history.edit'), compact('patient', 'history'));
     }
 
     public function update(Request $request, Patient $patient, PatientHistory $history): JsonResponse

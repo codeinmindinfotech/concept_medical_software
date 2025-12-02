@@ -14,7 +14,7 @@
         $currentGuard = getCurrentGuard();
         $backUrl = "";
         if ($currentGuard === 'doctor') {
-        $backUrl = guard_route('notification.form"'); // adjust if different
+        $backUrl = guard_route('notification.form'); // adjust if different
         } elseif ($currentGuard === 'clinic') {
         $backUrl = guard_route('clinic.notification.form');
         } elseif (has_role('superadmin')) {

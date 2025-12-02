@@ -332,19 +332,6 @@ foreach ($roles as $role) {
                 Route::resource('dashboard', DashboardController::class);
             }
         
-            // Route::get('/{clinic}/schedule', [ClinicController::class, 'schedule'])->name('clinic.schedule');
-            // Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
-            // Route::get('/calendar-days', [CalendarController::class, 'getDays'])->name('calendar.days');
-            // Route::get('/appointmentindex', [CalendarController::class, 'appointmentindex'])->name('patients.appointments.index');
-            // Route::get('/appointment/check-slot', [AppointmentController::class, 'checkSlot'])->name('patients.appointments.checkSlot');
-            // Route::put('/appointment/update-time/{appointment}', [AppointmentController::class, 'updateTime'])->name('patients.appointments.updateTime');
-
-
-
-            // Route::prefix("patients/{patient}/appointments")->group(function () {
-            //     Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.main.index');
-            // });
-
             Route::resource('roles', RoleController::class);
             Route::resource('users', UserController::class);
             Route::resource('patients', PatientController::class);

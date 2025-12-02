@@ -17,15 +17,7 @@ Patient Dashboard
     <div class="container">
 
         <div class="row">
-
-            <!-- Profile Sidebar -->
-            @component('components.admin.sidebar_patient', ['patient' => $patient])
-			@endcomponent
-
-            <!-- / Profile Sidebar -->
-
-            <div class="col-lg-8 col-xl-9">
-				<div class="dashboard-header">
+            <div class="dashboard-header">
 					<h3>Dashboard</h3>
 					<ul class="header-list-btns">
 						<li>
@@ -130,7 +122,7 @@ Patient Dashboard
 						<div class="favourites-dashboard w-100">
 							<div class="book-appointment-head">
 								<h3><span>Book a new</span>Appointment</h3>
-								<span class="add-icon"><a href="search.html"><i class="fa-solid fa-circle-plus"></i></a></span>
+								<span class="add-icon"><a href="{{ guard_route('appointments.schedule') }}"><i class="fa-solid fa-circle-plus"></i></a></span>
 							</div>
 							<div class="dashboard-card w-100">
 								<div class="dashboard-card-head">
@@ -1178,7 +1170,7 @@ Patient Dashboard
 						</div>
 					</div>
 				</div>
-			</div>
+			
         </div>
 
     </div>

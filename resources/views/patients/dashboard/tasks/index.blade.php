@@ -5,128 +5,126 @@
 @endsection
 
 @section('tab-content')
-<div class="tab-pane fade show active" id="tasks" role="tabpanel">
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="fas fa-user-clock me-2"></i> Task Management
-            </h5>
-            <a href="{{guard_route('tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                <i class="fas fa-plus-circle me-1"></i> New Task
-            </a>
-        </div>
-        <div class="card-body">
-            @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped mb-0" id="TaskTable">
-                    <thead>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Creator</th>
-                            <th>Owner</th>
-                            <th>Category</th>
-                            <th>Priority</th>
-                            <th>Status</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th width="150px">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($tasks as $task)
-                        <tr>
-                            <td>{{ $task->subject }}</td>
-                            <td>{{ $task->creator->name ?? 'N/A' }}</td>
-                            <td>{{ $task->owner->name ?? 'N/A' }}</td>
-                            <td>{{ $task->category->value ?? 'N/A' }}</td>
-                            <td>{{ ucfirst($task->priority) }}</td>
-                            <td>{{ $task->status->value ?? 'N/A' }}</td>
-                            <td>{{ format_date($task->start_date) }}</td>
-                            <td>{{ format_date($task->end_date) }}</td>
-                            <td>
-                                <a class="btn btn-sm bg-primary-light" href="{{guard_route('tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" title="Edit">
-                                    <i class="fe fe-pencil"></i> Edit
-                                </a>
-                                <button type="button" class="btn btn-sm bg-success-light open-add-followup" data-task-id="{{ $task->id }}" data-task-subject="{{ $task->subject }}" data-bs-toggle="modal" data-bs-target="#addFollowupModal">
-                                    <i class="fa fa-plus"></i>
-                                </button>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-user-clock me-2"></i> Task Management
+        </h5>
+        <a href="{{guard_route('tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+            <i class="fas fa-plus-circle me-1"></i> New Task
+        </a>
+    </div>
+    <div class="card-body">
+        @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mb-0" id="TaskTable">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Creator</th>
+                        <th>Owner</th>
+                        <th>Category</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th width="150px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($tasks as $task)
+                    <tr>
+                        <td>{{ $task->subject }}</td>
+                        <td>{{ $task->creator->name ?? 'N/A' }}</td>
+                        <td>{{ $task->owner->name ?? 'N/A' }}</td>
+                        <td>{{ $task->category->value ?? 'N/A' }}</td>
+                        <td>{{ ucfirst($task->priority) }}</td>
+                        <td>{{ $task->status->value ?? 'N/A' }}</td>
+                        <td>{{ format_date($task->start_date) }}</td>
+                        <td>{{ format_date($task->end_date) }}</td>
+                        <td>
+                            <a class="btn btn-sm bg-primary-light" href="{{guard_route('tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" title="Edit">
+                                <i class="fe fe-pencil"></i> Edit
+                            </a>
+                            <button type="button" class="btn btn-sm bg-success-light open-add-followup" data-task-id="{{ $task->id }}" data-task-subject="{{ $task->subject }}" data-bs-toggle="modal" data-bs-target="#addFollowupModal">
+                                <i class="fa fa-plus"></i>
+                            </button>
 
 
-                                @if($task->followups->count())
-                                <button class="btn btn-sm bg-success-light toggle-followups" data-task-id="{{ $task->id }}">
-                                    <i class="fa fa-comments"></i>
-                                </button>
-                                @endif
+                            @if($task->followups->count())
+                            <button class="btn btn-sm bg-success-light toggle-followups" data-task-id="{{ $task->id }}">
+                                <i class="fa fa-comments"></i>
+                            </button>
+                            @endif
 
-                                <form action="{{guard_route('tasks.destroy', ['patient' => $patient, 'task' => $task->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this Task?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
-                                </form>
+                            <form action="{{guard_route('tasks.destroy', ['patient' => $patient, 'task' => $task->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this Task?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
+                            </form>
 
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-                {{ $tasks->links() }}
-            </div>
+            {{ $tasks->links() }}
         </div>
     </div>
+</div>
 
-    <!-- Add Follow-up Modal -->
-    <div class="modal fade" id="addFollowupModal" tabindex="-1" aria-labelledby="addFollowupModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form id="addFollowupForm" method="POST" action="" data-ajax class="needs-validation" novalidate>
-                @csrf
-                <input type="hidden" name="_method" value="POST" id="followupFormMethod">
+<!-- Add Follow-up Modal -->
+<div class="modal fade" id="addFollowupModal" tabindex="-1" aria-labelledby="addFollowupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="addFollowupForm" method="POST" action="" data-ajax class="needs-validation" novalidate>
+            @csrf
+            <input type="hidden" name="_method" value="POST" id="followupFormMethod">
 
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addFollowupModalLabel">Add Follow-up</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="followup_date">Follow-up Date</label>
-                            <div class="cal-icon">
-                                <input id="followup_date" name="followup_date" type="text" class="form-control datetimepicker @error('followup_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('followup_date') }}">
-                            </div>
-                            @error('followup_date')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addFollowupModalLabel">Add Follow-up</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="followup_date">Follow-up Date</label>
+                        <div class="cal-icon">
+                            <input id="followup_date" name="followup_date" type="text" class="form-control datetimepicker @error('followup_date') is-invalid @enderror" placeholder="YYYY-MM-DD" value="{{ old('followup_date') }}">
                         </div>
-                        <div class="mb-3">
-                            <label for="note">Note</label>
-                            <textarea name="note" id="note" class="form-control" required></textarea>
-                        </div>
+                        @error('followup_date')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary">Save Follow-up</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <div class="mb-3">
+                        <label for="note">Note</label>
+                        <textarea name="note" id="note" class="form-control" required></textarea>
                     </div>
                 </div>
-            </form>
-        </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary">Save Follow-up</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
 @php
 $tasksFollowups = $tasks->mapWithKeys(function($task) use ($patient) {
 return [
-$task->id => $task->followups->map(function($followup) use ($patient, $task) {
-return [
-'id' => $followup->id,
-'date' => \Carbon\Carbon::parse($followup->followup_date)->format('Y-m-d'),
-'note' => $followup->note,
-'editUrl' =>guard_route('followups.storeOrUpdate', [$patient->id, $task->id, $followup->id]),
-'deleteUrl' =>guard_route('followups.destroy', [$patient->id, $task->id, $followup->id]),
-];
-})->toArray()
-];
+        $task->id => $task->followups->map(function($followup) use ($patient, $task) {
+            return [
+                'id' => $followup->id,
+                'date' => \Carbon\Carbon::parse($followup->followup_date)->format('Y-m-d'),
+                'note' => $followup->note,
+                'editUrl' =>guard_route('followups.storeOrUpdate', [$patient->id, $task->id, $followup->id]),
+                'deleteUrl' =>guard_route('followups.destroy', [$patient->id, $task->id, $followup->id]),
+            ];
+        })->toArray()
+    ];
 });
 @endphp
 

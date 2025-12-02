@@ -82,9 +82,13 @@ class LoginController extends Controller
                     } elseif ($user?->hasRole('superadmin')) {
                         return '/dashboard';
                     }
+                } elseif($guard === 'clinic' || $guard === 'doctor') {
+                    return "/$routePrefix/patients";
+
+                } else {
+                    return "/$routePrefix/dashboard";
                 }
         
-                return "/$routePrefix/dashboard";
             }
         }
     }

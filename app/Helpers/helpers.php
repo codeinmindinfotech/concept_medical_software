@@ -282,3 +282,26 @@ if (!function_exists('company_path')) {
         return rtrim($basePath, '/') . '/' . ltrim($subPath, '/');
     }
 }
+
+if (!function_exists('guard_view')) {
+    /**
+     * Return the correct view path based on guard
+     *
+     * @param string $oldLayout
+     * @param string $newLayout
+     * @return string
+     */
+    function guard_view(string $oldLayout, string $newLayout): string
+    {
+        $guard = getCurrentGuard();
+
+        // Use old layout for superadmin/manager (web guard)
+        if ($guard === 'web') {
+            return $oldLayout;
+        }
+
+        // Use new layout for doctor/clinic/patient
+        return $newLayout;
+    }
+}
+

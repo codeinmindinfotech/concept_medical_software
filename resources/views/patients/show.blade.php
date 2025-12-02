@@ -54,8 +54,7 @@ $breadcrumbs = [
     </li>
     <li class="nav-item" role="presentation">
         <a class="nav-link" id="audio-tab" data-bs-toggle="tab" data-bs-target="#audio" role="tab">
-            <i class="fas fa-microphone me-1"></i>Audio Recordings
-        </a>
+            <i class="fas fa-microphone me-1"></i>Audio Recordings</a>
     </li>
 </ul>
 

@@ -21,7 +21,7 @@
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                     </form>
-                    <a href="{{ guard_route('patient-documents.email.form', [$patient, $doc]) }}" class="btn btn-sm bg-warning-light">
+                    <a href="{{ guard_route('patient-documents.email.form', [$patient, $doc]) }}" class="btn bg-success-light btn-sm">
                         <i class="fa-solid fa-envelope"></i></a>                    
                 </td>
 

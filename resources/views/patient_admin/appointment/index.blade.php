@@ -1,17 +1,11 @@
 <?php $page = 'patient-dashboard'; ?>
 @extends('layout.mainlayout')
 @section('content')
-@component('components.admin.breadcrumb')
-@slot('title')
-Patient
-@endslot
-@slot('li_1')
-Appointments 
-@endslot
-@slot('li_2')
-Appointments
-@endslot
-@endcomponent
+{{-- @component('components.admin.breadcrumb')
+@slot('title') Edit History @endslot
+@slot('li_1') Patients @endslot
+@slot('li_2') Edit @endslot
+@endcomponent --}}
 <!-- Page Content -->
 <div class="content">
     <div class="container">
@@ -47,150 +41,7 @@ Appointments
 							</li>
 						</ul>
 					</div>
-					{{-- <div class="filter-head">
-						<div class="form-sorts dropdown">
-							<a href="javascript:void(0);" class="dropdown-toggle" id="table-filter"><i class="isax isax-filter me-2"></i>Filter By</a>
-							<div class="filter-dropdown-menu">
-								<div class="filter-set-view">
-									<div class="accordion" id="accordionExample">
-										<div class="filter-set-content">
-											<div class="filter-set-content-head">
-												<a href="#" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Name<i class="fa-solid fa-chevron-right"></i></a>
-											</div>
-											<div class="filter-set-contents accordion-collapse collapse show" id="collapseTwo" data-bs-parent="#accordionExample">
-												<ul>
-													<li>
-														<div class="input-block dash-search-input w-100">
-															<input type="text" class="form-control" placeholder="Search">
-															<span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-														</div>
-													</li>
-												</ul>
-											</div>
-										</div>
-										<div class="filter-set-content">
-											<div class="filter-set-content-head">
-												<a href="#" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Appointment Type<i class="fa-solid fa-chevron-right"></i></a>
-											</div>
-											<div class="filter-set-contents accordion-collapse collapse show" id="collapseOne" data-bs-parent="#accordionExample">
-												<ul>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox" checked>
-																<span class="checkmarks"></span>
-																<span class="check-title">All Type</span>
-															</label>
-														</div>																
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">Video Call</span>
-															</label>
-														</div>																
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">Audio Call</span>
-															</label>
-														</div>																
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">Chat</span>
-															</label>
-														</div>																
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">Direct Visit</span>
-															</label>
-														</div>																
-													</li>
-												</ul>
-											</div>
-										</div>												
-										<div class="filter-set-content">
-											<div class="filter-set-content-head">
-												<a href="#" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Visit Type<i class="fa-solid fa-chevron-right"></i></a>
-											</div>
-											<div class="filter-set-contents accordion-collapse collapse show" id="collapseThree" data-bs-parent="#accordionExample">
-												<ul>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox" checked>
-																<span class="checkmarks"></span>
-																<span class="check-title">All Visit</span>
-															</label>
-														</div>
-														
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">General</span>
-															</label>
-														</div>
-														
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">Consultation</span>
-															</label>
-														</div>
-														
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">Follow-up</span>
-															</label>
-														</div>
-														
-													</li>
-													<li>
-														<div class="filter-checks">
-															<label class="checkboxs">
-																<input type="checkbox">
-																<span class="checkmarks"></span>
-																<span class="check-title">Direct Visit</span>
-															</label>
-														</div>
-														
-													</li>
-												</ul>
-											</div>
-										</div>
-									</div>
-									
-									<div class="filter-reset-btns">
-										<a href="#" class="btn btn-light">Reset</a>
-										<a href="#" class="btn btn-primary">Filter Now</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div> --}}
+
 				</div>
 
 				<div class="tab-content appointment-tab-content appoint-patient">

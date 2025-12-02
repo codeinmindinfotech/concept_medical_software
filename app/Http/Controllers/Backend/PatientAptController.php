@@ -44,7 +44,7 @@ class PatientAptController extends Controller
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();
         
-        $query = Appointment::with('clinic','patient','appointmentType','appointmentStatus');
+        $query = Appointment::with('clinic','patient','appointmentType','appointmentStatus','procedure');
                 if (! $isSuperAdmin) {
                     $query->where('appointments.company_id', current_company_id());
                 }
@@ -54,8 +54,9 @@ class PatientAptController extends Controller
             $apts = $query->get();
 
         if (request()->ajax()) {
-            return view('patients.apt.index', compact('diary_status','appointmentTypes','patient', 'apts','patients','clinics','procedures'));
+            return view('patients.apt.list', compact('diary_status','appointmentTypes','patient', 'apts','patients','clinics','procedures'));
         }
-        return view('patients.apt.index', compact('diary_status','appointmentTypes','patient', 'apts','patients','clinics','procedures'));  
+        
+        return view(guard_view('patients.apt.index', 'patient_admin.apt.index'), compact('diary_status','appointmentTypes','patient', 'apts','patients','clinics','procedures'));  
     }
 }

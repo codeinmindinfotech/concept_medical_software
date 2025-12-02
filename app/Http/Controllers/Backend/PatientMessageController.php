@@ -28,8 +28,7 @@ class PatientMessageController extends Controller
         $doctors = Doctor::whereIn('id', $doctorIds)->get();
 
         $managers = User::where('company_id', $patient->company_id )->get();
-
-        return view('patients.notifications.send', compact( 'doctors','managers'));
+        return view(guard_view('patients.notifications.send', 'patient_admin.profile.send'), compact( 'doctors','managers'));
     }
     public function send(Request $request)
     {

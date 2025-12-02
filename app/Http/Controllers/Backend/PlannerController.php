@@ -42,8 +42,8 @@ class PlannerController extends Controller
             $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
         }
         $patient = null; // Pass blank $patient
-
-        return view('planner.index', [
+        
+        return view(guard_view('planner.index', 'patient_admin.planner.index'), [
             'appointments' => $appointments,
             'date' => $date,
             'clinics' => Clinic::companyOnly()->orderBy('planner_seq', 'asc')->get(),

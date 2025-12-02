@@ -16,6 +16,9 @@
 <!-- Owl Carousel JS -->
 <script src="{{ URL::asset('/assets/js/owl.carousel.min.js') }}"></script>
 
+ <!-- Form Validation JS -->
+ <script src="{{ URL::asset('/assets_admin/js/form-validation.js') }}"></script>
+ 
 <!-- Apexchart JS -->
 <script src="{{ URL::asset('/assets/plugins/apex/apexcharts.min.js') }}"></script>
 <script src="{{ URL::asset('/assets/plugins/apex/chart-data.js') }}"></script>
@@ -34,6 +37,9 @@
 <script src="{{ URL::asset('/assets/js/moment.min.js') }}"></script>
 <script src="{{ URL::asset('/assets/plugins/daterangepicker/daterangepicker.js') }}"></script>
 
+ <!-- Datatables JS -->
+ <script src="{{ URL::asset('/assets_admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+ <script src="{{ URL::asset('/assets_admin/plugins/datatables/datatables.min.js') }}"></script>
 
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets/js/script.js') }}"></script>

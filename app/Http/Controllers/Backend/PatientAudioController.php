@@ -40,12 +40,12 @@ class PatientAudioController extends Controller
         if ($request->ajax()) {
             return view('patients.audio.list', compact('patient', 'audios'))->render();
         }
-        return view('patients.audio.index', compact('patient', 'audios'));
+        return view(guard_view('patients.audio.index', 'patient_admin.audio.index'), compact('patient', 'audios'));
     }
 
     public function create(Patient $patient): View
     {
-        return view('patients.audio.create', [
+        return view(guard_view('patients.audio.create', 'patient_admin.audio.create'), [
             'patient' => $patient
         ]);
     }
