@@ -57162,7 +57162,9 @@ ul li {
   border-color: rgb(2.0716049383, 122.224691358, 249.6283950617);
   color: #ffffff;
 }
-
+.txt-error {
+  color: red;
+}
 /****** UTILS ******/
 .dependent-wrap {
   border: 1px solid #E6E8EE;

@@ -28,7 +28,7 @@ class DoctorMessageController extends Controller
         $managers = User::where('company_id', $user->company_id )->get();
         $clinics = Clinic::where('company_id', $user->company_id)->get();
 
-        return view('doctors.notifications.send', compact('patients', 'clinics', 'managers'));
+        return view(guard_view('doctors.notifications.send', 'patient_admin.profile.doctor-send'), compact('patients', 'clinics', 'managers'));
     }
 
     public function send(Request $request)

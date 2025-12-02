@@ -17,51 +17,53 @@
             </div>
             <div class="main-menu-wrapper">
                 @php
+                $currentGuard = getCurrentGuard();
                 $dashboardRoutes = ['patient.dashboard', 'doctor.dashboard', 'clinic.dashboard'];
                 $calendarRoutes = ['patient.calendar', 'doctor.calendar', 'clinic.calendar'];
                 @endphp
                 <ul class="main-nav">
+                    @if(has_role('patient'))
                     <li class="megamenu {{ in_array(Route::currentRouteName(), $dashboardRoutes) ? 'active' : '' }}">
-                        <a href="{{ guard_route('dashboard.index') }}">Dashboard</a> 
+                        <a href="{{ guard_route('dashboard.index') }}">Dashboard</a>
                     </li>
+                    @endif
 
                     <li class="megamenu {{ is_guard_route('planner') ? 'active' : '' }}">
                         <a href="{{ guard_route('planner.index') }}">Planner</a>
                     </li>
 
                     <li class="megamenu {{ in_array(Route::currentRouteName(), $calendarRoutes) ? 'active' : '' }}">
-                        <a href="{{ guard_route('calendar') }}">Diary</a> 
+                        <a href="{{ guard_route('calendar') }}">Diary</a>
                     </li>
 
                     <li class="megamenu {{ is_guard_route('patients') ? 'active' : '' }}">
                         <a href="{{ guard_route('patients.index') }}">Patients </a>
                     </li>
-
+                    {{-- Notifications based on guard/role --}}
+                    @if ($currentGuard === 'doctor')
+                    <li class="megamenu {{ is_guard_route('notification') ? 'active' : '' }}">
+                        <a href="{{ guard_route('doctor.notification.form') }}">Send Notification </a>
+                    </li>
+                    @elseif ($currentGuard === 'clinic')
+                    <li class="megamenu {{ is_guard_route('clinic.notification*') ? 'active' : '' }}">
+                        <a href="{{ guard_route('clinic.notification.form') }}">Send Notification </a>
+                    </li>
+                    @elseif ($currentGuard === 'patient')
+                    <li class="megamenu {{ Request::is('send-notification*') ? 'active' : '' }}">
+                        <a href="{{ guard_route('patient.notification.form') }}">Send Notification </a>
+                    </li>
+                    @endif
                 </ul>
             </div>
 
             {{-- @php
-$currentRoute = Route::currentRouteName();
-dd($currentRoute);
-@endphp --}}
+            $currentRoute = Route::currentRouteName();
+            dd($currentRoute);
+            @endphp --}}
 
 
-
-            @if(Route::is(['patient.dashboard.index','patient.*']))
 
             <ul class="nav header-navbar-rht">
-                <li class="searchbar">
-                    <a href="javascript:void(0);"><i class="feather-search"></i></a>
-                    <div class="togglesearch">
-                        <form action="{{url('search')}}">
-                            <div class="input-group">
-                                <input type="text" class="form-control">
-                                <button type="submit" class="btn">Search</button>
-                            </div>
-                        </form>
-                    </div>
-                </li>
-
                 <!-- Patient Notifications -->
                 <li class="nav-item dropdown noti-nav me-3 pe-0">
                     <a href="#" id="notification-icon" class="dropdown-toggle nav-link p-0" data-bs-toggle="dropdown">
@@ -74,92 +76,145 @@ dd($currentRoute);
                         <div class="noti-content">
                             <ul class="notification-list" id="front_notification">
                             </ul>
+                            <ul class="notification-list">
+                            <li>
+                                <a class="dropdown-item text-center bg-primary-light fw-bold"
+                                    href="{{guard_route('notifications.index') }}">
+                                    <i class="isax isax-notification-bing"></i> View All Notification
+                                </a>
+                            </li>
+                            </ul>
                         </div>
                     </div>
                 </li>
                 <!-- /Notifications -->
 
-                <!-- Cart -->
-                <li class="nav-item dropdown noti-nav view-cart-header me-3 pe-0">
-                    <a href="#" class="dropdown-toggle nav-link active-dot active-dot-purple p-0 position-relative" data-bs-toggle="dropdown">
-                        <i class="isax isax-shopping-cart"></i>
-                    </a>
-                    <div class="dropdown-menu notifications dropdown-menu-end">
-                        <div class="shopping-cart">
-                            <ul class="shopping-cart-items list-unstyled">
-                                <li class="clearfix">
-                                    <div class="close-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-                                    <a href="{{url('product-description')}}"><img class="avatar-img rounded" src="{{URL::asset('assets/img/products/product.jpg')}}" alt="User Image"></a>
-                                    <a href="{{url('product-description')}}" class="item-name">Benzaxapine Croplex</a>
-                                    <span class="item-price">$849.99</span>
-                                    <span class="item-quantity">Quantity: 01</span>
-                                </li>
+                <li class="nav-item dropdown me-3 pe-0">
+                    <a href="javascript:;"
+                    class="dropdown-toggle nav-link active-dot active-dot-purple p-0 position-relative"
+                    id="recallsDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                 
+                     <i class="isax isax-calendar"></i>
+                 
+                     @if(!empty($monthlyRecallCount) && $monthlyRecallCount > 0)
+                         <span class="badge rounded-pill bg-primary text-white
+                                      position-absolute top-0 start-100 translate-middle"
+                               id="recall-count">
+                             {{ $monthlyRecallCount }}
+                         </span>
+                     @endif
+                 </a>
+                 
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="recallsDropdown">
+                        <li>
+                            <h6 class="dropdown-header">
+                                <i class="fas fa-calendar-alt me-2"></i> Recalls This Month
+                            </h6>
+                        </li>
 
-                                <li class="clearfix">
-                                    <div class="close-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-                                    <a href="{{url('product-description')}}"><img class="avatar-img rounded" src="{{URL::asset('assets/img/products/product1.jpg')}}" alt="User Image"></a>
-                                    <a href="{{url('product-description')}}" class="item-name">Ombinazol Bonibamol</a>
-                                    <span class="item-price">$1,249.99</span>
-                                    <span class="item-quantity">Quantity: 01</span>
-                                </li>
+                        @forelse($recallsThisMonth as $recall)
+                        <li>
+                            <a class="dropdown-item" href="{{guard_route('recalls.notifications') }}">
+                                <i class="fas fa-user me-2"></i>
+                                Patient #{{ $recall->patient_id }} – {{
+                                \Carbon\Carbon::parse($recall->recall_date)->format('d M Y') }}
+                            </a>
+                        </li>
+                        @empty
+                        <li><span class="dropdown-item-text">No recalls due</span></li>
+                        @endforelse
 
-                                <li class="clearfix">
-                                    <div class="close-icon"><i class="fa-solid fa-circle-xmark"></i></div>
-                                    <a href="{{url('product-description')}}"><img class="avatar-img rounded" src="{{URL::asset('assets/img/products/product2.jpg')}}" alt="User Image"></a>
-                                    <a href="{{url('product-description')}}" class="item-name">Dantotate Dantodazole</a>
-                                    <span class="item-price">$129.99</span>
-                                    <span class="item-quantity">Quantity: 01</span>
-                                </li>
-                            </ul>
-                            <div class="booking-summary pt-3">
-                                <div class="booking-item-wrap">
-                                    <ul class="booking-date">
-                                        <li>Subtotal <span>$5,877.00</span></li>
-                                        <li>Shipping <span>$25.00</span></li>
-                                        <li>Tax <span>$0.00</span></li>
-                                        <li>Total <span>$5.2555</span></li>
-                                    </ul>
-                                    <div class="booking-total">
-                                        <ul class="booking-total-list text-align">
-                                            <li>
-                                                <div class="clinic-booking pt-3">
-                                                    <a class="apt-btn" href="{{url('cart')}}">View Cart</a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="clinic-booking pt-3">
-                                                    <a class="apt-btn" href="{{url('product-checkout')}}">Checkout</a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-center text-primary fw-bold"
+                                href="{{guard_route('recalls.notifications') }}">
+                                <i class="fas fa-folder-open me-2"></i> View All Recalls
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <!-- /Cart -->
+
+                <!-- Tasks Notification Dropdown -->
+                <li class="nav-item dropdown me-3 pe-0">
+                    <a class="nav-link dropdown-toggle position-relative" href="#" id="tasksDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+
+                        <i class="fas fa-tasks"></i>
+                        @if(!empty($taskCount) && $taskCount > 0)
+
+                        <span
+                            class="badge rounded-pill bg-warning text-dark position-absolute translate-middle"
+                            id="recall-count">
+                            {{ $taskCount }}
+                        </span>
+                        @endif
+
+                    </a>
+
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="tasksDropdown">
+                        <li>
+                            <h6 class="dropdown-header">
+                                <i class="fas fa-clipboard-list me-2"></i> Upcoming Tasks
+                            </h6>
+                        </li>
+
+                        @forelse($upcomingTasks as $task)
+                        <li>
+                            <a class="dropdown-item"
+                                href="{{guard_route('tasks.edit', ['patient' => $task->patient_id, 'task' => $task->id]) }}">
+                                <i class="fas fa-file-alt me-2"></i>
+                                {{ $task->subject }} – {{ \Carbon\Carbon::parse($task->end_date)->format('d M Y') }}
+                            </a>
+                        </li>
+                        @empty
+                        <li><span class="dropdown-item-text">No upcoming tasks</span></li>
+                        @endforelse
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-center text-primary fw-bold"
+                                href="{{guard_route('tasks.notifications') }}">
+                                <i class="fas fa-folder-open me-2"></i> View All Tasks
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                 <!-- User Menu -->
                 <li class="nav-item dropdown has-arrow logged-item">
                     <a href="#" class="nav-link ps-0" data-bs-toggle="dropdown">
                         <span class="user-img">
-                            <img class="rounded-circle" src="{{URL::asset('assets/img/doctors-dashboard/profile-06.jpg')}}" width="31" alt="Darren Elder">
+                            <img class="rounded-circle"
+                                src="{{URL::asset('assets/img/doctors-dashboard/profile-06.jpg')}}" width="31"
+                                alt="Darren Elder">
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
                         <div class="user-header">
                             <div class="avatar avatar-sm">
-                                <img src="{{URL::asset('assets/img/doctors-dashboard/profile-06.jpg')}}" alt="User Image" class="avatar-img rounded-circle">
+                                <img src="{{URL::asset('assets/img/doctors-dashboard/profile-06.jpg')}}"
+                                    alt="User Image" class="avatar-img rounded-circle">
                             </div>
                             <div class="user-text">
                                 <h6>{{ Auth::user()->name ?? Auth::user()->full_name }}</h6>
-                                <p class="text-muted mb-0">Patient</p>
+                                <p class="text-muted mb-0">{{$currentGuard}}</p>
                             </div>
                         </div>
                         <a class="dropdown-item" href="{{guard_route('patient.dashboard.index')}}">Dashboard</a>
-                        <a class="dropdown-item" href="{{url('profile-settings')}}">Profile Settings</a>
-                        <a class="dropdown-item" href="{{guard_route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <a class="dropdown-item" href="{{ guard_route($currentGuard . 's.edit',Auth::user()->id) }}">Change profile</a>
+                        <a class="dropdown-item" href="{{ guard_route('password.change') }}">Change Password</a>
+                        <a class="dropdown-item" href="{{guard_route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             {{ __('Logout') }}
                         </a>
                         <form id="logout-form" action="{{guard_route('logout') }}" method="POST" class="d-none">
@@ -170,11 +225,9 @@ dd($currentRoute);
                 <!-- /User Menu -->
             </ul>
 
-            @endif
 
 
         </nav>
     </div>
 </header>
 <!-- /Header -->
-

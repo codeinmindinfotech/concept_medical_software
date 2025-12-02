@@ -23,12 +23,8 @@ class UserController extends Controller
     public function index(Request $request): View|string
     {
         $user = auth()->user();
-
-        if ($user->hasRole('patient')) {
-            $data = User::companyOnly()->where('id', $user->id)->latest()->paginate(5);
-        } else {
-            $data = User::companyOnly()->latest()->paginate(5);
-        }
+        $query = User::with(['creator', 'updater'])->companyOnly();
+        $data = $query->latest()->paginate(5);
 
         if ($request->ajax()) {
             return view('users.list', compact('data'))->render();
@@ -43,7 +39,11 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        $roles = Role::where('guard_name', 'web')->pluck('name','name')->all(); //where guard_name =web
+        $query = Role::where('guard_name', 'web');
+        if (has_role('manager')) {
+            $query->where('name', 'manager');
+        } 
+        $roles = $query->pluck('name','name')->all(); 
 
         return view('users.create',compact('roles'));
     }
@@ -67,7 +67,7 @@ class UserController extends Controller
     
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
-    
+        $input['created_by'] = auth()->id();
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
     
@@ -97,9 +97,12 @@ class UserController extends Controller
     public function edit($id): View
     {
         $user = User::find($id);
-        $roles = Role::where('guard_name', 'web')->pluck('name','name')->all();
         $userRole = $user->roles->pluck('name','name')->all();
-    
+        $query = Role::where('guard_name', 'web');
+        if (has_role('manager')) {
+            $query->where('name', 'manager');
+        } 
+        $roles = $query->pluck('name','name')->all(); 
         return view('users.edit',compact('user','roles','userRole'));
     }
     
@@ -128,6 +131,7 @@ class UserController extends Controller
         }
     
         $user = User::find($id);
+        $input['updated_by'] = auth()->id();
         $user->update($input);
         DB::table('model_has_roles')->where('model_id',$id)->delete();
     

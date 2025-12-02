@@ -16,10 +16,10 @@
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-user-clock me-2"></i> Note Management
+                            <i class="fas fa-user-clock me-2"></i> Patient Management
                         </h5>
-                        <a href="{{guard_route('patients.notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                            <i class="fas fa-plus-circle me-1"></i> Note Add
+                        <a href="{{guard_route('patients.index') }}" class="btn bg-primary text-white btn-light btn-sm">
+                            <i class="fas fa-plus-circle me-1"></i> Patient List
                         </a>
                     </div>
                     <div class="card-body">

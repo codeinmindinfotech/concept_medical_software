@@ -49,9 +49,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrapFive(); // 👈 This is the key line
-
-        View::composer('layout.partials.tab-navigation', function ($view) {
-            // Get today's date
+        View::composer(
+            [
+                'layout.partials.tab-navigation',
+                'components.admin.tab-navigation'
+            ],
+            function ($view) {
             $today = Carbon::today();
 
             // Get patients with count of tasks, recalls, and appointments after today
@@ -85,8 +88,13 @@ class AppServiceProvider extends ServiceProvider
             // Share the $patients variable with the view
             $view->with('patients', $patients);
         });
-
-         View::composer('layout.partials.header_admin', function ($view) {
+        
+         View::composer(
+            [
+                'layout.partials.header_admin',
+                'layout.partials.header'
+            ],
+            function ($view) {
             $user = Auth::user();
 
             // === Recall Data ===

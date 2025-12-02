@@ -42,8 +42,8 @@ class DoctorController extends Controller
         if ($request->ajax()) {
             return view('doctors.list', compact('doctors'))->render();
         } 
-
-        return view('doctors.index',compact('doctors'));
+        
+        return view(guard_view('doctors.index', 'patient_admin.doctor.index'),compact('doctors'));
     }
     
     /**
@@ -96,7 +96,7 @@ class DoctorController extends Controller
     public function show(Doctor $doctor): View
     {
         $this->authorize('view', $doctor);
-        return view('doctors.show',compact('doctor'));
+        return view(guard_view('doctors.show', 'patient_admin.doctor.show'),compact('doctor'));
     }
     
     /**
@@ -109,7 +109,7 @@ class DoctorController extends Controller
     {
         $this->authorize('update', $doctor);
         extract($this->getCommonDropdowns());
-        return view('doctors.edit',compact('doctor','contactTypes','paymentMethods'));
+        return view(guard_view('doctors.edit', 'patient_admin.doctor.edit'),compact('doctor','contactTypes','paymentMethods'));
     }
     
     /**

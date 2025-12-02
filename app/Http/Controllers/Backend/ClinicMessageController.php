@@ -30,7 +30,7 @@ class ClinicMessageController extends Controller
         // Optional: Get all doctors under same company
         $doctors = Doctor::where('company_id', $clinic->company_id)->get();
 
-        return view('clinics.notifications.send', compact('patients', 'doctors','managers'));
+        return view(guard_view('clinics.notifications.send', 'patient_admin.profile.clinic-send'), compact('patients', 'doctors','managers'));
     }
     public function send(Request $request)
     {

@@ -19,6 +19,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'created_by',
+        'updated_by'
     ];
 
     protected $hidden = [
@@ -43,5 +45,16 @@ class User extends Authenticatable
     {
         $this->notify(new \App\Notifications\ClinicResetPasswordNotification($token, $this->company_id, 'user'));
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
 
 }

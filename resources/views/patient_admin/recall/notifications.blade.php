@@ -121,7 +121,7 @@
                                             <a href="{{ guard_route('patients.show', $recall->patient_id) }}" class="btn bg-info-light btn-sm me-2">
                                                 <i class="fas fa-user"></i> View Patient
                                             </a>
-                                            <a href="{{ guard_route('recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn bg-warning-light btn-sm me-2">
+                                            <a href="{{ guard_route('recalls.edit', ['patient' => $recall->patient_id, 'recall' => $recall]) }}" class="btn btn-sm bg-danger-light">
                                                 <i class="fas fa-edit"></i> Edit Recall
                                             </a>
                                             <a href="{{ guard_route('recalls.email', $recall->id) }}" class="btn bg-primary-light btn-sm me-2">

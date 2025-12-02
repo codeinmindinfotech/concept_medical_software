@@ -26,13 +26,20 @@ class ClinicController extends Controller
     public function index(Request $request): View|string
     {
         $pageTitle = "Clinics List";
-        $clinics = Clinic::companyOnly()->latest()->get();
+        $query = Clinic::companyOnly();
+
+        if (has_role('clinic')) {
+            $user = auth()->user();
+            $query = $query->where('id', $user->id);
+        }
+
+        $clinics = $query->latest()->get();
 
         if ($request->ajax()) {
             return view('clinics.list', compact('clinics'))->render();
         }
-
-        return view('clinics.index', compact('clinics', 'pageTitle'));
+        
+        return view(guard_view('clinics.index', 'patient_admin.clinic.index'), compact('clinics', 'pageTitle'));
     }
 
     public function create(): View
@@ -66,7 +73,7 @@ class ClinicController extends Controller
     public function edit(Clinic $clinic): View
     {
         $pageTitle = "Edit Clinic";
-        return view('clinics.edit', compact('clinic', 'pageTitle'));
+        return view(guard_view('clinics.edit', 'patient_admin.clinic.edit'), compact('clinic', 'pageTitle'));
     }
 
     public function update(ClinicRequest $request, Clinic $clinic): JsonResponse
@@ -83,7 +90,7 @@ class ClinicController extends Controller
     public function show(Clinic $clinic): View
     {
         $pageTitle = "Show Clinic";
-        return view('clinics.show', compact('clinic', 'pageTitle'));
+        return view(guard_view('clinics.show', 'patient_admin.clinic.show'), compact('clinic', 'pageTitle'));
     }
 
     public function destroy(Clinic $clinic): RedirectResponse

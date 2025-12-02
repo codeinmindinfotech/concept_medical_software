@@ -243,13 +243,7 @@ Version      : 1.3
 		}
 	});
 
-	$('.select2').select2({
-		theme: 'bootstrap-5'
-	});
-	$('.select2-multiple').select2({
-		placeholder: "Select options",
-		allowClear: true
-	});
+
 	
 	// permission assign checkbox
 	document.addEventListener('DOMContentLoaded', function () {
@@ -269,5 +263,14 @@ Version      : 1.3
 				document.querySelectorAll(`.${module}-perm`).forEach(cb => cb.checked = checked);
 			});
 		});
+	});
+
+
+	$('.select2').select2({
+		theme: 'bootstrap-5'
+	});
+	$('.select2-multiple').select2({
+		placeholder: "Select options",
+		allowClear: true
 	});
 })(jQuery);

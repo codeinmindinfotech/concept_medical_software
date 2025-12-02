@@ -14,20 +14,28 @@
         <div class="row">
 
 
-                <h3 class="mb-4">Create Patient</h3>
-                <form action="{{guard_route('patients.store') }}" method="POST" data-ajax class="needs-validation" novalidate>
-                    @csrf
-                    @include('patients.form', [
-                    'insurances' => $insurances,
-                    'preferredContact' => $preferredContact,
-                    'doctors' => $doctors,
-                    'titles' => $titles
-                    ])
-                </form>
-
-            
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-clock me-2"></i> Patient Management
+                    </h5>
+                    <a href="{{guard_route('patients.index') }}" class="btn bg-primary text-white btn-light btn-sm">
+                        <i class="fas fa-plus-circle me-1"></i> Patient List
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form action="{{guard_route('patients.store') }}" method="POST" data-ajax class="needs-validation" novalidate>
+                        @csrf
+                        @include('patients.form', [
+                        'insurances' => $insurances,
+                        'preferredContact' => $preferredContact,
+                        'doctors' => $doctors,
+                        'titles' => $titles
+                        ])
+                    </form>
+                </div>
+            </div>
         </div>
-
     </div>
 </div>
 

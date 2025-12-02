@@ -1,15 +1,8 @@
-<?php $page = 'notifications-list'; ?>
-@extends('layout.mainlayout_admin')
+@extends('layout.mainlayout')
 @section('content')
-<!-- Page Wrapper -->
-<div class="page-wrapper">
-    <div class="content container-fluid">
-        @php
-        $breadcrumbs = [
-        ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
-        ['label' => 'Notifictaion List'],
-        ];
-        @endphp
+
+<div class="content">
+    <div class="container">
         @php
         $currentGuard = getCurrentGuard();
         $backUrl = "";
@@ -26,22 +19,19 @@
         }
         @endphp
 
-        @include('layout.partials.breadcrumb', [
-        'pageTitle' => 'Notifictaion List',
-        'breadcrumbs' => $breadcrumbs,
-        'backUrl' => $backUrl,
-        'isListPage' => true
-        ])
-
         @session('success')
         <div class="alert alert-success" role="alert">
             {{ $value }}
         </div>
         @endsession
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                Notifictaion Management
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-clock me-2"></i> Notifications All
+                </h5>
+                <a href="{{$backUrl }}" class="btn bg-primary text-white btn-light btn-sm">
+                    <i class="fas fa-plus-circle me-1"></i> New Notification
+                </a>
             </div>
             <div class="card-body">
                 <form action="{{ guard_route('notifications.markAllAsRead') }}" method="POST" class="text-center my-3 validate-form">
@@ -55,13 +45,12 @@
             </div>
         </div>
 
+
+
     </div>
 </div>
-<!-- /Page Wrapper -->
-
-</div>
-<!-- /Main Wrapper -->
 @endsection
+
 @push('scripts')
 <script src="{{ asset('theme/form-validation.js') }}"></script>
 <script>
