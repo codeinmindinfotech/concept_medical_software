@@ -462,6 +462,37 @@
     
   </div>
 
+  {{-- ▶ Signature --}}
+<div class="col-12">
+  <div class="card shadow-sm mb-3">
+    <div class="card-header">
+      <h5 class="card-title mb-0"><strong>Patient Signature</strong></h5>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label"><strong>Draw Signature:</strong></label>
+        <canvas id="signature-pad" width="400" height="150" style="border:1px solid #ccc;"></canvas>
+        <input type="hidden" name="signature_draw" id="signature_draw">
+        <button type="button" class="btn btn-secondary mt-2" onclick="clearCanvas()">Clear</button>
+      </div>
+      <div class="mb-3">
+        <label for="signature_file" class="form-label"><strong>Or Upload Signature:</strong></label>
+        <input type="file" name="signature_file" id="signature_file" accept="image/*" class="form-control">
+      </div>
+
+      @if(!empty($patient->patient_signature))
+      <div class="mt-3">
+        <label class="form-label"><strong>Existing Signature:</strong></label>
+        <div>
+          <img src="{{ asset('storage/' . $patient->patient_signature) }}" width="400" height="150" style="border:1px solid #ccc;">
+        </div>
+      </div>
+      @endif
+
+    </div>
+  </div>
+</div>
+
 
 
   {{-- ▶ Submit Button --}}

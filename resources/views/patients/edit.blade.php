@@ -46,3 +46,6 @@
     </form>
                
 @endsection
+@push('scripts')
+<script src="{{ URL::asset('/assets/js/signature.js') }}"></script>
+@endpush
