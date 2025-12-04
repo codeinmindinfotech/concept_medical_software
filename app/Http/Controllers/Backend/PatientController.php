@@ -349,7 +349,8 @@ class PatientController extends Controller
             }
     
             $img = $manager->read($request->file('signature_file')->getRealPath());
-    
+            // Resize image
+            $img->resize(100, 80);
         // 2. Drawn signature
         } elseif ($request->signature_draw) {
             if (!Storage::disk('public')->exists($dir)) {
@@ -363,33 +364,52 @@ class PatientController extends Controller
             $data = base64_decode($data);
     
             $img = $manager->read($data);
-    
+            // Resize image
+            $img->resize(100, 80);
         // 3. Existing signature
         } elseif ($patient->patient_signature && Storage::disk('public')->exists($patient->patient_signature)) {
             $img = $manager->read(storage_path("app/public/" . $patient->patient_signature));
             \Log::info('Using existing patient signature: ' . $patient->patient_signature);
     
         // 4. Create blank canvas
-        } else {
-            $gdResource = imagecreatetruecolor(150, 100);
+        }  else {
+            $text = $patient->first_name;
+            $fontPath = public_path('assets/fonts/DancingScript-VariableFont_wght.ttf');
+            $fontSize = 16;
+        
+            // Measure text bounding box
+            $box = imagettfbbox($fontSize, 0, $fontPath, $text);
+            $textWidth  = abs($box[2] - $box[0]);
+            $textHeight = abs($box[7] - $box[1]);
+        
+            // Define padding (px)
+            $padding = 4;
+        
+            // Create GD canvas with padding
+            $canvasWidth  = $textWidth + ($padding * 2);
+            $canvasHeight = $textHeight + ($padding * 2);
+        
+            $gdResource = imagecreatetruecolor($canvasWidth, $canvasHeight);
+        
+            // Optional: fill with white
             $white = imagecolorallocate($gdResource, 255, 255, 255);
             imagefill($gdResource, 0, 0, $white);
-    
+        
+            // Load into Intervention
             $img = $manager->read($gdResource);
-    
-            $text = $request->first_name . ' ' . $request->surname;
-            $img->text($text, 75, 50, function ($font) {
-                $font->filename(public_path('assets/fonts/OpenSans-Regular.ttf'));
-                $font->size(18);
-                $font->color('#000000');
+        
+            // Draw text centered inside the padded canvas
+            $img->text($text, $canvasWidth / 2, $canvasHeight / 2, function ($font) use ($fontPath, $fontSize) {
+                $font->filename($fontPath);
+                $font->size($fontSize);
+                $font->color('#1b5a90');
                 $font->align('center');
                 $font->valign('middle');
             });
+        
+            // $img now has padding and correct proportions
         }
-    
-        // Resize image
-        $img->resize(150, 100);
-    
+   
         $filename = "signature.png";
         $path = "$dir/$filename";
     

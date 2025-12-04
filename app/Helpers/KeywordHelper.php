@@ -225,8 +225,8 @@ class KeywordHelper
         if (file_exists($patientSignaturePath)) {
             $template->setImageValue('PatientSignature', [
                 'path' => $patientSignaturePath,
-                'width' => 150,
-                'height' => 100,
+                'width' => 100,
+                'height' => 80,
                 'ratio' => true
             ]);
         }
@@ -234,8 +234,8 @@ class KeywordHelper
         if (file_exists($doctorSignaturePath)) {
             $template->setImageValue('DoctorSignature', [
                 'path' => $doctorSignaturePath,
-                'width' => 150,
-                'height' => 100,
+                'width' => 100,
+                'height' => 80,
                 'ratio' => true
             ]);
         }
