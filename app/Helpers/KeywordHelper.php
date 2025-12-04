@@ -224,7 +224,7 @@ class KeywordHelper
         // Replace placeholders with images
         if (file_exists($patientSignaturePath)) {
             $template->setImageValue('PatientSignature', [
-                'path' => $patientSignaturePath,
+                'path' => asset('storage/' . $patient->patient_picture),
                 'width' => 150,    // adjust width
                 'height' => 100,   // adjust height
                 'ratio' => true
@@ -233,7 +233,7 @@ class KeywordHelper
 
         if (file_exists($doctorSignaturePath)) {
             $template->setImageValue('DoctorSignature', [
-                'path' => $doctorSignaturePath,
+                'path' => asset('storage/' . $patient->doctor->doctor_signature),
                 'width' => 150,
                 'height' => 100,
                 'ratio' => true
