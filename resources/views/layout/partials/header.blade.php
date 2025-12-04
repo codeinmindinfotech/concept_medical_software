@@ -195,14 +195,14 @@
                     <a href="#" class="nav-link ps-0" data-bs-toggle="dropdown">
                         <span class="user-img">
                             <img class="rounded-circle"
-                                src="{{URL::asset('assets/img/doctors-dashboard/profile-06.jpg')}}" width="31"
+                                src="{{ setProfileImage() }}" width="31"
                                 alt="Darren Elder">
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
                         <div class="user-header">
                             <div class="avatar avatar-sm">
-                                <img src="{{URL::asset('assets/img/doctors-dashboard/profile-06.jpg')}}"
+                                <img src="{{ setProfileImage() }}"
                                     alt="User Image" class="avatar-img rounded-circle">
                             </div>
                             <div class="user-text">

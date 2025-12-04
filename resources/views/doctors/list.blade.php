@@ -10,7 +10,18 @@
         @foreach ($doctors as $i => $doctor)
         <tr>
             <td>{{ ++$i }}</td>
-            <td>{{ $doctor->name }}</td>
+            <td>
+                <div class="align-items-center gap-2 d-flex">
+                    @if ($doctor->doctor_picture)
+                    <img src="{{ asset('storage/' . $doctor->doctor_picture) }}" alt="Patient Picture" class="rounded-circle" width="40" height="40">
+                    @else
+                    <div class="rounded-circle bg-secondary d-inline-block text-white text-center" style="width: 40px; height: 40px; line-height: 40px;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    @endif
+                    {{ $doctor->name }}
+                </div>
+            </td>
             <td>
                 @can('view', $doctor)
                 <a class="btn btn-sm bg-success-light" href="{{guard_route('doctors.show',$doctor->id) }}">

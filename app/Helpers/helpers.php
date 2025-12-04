@@ -304,4 +304,32 @@ if (!function_exists('guard_view')) {
         return $newLayout;
     }
 }
+if (!function_exists('setProfileImage')) {
+
+    function setProfileImage()
+    {
+        // Detect guard (doctor or patient)
+        if (Auth::guard('doctor')->check()) {
+            $user = Auth::guard('doctor')->user();
+            $path = "storage/doctor_pictures/{$user->id}/small.jpg";
+        }
+        elseif (Auth::guard('patient')->check()) {
+            $user = Auth::guard('patient')->user();
+            $path = "storage/patient_pictures/{$user->id}/small.jpg";
+        }
+        else {
+            return asset('assets/img/doctors-dashboard/profile-06.jpg');
+        }
+
+        // Check if file exists
+        if (file_exists(public_path($path))) {
+            return asset($path);
+        }
+
+        // Return your custom default image
+        return asset('assets/img/doctors-dashboard/profile-06.jpg');
+    }
+}
+
+
 

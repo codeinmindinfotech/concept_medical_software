@@ -31,7 +31,7 @@ canvas.addEventListener('mousemove', function (e) {
 
     ctx.lineWidth = 2;
     ctx.lineCap = "round";
-    ctx.strokeStyle = "#000";
+    ctx.strokeStyle = "#1b5a90";
 
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
