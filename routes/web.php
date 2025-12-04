@@ -214,6 +214,8 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     Route::prefix("patients/{patient}/appointments")->group(function () {
         Route::get('/', [PatientAppointmentController::class, 'index'])->name('patients.appointments.main.index');
     });
+    Route::post('/doctor/upload-picture', [DoctorController::class, 'uploadPicture'])->name('doctor.upload-picture');
+
 
     Route::get("$prefix/upload-picture", [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
 };
@@ -244,7 +246,6 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
         Route::resource('clinics', ClinicController::class);
         Route::resource('chargecodes', ChargeCodeController::class);
         Route::resource('chargecodeprices', ChargeCodePriceController::class);
-        Route::resource('audios', AudioController::class);
 
         Route::get('/companies/{company}/managers', [CompanyController::class, 'getManagers'])->name('company.manager');
         Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
@@ -310,7 +311,6 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
         Route::resource('clinics', ClinicController::class);
         Route::resource('chargecodes', ChargeCodeController::class);
         Route::resource('chargecodeprices', ChargeCodePriceController::class);
-        Route::resource('audios', AudioController::class);
 
         Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
         
@@ -341,7 +341,6 @@ foreach ($roles as $role) {
             Route::resource('clinics', ClinicController::class);
             Route::resource('chargecodes', ChargeCodeController::class);
             Route::resource('chargecodeprices', ChargeCodePriceController::class);
-            Route::resource('audios', AudioController::class);
             Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
 

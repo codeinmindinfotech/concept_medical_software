@@ -37,9 +37,9 @@ class KeywordHelper
             'FirstName'         => $patient->first_name ?? '',
             'SurName'           => $patient->surname ?? '',
             'PatientName'       => $patient->full_name ?? '',
-            'PatientAddress'   => $patient->address ?? '',
+            'PatientAddress'    => $patient->address ?? '',
             'PatientAddress1'   => $patient->address ?? '',
-            'Signature'         =>  public_path('assets/img/banner-lief-img.png'),//$patient->signature_url ??
+            'PatientSignature'  => asset('storage/' . $patient->patient_signature),//$patient->signature_url ??
             // 'PatientAddress2'   => $patient->address2 ?? '',
             // 'PatientAddress3'   => $patient->address3 ?? '',
             // 'PatientAddress4'   => $patient->address4 ?? '',
@@ -80,6 +80,8 @@ class KeywordHelper
             // Doctor / Consultant
             'DoctorName'        => optional($patient->doctor)->name,
             'DoctorTitle'       => optional($patient->doctor)->salutation,
+            'DoctorSignature'  =>  asset('storage/' . $patient->doctor->doctor_signature),//$patient->signature_url ??
+
             // 'DoctorFirstName'   => optional($patient->doctor)->first_name,
             // 'DoctorSurName'     => optional($patient->doctor)->surname,
             'DoctorAddress1'    => optional($patient->doctor)->address,
@@ -205,20 +207,39 @@ class KeywordHelper
         // 3️⃣ Replace placeholders dynamically
         // ------------------------------------------------------------
         foreach ($data as $key => $value) {
-            if ($key !== 'Signature') { // skip signature here
+            if ($key !== 'PatientSignature' || $key !== 'DoctorSignature'  ) { // skip signature here
                 $template->setValue($key, $value ?? '');
             }
         }
 
-        // Replace [Signature] placeholder with image
-        if (file_exists($signaturePath)) {
-            $template->setImageValue('Signature', [
-                'path' => $signaturePath,
-                'width' => 200,
+       // Paths for signatures (fallback if missing)
+        $patientSignaturePath = $patient->patient_signature 
+        ? storage_path('app/public/' . $patient->patient_signature) 
+        : public_path('assets/img/banner-lief-img.png');
+
+        $doctorSignaturePath = optional($patient->doctor)->doctor_signature
+        ? storage_path('app/public/' . $patient->doctor->doctor_signature)
+        : public_path('assets/img/banner-lief-img.png');
+
+        // Replace placeholders with images
+        if (file_exists($patientSignaturePath)) {
+            $template->setImageValue('PatientSignature', [
+                'path' => $patientSignaturePath,
+                'width' => 150,    // adjust width
+                'height' => 100,   // adjust height
+                'ratio' => true
+            ]);
+        }
+
+        if (file_exists($doctorSignaturePath)) {
+            $template->setImageValue('DoctorSignature', [
+                'path' => $doctorSignaturePath,
+                'width' => 150,
                 'height' => 100,
                 'ratio' => true
             ]);
         }
+
 
         $template->saveAs($filePath);
 

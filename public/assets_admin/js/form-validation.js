@@ -69,6 +69,8 @@
           });
 
           let formData = new FormData(form);
+          // saveSignature();
+          // alert("after");
 
           fetch(form.action, {
             method: form.method || "POST",

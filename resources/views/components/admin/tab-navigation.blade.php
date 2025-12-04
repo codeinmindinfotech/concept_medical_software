@@ -33,10 +33,6 @@
                                 </span>
                             </a>
 
-                            <a href="{{ guard_route('patients.upload-picture-form', $patient->id) }}" class="{{ btnClass('upload-picture.*', 'primary') }}">
-                                <i class="fas fa-camera me-2"></i> Upload Picture
-                            </a>
-
                             <a href="{{ guard_route('patients.history.index', $patient->id) }}" class="{{ btnClass('patients.history.*', 'warning') }}">
                                 <i class="fas fa-history me-2"></i> History
                                 <span class="badge bg-warning  border border-white">

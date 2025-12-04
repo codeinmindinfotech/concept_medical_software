@@ -41,8 +41,11 @@
  <script src="{{ URL::asset('/assets_admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
  <script src="{{ URL::asset('/assets_admin/plugins/datatables/datatables.min.js') }}"></script>
 
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets/js/script.js') }}"></script>
+
 
 @stack('scripts')
 @php
