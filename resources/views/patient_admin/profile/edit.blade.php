@@ -26,8 +26,8 @@
                                     <i class="fas fa-camera me-1"></i>Upload Picture
                                 </a>
                             </li>
-                        </ul>    
-                        
+                        </ul>
+
                         {{-- <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Patient Management
                         </h5> --}}
@@ -36,10 +36,10 @@
                         </a>
                     </div>
                     <div class="tab-content" id="myTabContent">
-                
+
                         {{-- Patient Information --}}
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                          
+
                             <div class="card-body">
                                 <form action="{{guard_route('patients.update', $patient->id) }}" method="POST" data-ajax class="needs-validation" novalidate>
 
@@ -48,17 +48,17 @@
 
                                     {{-- Reuse SAME patient form --}}
                                     @include('patients.form', [
-                                        'patient' => $patient,
-                                        'insurances' => $insurances,
-                                        'preferredContact' => $preferredContact,
-                                        'doctors' => $doctors,
-                                        'titles' => $titles,
-                                        'consultants' => $consultants,
-                                        'relations' => $relations,
+                                    'patient' => $patient,
+                                    'insurances' => $insurances,
+                                    'preferredContact' => $preferredContact,
+                                    'doctors' => $doctors,
+                                    'titles' => $titles,
+                                    'consultants' => $consultants,
+                                    'relations' => $relations,
                                     ])
 
                                 </form>
-                            </div>    
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                             <div class="card-body">
@@ -67,58 +67,58 @@
                                     <button class="btn btn-outline-success" onclick="showWebcam()">Use Webcam</button>
                                 </div>
                                 <div class="row">
-                                        <!-- Upload from Computer -->
-                                        <div id="uploadBox" class="col-md-6" style="display:none;">
-                                            <form id="browseUploadForm" action="{{ guard_route('patients.upload-picture', $patient->id) }}" method="POST" enctype="multipart/form-data">
-                                                @csrf
-                                                <input type="hidden" name="patient_id" value="{{ $patient->id }}">
-                                
-                                                <label>Select Image:</label>
-                                                <input type="file" name="patient_picture" class="form-control" accept="image/*">
-                                                <button class="btn btn-primary mt-3">Upload</button>
-                                            </form>
-                                        </div>
-                                
-                                        <!-- Webcam Capture -->
-                                        <div id="webcamBox"  class="col-md-6" style="display:none;">
-                                            <div id="camera" style="width:320px;height:240px;border:1px solid #ccc;"></div>
-                                
-                                            <button onclick="takeSnapshot()" class="btn btn-success mt-2">Capture</button>
-                                
-                                            <div id="snapshotResult" class="mt-3"></div>
-                                
-                                            <form id="webcamForm" action="{{ guard_route('patients.upload-picture', $patient->id) }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="patient_id" value="{{ $patient->id }}">
-                                                <input type="hidden" name="patient_picture_webcam" id="webcamImageField">
-                                
-                                                <button type="submit" class="btn btn-primary mt-3" style="display:none;" id="uploadBtn">
-                                                    Upload Captured Image
-                                                </button>
-                                            </form>
-                                        </div>
+                                    <!-- Upload from Computer -->
+                                    <div id="uploadBox" class="col-md-6" style="display:none;">
+                                        <form id="browseUploadForm" action="{{ guard_route('patients.upload-picture', $patient->id) }}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
-                                        <!-- Existing Signature -->
-                                        @if(!empty($patient->patient_picture))
-                                        <div class="col-md-6">
-                                            <label class="form-label"><strong>Existing:</strong></label>
-                                            <div>
-                                                <img src="{{ asset('storage/' . $patient->patient_picture) }}" width="150" height="100" class="img-thumbnail">
-                                            </div>
-                                        </div>
-                                        @endif
-
+                                            <label>Select Image:</label>
+                                            <input type="file" name="patient_picture" class="form-control" accept="image/*">
+                                            <button class="btn btn-primary mt-3">Upload</button>
+                                        </form>
                                     </div>
-                                    
+
+                                    <!-- Webcam Capture -->
+                                    <div id="webcamBox" class="col-md-6" style="display:none;">
+                                        <div id="camera" style="width:320px;height:240px;border:1px solid #ccc;"></div>
+
+                                        <button onclick="takeSnapshot()" class="btn btn-success mt-2">Capture</button>
+
+                                        <div id="snapshotResult" class="mt-3"></div>
+
+                                        <form id="webcamForm" action="{{ guard_route('patients.upload-picture', $patient->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                                            <input type="hidden" name="patient_picture_webcam" id="webcamImageField">
+
+                                            <button type="submit" class="btn btn-primary mt-3" style="display:none;" id="uploadBtn">
+                                                Upload Captured Image
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Existing Signature -->
+                                    @if(!empty($patient->patient_picture))
+                                    <div class="col-md-6">
+                                        <label class="form-label"><strong>Existing:</strong></label>
+                                        <div>
+                                            <img src="{{ asset('storage/' . $patient->patient_picture) }}" width="150" height="100" class="img-thumbnail">
+                                        </div>
+                                    </div>
+                                    @endif
+
                                 </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-             {{-- Patient Dashboard Sidebar --}}
-             @component('components.admin.tab-navigation', ['patient' => $patient])
-             @endcomponent
+            {{-- Patient Dashboard Sidebar --}}
+            @component('components.admin.tab-navigation', ['patient' => $patient])
+            @endcomponent
         </div>
 
     </div>
