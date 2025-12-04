@@ -1,60 +1,50 @@
 const canvas = document.getElementById('signature-pad');
 const ctx = canvas.getContext('2d');
+const hiddenField = document.getElementById('signature_draw');
+
 let drawing = false;
+let lastX = 0;
+let lastY = 0;
 
-canvas.addEventListener('mousedown', () => drawing = true);
-canvas.addEventListener('mouseup', () => drawing = false);
+// Save signature to hidden input
+function saveSignature() {
+    hiddenField.value = canvas.toDataURL("image/png");
+}
+
+// Start drawing
+canvas.addEventListener('mousedown', function (e) {
+    drawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+});
+
+// Stop drawing
+canvas.addEventListener('mouseup', () => {
+    drawing = false;
+    saveSignature(); // save after finishing
+});
+
 canvas.addEventListener('mouseout', () => drawing = false);
-canvas.addEventListener('mousemove', draw);
 
-function draw(e) {
+// Draw smooth line
+canvas.addEventListener('mousemove', function (e) {
     if (!drawing) return;
-    const rect = canvas.getBoundingClientRect();
+
     ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#000';
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#000";
+
     ctx.beginPath();
-    ctx.moveTo(e.offsetX, e.offsetY);
+    ctx.moveTo(lastX, lastY);
     ctx.lineTo(e.offsetX, e.offsetY);
     ctx.stroke();
-}
 
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+
+    saveSignature(); // save continuously while drawing
+});
+
+// Clear canvas
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hiddenField.value = ""; // Clear hidden field also
 }
-
-// On form submit, convert canvas to base64
-document.querySelector('form').addEventListener('submit', function(e){
-    document.getElementById('signature_draw').value = canvas.toDataURL('image/png');
-});
-
-
-function showUpload() {
-	document.getElementById('uploadBox').style.display = 'block';
-	document.getElementById('webcamBox').style.display = 'none';
-}
-
-function showWebcam() {
-	document.getElementById('uploadBox').style.display = 'none';
-	document.getElementById('webcamBox').style.display = 'block';
-}
-
-Webcam.set({
-	width: 320
-	, height: 240
-	, image_format: 'png'
-	, png_quality: 90
-});
-
-Webcam.attach('#camera');
-
-function takeSnapshot() {
-	Webcam.snap(function(dataURI) {
-		document.getElementById('snapshotResult').innerHTML =
-			'<img src="' + dataURI + '" width="320" class="img-thumbnail">';
-
-		document.getElementById('webcamImageField').value = dataURI;
-		document.getElementById('uploadBtn').style.display = 'block';
-	});
-}
-

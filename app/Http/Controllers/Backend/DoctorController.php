@@ -10,7 +10,9 @@ use App\Http\Requests\DoctorRequest;
 use App\Services\PasswordResetService;
 use App\Traits\DropdownTrait;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;  // or Imagick
 
 class DoctorController extends Controller
 { 
@@ -71,6 +73,13 @@ class DoctorController extends Controller
         $doctor = Doctor::create($validated);
         assignRoleToGuardedModel($doctor, 'doctor', 'doctor');
 
+         // Handle signature
+        if ($doctor) {
+            $signaturePath = $this->handleSignature($request, $doctor);
+            $doctor->doctor_signature = $signaturePath;
+            $doctor->save();
+        }
+
         if ($doctor) {
             try {
                 $resetService->sendResetLink($doctor, 'doctor', 'doctors');
@@ -124,7 +133,13 @@ class DoctorController extends Controller
         $this->authorize('update', $doctor);
         $validated = $request->validated();
         $doctor->update($validated);
-        
+        // Handle signature
+        $signaturePath = $this->handleSignature($request, $doctor);
+        if ($signaturePath) {
+            $doctor->doctor_signature = $signaturePath;
+            $doctor->save();
+        }
+
         return response()->json([
             'redirect' =>guard_route('doctors.index'),
             'message' => 'Doctor updated successfully',
@@ -144,5 +159,128 @@ class DoctorController extends Controller
     
         return redirect(guard_route('doctors.index'))
                         ->with('success','doctor deleted successfully');
+    }
+
+    protected function handleSignature($request, $patient)
+    {
+        $dir = "doctor_signatures/{$patient->id}";
+        $manager = new ImageManager(new Driver());
+    
+        // 1. Uploaded file
+        if ($request->hasFile('signature_file')) {
+            if (!Storage::disk('public')->exists($dir)) {
+                Storage::disk('public')->makeDirectory($dir);
+            } else {
+                Storage::disk('public')->deleteDirectory($dir);
+                Storage::disk('public')->makeDirectory($dir);
+            }
+    
+            $img = $manager->read($request->file('signature_file')->getRealPath());
+    
+        // 2. Drawn signature
+        } elseif ($request->signature_draw) {
+            if (!Storage::disk('public')->exists($dir)) {
+                Storage::disk('public')->makeDirectory($dir);
+            } else {
+                Storage::disk('public')->deleteDirectory($dir);
+                Storage::disk('public')->makeDirectory($dir);
+            }
+    
+            $data = str_replace('data:image/png;base64,', '', $request->signature_draw);
+            $data = base64_decode($data);
+    
+            $img = $manager->read($data);
+    
+        // 3. Existing signature
+        } elseif ($patient->patient_signature && Storage::disk('public')->exists($patient->patient_signature)) {
+            $img = $manager->read(storage_path("app/public/" . $patient->patient_signature));
+            \Log::info('Using existing patient signature: ' . $patient->patient_signature);
+    
+        // 4. Create blank canvas
+        } else {
+            $gdResource = imagecreatetruecolor(150, 100);
+            $white = imagecolorallocate($gdResource, 255, 255, 255);
+            imagefill($gdResource, 0, 0, $white);
+    
+            $img = $manager->read($gdResource);
+    
+            $text = $request->name;
+            $img->text($text, 75, 50, function ($font) {
+                $font->filename(public_path('assets/fonts/OpenSans-Regular.ttf'));
+                $font->size(18);
+                $font->color('#000000');
+                $font->align('center');
+                $font->valign('middle');
+            });
+        }
+    
+        // Resize image
+        $img->resize(150, 100);
+    
+        $filename = "signature.png";
+        $path = "$dir/$filename";
+    
+        // Save image
+        if (!Storage::disk('public')->exists($dir)) {
+            Storage::disk('public')->makeDirectory($dir);
+        }
+    
+        $img->save(storage_path("app/public/" . $path));
+    
+        return $path;
+    }
+    public function uploadPicture(Request $request)
+    {
+        $request->validate([
+            'doctor_id' => 'required|exists:doctors,id',
+            'doctor_picture' => 'nullable|image|max:4096',
+            'doctor_picture_webcam' => 'nullable|string',
+        ]);
+    
+        $doctor = Doctor::findOrFail($request->doctor_id);
+    
+        // Create Image Manager instance (v3)
+        $manager = new ImageManager(new Driver());
+
+        // Delete old images
+        $dir = "doctor_pictures/{$doctor->id}";
+        Storage::disk('public')->deleteDirectory($dir);
+        Storage::disk('public')->makeDirectory($dir);
+    
+        // Load image from file upload
+        if ($request->hasFile('doctor_picture')) {
+            $img = $manager->read($request->file('doctor_picture')->getRealPath());
+        }
+        // Load image from webcam base64
+        elseif ($request->doctor_picture_webcam) {
+            $data = $request->doctor_picture_webcam;
+            $data = str_replace('data:image/png;base64,', '', $data);
+            $data = base64_decode($data);
+    
+            $img = $manager->read($data);
+        } else {
+            return back()->with('error', 'No image uploaded.');
+        }
+    
+        // Save main profile (400x400)
+        $img->cover(400, 400)->toJpeg()->save(storage_path("app/public/$dir/profile.jpg"));
+    
+        // Save small (150x150)
+        $small = clone $img;
+        $small->cover(150, 150)->toJpeg()->save(storage_path("app/public/$dir/small.jpg"));
+    
+        // Save medium (300x300)
+        $medium = clone $img;
+        $medium->cover(300, 300)->toJpeg()->save(storage_path("app/public/$dir/medium.jpg"));
+    
+        // Save large (600x600)
+        $large = clone $img;
+        $large->cover(600, 600)->toJpeg()->save(storage_path("app/public/$dir/large.jpg"));
+    
+        // DB save
+        $doctor->doctor_picture = "$dir/profile.jpg";
+        $doctor->save();
+    
+        return back()->with('success', 'Profile picture updated successfully!');
     }
 }

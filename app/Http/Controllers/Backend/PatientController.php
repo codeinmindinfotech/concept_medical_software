@@ -269,42 +269,6 @@ class PatientController extends Controller
         return view('patients.upload',compact('patient'));
     }
 
-    // public function uploadPicture(Request $request)
-    // {
-    //     $request->validate([
-    //         'patient_id' => 'required|exists:patients,id',
-    //         'patient_picture' => 'required|image|max:2048',
-    //     ]);
-
-    //     $patient = Patient::findOrFail($request->patient_id);
-
-    //     if ($request->hasFile('patient_picture')) {
-    //         $file = $request->file('patient_picture');
-
-    //         // 🔁 Delete ALL previous versions with different extensions
-    //         $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    //         foreach ($extensions as $ext) {
-    //             $existingPath = "patient_pictures/picture_{$patient->id}." . $ext;
-    //             if (Storage::disk('public')->exists($existingPath)) {
-    //                 Storage::disk('public')->delete($existingPath);
-    //             }
-    //         }
-
-    //         $ext = strtolower($file->getClientOriginalExtension());
-    //         $filename = "picture_{$patient->id}." . $ext;
-    //         $path = $file->storeAs('patient_pictures', $filename, 'public');
-
-    //         $patient->patient_picture = $path;
-    //         $patient->save();
-    //     }
-
-    //     return response()->json([
-    //         'message' => 'Profile picture updated successfully.',
-    //         'image_url' => asset('storage/' . $patient->patient_picture),
-    //     ]);
-    // }
-
-
     public function uploadPicture(Request $request)
     {
         $request->validate([
@@ -373,50 +337,71 @@ class PatientController extends Controller
     protected function handleSignature($request, $patient)
     {
         $dir = "patient_signatures/{$patient->id}";
-        Storage::disk('public')->deleteDirectory($dir);
-        Storage::disk('public')->makeDirectory($dir);
-
-        $manager = new ImageManager('gd'); // Use GD driver
-
+        $manager = new ImageManager(new Driver());
+    
+        // 1. Uploaded file
         if ($request->hasFile('signature_file')) {
-            // Uploaded file
-            $img = $manager->make($request->file('signature_file')->getRealPath());
+            if (!Storage::disk('public')->exists($dir)) {
+                Storage::disk('public')->makeDirectory($dir);
+            } else {
+                Storage::disk('public')->deleteDirectory($dir);
+                Storage::disk('public')->makeDirectory($dir);
+            }
+    
+            $img = $manager->read($request->file('signature_file')->getRealPath());
+    
+        // 2. Drawn signature
         } elseif ($request->signature_draw) {
-            // Signature drawn on canvas (base64)
+            if (!Storage::disk('public')->exists($dir)) {
+                Storage::disk('public')->makeDirectory($dir);
+            } else {
+                Storage::disk('public')->deleteDirectory($dir);
+                Storage::disk('public')->makeDirectory($dir);
+            }
+    
             $data = str_replace('data:image/png;base64,', '', $request->signature_draw);
             $data = base64_decode($data);
-            $img = $manager->make($data);
+    
+            $img = $manager->read($data);
+    
+        // 3. Existing signature
+        } elseif ($patient->patient_signature && Storage::disk('public')->exists($patient->patient_signature)) {
+            $img = $manager->read(storage_path("app/public/" . $patient->patient_signature));
+            \Log::info('Using existing patient signature: ' . $patient->patient_signature);
+    
+        // 4. Create blank canvas
         } else {
-            // Create blank image (default signature with patient's name)
-            $img = $manager->make(
-                imagecreatetruecolor(400, 150) // Create GD blank image
-            );
-
-            // Fill white background
-            $img->fill('#ffffff');
-
-            // Add text (patient's name)
+            $gdResource = imagecreatetruecolor(150, 100);
+            $white = imagecolorallocate($gdResource, 255, 255, 255);
+            imagefill($gdResource, 0, 0, $white);
+    
+            $img = $manager->read($gdResource);
+    
             $text = $request->first_name . ' ' . $request->surname;
-            $img->text($text, 200, 75, function ($font) {
-                $font->file(public_path('fonts/arial.ttf')); // Cursive or fallback font
-                $font->size(48);
+            $img->text($text, 75, 50, function ($font) {
+                $font->filename(public_path('assets/fonts/OpenSans-Regular.ttf'));
+                $font->size(18);
                 $font->color('#000000');
                 $font->align('center');
                 $font->valign('middle');
             });
         }
-
-        // Resize final image to standard size
-        $img->resize(400, 150, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
-
+    
+        // Resize image
+        $img->resize(150, 100);
+    
         $filename = "signature.png";
-        $img->save(storage_path("app/public/$dir/$filename"));
-
-        return "$dir/$filename";
+        $path = "$dir/$filename";
+    
+        // Save image
+        if (!Storage::disk('public')->exists($dir)) {
+            Storage::disk('public')->makeDirectory($dir);
+        }
+    
+        $img->save(storage_path("app/public/" . $path));
+    
+        return $path;
     }
-
+    
     
 }

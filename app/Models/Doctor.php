@@ -19,6 +19,8 @@ class Doctor extends Authenticatable
 
     protected $fillable = [
         'company_id',
+        'doctor_picture',
+        'doctor_signature',
         'password',
         'name',
         'company',

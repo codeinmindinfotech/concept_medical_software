@@ -46,6 +46,6 @@
 </div>
 <!-- /Main Wrapper -->
 @endsection
-{{-- @push('scripts')
-<script src="{{ asset('theme/form-validation.js') }}"></script>
-@endpush --}}
+@push('scripts')
+<script src="{{ URL::asset('/assets/js/signature.js') }}"></script>
+@endpush
