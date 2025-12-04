@@ -207,33 +207,33 @@ class KeywordHelper
         // 3️⃣ Replace placeholders dynamically
         // ------------------------------------------------------------
         foreach ($data as $key => $value) {
-            if ($key !== 'PatientSignature' || $key !== 'DoctorSignature'  ) { // skip signature here
+            if ($key !== 'PatientSignature' && $key !== 'DoctorSignature'  ) { // skip signature here
                 $template->setValue($key, $value ?? '');
             }
         }
 
-       // Paths for signatures (fallback if missing)
+       // Paths for signatures
         $patientSignaturePath = $patient->patient_signature 
-        ? storage_path('app/public/' . $patient->patient_signature) 
-        : public_path('assets/img/banner-lief-img.png');
+            ? storage_path('app/public/' . $patient->patient_signature) 
+            : public_path('assets/img/banner-lief-img.png');
 
         $doctorSignaturePath = optional($patient->doctor)->doctor_signature
-        ? storage_path('app/public/' . $patient->doctor->doctor_signature)
-        : public_path('assets/img/banner-lief-img.png');
+            ? storage_path('app/public/' . $patient->doctor->doctor_signature)
+            : public_path('assets/img/banner-lief-img.png');
 
-        // Replace placeholders with images
+        // Replace placeholders with images using local paths
         if (file_exists($patientSignaturePath)) {
             $template->setImageValue('PatientSignature', [
-                'path' => asset('storage/' . $patient->patient_picture),
-                'width' => 150,    // adjust width
-                'height' => 100,   // adjust height
+                'path' => $patientSignaturePath,
+                'width' => 150,
+                'height' => 100,
                 'ratio' => true
             ]);
         }
 
         if (file_exists($doctorSignaturePath)) {
             $template->setImageValue('DoctorSignature', [
-                'path' => asset('storage/' . $patient->doctor->doctor_signature),
+                'path' => $doctorSignaturePath,
                 'width' => 150,
                 'height' => 100,
                 'ratio' => true
