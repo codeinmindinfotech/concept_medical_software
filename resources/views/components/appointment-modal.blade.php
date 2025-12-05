@@ -41,7 +41,7 @@
 
                         <div class="col-md-6">
                             <label for="appointment_type" class="form-label">Appointment Type<span class="txt-error">*</span></label>
-                            <select class="form-select" id="appointment_type" name="appointment_type">
+                            <select class="form-select" id="appointment_type" name="appointment_type" required>
                                 @foreach($appointmentTypes as $id => $value)
                                 <option value="{{ $id }}">{{ $value }}</option>
                                 @endforeach

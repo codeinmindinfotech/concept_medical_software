@@ -39,5 +39,104 @@
 
 		<!-- Datatables CSS -->
 		<link rel="stylesheet" href="{{ url('assets_admin/plugins/datatables/datatables.min.css') }}">
+<style>/* ================================
+	DATATABLE PAGINATION (DOC CURE STYLE)
+	Compatible with DataTables v2
+ =================================== */
+ 
+ /* Pagination wrapper */
+ .dt-paging {
+	 margin-top: 20px;
+ }
+ 
+ .dt-paging nav {
+	 display: flex;
+	 align-items: center;
+	 gap: 6px;
+ }
+ 
+ /* All pagination buttons */
+ .dt-paging-button {
+	 padding: 8px 14px !important;
+	 background: #ffffff !important;
+	 border: 1px solid #e4e4e4 !important;
+	 color: #6c757d !important;
+	 border-radius: 6px !important;
+	 cursor: pointer !important;
+	 font-size: 14px !important;
+	 min-width: 38px;
+	 text-align: center;
+	 line-height: normal;
+	 transition: all 0.25s ease;
+ }
+ 
+ /* Rounded like Doccure */
+ .dt-paging-button {
+	 border-radius: 50px !important;
+ }
+ 
+ /* Hover State */
+ .dt-paging-button:not(.disabled):hover {
+	 background: #eef3ff !important;
+	 border: 2px solid #c7d3ff  !important;
 
+	 border-color: #c7d3ff !important;
+	 color: #336c9c !important;
+ }
+ 
+ /* Active Page */
+ .dt-paging-button.current {
+	 /* background: #336c9c !important; */
+	 color: #ffffff !important;
+	 border: 2px solid #336c9c  !important;
+	 /* border-color: #336c9c !important; */
+	 font-weight: 600 !important;
+ }
+ 
+ /* Disabled Buttons */
+ .dt-paging-button.disabled {
+	 background: #f8f9fa !important;
+	 color: #b7b7b7 !important;
+	 border-color: #e4e4e4 !important;
+	 cursor: not-allowed !important;
+	 opacity: 0.6;
+ }
+ 
+ /* First / Previous / Next / Last icons styling */
+ .dt-paging-button.first,
+ .dt-paging-button.previous,
+ .dt-paging-button.next,
+ .dt-paging-button.last {
+	 font-weight: bold;
+ }
+ 
+ /* Prevent pagination from squashing */
+ .dt-layout-end {
+	 display: flex;
+	 justify-content: flex-end;
+ }
+ 
+ /* ------- Mobile Responsive -------- */
+ @media (max-width: 576px) {
+ 
+	 .dt-paging nav {
+		 flex-wrap: wrap;
+		 gap: 4px;
+	 }
+ 
+	 .dt-paging-button {
+		 padding: 6px 10px !important;
+		 font-size: 13px !important;
+		 min-width: 30px;
+	 }
+ }
+ 
+ /* For Dark backgrounds (optional) */
+ .dark-mode .dt-paging-button {
+	 border-color: #444 !important;
+	 background: #222 !important;
+	 color: #bbb !important;
+ }
+ 
+</style>
 		@stack('styles')

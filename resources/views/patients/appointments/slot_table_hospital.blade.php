@@ -147,4 +147,11 @@
         </td>
     </tr>
     @endif
+
+
+    <div class="mb-3 justify-content-end p-3 border-bottom" id="manualSlotButton" class="d-flex ">
+        <button class="btn btn-sm btn-outline-primary" onclick="openManualBookingModal()">
+            <i class="fas fa-plus me-1"></i> Add Manual Slot
+        </button>
+    </div>
 @endif

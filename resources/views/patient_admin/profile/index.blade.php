@@ -1,20 +1,12 @@
 <?php $page = 'patient-dashboard'; ?>
 @extends('layout.mainlayout')
 @section('content')
-{{-- @component('components.admin.breadcrumb')
-@slot('title') Edit History @endslot
-@slot('li_1') Patients @endslot
-@slot('li_2') Edit @endslot
-@endcomponent --}}
 <!-- Page Content -->
 <div class="content">
     <div class="container">
 
         <div class="row">
-
-
-
-            <!-- / Profile Sidebar -->
+    <!-- / Profile Sidebar -->
             @php
             $hasFilters = request()->hasAny(['first_name', 'surname', 'phone', 'dob']);
             @endphp
