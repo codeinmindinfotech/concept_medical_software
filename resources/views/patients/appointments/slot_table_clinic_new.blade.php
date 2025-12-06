@@ -20,14 +20,14 @@
                             $isSuperAdmin = (($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
                             $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
                             $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && $appointment->patient->id === $patient->id);
-
+                            $isclinic = (getCurrentGuard() == "clinic");
                             $rowClass =  $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' ;
                         @endphp
 
                         <div class="d-flex align-items-center mb-2 p-2 border rounded shadow-sm draggable"
                              data-appointment-id="{{ $appointment->id }}"
                              data-time-slot="{{ $time }}"
-                             @if($isSuperAdmin || $isPatientUserEditingOwnAppointment || $isCurrentPatient)
+                             @if($isSuperAdmin || $isPatientUserEditingOwnAppointment || $isCurrentPatient || $isclinic)
                                  draggable="true"
                                  ondragstart="onDragStart(event)"
                                  ondrop="onDrop(event)"
@@ -85,7 +85,7 @@
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                    @if($isSuperAdmin || $isPatientUserEditingOwnAppointment || $isCurrentPatient)
+                                    @if($isSuperAdmin || $isPatientUserEditingOwnAppointment || $isCurrentPatient || $isclinic)
                                         <li>
                                             <a href="javascript:void(0)" class="dropdown-item edit-appointment"
                                                data-id="{{ $appointment->id }}">
@@ -131,8 +131,7 @@
                         </div>
                     @endforeach
                 @else
-                    <!-- Empty Slot with Book button -->
-                    <div class="d-flex align-items-center justify-content-between p-2 border rounded shadow-sm">
+                    <div class="d-flex align-items-center justify-content-between p-2 border rounded shadow-sm" ondrop="onDrop(event)" ondragover="onDragOver(event)" data-time-slot="{{ $time }}">
                         <span class="text-muted fst-italic">This time slot is available.</span>
                         <button class="btn btn-sm btn-outline-primary" onclick="bookSlot('{{ $time }}')">
                             <i class="fas fa-plus me-1"></i> Book

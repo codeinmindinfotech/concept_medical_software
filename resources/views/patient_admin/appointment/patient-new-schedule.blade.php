@@ -8,9 +8,7 @@
             <button id="prevDay" class="btn btn-outline-primary">&larr;</button>
             <input type="date" id="selectedDate" class="form-control" style="width: 150px;" value="{{ date('Y-m-d') }}">
             <button id="nextDay" class="btn btn-outline-primary">&rarr;</button>
-
             <select id="clinic-select" class="form-select ms-3" style="width: 200px;">
-                <option value="">Select Clinic</option>
                 @foreach($clinics as $clinic)
                     <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
                 @endforeach
@@ -18,8 +16,8 @@
 
             <select id="patient-select" class="form-select" style="width: 200px;">
                 <option value="">Select Patient</option>
-                @foreach($patients as $patient)
-                    <option value="{{ $patient->id }}">{{ $patient->full_name }}</option>
+                @foreach($patients as $pat)
+                    <option value="{{ $pat->id }}">{{ $pat->full_name }}</option>
                 @endforeach
             </select>
 
@@ -68,13 +66,13 @@
     <x-clinic-overview-count-modal />
 
     <!-- Hospital Booking Modal -->
-    <x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+    <x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="$flag" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 
     <!-- Status Change Modal -->
-    <x-status-modal :diary_status="$diary_status" :flag="0" />
+    <x-status-modal :diary_status="$diary_status" :flag="$flag" />
 
     <!-- Appointment Booking Modal -->
-    <x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+    <x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="$flag" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 @endpush
 @push('scripts')
 <script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
@@ -84,10 +82,18 @@
         updateSlotUrl: "{{ guard_route('appointments.update-slot') }}",
         reportUrl: "{{ guard_route('reports.entire-day') }}",
         csrfToken: "{{ csrf_token() }}",
+        fetchAppointmentRoute: "{{ guard_route('appointments.edit', ['id' => '__ID__']) }}",
         initialDate: "{{ date('Y-m-d') }}",
-        patientName: "{{ $patient ? $patient->full_name : '' }}",
-        patientDob: "{{ $patient ? format_date($patient->dob) : '' }}",
+        patientId: "{{ $patient ? $patient->id : '' }}",
         storeHospitalAppointment: "{{ $patient ?guard_route('hospital_appointments.store', ['patient' => $patient->id]) :guard_route('hospital_appointments.storeGlobal') }}",
+        statusAppointment: (appointmentId, patientId) =>
+            `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+            .replace('__PATIENT_ID__', patientId)
+            .replace('__APPOINTMENT_ID__', appointmentId),
+        destroyAppointment: (appointmentId, patientId) =>
+            `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+            .replace('__PATIENT_ID__', patientId)
+            .replace('__APPOINTMENT_ID__', appointmentId),
     };
 </script>
 <script src="{{ URL::asset('/assets/js/appointment.js') }}"></script>

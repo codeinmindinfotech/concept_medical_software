@@ -152,6 +152,7 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
     // Appointments
     Route::prefix("$prefix/appointments")->group(function () {
+        Route::get('/new_schedule', [AppointmentController::class, 'newSchedulePage'])->name('patients.appointments.new_patient_schedule')->defaults('flag', 0);
 
         Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
         Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
@@ -163,7 +164,8 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     });
 
     Route::prefix('appointments')->group(function () {
-        Route::get('/new_schedule', [AppointmentController::class, 'newSchedulePage'])->name('patients.appointments.new_schedule')->defaults('flag', 0);
+        Route::get('/new_schedule', [AppointmentController::class, 'newSchedulePage'])->name('patients.appointments.new_schedule')->defaults('flag', 1);
+        Route::get('/{id}/edit', [AppointmentController::class, 'fetchAppointmentData'])->name('appointments.edit');
 
         Route::post('/{appointment}/reschedule', [PlannerController::class, 'reschedule'])->name('appointments.reschedule');
         Route::post('/available-slots', [AppointmentController::class, 'availableSlots'])->name('appointments.availableSlots')->defaults('flag', 0);

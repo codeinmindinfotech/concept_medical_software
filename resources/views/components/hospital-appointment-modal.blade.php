@@ -15,26 +15,18 @@
                         <input type="hidden" class="form-control" id="hospital-clinic-id" name="clinic_id">
                     @endif
                     <input type="hidden" class="form-control" id="hospital-appointment-id" name="hospital_id">
-                    <div class="row g-3">
-                        @if ($patient)
-                        <div class="col-md-6">
-                            <input type="hidden" id="hospital-patient-id" name="patient_id" value="">
-                            <label class="form-label">Patient Name<span class="txt-error">*</span></label>
-                            <input type="text" class="form-control" id="hospital-patient-name" readonly>
-                        </div>
-                        @else 
+                    <div class="row g-3"> 
                         <div class="col-md-6">
                             <label class="form-label">Select Patient<span class="txt-error">*</span></label>
                             <select class="select2 form-select" id="hospital-patient-id" name="patient_id" style="width:100%">
                                 <option value="">-- Select Patient --</option>
-                                @foreach ($patients as $p)
-                                    <option value="{{ $p->id }}"
-                                        data-dob="{{ format_date($p->dob) }}"
-                                        data-consultant="{{ $p->consultant->name }}">{{ $p->full_name }}</option>
+                                @foreach ($patients as $pt)
+                                    <option value="{{ $pt->id }}"
+                                        data-dob="{{ format_date($pt->dob) }}"
+                                        data-consultant="{{ $pt->consultant->name }}">{{ $pt->full_name }}</option>
                                 @endforeach
                             </select>
                         </div>                        
-                        @endif
                         <div class="col-md-6">
                             <label class="form-label">Date of Birth<span class="txt-error">*</span></label>
                             <div class="input-group">

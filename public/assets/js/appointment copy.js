@@ -106,23 +106,6 @@ class AppointmentManager {
         });
     }
 
-    handleEditClick(e) {
-        // Edit regular appointment
-        if (e.target.closest('.edit-appointment')) {
-            const btn = e.target.closest('.edit-appointment');
-            const appointmentId = btn.dataset.id;
-            this.fetchAppointmentData(appointmentId);
-        }
-    
-        // Edit hospital appointment
-        if (e.target.closest('.edit-hospital-appointment')) {
-            const btn = e.target.closest('.edit-hospital-appointment');
-            const appointmentId = btn.dataset.id;
-            this.fetchHospitalAppointmentData(appointmentId);
-        }
-    }
-    
-
     async loadAppointments() {
         if (!this.selectedDate) return;
 
@@ -502,30 +485,27 @@ class AppointmentManager {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-
-    if (document.querySelector('#appointments-container')) {
-
     const appointmentManager = new AppointmentManager({
-    containerSelector: '#appointments-container',
-    loaderSelector: '#globalLoader',
-    dateSelector: '#selectedDate',
-    prevBtnSelector: '#prevDay',
-    nextBtnSelector: '#nextDay',
-    clinicSelector: '#clinic-select',
-    patientSelector: '#patient-select',
-    loadUrl: window.appConfig.loadAppointmentsUrl,
-    fetchAppointmentRoute: window.appConfig.fetchAppointmentRoute,
-    updateSlotUrl: window.appConfig.updateSlotUrl,
-    csrfToken: window.appConfig.csrfToken,
-    patientId: window.appConfig.patientId,
-    initialDate: window.appConfig.initialDate,
-    storeHospitalAppointment: window.appConfig.storeHospitalAppointment,
-    statusAppointment: window.appConfig.statusAppointment,
-    destroyAppointment: window.appConfig.destroyAppointment,
+        containerSelector: '#appointments-container',
+        loaderSelector: '#globalLoader',
+        dateSelector: '#selectedDate',
+        prevBtnSelector: '#prevDay',
+        nextBtnSelector: '#nextDay',
+        clinicSelector: '#clinic-select',
+        patientSelector: '#patient-select',
+        loadUrl: window.appConfig.loadAppointmentsUrl,
+        fetchAppointmentRoute: window.appConfig.fetchAppointmentRoute,
+        updateSlotUrl: window.appConfig.updateSlotUrl,
+        csrfToken: window.appConfig.csrfToken,
+        patientId: window.appConfig.patientId,
+        initialDate: window.appConfig.initialDate,
+        storeHospitalAppointment: window.appConfig.storeHospitalAppointment,
+        statusAppointment: window.appConfig.statusAppointment,
+        destroyAppointment: window.appConfig.destroyAppointment,
     });
 
     // Expose globally for onclick
-
+    
     window.onDragStart = (event) => appointmentManager.onDragStart(event);
     window.onDragOver = (event) => appointmentManager.onDragOver(event);
     window.onDrop = (event) => appointmentManager.onDrop(event);
@@ -533,45 +513,45 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openManualBookingModal = () => appointmentManager.openManualBookingModal();
     window.openStatusModal = (appointmentId, patientId, status) => appointmentManager.openStatusModal(appointmentId, patientId, status);
     window.deleteAppointment= (appointmentId, patientId, flag) => appointmentManager.deleteAppointment(appointmentId, patientId, flag);
-    // For Book Appointment Modal
+   // For Book Appointment Modal
     PopupForm.init('#bookAppointmentModal', '#bookAppointmentForm', (response) => {
-    // Reload appointments after booking
-    appointmentManager.loadAppointments();
-    Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: response.message || 'Appointment booked successfully!',
-        timer: 2000,
-        showConfirmButton: false
-    });
+        // Reload appointments after booking
+        appointmentManager.loadAppointments();
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.message || 'Appointment booked successfully!',
+            timer: 2000,
+            showConfirmButton: false
+        });
     });
 
     // For Manual Booking Modal
     PopupForm.init('#manualBookingModal', '#manualBookingForm', (response) => {
-    // Do something after manual booking
-    appointmentManager.loadAppointments();
-    Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: response.message || 'Appointment booked For Hospital successfully!',
-        timer: 2000,
-        showConfirmButton: false
-    });
+        // Do something after manual booking
+        appointmentManager.loadAppointments();
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.message || 'Appointment booked For Hospital successfully!',
+            timer: 2000,
+            showConfirmButton: false
+        });
     });
 
     PopupForm.init('#statusChangeModal', '#statusChangeForm', (response) => {
-    // Optionally reload appointments table
-    appointmentManager.loadAppointments();
-    Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: response.message || 'Status updated successfully!',
-        timer: 2000,
-        showConfirmButton: false
+        // Optionally reload appointments table
+        appointmentManager.loadAppointments();
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.message || 'Status updated successfully!',
+            timer: 2000,
+            showConfirmButton: false
+        });
+        $('#statusChangeModal').modal('hide');
     });
-    $('#statusChangeModal').modal('hide');
-    });
-    }
+    
 
 });
 

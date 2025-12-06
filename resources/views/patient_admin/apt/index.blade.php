@@ -15,9 +15,13 @@
 			    <div class="card mb-4 shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-user-clock me-2"></i> Default SMS Template
+                            <i class="fas fa-user-clock me-2"></i> Patient Appointment
                         </h5>
+                        <a href="{{ guard_route('patients.appointments.new_patient_schedule', ['patient' => $patient]) }}" class="btn bg-primary text-white btn-light btn-sm">
+                            <i class="fas fa-plus-circle me-1"></i> New Appointment
+                        </a>
                     </div>
+                    
                     <div class="card-body">
                         @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>

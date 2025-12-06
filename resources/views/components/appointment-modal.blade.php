@@ -6,7 +6,7 @@
             @csrf
             <div class="modal-content">
                 <div class="modal-header bg-primary-light">
-                    <h5 class="modal-title" id="bookAppointmentLabel">Book Appointment</h5>
+                    <h5 class="modal-title" id="bookAppointmentLabel">Book Appointment </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -14,13 +14,7 @@
                     <input type="hidden" name="appointment_id" id="appointment-id">
 
                     <div class="row g-3">
-                        @if ($patient)
-                        <div class="col-md-6">
-                            <input type="hidden" name="patient_id" id="appointment-patient-id" value="{{$patient->id??''}}">
-                            <label class="form-label">Patient Name<span class="txt-error">*</span></label>
-                            <input type="text" class="form-control" id="modal-patient-name" readonly>
-                        </div>
-                        @else
+                        
                         <div class="col-md-6">
                             <label class="form-label">Select Patient</label>
                             <select class="form-select select2" id="patient-id" name="patient_id" style="width:100%">
@@ -30,7 +24,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        @endif
+                        
                         <div class="col-md-6">
                             <label class="form-label">Date of Birth</label>
                             <div class="input-group">

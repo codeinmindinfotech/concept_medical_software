@@ -3,10 +3,12 @@
 
 @push('styles')
 <style>
+#calendar {
+    width: 100% !important;
+}
 .fc-event {
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 0.85rem;
-    font-weight: 500;
     padding: 5px;
     cursor: pointer;
 }
@@ -14,26 +16,7 @@
 @endpush
 
 <div class="content">
-    <div class="container mt-5">
-
-        <div class="row mb-3 align-items-center">
-            <!-- Clinic filter -->
-            <div class="col-md-4">
-                <select id="clinicFilter" class="form-select">
-                    <option value="">-- Select Clinic --</option>
-                    @foreach($clinics as $clinic)
-                        <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Add Appointment Button -->
-            <div class="col-md-2 ms-auto text-end">
-                <a href="{{ guard_route('patients.appointments.new_schedule') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i> Add Appointment
-                </a>
-            </div>
-        </div>
+    <div class="container mt-4">
 
         <div class="card shadow-sm">
             <div class="card-body">
@@ -45,161 +28,106 @@
 </div>
 
 @endsection
+
 @push('modals')
+    <x-status-modal :diary_status="$diary_status" :flag="0" />
+    <x-hospital-appointment-modal 
+        :clinics="$clinics" 
+        :patients="$patients"
+        :patient="$patient ?? ''" 
+        :procedures="$procedures" 
+        :flag="0"
+        :action="$patient ? guard_route('patients.appointments.store',['patient'=>$patient->id]) : guard_route('appointments.storeGlobal')"
+    />
 
-<!-- Status Change Modal -->
-<x-status-modal :diary_status="$diary_status" :flag="0" />
-
-<!-- Hospital Booking Modal -->
-<x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
-
-<!-- Include your bookAppointmentModal component -->
-<x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="0" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
-
-
-
+    <x-appointment-modal 
+        :clinics="$clinics" 
+        :patients="$patients"
+        :patient="$patient ?? ''"
+        :appointmentTypes="$appointmentTypes"
+        :flag="0" 
+        :action="$patient ? guard_route('patients.appointments.store',['patient'=>$patient->id]) : guard_route('appointments.storeGlobal')"
+    />
 @endpush
+
 @push('scripts')
 <script src="{{ URL::asset('/assets/plugins/fullcalendar/3.10.2/fullcalendar.min.js') }}"></script>
 <script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
+
 <script>
-    window.Laravel = {
-        csrfToken: "{{ csrf_token() }}"
-    };
+/* REQUIRED BY appointment.js */
+window.appConfig = {
+    fetchAppointmentRoute: "{{ guard_route('appointments.edit', ['id' => '__ID__']) }}",
+    statusAppointment: (appointmentId, patientId) =>
+        `{{ guard_route('patients.appointments.updateStatus',['patient'=>'__PID__','appointment'=>'__AID__']) }}`
+            .replace('__PID__', patientId)
+            .replace('__AID__', appointmentId),
+    destroyAppointment: (appointmentId, patientId) =>
+        `{{ guard_route('patients.appointments.destroy',['patient'=>'__PID__','appointment'=>'__AID__']) }}`
+            .replace('__PID__', patientId)
+            .replace('__AID__', appointmentId),
+    storeHospitalAppointment: "{{ $patient ? guard_route('hospital_appointments.store',['patient'=>$patient->id]) : guard_route('hospital_appointments.storeGlobal') }}",
+    csrfToken: "{{ csrf_token() }}"
+};
+
+/* EXTRA FOR CALENDAR PAGE */
+window.calendarConfig = {
+    fetchAllAppointments : "{{ guard_route('patients.appointments.index') }}",
+    patientUrl: "{{ guard_route('patients.show', ['patient' => '__PID__']) }}",
+};
 </script>
-<script src="{{ URL::asset('/assets/js/calendar.js') }}"></script>
 <script>
-    const routes = {
-        storeHospitalAppointment: "{{ $patient ?guard_route('hospital_appointments.store', ['patient' => $patient->id]) :guard_route('hospital_appointments.storeGlobal') }}",
-        fetchAppointmentsByDate: "{{ $patient ? guard_route('patients.appointments.byDate', ['patient' => $patient->id]) : guard_route('appointments.byDateGlobal') }}",
-        fetchAllAppointments: "{{ guard_route('patients.appointments.index') }}",
-        statusAppointment: (appointmentId, patientId) =>
-            `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
-            .replace('__PATIENT_ID__', patientId)
-            .replace('__APPOINTMENT_ID__', appointmentId)
-    };
+$(document).ready(function() {
 
-    $(document).ready(function() {
-    function loadCalendar(clinicId = '') {
-        $('#calendar').fullCalendar('destroy');
+    $('#calendar').fullCalendar({
+        height: 580,
+        contentHeight: 580,
+        aspectRatio: 2.0,
+        defaultView: 'month',
+        editable: false,
+        selectable: true,
 
-        $('#calendar').fullCalendar({
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month' // only month view
-            },
-            height: 450, // compact height
-            contentHeight: 450, // ensures height fits inside card
-            editable: false,
-            selectable: true,
-            eventLimit: true,
-            events: {
-                url: routes.fetchAllAppointments,
-                type: 'GET',
-                data: { clinic_id: clinicId }
-            },
-            eventClick: function(event) {
-				// Show options to user
-				Swal.fire({
-					title: 'Select Action',
-					showDenyButton: true,
-					showCancelButton: true,
-					confirmButtonText: 'Edit Appointment',
-					denyButtonText: 'Change Status',
-				}).then((result) => {
-					if (result.isConfirmed) {
-						// Edit appointment
-						fillAppointmentModal(event, event.clinic_type);
-					} else if (result.isDenied) {
-						// Change status
-						openStatusModal(event.id, event.patient_id, event.status);
-					}
-					// Cancel does nothing
-				});
-			},
+        /** THIS ENABLES +more **/
+        eventLimit: true,
 
-            // eventClick: function(event) {
-            //     const date = moment(event.start).format('YYYY-MM-DD');
-            //     const clinicId = $('#clinicFilter').val() || '';
-            //     window.location.href = `${routes.fetchAppointmentsByDate}?date=${date}&clinic_id=${clinicId}`;
-            // },
-            select: function(start) {
-                const date = start.format('YYYY-MM-DD');
-                const clinicId = $('#clinicFilter').val();
-                if (!clinicId) {
-                    Swal.fire({ icon: 'warning', title: 'Select Clinic', text: 'Please select a clinic first.' });
-                    return false;
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: ''
+        },
+
+        events: {
+            url: calendarConfig.fetchAllAppointments,
+            type: 'GET'
+        },
+
+        eventClick: function(event) {
+            Swal.fire({
+                title: "Choose Action",
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: "Edit",
+                denyButtonText: "Status",
+                cancelButtonText: "Cancel",
+                footer: `<a href="${calendarConfig.patientUrl.replace('__PID__', event.patient_id)}" target="_blank">View Patient</a>`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetchAppointmentData(event.id);
                 }
-                window.location.href = `${routes.fetchAppointmentsByDate}?date=${date}&clinic_id=${clinicId}`;
-            },
-            views: {
-                month: {
-                    // Remove extra time and slots from month view
-                    titleFormat: 'MMMM YYYY', // e.g., December 2025
-                    columnHeaderFormat: 'dddd' // shows just 1,2,3...
+                else if (result.isDenied) {
+                    openStatusModal(event.id, event.patient_id, event.status);
                 }
-            },
-            columnHeaderFormat: 'dddd' // shows 1,2,3 in the top header row
-        });
-    }
+            });
+        },
 
-    loadCalendar($('#clinicFilter').val());
-
-    $('#clinicFilter').on('change', function() {
-        loadCalendar($(this).val());
+        select: function(date) {
+            const selected = date.format('YYYY-MM-DD');
+            window.location.href = `{{ guard_route('patients.appointments.new_schedule') }}?date=${selected}`;
+        }
     });
 
-    function fillAppointmentModal(event, selectedClinicType) {
-            // Common fields
-            $("#appointment-id").val(event.id);
-            $("#appointment-patient-id").val(event.patient_id);
-            $("#patient-id").val(event.patient_id);
-
-            $("#modal-patient-name").val(event.patient_name);
-            $("#modal-dob").val(event.dob);
-            $("#clinic_consultant").val(event.consultant);
-            $("#appointment_type").val(event.appointment_type);
-            $("#modal-appointment-date").val(moment(event.start).format('YYYY-MM-DD'));
-            $("#start_time").val(moment(event.start).format('HH:mm'));
-            $("#end_time").val(moment(event.end).format('HH:mm'));
-            $("#patient_need").val(event.patient_need);
-            $("#appointment_note").val(event.appointment_note);
-
-            // Hospital-specific fields
-            $("#hospital-clinic-id").val(event.clinic_id);
-            $("#hospital-appointment-id").val(event.id);
-            $("#hospital-patient-id").val(event.patient_id);
-            $("#hospital-dob").val(event.dob);
-            $("#hospital_appointment_date").val(moment(event.start).format('YYYY-MM-DD'));
-            $("#hospital_start_time").val(moment(event.start).format('HH:mm'));
-            $("#admission_date").val(event.admission_date);
-            $("#admission_time").val(event.admission_time);
-            $("#operation_duration").val(event.operation_duration);
-            $("#ward").val(event.ward);
-            $("#allergy").val(event.allergy);
-            $("#procedure_id").val(event.procedure_id);
-            $("#consultant").val(event.consultant);
-            $("#notes").val(event.appointment_note);
-            $("#appointment-clinic-id").val(event.clinic_id);
-
-            // Slots
-            $(".apt-slot-radio").prop('checked', false);
-            if (event.apt_slots) {
-                $("#slot" + event.apt_slots).prop('checked', true);
-            } else {
-                $("#slot1").prop('checked', true);
-            }
-
-            // Set form action for hospital modal
-            if (selectedClinicType === "hospital") {
-                $('#manualBookingForm').attr('data-action', routes.storeHospitalAppointment);
-                $("#manualBookingModal").modal("show");
-            } else {
-                $("#bookAppointmentModal").modal("show");
-            }
-        }
 });
-
 </script>
+<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
+
 @endpush

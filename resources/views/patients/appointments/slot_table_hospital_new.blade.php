@@ -13,6 +13,7 @@
                 : 'appointment-default';
 
             $user = current_user();
+            $isclinic = (getCurrentGuard() == "clinic");
             $isSuperAdmin = (($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
             $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
             $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && optional($appointment->patient)->id === optional($patient)->id);
@@ -42,7 +43,7 @@
                     <p class="mb-1"><strong>Clinic:</strong> {{ optional($appointment->clinic)->name ?? '-' }}</p>
                     <p class="mb-1"><strong>Procedure:</strong> {{ optional($appointment->procedure)->code ?? '-' }}</p>
                     <p class="mb-1"><strong>Admission Date:</strong> {{ $appointment->admission_date ?? '-' }}</p>
-                    <p class="mb-1"><strong>Admission Time:</strong> {{ format_time($appointment->admission_time ?? '-') }}</p>
+                    <p class="mb-1"><strong>Admission Time:</strong> {{ format_time($appointment->start_time ?? '-') }}</p>
                     <p class="mb-1"><strong>Operation Duration:</strong> {{ $appointment->operation_duration ?? '-' }} mins</p>
                     <p class="mb-1"><strong>Allergy:</strong> {{ $appointment->allergy ?? '-' }}</p>
                     <p class="mb-1 text-muted small">{{ $appointment->appointment_note ?? '-' }}</p>
@@ -64,25 +65,11 @@
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
+                                @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin  || $isclinic)
                                     <li>
                                         <a class="dropdown-item text-success edit-hospital-appointment"
                                            href="javascript:void(0)"
-                                           data-id="{{ $appointment->id }}"
-                                           data-consultant="{{ optional($appointment->patient->consultant)->name }}"
-                                           data-clinic_id="{{ $appointment->clinic_id }}"
-                                           data-type="{{ $appointment->appointment_type }}"
-                                           data-date="{{ $appointment->appointment_date }}"
-                                           data-admission_date="{{ $appointment->admission_date }}"
-                                           data-start="{{ format_time($appointment->start_time) }}"
-                                           data-operation_duration="{{ $appointment->operation_duration }}"
-                                           data-ward="{{ $appointment->ward }}"
-                                           data-admission_time="{{ format_time($appointment->admission_time) }}"
-                                           data-procedure_id="{{ $appointment->procedure_id }}"
-                                           data-patient_id="{{ optional($appointment->patient)->id }}"
-                                           data-patient_name="{{ optional($appointment->patient)->full_name }}"
-                                           data-allergy="{{ $appointment->allergy }}"
-                                           data-note="{{ $appointment->appointment_note }}">
+                                           data-id="{{ $appointment->id }}">
                                             <i class="fa fa-pencil-square"></i> Edit Appointment
                                         </a>
                                     </li>
@@ -90,6 +77,12 @@
                                         <a class="dropdown-item text-danger" href="javascript:void(0)"
                                            onclick="deleteAppointment({{ $appointment->id }},{{ optional($appointment->patient)->id ?? 0 }},0)">
                                             <i class="fa fa-trash"></i> Delete Appointment
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-primary" href="javascript:void(0)"
+                                           onclick="openStatusModal({{ $appointment->id }}, {{ $appointment->patient->id }}, '{{ $appointment->appointment_status }}')">
+                                            <i class="fa fa-sync-alt me-2"></i> Change Status
                                         </a>
                                     </li>
                                 @endif

@@ -17,7 +17,7 @@
     @include('layout.partials.breadcrumb', [
     'pageTitle' => 'Patient Apt/Surgery',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('patients.index'),
+    'backUrl' =>guard_route('patients.appointments.schedule', ['patient' => $patient]),
     'isListPage' => false
     ])
 
