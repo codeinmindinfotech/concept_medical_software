@@ -76,7 +76,7 @@
                             data-appointment-time="{{ $time }}">
                         <i class="fab fa-whatsapp"></i> Send Message
                     </button>
-                  </td>
+                </td>
                   
                 <td>
                     <div class="dropdown">

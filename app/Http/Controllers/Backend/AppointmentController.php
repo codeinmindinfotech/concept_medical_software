@@ -18,7 +18,7 @@ class AppointmentController extends Controller
 {
     use DropdownTrait;
     
-    public function newSchedulePage(Request $request, ?Patient $patient = null)
+    public function schedulePage(Request $request, ?Patient $patient = null)
     {
         $flag = $request->route('flag');
         $this->authorize('viewAny', Appointment::class);
@@ -36,27 +36,7 @@ class AppointmentController extends Controller
         $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();
-        return view(guard_view('patients.appointments.patient-schedule', 'patient_admin.appointment.patient-new-schedule'), compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes','flag'));
-    }
-    public function schedulePage(Request $request, ?Patient $patient = null)
-    {
-        $this->authorize('viewAny', Appointment::class);
-        if (has_role('patient')) {
-            $user = auth()->user();
-            $patients = Patient::companyOnly()->with('title')->where('id', $user->id)->paginate(1);
-        } else {
-            $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
-        }
-        
-        $clinics = Clinic::companyOnly()->get()->map(function ($clinic) {
-            return $clinic;
-        });
-
-        $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
-        $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
-        $procedures = ChargeCode::companyOnly()->get();
-        
-        return view(guard_view('patients.appointments.patient-schedule', 'patient_admin.appointment.patient-schedule'), compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));
+        return view(guard_view('patients.appointments.patient-schedule', 'patient_admin.appointment.patient-schedule'), compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes','flag'));
     }
 
     public function calendarEvents(Request $request, ?Patient $patient = null)
@@ -745,6 +725,7 @@ class AppointmentController extends Controller
         $request->validate([
             'date' => 'required|date',
             'clinic_id' => 'required|integer',
+            'appointment_id' => 'required|integer',
         ]);
 
         try {
@@ -755,6 +736,7 @@ class AppointmentController extends Controller
             ])
             ->whereDate('appointment_date', $request->date)
             ->where('clinic_id', $request->clinic_id)
+            ->where('id', $request->appointment_id)
             ->orderBy('start_time')
             ->companyOnly()
             ->get();

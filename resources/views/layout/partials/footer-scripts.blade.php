@@ -45,6 +45,16 @@
 
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets/js/script.js') }}"></script>
+<script>
+    window.appConfig = {
+         //set caledar days
+        calendarDays: "{{ guard_route('calendar.days') }}",
+		savecalendarDays: "{{ guard_route('calendar.store') }}",
+    };
+</script>
+<!-- Modalpopup JS -->
+<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
+
 
 
 @stack('scripts')

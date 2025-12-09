@@ -1,4 +1,5 @@
 class AppointmentManager {
+    alert("edit-hospital-appointment");
     constructor(config) {
         this.container = document.querySelector(config.containerSelector);
         this.loader = document.querySelector(config.loaderSelector);
@@ -149,12 +150,20 @@ class AppointmentManager {
     }
 
     changeDate(offset) {
+        // Ensure selectedDate has a fallback
+        if (!this.selectedDate || isNaN(new Date(this.selectedDate))) {
+            this.selectedDate = this.dateInput?.value || new Date().toISOString().split('T')[0];
+        }
+    
         const date = new Date(this.selectedDate);
         date.setDate(date.getDate() + offset);
         this.selectedDate = date.toISOString().split('T')[0];
-        this.dateInput.value = this.selectedDate;
+        if (this.dateInput) this.dateInput.value = this.selectedDate;
+    
         this.loadAppointments();
     }
+    
+    
 
     showLoader(show) {
         this.loader.style.display = show ? 'block' : 'none';

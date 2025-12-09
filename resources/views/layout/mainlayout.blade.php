@@ -30,6 +30,8 @@
 <body class="login-body">
 @endif
 
+<x-set-calendar-days-modal :clinics="$clinics" />
+
 @include('layout.partials.header')
 
     @yield('content')
@@ -43,7 +45,8 @@
         <i class="fa fa-spinner"></i>
     </div> --}}
     @stack('modals')
-
+    <!-- Modal -->
+    
     @include('layout.partials.footer-scripts')
 
 </body>

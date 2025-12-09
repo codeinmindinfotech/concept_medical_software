@@ -30,8 +30,8 @@
                     <li class="megamenu {{ in_array(Route::currentRouteName(), $calendarRoutes) ? 'active' : '' }}">
                         <a href="{{ guard_route('calendar') }}">Planner</a>
                     </li>
-                    <li class="megamenu {{ is_guard_route('appointments.new_schedule') ? 'active' : '' }}">
-                        <a href="{{ guard_route('patients.appointments.new_schedule') }}">Diary</a>
+                    <li class="megamenu {{ is_guard_route('appointments.schedule') ? 'active' : '' }}">
+                        <a href="{{ guard_route('appointments.schedule') }}">Diary</a>
                     </li>
 
                     <li class="megamenu {{ is_guard_route('patients') ? 'active' : '' }}">
@@ -208,6 +208,7 @@
                                 <p class="text-muted mb-0">{{$currentGuard}}</p>
                             </div>
                         </div>
+                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">Set Calendar Days</a>
                         <a class="dropdown-item" href="{{guard_route('patient.dashboard.index')}}">Dashboard</a>
                         <a class="dropdown-item" href="{{ guard_route($currentGuard . 's.edit',Auth::user()->id) }}">Change profile</a>
                         <a class="dropdown-item" href="{{ guard_route('password.change') }}">Change Password</a>
@@ -222,9 +223,6 @@
                 </li>
                 <!-- /User Menu -->
             </ul>
-
-
-
         </nav>
     </div>
 </header>
