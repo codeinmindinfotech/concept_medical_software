@@ -15,6 +15,8 @@ const savecalendarDayUrl = window.appConfig.savecalendarDays || null;
 
 // send whats app
 const whatsappSend = window.appConfig.whatsappSend || null;
+const destroyAppointment = window.appConfig.destroyAppointment || null;
+
 
 /**
  * Fetch appointment data for Edit modal
@@ -467,119 +469,47 @@ function sendWhatsAppMessage() {
     });
 }
 
-function selectClinic(name, id) {
-    document.getElementById('selectedClinic').value = name;
-    document.getElementById('selectedClinicId').value = id;
-}
-function generateDates() {
-    const startDateInput = document.getElementById('startDate').value;
-    const repeatType = document.querySelector('input[name="repeatType"]:checked').value;
-    const repeatCount = parseInt(document.getElementById('repeatCount').value);
-    const clinicName = document.getElementById('selectedClinic').value;
-
-    if (!startDateInput || !clinicName) {
-        Swal.fire("Error", "Please select a clinic and start date.", "error");
-        return;
-    }
-
-    const startDate = new Date(startDateInput);
-    const tbody = document.querySelector('#dateTable tbody');
-    tbody.innerHTML = '';
-
-    for (let i = 0; i < repeatCount; i++) {
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i * (repeatType === 'weekly' ? 7 : 14));
-        const formattedDate = date.toISOString().split('T')[0];
-        tbody.innerHTML += `
-		<tr>
-			<td>${formattedDate}</td>
-			<td>${clinicName}</td>
-			<td><input type="checkbox" value="${formattedDate}" checked></td>
-		</tr>`;
-    }
-}
-function saveCalendarDays() {
-    const clinicId = document.getElementById('selectedClinicId').value;
-    const dates = Array.from(document.querySelectorAll('#dateTable tbody input[type="checkbox"]:checked'))
-        .map(cb => cb.value);
-
-    if (!clinicId || dates.length === 0) {
-        Swal.fire("Error", "Select a clinic and at least one date.", "error");
-        return;
-    }
-
-    fetch(savecalendarDayUrl, {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),   // 🔥 FIXES 419 ERROR
-        },
-        body: JSON.stringify({ clinic_id: clinicId, dates })
-    })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire("Success", data.message, "success");
-                // Refresh FullCalendar events
-                if ($('#calendar').fullCalendar) {
-                    renderCalendarDaysDots();
+function deleteAppointment(appointmentId, patientId, flag) {
+    const url = destroyAppointment(appointmentId, patientId);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This will permanently delete the appointment.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
                 }
-                $('#setCalendarDaysModal').modal('hide');
-
-                document.querySelector('#dateTable tbody').innerHTML = '';
-                document.getElementById('startDate').value = '';
-            }
-        })
-        .catch(err => console.error('Error:', err));
-}
-
-function renderCalendarDaysDots() {
-    $.get(window.appConfig.calendarDays, function(days) {
-        // Remove previous dots
-        $("td.fc-day-top").find(".appointment-dot-container").remove();
-
-        // Group colors by date
-        const groupedDays = {};
-        days.forEach(d => {
-            if (!groupedDays[d.date]) groupedDays[d.date] = [];
-            groupedDays[d.date].push(d.color);
-        });
-
-        // Add dots and borders
-        Object.keys(groupedDays).forEach(date => {
-            const colors = groupedDays[date];
-
-            // Get the top cell with date number
-            const cell = $("td.fc-day-top[data-date='" + date + "']");
-            if (!cell.length) return;
-
-            // Create a container for dots
-            const dotContainer = $("<div>").addClass("appointment-dot-container");
-            dotContainer.css({
-                "display": "flex"
-                , "gap": "2px"
-                , "justify-content": "flex-end"
-                , "position": "relative"
-                , "top": "2px"
-                , "right": "2px"
-            });
-
-            // Add a dot for each color
-            colors.forEach(color => {
-                const dot = $("<div>").css({
-                    "width": "8px"
-                    , "height": "8px"
-                    , "border-radius": "50%"
-                    , "background-color": color
-                    , "border": "1px solid #fff"
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: data.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        if (flag == 1) {
+                            location.reload();
+                        } else {
+                            appointmentManager.loadAppointments();
+                        }
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to delete.', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire('Error', 'Something went wrong.', 'error');
                 });
-                dotContainer.append(dot);
-            });
-
-            // Make sure the cell is relative for absolute positioning
-            cell.css("position", "relative");
-            cell.append(dotContainer);
-
-        });
+        }
     });
-}
+};

@@ -1,5 +1,4 @@
 class AppointmentManager {
-    alert("edit-hospital-appointment");
     constructor(config) {
         this.container = document.querySelector(config.containerSelector);
         this.loader = document.querySelector(config.loaderSelector);
@@ -408,6 +407,56 @@ class AppointmentManager {
         }
     }
      
+    // async renderCalendarDaysDots() {
+    //     $.get(window.appConfig.calendarDays, function(days) {
+    //         // Remove previous dots
+    //         $("td.fc-day-top").find(".appointment-dot-container").remove();
+    
+    //         // Group colors by date
+    //         const groupedDays = {};
+    //         days.forEach(d => {
+    //             if (!groupedDays[d.date]) groupedDays[d.date] = [];
+    //             groupedDays[d.date].push(d.color);
+    //         });
+    
+    //         // Add dots and borders
+    //         Object.keys(groupedDays).forEach(date => {
+    //             const colors = groupedDays[date];
+    
+    //             // Get the top cell with date number
+    //             const cell = $("td.fc-day-top[data-date='" + date + "']");
+    //             if (!cell.length) return;
+    
+    //             // Create a container for dots
+    //             const dotContainer = $("<div>").addClass("appointment-dot-container");
+    //             dotContainer.css({
+    //                 "display": "flex"
+    //                 , "gap": "2px"
+    //                 , "justify-content": "flex-end"
+    //                 , "position": "relative"
+    //                 , "top": "2px"
+    //                 , "right": "2px"
+    //             });
+    
+    //             // Add a dot for each color
+    //             colors.forEach(color => {
+    //                 const dot = $("<div>").css({
+    //                     "width": "8px"
+    //                     , "height": "8px"
+    //                     , "border-radius": "50%"
+    //                     , "background-color": color
+    //                     , "border": "1px solid #fff"
+    //                 });
+    //                 dotContainer.append(dot);
+    //             });
+    
+    //             // Make sure the cell is relative for absolute positioning
+    //             cell.css("position", "relative");
+    //             cell.append(dotContainer);
+    
+    //         });
+    //     });
+    // }
     openHospitalModal(data) {
         const modalEl = document.getElementById('manualBookingModal'); // your hospital modal
         const modal = new bootstrap.Modal(modalEl);
@@ -534,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Expose globally for onclick
-
+    // window.renderCalendarDaysDots = () => appointmentManager.renderCalendarDaysDots();
     window.onDragStart = (event) => appointmentManager.onDragStart(event);
     window.onDragOver = (event) => appointmentManager.onDragOver(event);
     window.onDrop = (event) => appointmentManager.onDrop(event);

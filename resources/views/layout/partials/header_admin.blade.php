@@ -150,7 +150,7 @@
                     </div>
                 </div>
                 <a class="dropdown-item" href="{{ guard_route('password.change') }}">Change Password</a>
-                {{-- <a class="dropdown-item" href="{{url('admin/settings')}}">Settings</a> --}}
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">Set Calendar Days</a>
                 <a class="dropdown-item" href="{{guard_route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     {{ __('Logout') }}
                 </a>

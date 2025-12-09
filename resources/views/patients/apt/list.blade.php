@@ -1,4 +1,4 @@
-<table class="table table-hover table-center mb-0" id="PatientApt">
+<table class="table table-hover align-middle text-nowrap" id="PatientApt">
     <thead>
         <tr>
             <th>#</th>
@@ -32,17 +32,20 @@
                 <td>{{$apt->appointmentStatus->value??''}}</td>
                 <td>
                     @if($isClinic)
-                    <a href="javascript:void(0)" class="btn bg-primary-light edit-appointment"
-                        data-id="{{ $apt->id }}">
-                        <i class="fa fa-pen me-2"></i> {{$isClinic}} Edit
-                    </a>
+                        <a href="javascript:void(0)" class="btn bg-primary-light" onclick="fetchAppointmentData({{ $apt->id }})" >
+                            <i class="fa fa-pencil-square"></i> Edit
+                        </a>
                     @else
-                    <a class="btn bg-primary-light text-success edit-hospital-appointment"
-                        href="javascript:void(0)"
-                        data-id="{{ $apt->id }}">
-                        <i class="fa fa-pencil-square"></i> {{$isClinic}} Edit
-                    </a>
+                        <a class="btn bg-primary-light text-success " onclick="fetchHospitalAppointmentData({{ $apt->id }})"
+                            href="javascript:void(0)">
+                            <i class="fa fa-pencil-square"></i> Edit
+                        </a>
                     @endif
+                    <a class="btn bg-warning" onclick="openStatusModal({{ $apt->id }}, {{ $apt->patient->id }}, {{ $apt->appointment_status }});"
+                        href="javascript:void(0)">
+                        <i class="fa fa-pencil-square"></i> Status
+                    </a>
+                    
 
                     <a href="javascript:void(0)" title="Delete" class="btn bg-danger-light" onclick="deleteAppointment({{ $apt->id }}, {{ $apt->patient->id }}, 1)">
                         <i class="fe fe-trash"></i> Delete

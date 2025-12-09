@@ -45,18 +45,15 @@
 
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets/js/script.js') }}"></script>
+
 <script>
-    window.appConfig = {
+    window.calendarConfig = {
          //set caledar days
         calendarDays: "{{ guard_route('calendar.days') }}",
-		savecalendarDays: "{{ guard_route('calendar.store') }}",
     };
 </script>
 <!-- Modalpopup JS -->
-<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
-
-
-
+<script src="{{ URL::asset('/assets/js/calendar-days.js') }}"></script>
 @stack('scripts')
 @php
 $guards = ['doctor', 'patient', 'clinic', 'web'];

@@ -76,7 +76,7 @@
 
             <div class="modal-footer py-2">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-sm" onclick="saveCalendarDays()">Save</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="saveCalendarDays('{{ guard_route('calendar.store') }}')">Save</button>
             </div>
         </div>
     </div>

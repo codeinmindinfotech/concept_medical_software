@@ -48,44 +48,83 @@ $loadAppointmentsUrl = (!empty($patient) && !empty($patient->id))
     : guard_route('appointments.byDateGlobal');
 @endphp
 @push('scripts')
-<script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
-<script>
-    window.appConfig = {
-        loadAppointmentsUrl: "{{ $loadAppointmentsUrl }}",
-        updateSlotUrl: "{{ guard_route('appointments.update-slot') }}",
-        reportUrl: "{{ guard_route('reports.entire-day') }}",
-        csrfToken: "{{ csrf_token() }}",
-        fetchAppointmentRoute: "{{ guard_route('appointments.edit', ['id' => '__ID__']) }}",
-        initialDate: "{{ date('Y-m-d') }}",
-        patientId: "{{ !empty($patient) && !empty($patient->id) ? $patient->id : '' }}",
-        storeHospitalAppointment: "{{ $patient ?guard_route('hospital_appointments.store', ['patient' => $patient->id]) :guard_route('hospital_appointments.storeGlobal') }}",
-        statusAppointment: (appointmentId, patientId) =>
-            `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
-            .replace('__PATIENT_ID__', patientId)
-            .replace('__APPOINTMENT_ID__', appointmentId),
-        destroyAppointment: (appointmentId, patientId) =>
-            `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
-            .replace('__PATIENT_ID__', patientId)
-            .replace('__APPOINTMENT_ID__', appointmentId),
-    };
+    <script>
+        window.appConfig = {
+            loadAppointmentsUrl: "{{ $loadAppointmentsUrl }}",
+            updateSlotUrl: "{{ guard_route('appointments.update-slot') }}",
+            reportUrl: "{{ guard_route('reports.entire-day') }}",
+            csrfToken: "{{ csrf_token() }}",
+            fetchAppointmentRoute: "{{ guard_route('appointments.edit', ['id' => '__ID__']) }}",
+            initialDate: "{{ date('Y-m-d') }}",
+            patientId: "{{ !empty($patient) && !empty($patient->id) ? $patient->id : '' }}",
+            storeHospitalAppointment: "{{ $patient ?guard_route('hospital_appointments.store', ['patient' => $patient->id]) :guard_route('hospital_appointments.storeGlobal') }}",
+            statusAppointment: (appointmentId, patientId) =>
+                `{{guard_route('patients.appointments.updateStatus', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+                .replace('__PATIENT_ID__', patientId)
+                .replace('__APPOINTMENT_ID__', appointmentId),
+            destroyAppointment: (appointmentId, patientId) =>
+                `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
+                .replace('__PATIENT_ID__', patientId)
+                .replace('__APPOINTMENT_ID__', appointmentId),
+        };
 
-    $('#PatientApt').DataTable({
-        paging: true,
-        searching: true,
-        ordering: true,
-        info: true,
-        lengthChange: true,
-        pageLength: 10,
-        columnDefs: [
-            {
-                targets: 3, // Disable sorting for Action column
-                orderable: false
-            }
-        ]
+        $('#PatientApt').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            lengthChange: true,
+            pageLength: 10,
+            columnDefs: [
+                {
+                    targets: 7, // Disable sorting for Action column
+                    orderable: false
+                }
+            ]
+        });
+
+    $(document).ready(function() {
+        PopupForm.init('#bookAppointmentModal', '#bookAppointmentForm', (response) => {
+            // Reload appointments after booking
+            location.reload();
+            Swal.fire({
+                icon: 'success'
+                , title: 'Success'
+                , text: response.message || 'Appointment booked successfully!'
+                , timer: 2000
+                , showConfirmButton: false
+            });
+        });
+
+        PopupForm.init('#statusChangeModal', '#statusChangeForm', (response) => {
+            // Optionally reload appointments table
+            location.reload();
+            Swal.fire({
+                icon: 'success'
+                , title: 'Success'
+                , text: response.message || 'Status updated successfully!'
+                , timer: 2000
+                , showConfirmButton: false
+            });
+            $('#statusChangeModal').modal('hide');
+        });
+
+        // For Manual Booking Modal
+        PopupForm.init('#manualBookingModal', '#manualBookingForm', (response) => {
+            // Do something after manual booking
+            location.reload();
+            Swal.fire({
+                icon: 'success'
+                , title: 'Success'
+                , text: response.message || 'Appointment booked For Hospital successfully!'
+                , timer: 2000
+                , showConfirmButton: false
+            });
+        });
     });
-</script>
-<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
-
+    </script>
+    <script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
+    <script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
 @endpush
 
 

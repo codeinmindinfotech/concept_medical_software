@@ -95,7 +95,6 @@
             .replace('__PATIENT_ID__', patientId)
             .replace('__APPOINTMENT_ID__', appointmentId),
     };
-    alert(window.appConfig.loadAppointmentsUrl);
 </script>
 <script src="{{ URL::asset('/assets/js/appointment.js') }}"></script>
 @endpush

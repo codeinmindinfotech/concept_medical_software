@@ -78,6 +78,7 @@
 
 @push('scripts')
 <script src="{{ URL::asset('/assets/plugins/fullcalendar/3.10.2/fullcalendar.min.js') }}"></script>
+
 <script>
     /* REQUIRED BY appointment.js */
     window.appConfig = {
@@ -196,7 +197,7 @@
                     <a href="${calendarConfig.patientUrl.replace('__PID__', event.patient_id)}" class="btn btn-primary" target="_blank">View Patient</a>
                     <br>
                     <button class="btn btn-info mt-2" id="moveAppointmentBtn">Move Appointment</button>
-                    <button class="btn btn-outline-success mt-2" id="whatsappBtn">Send WhatsApp</button>
+                    <button class="btn btn-success mt-2" id="whatsappBtn">Send WhatsApp</button>
                 `
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -256,16 +257,14 @@
                 renderCalendarDaysDots();
             },
 
-
-
             select: function(date) {
                 const selected = date.format('YYYY-MM-DD');
                 window.location.href = `{{ guard_route('appointments.schedule') }}?date=${selected}`;
             }
         });
-
     });
 
 </script>
+<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
 <script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
 @endpush

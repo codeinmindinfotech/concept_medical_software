@@ -98,12 +98,6 @@
                                 </span>
                             </a>
 
-                            <a href="{{ guard_route('patients.appointments.schedule', ['patient' => $patient]) }}" class="{{ btnClass('patients.appointments.*', 'primary') }}">
-                                <i class="fas fa-calendar-check me-2"></i> Appointments 
-                                <span class="badge bg-primary  border border-white">
-                                    {{ $patients->appointments_count??0 }}
-                                </span>
-                            </a>
                         @endcan
 
                         @can('delete', $patient)

@@ -29,22 +29,17 @@
  <script src="{{ URL::asset('/assets_admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
  <script src="{{ URL::asset('/assets_admin/plugins/datatables/datatables.min.js') }}"></script>
 
- @stack('scripts')
  
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets_admin/js/script.js') }}"></script>
 <script>
-    // window.appConfig = {
-    //      //set caledar days
-    //     calendarDays: "{{ guard_route('calendar.days') }}",
-	// 	savecalendarDays: "{{ guard_route('calendar.store') }}",
-    // };
+    window.calendarConfig = {
+        calendarDays: "{{ guard_route('calendar.days') }}",
+    };
 </script>
-<!-- Modalpopup JS -->
-{{-- <script src="{{ URL::asset('/assets/js/appointment.js') }}"></script> --}}
-{{-- <script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script> --}}
+<script src="{{ URL::asset('/assets/js/calendar-days.js') }}"></script>
 
-
+@stack('scripts')
 
  @php
  $guards = ['doctor', 'patient', 'clinic', 'web'];
