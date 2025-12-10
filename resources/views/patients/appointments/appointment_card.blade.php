@@ -2,7 +2,7 @@
     <div class="card-body p-3">
         <div class="d-flex justify-content-between align-items-start">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="appointment_ids[]" value="{{ $appointment->id }}" id="appt-{{ $appointment->id }}">
+                <input class="form-check-input" type="checkbox" checked name="appointment_ids[]" value="{{ $appointment->id }}" id="appt-{{ $appointment->id }}">
             </div>
             <div class="w-100 ms-2">
                 <div class="d-flex justify-content-between align-items-center mb-2">

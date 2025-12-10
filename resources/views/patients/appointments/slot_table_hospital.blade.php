@@ -16,8 +16,9 @@
                 : 'appointment-default';
 
             $user = current_user(); // or auth()->user()
+            $isclinic = (getCurrentGuard() == "clinic");
             $isSuperAdmin = (($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
-            $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
+            $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id) ;
             $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && optional($appointment->patient)->id === optional($patient)->id);
         @endphp
      <tr class="align-middle">
@@ -76,7 +77,7 @@
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                    @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin)
+                    @if($isPatientUserEditingOwnAppointment || $isCurrentPatient || $isSuperAdmin || $isclinic)
                         <li>
                             <a class="dropdown-item text-success edit-hospital-appointment"
                                href="javascript:void(0)"
@@ -147,4 +148,11 @@
         </td>
     </tr>
     @endif
+
+
+    <div class="mb-3 justify-content-end p-3 border-bottom" id="manualSlotButton" class="d-flex ">
+        <button class="btn btn-sm btn-outline-primary" onclick="openManualBookingModal()">
+            <i class="fas fa-plus me-1"></i> Add Manual Slot
+        </button>
+    </div>
 @endif

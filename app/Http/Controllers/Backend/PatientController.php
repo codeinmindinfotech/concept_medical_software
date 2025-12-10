@@ -373,7 +373,7 @@ class PatientController extends Controller
     
         // 4. Create blank canvas
         }  else {
-            $text = $patient->first_name;
+            $text = $patient->full_name;
             $fontPath = public_path('assets/fonts/DancingScript-VariableFont_wght.ttf');
             $fontSize = 16;
         

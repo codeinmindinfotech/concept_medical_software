@@ -25,7 +25,8 @@
 </head>
 
 <body>
-	
+<x-set-calendar-days-modal :clinics="$clinics" />
+
 {{-- @php
 $currentRoute = Route::currentRouteName();
 dd($currentRoute);

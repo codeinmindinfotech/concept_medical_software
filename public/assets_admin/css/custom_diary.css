@@ -5,6 +5,8 @@
     .fc .fc-event {
         border-width: 1px;
         border-style: solid;
+        padding: 1px !important;
+        margin:1px !important;
     }
 
     .fc .fc-daygrid-day-bg {

@@ -153,6 +153,8 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     // Appointments
     Route::prefix("$prefix/appointments")->group(function () {
         Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
+
+        // Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
         Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
         Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store')->defaults('flag', 0);
         Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy')->defaults('flag', 0);
@@ -162,13 +164,15 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     });
 
     Route::prefix('appointments')->group(function () {
+        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule')->defaults('flag', 1);
+        Route::get('/{id}/edit', [AppointmentController::class, 'fetchAppointmentData'])->name('appointments.edit');
+
         Route::post('/{appointment}/reschedule', [PlannerController::class, 'reschedule'])->name('appointments.reschedule');
         Route::post('/available-slots', [AppointmentController::class, 'availableSlots'])->name('appointments.availableSlots')->defaults('flag', 0);
         Route::post('/move', [AppointmentController::class, 'move'])->name('appointments.move')->defaults('flag', 0);
         Route::post('/forDate', [AppointmentController::class, 'getAppointmentsForDate'])->name('appointments.forDate');
         Route::post('/update-slot', [AppointmentController::class, 'updateSlot'])->name('appointments.update-slot');
         Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 1);
-        Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('appointments.schedule')->defaults('flag', 1);
         Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('appointments.byDateGlobal')->defaults('flag', 1);
         Route::post('/calendar-events', [AppointmentController::class, 'calendarEvents'])->name('appointments.calendarEvents')->defaults('flag', 1);
         Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.storeGlobal')->defaults('flag', 1);

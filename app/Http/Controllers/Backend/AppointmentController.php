@@ -17,9 +17,10 @@ use Illuminate\Support\Facades\Validator;
 class AppointmentController extends Controller
 {
     use DropdownTrait;
-
+    
     public function schedulePage(Request $request, ?Patient $patient = null)
     {
+        $flag = $request->route('flag');
         $this->authorize('viewAny', Appointment::class);
         if (has_role('patient')) {
             $user = auth()->user();
@@ -35,8 +36,7 @@ class AppointmentController extends Controller
         $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();
-        
-        return view(guard_view('patients.appointments.patient-schedule', 'patient_admin.appointment.patient-schedule'), compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes'));
+        return view(guard_view('patients.appointments.patient-schedule', 'patient_admin.appointment.patient-schedule'), compact('procedures','patients','diary_status','clinics', 'patient', 'appointmentTypes','flag'));
     }
 
     public function calendarEvents(Request $request, ?Patient $patient = null)
@@ -153,7 +153,7 @@ class AppointmentController extends Controller
             $stats = $appointments->groupBy(fn($apt) => optional($apt->appointmentType)->value)
             ->map(fn($group) => $group->count());
                 return response()->json([
-                    'html' => view('patients.appointments.slot_table_clinic', [
+                    'html' => view('patients.appointments.slot_table_clinic_new', [
                         'appointments' => $appointments,
                         'slots' => $slots,
                         'patient' => $patient,
@@ -205,7 +205,7 @@ class AppointmentController extends Controller
         $isOpen = $clinic->{$dayField}; 
 
         return response()->json([
-            'html' => view('patients.appointments.slot_table_hospital', [
+            'html' => view('patients.appointments.slot_table_hospital_new', [
                 'appointments' => $hospitalAppointments,
                 'patient' => $patient,
                 'isOpen' => $isOpen,
@@ -725,6 +725,7 @@ class AppointmentController extends Controller
         $request->validate([
             'date' => 'required|date',
             'clinic_id' => 'required|integer',
+            'appointment_id' => 'required|integer',
         ]);
 
         try {
@@ -735,6 +736,7 @@ class AppointmentController extends Controller
             ])
             ->whereDate('appointment_date', $request->date)
             ->where('clinic_id', $request->clinic_id)
+            ->where('id', $request->appointment_id)
             ->orderBy('start_time')
             ->companyOnly()
             ->get();
@@ -817,5 +819,31 @@ class AppointmentController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function fetchAppointmentData($id)
+    {
+        $appointment = Appointment::with(['patient', 'clinic', 'appointmentType'])->find($id);
 
+        if (!$appointment) {
+            return response()->json(['error' => 'Appointment not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $appointment->id,
+            'appointment_date' => $appointment->appointment_date,
+            'start_time' => format_time($appointment->start_time),
+            'end_time' => format_time($appointment->end_time),
+            'patient_id' => $appointment->patient_id,
+            'clinic_id' => $appointment->clinic_id,
+            'appointment_type' => $appointment->appointment_type,
+            'patient_need' => $appointment->patient_need,
+            'appointment_note' => $appointment->appointment_note,
+            'procedure_id' => $appointment->procedure_id,
+            'admission_date' => $appointment->admission_date,
+            'admission_time' => format_time($appointment->admission_time),
+            'operation_duration' => $appointment->operation_duration,
+            'ward' => $appointment->ward,
+            'allergy' => $appointment->allergy,
+            'appointment_status' => $appointment->appointment_status,
+        ]);
+    }
 }

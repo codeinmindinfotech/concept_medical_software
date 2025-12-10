@@ -49,6 +49,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrapFive(); // 👈 This is the key line
+        View::composer('*', function ($view) {
+            $view->with('clinics', \App\Models\Clinic::companyOnly()->get());
+        });
         View::composer(
             [
                 'layout.partials.tab-navigation',

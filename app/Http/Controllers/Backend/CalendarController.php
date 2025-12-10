@@ -61,31 +61,48 @@ class CalendarController extends Controller
             })
         );
     }
+    // public function getDays()
+    // {
+    //     $days = CalendarDay::where('is_active', 1)->get();
+
+    //     $clinics = Clinic::pluck('color', 'id'); // clinic_id → color
+
+    //     $events = [];
+
+    //     foreach ($days as $day) {
+    //         $events[] = [
+    //             'id'        => $day->id,
+    //             'title'     => '',
+    //             'start'     => $day->date,
+    //             'allDay'    => true,
+    //             'color'     => 'transparent',   // no fill
+    //             'textColor' => 'transparent',
+    //             'clinic_id' => $day->clinic_id,
+    //             'borderColor' => $clinics[$day->clinic_id] ?? '#999',
+    //             'clinicColor' => $clinics[$day->clinic_id] ?? '#999', // custom field
+    //         ];
+    //     }
+
+    //     return response()->json($events);
+    // }
     public function getDays()
     {
         $days = CalendarDay::where('is_active', 1)->get();
-
+    
         $clinics = Clinic::pluck('color', 'id'); // clinic_id → color
-
-        $events = [];
-
+    
+        $result = [];
+    
         foreach ($days as $day) {
-            $events[] = [
-                'id'        => $day->id,
-                'title'     => '',
-                'start'     => $day->date,
-                'allDay'    => true,
-                'color'     => 'transparent',   // no fill
-                'textColor' => 'transparent',
-                'clinic_id' => $day->clinic_id,
-                'borderColor' => $clinics[$day->clinic_id] ?? '#999',
-                'clinicColor' => $clinics[$day->clinic_id] ?? '#999', // custom field
+            $result[] = [
+                'date'  => $day->date,
+                'color' => $clinics[$day->clinic_id] ?? '#999',
             ];
         }
-
-        return response()->json($events);
+    
+        return response()->json($result);
     }
-
+    
 
     public function index(Request $request, ?Patient $patient = null): View|string
     {
@@ -129,6 +146,7 @@ class CalendarController extends Controller
                 'color' => $apt->clinic->color ?? '#007bff',
                 'patient_id' => $apt->patient_id,
                 'patient_name' => $apt->patient->fullname,
+                'patient_phone' => $apt->patient->phone,
                 'dob' => format_date($apt->patient->dob),
                 'consultant' => $apt->patient->consultant->name ?? '',
                 'appointment_type' => $apt->appointment_type,

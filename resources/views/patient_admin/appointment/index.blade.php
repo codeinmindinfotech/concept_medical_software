@@ -77,7 +77,6 @@
 @endpush
 @push('scripts')
 <script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
-<script src="{{ URL::asset('/assets/js/calendar.js') }}"></script>
 <script>
     window.Laravel = {
         csrfToken: "{{ csrf_token() }}"
