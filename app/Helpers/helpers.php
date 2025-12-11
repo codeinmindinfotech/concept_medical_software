@@ -1,12 +1,18 @@
 <?php
 
+use App\Models\Company;
 use App\Models\PatientDocument;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 if (!function_exists('format_date')) {
     function format_date($date, $format = 'd M Y', $default = '-')
@@ -54,21 +60,75 @@ if (!function_exists('asset_url')) {
     }
 }
 
+
+
+/**
+ * Assign a role (and all its permissions) to a model (User, Doctor, etc.)
+ * with proper company_id and guard handling.
+ *
+ * @param Model $model
+ * @param string $roleName
+ * @param string $guardName
+ * @param int|null $companyId
+ * @return void
+ * @throws \Exception
+ */
 if (!function_exists('assignRoleToGuardedModel')) {
-    function assignRoleToGuardedModel($model, string $roleName, string $guardName): void
-    {
-        $role = \Spatie\Permission\Models\Role::where('name', $roleName)
-            ->where('guard_name', $guardName)
-            ->first();
+    /**
+     * Assign a role and its permissions to a model (User, Doctor, Patient, Clinic) for a specific guard and optional company.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param string $roleName
+     * @param string $guardName
+     * @param int|null $companyId
+     * @throws \Exception
+     */
 
-        if (!$role) {
-            throw new \Exception("Role '{$roleName}' with guard '{$guardName}' not found.");
-        }
+function assignRoleToGuardedModel(Model $model, string $roleName, string $guardName, ?int $companyId = null): void
+{
+    // Fetch the role for this guard and company
+    $roleQuery = Role::where('name', $roleName)
+        ->where('guard_name', $guardName);
 
-        // Assign role to the model
-        $model->assignRole($role);
+    if ($companyId !== null) {
+        $roleQuery->where('company_id', $companyId);
+    } else {
+        $roleQuery->whereNull('company_id');
     }
+
+    $role = $roleQuery->first();
+
+    if (!$role) {
+        throw new \Exception("Role '{$roleName}' with guard '{$guardName}' and company_id='{$companyId}' not found.");
+    }
+
+    // Ensure role has permissions for this guard + company
+    if ($role->permissions()->count() === 0) {
+        $permissions = Permission::where('guard_name', $guardName)
+            ->when($companyId, fn($q) => $q->where('company_id', $companyId), fn($q) => $q->whereNull('company_id'))
+            ->get();
+
+        $role->syncPermissions($permissions);
+    }
+
+    // Assign role to model via pivot table with company_id
+    DB::table('model_has_roles')->updateOrInsert(
+        [
+            'role_id' => $role->id,
+            'model_type' => get_class($model),
+            'model_id' => $model->id
+        ],
+        [
+            'company_id' => $companyId
+        ]
+    );
+
+    // Assign permissions to the model (company-aware)
+    $permissionIds = $role->permissions()->pluck('id')->toArray();
+    $model->syncPermissions($permissionIds);
 }
+}
+
 
 if (! function_exists('getAuthenticatedUserAndCompany')) {
     function getAuthenticatedUserAndCompany(): array
@@ -106,32 +166,38 @@ if (!function_exists('getCurrentGuard')) {
                 return $guard;
             }
         }
-
         return null;
     }
 }
-
 if (!function_exists('current_user')) {
     function current_user()
     {
         $guard = getCurrentGuard();
-        return $guard ? Auth::guard($guard)->user() : null;
+        $user = $guard ? Auth::guard($guard)->user() : null;
+
+        if ($user) {
+            $companyId = $user->company_id ?? null;
+            $user->company_roles = $user->roles()->wherePivot('company_id', $companyId)->get();
+            $user->company_permissions = $user->permissions()->wherePivot('company_id', $companyId)->get();
+        }
+
+        return $user;
     }
 }
-
 if (!function_exists('has_role')) {
     function has_role($role): bool
     {
         $user = current_user();
-        return $user && $user->hasRole($role);
+        return $user && $user->hasCompanyRole($role);
     }
 }
+
 
 if (!function_exists('has_permission')) {
     function has_permission($permission): bool
     {
         $user = current_user();
-        return $user && $user->can($permission);
+        return $user && $user->hasCompanyPermission($permission);
     }
 }
 
@@ -196,25 +262,40 @@ if (!function_exists('current_company_id')) {
     }
 }
 
-if (!function_exists('is_guard_route')) {
-    function is_guard_route(string $path): bool
-    {
-        $user = current_user();
-        $guard = getCurrentGuard(); // 'web', 'doctor', etc.
+// if (!function_exists('is_guard_route')) {
+//     function is_guard_route(string $path): bool
+//     {
+//         $user = current_user();
+//         $guard = getCurrentGuard(); // 'web', 'doctor', etc.
 
-        $prefix = '';
+//         $prefix = '';
 
-        if ($guard === 'web') {
-            if ($user?->hasRole('manager')) {
-                $prefix = 'manager/';
-            }
-            // superadmin gets no prefix
-        } elseif ($guard) {
-            $prefix = $guard . '/';
-        }
+//         if ($guard === 'web') {
+//             if ($user?->hasRole('manager')) {
+//                 $prefix = 'manager/';
+//             }
+//             // superadmin gets no prefix
+//         } elseif ($guard) {
+//             $prefix = $guard . '/';
+//         }
 
-        return \Illuminate\Support\Facades\Request::is($prefix . $path . '*');
+//         return \Illuminate\Support\Facades\Request::is($prefix . $path . '*');
+//     }
+// }
+
+function is_guard_route(string $routeName): bool
+{
+    $currentRoute = \Illuminate\Support\Facades\Route::currentRouteName();
+    $guard = getCurrentGuard();
+    $prefix = '';
+
+    if ($guard === 'web' && current_user()?->hasRole('manager')) {
+        $prefix = 'manager.';
+    } elseif ($guard !== 'web') {
+        $prefix = $guard . '.';
     }
+
+    return str_starts_with($currentRoute, $prefix . $routeName);
 }
 
 if (!function_exists('globalNotificationRecipients')) {
@@ -330,6 +411,136 @@ if (!function_exists('setProfileImage')) {
         return asset('assets/img/doctors-dashboard/profile-06.jpg');
     }
 }
+if (!function_exists('hasCompanyPermission')) {
+    function hasCompanyPermission(User $user, string $permission)
+    {
+        $guard = getCurrentGuard();
+
+        // Superadmin: global permissions
+        if ($user->hasRole('superadmin', $guard)) {
+            return $user->hasPermissionTo($permission); // company_id = null permissions attached to role
+        }
+
+        // Normal company user: check permissions scoped by company
+        return $user->permissions()
+                    ->where('permissions.name', $permission)
+                    ->where('permissions.guard_name', $guard)
+                    ->where('permissions.company_id', $user->company_id)
+                    ->exists();
+    }
+}
+
+if (!function_exists('setupCompanyRolesAndPermissions')) {
+    /**
+     * Create company-specific roles and permissions for all guards.
+     * If admin user is provided, assign manager role to them.
+     *
+     * @param Company $company
+     * @param User|null $adminUser
+     * @return void
+     */
+    function setupCompanyRolesAndPermissions(Company $company, ?User $adminUser = null): void
+    {
+        $entities = [
+            'role','dropdown','document','dropdownvalue','doctor','company',
+            'patient','consultant','insurance','clinic','chargecode',
+            'appointment','configuration','notification'
+        ];
+        $actions = ['list', 'create', 'edit', 'delete'];
+        $guards  = ['web','doctor','patient','clinic'];
+
+        // Ensure all permissions exist globally and for this company
+        foreach ($entities as $entity) {
+            foreach ($actions as $action) {
+                foreach ($guards as $guard) {
+                    // Global permission
+                    Permission::firstOrCreate([
+                        'name' => "{$entity}-{$action}",
+                        'guard_name' => $guard,
+                        'company_id' => null,
+                    ]);
+
+                    // Company-specific permission
+                    Permission::firstOrCreate([
+                        'name' => "{$entity}-{$action}",
+                        'guard_name' => $guard,
+                        'company_id' => $company->id,
+                    ]);
+                }
+            }
+        }
+
+        // Define roles and their permissions
+        $rolesPermissions = [
+            'manager' => [
+                'guard_name' => 'web',
+                'permissions' => null, // all permissions
+            ],
+            'doctor' => [
+                'guard_name' => 'doctor',
+                'permissions' => [
+                    'appointment-list','appointment-create','appointment-edit',
+                    'notification-list','notification-create','notification-edit','notification-delete',
+                    'patient-list'
+                ],
+            ],
+            'patient' => [
+                'guard_name' => 'patient',
+                'permissions' => [
+                    'appointment-list','appointment-create','appointment-edit',
+                    'patient-list','patient-edit',
+                    'notification-list','notification-create','notification-edit','notification-delete'
+                ],
+            ],
+            'clinic' => [
+                'guard_name' => 'clinic',
+                'permissions' => [
+                    'doctor-list','doctor-create','patient-list',
+                    'appointment-list','appointment-create','appointment-edit',
+                    'notification-list','notification-create','notification-edit','notification-delete'
+                ],
+            ],
+        ];
+
+        foreach ($rolesPermissions as $roleName => $config) {
+            $guard = $config['guard_name'];
+
+            // Create or get the role
+            $role = Role::firstOrCreate([
+                'name' => $roleName,
+                'guard_name' => $guard,
+                'company_id' => $company->id,
+            ]);
+
+            // Assign permissions to role
+            if ($config['permissions'] === null) {
+                // All permissions for this guard & company
+                $permissions = Permission::where('guard_name', $guard)
+                    ->where(function($q) use ($company) {
+                        $q->where('company_id', $company->id)
+                          ->orWhereNull('company_id');
+                    })->get();
+            } else {
+                $permissions = [];
+                foreach ($config['permissions'] as $permName) {
+                    $permissions[] = Permission::firstOrCreate([
+                        'name' => $permName,
+                        'guard_name' => $guard,
+                        'company_id' => $company->id,
+                    ]);
+                }
+            }
+
+            $role->syncPermissions($permissions);
+
+            // Assign manager role to admin user if provided
+            if ($roleName === 'manager' && $adminUser) {
+                assignRoleToGuardedModel($adminUser, $roleName, $guard, $company->id);
+            }
+        }
+    }
+}
+
 
 
 

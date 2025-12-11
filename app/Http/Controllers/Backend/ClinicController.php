@@ -52,7 +52,7 @@ class ClinicController extends Controller
     {
         $data = $this->extractDayFields($request);
         $clinic = Clinic::create($data);
-        assignRoleToGuardedModel($clinic, 'clinic', 'clinic');
+        assignRoleToGuardedModel($clinic, 'clinic', 'clinic',  $clinic->company_id);
 
         if ($clinic) {
             try {
@@ -80,6 +80,7 @@ class ClinicController extends Controller
     {
         $data = $this->extractDayFields($request);
         $clinic->update($data);
+        assignRoleToGuardedModel($clinic, 'clinic', 'clinic',  $clinic->company_id);
 
         return response()->json([
             'redirect' =>guard_route('clinics.index'),

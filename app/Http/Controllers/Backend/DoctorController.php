@@ -71,7 +71,7 @@ class DoctorController extends Controller
         $this->authorize('create', Doctor::class);
         $validated = $request->validated();
         $doctor = Doctor::create($validated);
-        assignRoleToGuardedModel($doctor, 'doctor', 'doctor');
+        assignRoleToGuardedModel($doctor, 'doctor', 'doctor',  $doctor->company_id);
 
          // Handle signature
         if ($doctor) {
@@ -133,6 +133,8 @@ class DoctorController extends Controller
         $this->authorize('update', $doctor);
         $validated = $request->validated();
         $doctor->update($validated);
+        assignRoleToGuardedModel($doctor, 'doctor', 'doctor',  $doctor->company_id);
+
         // Handle signature
         $signaturePath = $this->handleSignature($request, $doctor);
         if ($signaturePath) {

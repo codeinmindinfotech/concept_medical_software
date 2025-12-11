@@ -42,7 +42,6 @@ class PatientController extends Controller
     {
         $this->authorize('viewAny',  Patient::class);
         
-
         if (has_role('patient')) {
             $user = auth()->user();
             $patients = Patient::with('title')->companyOnly()->where('id', $user->id)->paginate(1);
@@ -153,8 +152,8 @@ class PatientController extends Controller
         $validated['email_consent'] = $request->has('email_consent');
 
         $patient = Patient::create($validated);
-        assignRoleToGuardedModel($patient, 'patient', 'patient');
-
+        $PatientCompanyId = $patient->company_id;
+        assignRoleToGuardedModel($patient, 'patient', 'patient', $PatientCompanyId);
          // Handle signature
         if ($patient) {
             $signaturePath = $this->handleSignature($request, $patient);
@@ -230,7 +229,9 @@ class PatientController extends Controller
 
         // Update the patient
         $patient->update($validated);
-        assignRoleToGuardedModel($patient, 'patient', 'patient');
+        $PatientCompanyId = $patient->company_id;
+        assignRoleToGuardedModel($patient, 'patient', 'patient', $PatientCompanyId);
+       
 
         // Handle signature
         $signaturePath = $this->handleSignature($request, $patient);

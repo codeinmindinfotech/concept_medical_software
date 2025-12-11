@@ -8,8 +8,10 @@ class AppointmentPolicy
 {
     public function viewAny($user)
     {
-        $authUser = current_user();
-        return $authUser && $authUser->can('appointment-list');
+        return $user->hasCompanyPermission('appointment-list');
+
+        // $authUser = current_user();
+        // return $authUser && $authUser->can('appointment-list');
     }
 
     public function view($user, Appointment $appointment)

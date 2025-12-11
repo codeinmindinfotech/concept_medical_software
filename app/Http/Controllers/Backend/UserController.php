@@ -24,14 +24,14 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $query = User::with(['creator', 'updater'])->companyOnly();
-        $data = $query->latest()->paginate(5);
+        $data = $query->latest()->get();
 
         if ($request->ajax()) {
             return view('users.list', compact('data'))->render();
         }
         return view('users.index',compact('data'));
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -69,7 +69,11 @@ class UserController extends Controller
         $input['password'] = Hash::make($input['password']);
         $input['created_by'] = auth()->id();
         $user = User::create($input);
-        $user->assignRole($request->input('roles'));
+        // Assign role using company-aware helper
+        $roleName = $request->input('roles');  // assuming a single role
+        assignRoleToGuardedModel($user, $roleName, 'web', $companyId);
+
+        // $user->assignRole($request->input('roles'));
     
         return redirect(guard_route('users.index'))
                         ->with('success','User created successfully');
@@ -106,40 +110,50 @@ class UserController extends Controller
         return view('users.edit',compact('user','roles','userRole'));
     }
     
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id): RedirectResponse
     {
         $companyId = auth()->user()->company_id;
+
         $this->validate($request, [
-            'name' => 'required',
-            'email' => ['required', 'email', new UniquePerCompany('users', 'email', $companyId, $id)],
-            'password' => 'same:confirm-password',
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                // Ignore the current user ID
+                function ($attribute, $value, $fail) use ($companyId, $id) {
+                    $exists = User::where('email', $value)
+                                ->where('company_id', $companyId)
+                                ->where('id', '<>', $id)
+                                ->exists();
+                    if ($exists) {
+                        $fail('This email is already taken for this company.');
+                    }
+                }
+            ],
+            'password' => 'nullable|same:confirm-password',
             'roles' => 'required'
         ]);
+
     
-        $input = $request->all();
-        if(!empty($input['password'])){ 
-            $input['password'] = Hash::make($input['password']);
-        }else{
-            $input = Arr::except($input,array('password'));    
+        $user = User::findOrFail($id);
+        $input = $request->except('password');
+    
+        if ($request->filled('password')) {
+            $input['password'] = Hash::make($request->password);
         }
     
-        $user = User::find($id);
         $input['updated_by'] = auth()->id();
         $user->update($input);
-        DB::table('model_has_roles')->where('model_id',$id)->delete();
     
-        $user->assignRole($request->input('roles'));
-    
+        // Assign company-scoped role with all permissions
+        $roleName = $request->input('roles');
+        $userCompanyId = $user->company_id;
+        assignRoleToGuardedModel($user, $roleName, 'web', $userCompanyId);
         return redirect(guard_route('users.index'))
-                        ->with('success','User updated successfully');
+            ->with('success', 'User updated successfully');
     }
+    
+
     
     /**
      * Remove the specified resource from storage.

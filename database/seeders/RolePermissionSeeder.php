@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Models\Company;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -13,53 +14,49 @@ class RolePermissionSeeder extends Seeder
         $rolesPermissions = [
             'superadmin' => [
                 'guard_name' => 'web',
-                'permissions' => Permission::where('guard_name', 'web')->pluck('name')->toArray(), 
+                'permissions' => Permission::where('guard_name','web')->pluck('name')->toArray(),
             ],
             'manager' => [
                 'guard_name' => 'web',
-                'permissions' => [
-                    'patient-list', 'patient-create', 'patient-edit', 'patient-delete',
-                    'document-list', 'document-create', 'document-edit', 'document-delete',
-                    'appointment-list', 'appointment-create','notification-list','notification-create', 'notification-edit', 'notification-delete'
-                ],
+                'permissions' => ['patient-list','patient-create','patient-edit','patient-delete','document-list','document-create','document-edit','document-delete','appointment-list','appointment-create','notification-list','notification-create','notification-edit','notification-delete'],
             ],
             'doctor' => [
                 'guard_name' => 'doctor',
-                'permissions' => [
-                    'appointment-list', 'appointment-create', 'appointment-edit','notification-list','notification-create', 'notification-edit', 'notification-delete',
-                    'patient-list',
-                ],
+                'permissions' => ['appointment-list','appointment-create','appointment-edit','notification-list','notification-create','notification-edit','notification-delete','patient-list'],
             ],
             'patient' => [
                 'guard_name' => 'patient',
-                'permissions' => [
-                    'appointment-list', 'appointment-create', 'appointment-edit',
-                    'patient-list','patient-edit','notification-list','notification-create', 'notification-edit', 'notification-delete'
-                ],
+                'permissions' => ['appointment-list','appointment-create','appointment-edit','patient-list','patient-edit','notification-list','notification-create','notification-edit','notification-delete'],
             ],
             'clinic' => [
                 'guard_name' => 'clinic',
-                'permissions' => [
-                    'doctor-list', 'doctor-create', 'patient-list', 'appointment-list',
-                    'appointment-create', 'appointment-edit','notification-list','notification-create', 'notification-edit', 'notification-delete'
-                ],
+                'permissions' => ['doctor-list','doctor-create','patient-list','appointment-list','appointment-create','appointment-edit','notification-list','notification-create','notification-edit','notification-delete'],
             ],
         ];
 
-        foreach ($rolesPermissions as $roleName => $data) {
-            $role = Role::firstOrCreate([
-                'name' => $roleName,
-                'guard_name' => $data['guard_name'],
-            ]);
+        // 1️⃣ Global superadmin
+        $superadminRole = Role::updateOrCreate(
+            ['name' => 'superadmin', 'guard_name' => 'web', 'company_id' => null],
+        );
+        $superadminPermissions = Permission::where('guard_name','web')->whereNull('company_id')->pluck('id');
+        $superadminRole->syncPermissions($superadminPermissions);
 
-            foreach ($data['permissions'] as $permName) {
-                $permission = Permission::where('name', $permName)
-                                        ->where('guard_name', $data['guard_name']) // ✅ ensure correct guard
-                                        ->first();
+        // 2️⃣ Company-specific roles
+        $companies = Company::all();
+        foreach ($companies as $company) {
+            foreach ($rolesPermissions as $roleName => $data) {
+                if ($roleName === 'superadmin') continue;
 
-                if ($permission) {
-                    $role->givePermissionTo($permission);
-                }
+                $role = Role::updateOrCreate(
+                    ['name' => $roleName, 'guard_name' => $data['guard_name'], 'company_id' => $company->id]
+                );
+
+                $permissionIds = Permission::whereIn('name', $data['permissions'])
+                                           ->where('guard_name', $data['guard_name'])
+                                           ->where('company_id', $company->id)
+                                           ->pluck('id');
+
+                $role->syncPermissions($permissionIds);
             }
         }
     }

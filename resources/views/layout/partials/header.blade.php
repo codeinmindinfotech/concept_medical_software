@@ -208,6 +208,16 @@
                                 <p class="text-muted mb-0">{{$currentGuard}}</p>
                             </div>
                         </div>
+                        @if(has_permission('doctor-list'))
+                        <!-- Main menu item with submenu -->
+                        <div class="dropdown-submenu">
+                            <a class="dropdown-item dropdown-toggle" href="#">Doctors</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ guard_route('doctors.index') }}">Doctors</a></li>
+                                <li><a class="dropdown-item" href="{{ guard_route('clinics.index') }}">Clinics</a></li>
+                            </ul>
+                        </div>
+                        @endif
                         <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">Set Calendar Days</a>
                         <a class="dropdown-item" href="{{guard_route('patient.dashboard.index')}}">Dashboard</a>
                         <a class="dropdown-item" href="{{ guard_route($currentGuard . 's.edit',Auth::user()->id) }}">Change profile</a>
@@ -227,3 +237,24 @@
     </div>
 </header>
 <!-- /Header -->
+<style>
+/* Default right-opening submenu */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+    top: 0;
+    left: 100%; /* opens right by default */
+    margin-left: 0.1rem;
+}
+
+/* Force submenu to open left if dropdown-menu-end is used */
+.dropdown-menu.dropdown-menu-end .dropdown-submenu > .dropdown-menu {
+    left: auto;
+    right: 100%;
+    margin-left: 0;
+    margin-right: 0.1rem;
+}
+
+    </style>

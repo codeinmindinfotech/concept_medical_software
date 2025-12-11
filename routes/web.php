@@ -294,6 +294,7 @@ Route::group(['middleware' => ['auth']], function() use ($patientSubRoutes) {
             // Basic resources
         Route::resource('documents', DocumentTemplateController::class);
         Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
+        Route::resource('roles', RoleController::class);
 
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

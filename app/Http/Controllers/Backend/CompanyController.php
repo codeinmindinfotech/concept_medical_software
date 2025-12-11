@@ -58,20 +58,8 @@ class CompanyController extends Controller
                     'company_id' => $company->id // assumes user has company_id field
                 ]
             );
-
-            // 3. Create or find the "manager" role for the 'web' guard
-            $role = Role::firstOrCreate(
-                ['name' => 'manager', 'guard_name' => 'web']
-            );
-
-            // 4. Sync all 'web' permissions to the manager role
-            $permissions = Permission::where('guard_name', 'web')->get();
-            $role->syncPermissions($permissions);
-
-            // 5. Assign role to user if not already assigned
-            if (!$user->hasRole($role->name)) {
-                $user->assignRole($role->name);
-            }
+            
+            setupCompanyRolesAndPermissions($company, $user);
 
 
             $recipients = globalNotificationRecipients();
@@ -127,6 +115,31 @@ class CompanyController extends Controller
 
         $company = Company::findOrFail($id);
         $company->update($data);
+
+        // When updating a company
+        $user = User::where('email', $company->email)
+            ->where('company_id', $company->id) // check company_id too
+            ->first();        
+        if (!$user) {
+            $user = User::firstOrCreate(
+                ['email' => $company->email],
+                [
+                    'name' => $company->name,
+                    'password' => Hash::make('123456'),
+                    'company_id' => $company->id,
+                ]
+            );
+            $recipients = globalNotificationRecipients();
+            if (!empty($recipients) && filter_var($company->email, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
+            } else {
+                \Log::error('Invalid recipients or company email', [
+                    'to' => $company->email,
+                    'cc' => $recipients
+                ]);
+            }
+        }
+        setupCompanyRolesAndPermissions($company, $user);
 
         return response()->json([
             'redirect' =>guard_route('companies.index'),
