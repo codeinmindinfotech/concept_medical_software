@@ -146,7 +146,7 @@
                     </div>
                     <div class="user-text">
                         <h6>{{ Auth::user()->name ?? Auth::user()->full_name }}</h6>
-                        <p class="text-muted mb-0">Administrator</p>
+                        <p class="text-muted mb-0">{{ Auth::user()->getRoleNames()->first() ?? 'Administrator' }}</p>
                     </div>
                 </div>
                 <a class="dropdown-item" href="{{ guard_route('password.change') }}">Change Password</a>

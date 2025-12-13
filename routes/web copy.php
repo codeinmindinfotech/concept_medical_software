@@ -154,7 +154,6 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     Route::prefix("$prefix/appointments")->group(function () {
         Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
 
-        // Route::get('/schedule', [AppointmentController::class, 'schedulePage'])->name('patients.appointments.schedule')->defaults('flag', 0);
         Route::post('/by-date', [AppointmentController::class, 'getAppointmentsByDate'])->name('patients.appointments.byDate')->defaults('flag', 0);
         Route::post('/store', [AppointmentController::class, 'store'])->name('patients.appointments.store')->defaults('flag', 0);
         Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('patients.appointments.destroy')->defaults('flag', 0);
@@ -235,269 +234,203 @@ $resources = [
     'clinics' => ClinicController::class,
     'chargecodes' => ChargeCodeController::class,
     'chargecodeprices' => ChargeCodePriceController::class,
-    'configurations' => ConfigurationController::class,
 ];
 
-// Web guard roles: superadmin, manager, consultant
 Route::group(['middleware' => ['auth']], function() use ($resources, $patientSubRoutes) {
-
-    // All web guard roles share the same "no prefix" routes
-    Route::group(['middleware' => ['role:superadmin|manager|consultant']], function() use ($resources, $patientSubRoutes) {
-
-        // Resource routes
-        foreach ($resources as $uri => $controller) {
-            if ($uri === 'configurations') {
-                Route::resource($uri, $controller)->except(['show']);
-            } else {
-                Route::resource($uri, $controller);
-            }
+    Route::middleware('role:superadmin')->group(function() use ($resources, $patientSubRoutes) {
+        // Basic resources
+        Route::resource('companies', CompanyController::class);
+        Route::resource('configurations', ConfigurationController::class)->except(['show']);
+        // Basic resources
+        foreach ($resources as $name => $controller) {
+            Route::resource($name, $controller);
         }
 
-        // Superadmin-specific extra routes
-        Route::middleware('role:superadmin')->group(function() {
-            Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
-            Route::post('documents/temp-upload', [DocumentTemplateController::class, 'tempUpload'])->name('documents.tempUpload');
-            Route::get('documents/load-file/{id}', [DocumentTemplateController::class, 'loadFile'])->name('documents.loadFile');
-            Route::get('/doc', [DocumentTemplateController::class, 'doc']);
+        Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
+        Route::post('documents/temp-upload', [DocumentTemplateController::class, 'tempUpload'])->name('documents.tempUpload');
+        Route::get('documents/load-file/{id}', [DocumentTemplateController::class, 'loadFile'])->name('documents.loadFile');
+        Route::get('/doc', [DocumentTemplateController::class, 'doc']);
+        
+        Route::get('/patients/ajax', [PatientController::class, 'ajax'])->name('patients.ajax');
+        Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
+      
 
-            Route::resource('companies', CompanyController::class);
-            Route::get('/companies/{company}/managers', [CompanyController::class, 'getManagers'])->name('company.manager');
-            Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
+        Route::get('/companies/{company}/managers', [CompanyController::class, 'getManagers'])->name('company.manager');
+        Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
-            // Notifications
-            Route::prefix('notifications')->group(function () {
-                Route::get('/send', [NotificationController::class, 'showForm'])->name('notifications.form');
-                Route::post('/send', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
-            });
-            // Dropdowns
-            Route::resource('dropdowns', DropDownController::class);
-            Route::prefix('dropdownvalues')->group(function () {
-                Route::get('/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
-                Route::get('/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
-                Route::post('/store/{dropDownId}', [DropDownValueController::class, 'store'])->name('dropdownvalues.store');
-                Route::get('/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
-                Route::put('/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
-            });
-        });
-
-        // Manager-specific extra routes
-        Route::middleware('role:manager')->group(function() {
-            Route::prefix('send-manager-notification')->group(function () { 
-                Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-                Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-            });
-            Route::get('{user}/edit-permissions', [UserController::class, 'editPermissions'])->name('users.edit_permissions');
-            Route::put('{user}/update-permissions', [UserController::class, 'updatePermissions'])->name('users.update_permissions');
-        });
-
-
-        // Manager-specific extra routes
-        Route::middleware('role:consultant')->group(function() {
-            Route::prefix('send-manager-notification')->group(function () { 
-                Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-                Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-            });
-            // Apply patient sub-routes
-        });
-
-        // Common routes for all web roles
+        // Dashboard & Password
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
         Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
-        Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
-        Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
-        Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
+        // Notifications
+        Route::prefix('notifications')->group(function () {
+            Route::get('/send', [NotificationController::class, 'showForm'])->name('notifications.form');
+            Route::post('/send', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
+        });
+    
+    
+        // Dropdowns
+        Route::resource('dropdowns', DropDownController::class);
+        Route::prefix('dropdownvalues')->group(function () {
+            Route::get('/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
+            Route::get('/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
+            Route::post('/store/{dropDownId}', [DropDownValueController::class, 'store'])->name('dropdownvalues.store');
+            Route::get('/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
+            Route::put('/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
+        });
         // Apply patient sub-routes
         $patientSubRoutes();
+    
+        // Planner & global appointments
+        Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');      
+        Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
     });
-});
+    
+    Route::prefix("manager")->name("manager.")->middleware('role:manager')
+        ->group(function () use ($resources,$patientSubRoutes)  {
 
-// Patient guard routes
-Route::prefix('patient')->name('patient.')->middleware(['auth:patient', 'check.guard.role'])->group(function() use ($resources, $patientSubRoutes) {
+            Route::prefix('send-manager-notification')->group(function () { 
+                Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
+                Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
+            });
 
-    Route::resource('dashboard', PatientDashboardController::class);
-
-    foreach ($resources as $uri => $controller) {
-        if ($uri === 'configurations') {
-            Route::resource($uri, $controller)->except(['show']);
-        } else {
-            Route::resource($uri, $controller);
-        }
-    }
-
-    Route::get('/send-patient-notification', [PatientMessageController::class, 'showForm'])->name('patient.notification.form');
-    Route::post('/send-patient-notification', [PatientMessageController::class, 'send'])->name('patient.notification.send');
-
-    Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-    Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
-
-    Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
-
-    $patientSubRoutes();
-    Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
-    Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
-});
-
-// Route::group(['middleware' => ['auth']], function() use ($resources, $patientSubRoutes) {
-//     // Route::middleware('role:superadmin')->group(function() use ($resources, $patientSubRoutes) {
-//     //     // Basic resources
-//     //     Route::resource('documents', DocumentTemplateController::class);
-//     //     Route::resource('companies', CompanyController::class);
-//     //     Route::resource('roles', RoleController::class);
-//     //     Route::resource('users', UserController::class);
-//     //     Route::resource('patients', PatientController::class);
-//     //     Route::resource('doctors', DoctorController::class);
-//     //     Route::resource('insurances', InsuranceController::class);
-//     //     Route::resource('consultants', ConsultantController::class);
-//     //     Route::resource('clinics', ClinicController::class);
-//     //     Route::resource('chargecodes', ChargeCodeController::class);
-//     //     Route::resource('chargecodeprices', ChargeCodePriceController::class);
-//     //     Route::resource('configurations', ConfigurationController::class)->except(['show']);
-
-
-//     //     Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
-//     //     Route::post('documents/temp-upload', [DocumentTemplateController::class, 'tempUpload'])->name('documents.tempUpload');
-//     //     Route::get('documents/load-file/{id}', [DocumentTemplateController::class, 'loadFile'])->name('documents.loadFile');
-//     //     Route::get('/doc', [DocumentTemplateController::class, 'doc']);
+            // user wise change permision
+            Route::get('{user}/edit-permissions', [UserController::class, 'editPermissions'])
+                ->name('users.edit_permissions');
         
-//     //     Route::get('/patients/ajax', [PatientController::class, 'ajax'])->name('patients.ajax');
-//     //     Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
-      
-
-//     //     Route::get('/companies/{company}/managers', [CompanyController::class, 'getManagers'])->name('company.manager');
-//     //     Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
-
-//     //     // Dashboard & Password
-//     //     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-//     //     Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-//     //     Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
-
-//     //     // Notifications
-//     //     Route::prefix('notifications')->group(function () {
-//     //         Route::get('/send', [NotificationController::class, 'showForm'])->name('notifications.form');
-//     //         Route::post('/send', [NotificationController::class, 'sendToCompany'])->name('notifications.send');
-//     //     });
-    
-    
-//     //     // Dropdowns
-//     //     Route::resource('dropdowns', DropDownController::class);
-//     //     Route::prefix('dropdownvalues')->group(function () {
-//     //         Route::get('/list/{dropDownId}', [DropDownValueController::class, 'index'])->name('dropdownvalues.index');
-//     //         Route::get('/create/{dropDownId}', [DropDownValueController::class, 'create'])->name('dropdownvalues.create');
-//     //         Route::post('/store/{dropDownId}', [DropDownValueController::class, 'store'])->name('dropdownvalues.store');
-//     //         Route::get('/{id}/edit/{dropDownId}', [DropDownValueController::class, 'edit'])->name('dropdownvalues.edit');
-//     //         Route::put('/{id}/update', [DropDownValueController::class, 'update'])->name('dropdownvalues.update');
-//     //     });
-//     //     // Apply patient sub-routes
-//     //     $patientSubRoutes();
-    
-//     //     // Planner & global appointments
-//     //     Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');      
-//     //     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
-//     // });
-    
-//     // Route::prefix("manager")->name("manager.")->middleware('role:manager')
-//     //     ->group(function () use ($patientSubRoutes)  {
-
-//     //         Route::prefix('send-manager-notification')->group(function () { 
-//     //             Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-//     //             Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-//     //         });
-
-//     //         // user wise change permision
-//     //         Route::get('{user}/edit-permissions', [UserController::class, 'editPermissions'])
-//     //             ->name('users.edit_permissions');
-        
-//     //         Route::put('{user}/update-permissions', [UserController::class, 'updatePermissions'])
-//     //             ->name('users.update_permissions');
+            Route::put('{user}/update-permissions', [UserController::class, 'updatePermissions'])
+                ->name('users.update_permissions');
            
             
 
-//     //         // Basic resources
+            // Basic resources
         
-//     //     Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
+        Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
        
 
 
-//     //     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-//     //     Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-//     //     Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
-//     //     Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
-//     //     Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
-//     //     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');    
-//     //     Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
+        Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
+        Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
+        Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');    
+        Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
          
 
 
 
-//     //     Route::resource('users', UserController::class);
-//     //     Route::resource('patients', PatientController::class);
-//     //     Route::resource('doctors', DoctorController::class);
-//     //     Route::resource('insurances', InsuranceController::class);
-//     //     Route::resource('consultants', ConsultantController::class);
-//     //     Route::resource('clinics', ClinicController::class);
-//     //     Route::resource('chargecodes', ChargeCodeController::class);
-//     //     Route::resource('chargecodeprices', ChargeCodePriceController::class);
-//     //     Route::resource('documents', DocumentTemplateController::class);
-//     //     Route::resource('roles', RoleController::class);
-//     //     Route::resource('configurations', ConfigurationController::class)->except(['show']);
+        // Basic resources
+        foreach ($resources as $name => $controller) {
+            Route::resource($name, $controller);
+        }
+        Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
-//     //     Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
+        Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
 
         
 
-//     //     Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
+        Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
         
-//     //     $patientSubRoutes();
-//     // });
-// });
+        $patientSubRoutes();
+    });
 
 
-// $roles = ['patient'];
-// foreach ($roles as $role) {
-//     Route::prefix($role)
-//         ->name("$role.")
-//         ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
-//         ->group(function () use ($role, $patientSubRoutes) {
+    Route::prefix("consultant")->name("consultant.")->middleware('role:consultant')
+        ->group(function () use ($resources,$patientSubRoutes)  {
 
-//             Route::resource('dashboard', PatientDashboardController::class);
+            Route::prefix('send-manager-notification')->group(function () { 
+                Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
+                Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
+            });
 
-//             Route::resource('users', UserController::class);
-//             Route::resource('patients', PatientController::class);
-//             Route::resource('doctors', DoctorController::class);
-//             Route::resource('insurances', InsuranceController::class);
-//             Route::resource('consultants', ConsultantController::class);
-//             Route::resource('clinics', ClinicController::class);
-//             Route::resource('chargecodes', ChargeCodeController::class);
-//             Route::resource('chargecodeprices', ChargeCodePriceController::class);
-//             Route::resource('configurations', ConfigurationController::class)->except(['show']);
+            // user wise change permision
+            Route::get('{user}/edit-permissions', [UserController::class, 'editPermissions'])
+                ->name('users.edit_permissions');
+        
+            Route::put('{user}/update-permissions', [UserController::class, 'updatePermissions'])
+                ->name('users.update_permissions');
+           
+            
+
+            // Basic resources
+            foreach ($resources as $name => $controller) {
+                Route::resource($name, $controller);
+            }
+        Route::post('documents/library/download', [DocumentTemplateController::class, 'downloadSelectedDocuments'])->name('documents.library.download');
+       
 
 
-//             // Add doctor-specific routes only in doctor group
-//             if ($role === 'doctor') {
-//                 Route::get('/send-notification', [DoctorMessageController::class, 'showForm'])->name('notification.form');
-//                 Route::post('/send-notification', [DoctorMessageController::class, 'send'])->name('notification.send');
-//             }
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+        Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
+        Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
+        Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
+        Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');    
+        Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+         
 
-//             if ($role === 'clinic') {
-//                 Route::get('/send-clinic-notification', [ClinicMessageController::class, 'showForm'])->name('clinic.notification.form');
-//                 Route::post('/send-clinic-notification', [ClinicMessageController::class, 'send'])->name('clinic.notification.send');
-//             }
 
-//             if ($role === 'patient') {
-//                 Route::get('/send-patient-notification', [PatientMessageController::class, 'showForm'])->name('patient.notification.form');
-//                 Route::post('/send-patient-notification', [PatientMessageController::class, 'send'])->name('patient.notification.send');
-//             }
 
-//             Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
-//             Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
-//             Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
+       
+        Route::resource('configurations', ConfigurationController::class)->except(['show']);
 
-//             $patientSubRoutes();
-//             Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
-//             Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
-//             Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
-//             Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);         
-//         });
-// }
+        Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
+
+        
+
+        Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
+        
+        $patientSubRoutes();
+    });
+});
+
+
+$roles = ['patient'];
+foreach ($roles as $role) {
+    Route::prefix($role)
+        ->name("$role.")
+        ->middleware(['auth:' . $role, 'check.guard.role']) // Custom middleware
+        ->group(function () use ($role, $patientSubRoutes) {
+
+            Route::resource('dashboard', PatientDashboardController::class);
+
+            Route::resource('users', UserController::class);
+            Route::resource('patients', PatientController::class);
+            Route::resource('doctors', DoctorController::class);
+            Route::resource('insurances', InsuranceController::class);
+            Route::resource('consultants', ConsultantController::class);
+            Route::resource('clinics', ClinicController::class);
+            Route::resource('chargecodes', ChargeCodeController::class);
+            Route::resource('chargecodeprices', ChargeCodePriceController::class);
+            Route::resource('configurations', ConfigurationController::class)->except(['show']);
+
+
+            // Add doctor-specific routes only in doctor group
+            if ($role === 'doctor') {
+                Route::get('/send-notification', [DoctorMessageController::class, 'showForm'])->name('notification.form');
+                Route::post('/send-notification', [DoctorMessageController::class, 'send'])->name('notification.send');
+            }
+
+            if ($role === 'clinic') {
+                Route::get('/send-clinic-notification', [ClinicMessageController::class, 'showForm'])->name('clinic.notification.form');
+                Route::post('/send-clinic-notification', [ClinicMessageController::class, 'send'])->name('clinic.notification.send');
+            }
+
+            if ($role === 'patient') {
+                Route::get('/send-patient-notification', [PatientMessageController::class, 'showForm'])->name('patient.notification.form');
+                Route::post('/send-patient-notification', [PatientMessageController::class, 'send'])->name('patient.notification.send');
+            }
+
+            Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
+            Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
+            Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
+
+            $patientSubRoutes();
+            Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
+            Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
+            Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
+            Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);         
+        });
+}

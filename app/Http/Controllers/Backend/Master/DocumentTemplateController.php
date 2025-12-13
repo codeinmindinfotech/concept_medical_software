@@ -27,7 +27,7 @@ class DocumentTemplateController extends Controller
                                     ->where('file_path', '!=', '')                             
                                     ->orderBy('id', 'desc')
                                     ->get();
-        return view('documents.index', compact('templates'));
+        return view(guard_view('documents.index', 'patient_admin.main.document.index'), compact('templates'));
     }
 
     public function create()

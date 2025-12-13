@@ -23,8 +23,7 @@ class RolesTableSeeder extends Seeder
          * ------------------------------------------------------*/
         $roleDefinitions = [
             ['name' => 'manager', 'guard_name' => 'web'],
-            ['name' => 'clinic', 'guard_name' => 'clinic'],
-            ['name' => 'doctor', 'guard_name' => 'doctor'],
+            ['name' => 'consultant', 'guard_name' => 'web'],
             ['name' => 'patient', 'guard_name' => 'patient'],
         ];
 

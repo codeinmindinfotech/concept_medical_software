@@ -18,20 +18,16 @@ class RolePermissionSeeder extends Seeder
             ],
             'manager' => [
                 'guard_name' => 'web',
-                'permissions' => ['patient-list','patient-create','patient-edit','patient-delete','document-list','document-create','document-edit','document-delete','appointment-list','appointment-create','notification-list','notification-create','notification-edit','notification-delete'],
+                'permissions' => Permission::where('guard_name','web')->pluck('name')->toArray(),
             ],
-            'doctor' => [
-                'guard_name' => 'doctor',
-                'permissions' => ['appointment-list','appointment-create','appointment-edit','notification-list','notification-create','notification-edit','notification-delete','patient-list'],
+            'consultant' => [
+                'guard_name' => 'web',
+                'permissions' => ['patient-list','patient-create','patient-edit','patient-delete','document-list','document-create','document-edit','document-delete','appointment-list','appointment-create','notification-list','notification-create','notification-edit','notification-delete'],
             ],
             'patient' => [
                 'guard_name' => 'patient',
                 'permissions' => ['appointment-list','appointment-create','appointment-edit','patient-list','patient-edit','notification-list','notification-create','notification-edit','notification-delete'],
-            ],
-            'clinic' => [
-                'guard_name' => 'clinic',
-                'permissions' => ['doctor-list','doctor-create','patient-list','appointment-list','appointment-create','appointment-edit','notification-list','notification-create','notification-edit','notification-delete'],
-            ],
+            ]
         ];
 
         // 1️⃣ Global superadmin

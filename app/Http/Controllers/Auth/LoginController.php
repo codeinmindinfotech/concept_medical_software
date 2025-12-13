@@ -42,9 +42,9 @@ class LoginController extends Controller
 
             $guards = [
                 'web' => User::class,
-                'doctor' => Doctor::class,
+                // 'doctor' => Doctor::class,
                 'patient' => Patient::class,
-                'clinic' => Clinic::class,
+                // 'clinic' => Clinic::class,
             ];
         
             foreach ($guards as $guard => $modelClass) {
@@ -67,9 +67,9 @@ class LoginController extends Controller
     protected function redirectTo()
     {
         $guards = [
-            'web' => 'web',
-            'clinic' => 'clinic',
-            'doctor' => 'doctor',
+            'web' => 'web', // superadmin , consultant, manaager
+            // 'clinic' => 'clinic',
+            // 'doctor' => 'doctor',
             'patient' => 'patient',
         ];
         
@@ -77,11 +77,12 @@ class LoginController extends Controller
             if (auth()->guard($guard)->check()) {
                 if ($guard === 'web') {
                     $user = auth()->guard('web')->user();
-                    if ($user?->hasRole('manager')) {
-                        return '/manager/dashboard';
-                    } elseif ($user?->hasRole('superadmin')) {
-                        return '/dashboard';
-                    }
+                    return '/dashboard';
+                    // if ($user?->hasRole('manager')) {
+                    //     return '/manager/dashboard';
+                    // } elseif ($user?->hasRole('superadmin')) {
+                    //     return '/dashboard';
+                    // }
                 } elseif($guard === 'clinic' || $guard === 'doctor') {
                     return "/$routePrefix/patients";
 

@@ -57,18 +57,9 @@ class PatientController extends Controller
                 $query->where('surname', 'like', '%' . $request->surname . '%');
             }
 
-            // if ($request->filled('title')) {
-            //     $query->whereHas('title', function ($q) use ($request) {
-            //         $q->where('value', $request->title);
-            //     });
-            // }
             if ($request->filled('phone')) {
                 $query->where('phone', 'like', '%' . $request->phone . '%');
             }
-    
-            // if ($request->filled('pin')) {
-            //     $query->where('pin', 'like', '%' . $request->pin . '%');
-            // }
     
             if ($request->filled('dob')) {
                 $query->whereDate('dob', $request->dob);
@@ -85,8 +76,13 @@ class PatientController extends Controller
             return view('patients.list', compact('patients'))->render();
         }
 
+        try {
+            return view(guard_view('patients.index', 'patient_admin.profile.index'), compact('patients'));
+        } catch (\Throwable $e) {
+            dd($e->getMessage(), $e->getTraceAsString());
+        }
         
-        return view(guard_view('patients.index', 'patient_admin.profile.index'), compact('patients'));
+        // return view(guard_view('patients.index', 'patient_admin.profile.index'), compact('patients'));
     }
 
     public function ajax(Request $request)
@@ -147,6 +143,10 @@ class PatientController extends Controller
         $this->authorize('create', Patient::class);
         $validated = $request->validated();
 
+        if(has_role('superadmin') )
+        {
+            $validated['company_id'] = $request->has('company_id');
+        }
         $validated['rip'] = $request->has('rip');
         $validated['sms_consent'] = $request->has('sms_consent');
         $validated['email_consent'] = $request->has('email_consent');
@@ -221,7 +221,10 @@ class PatientController extends Controller
         $this->authorize('update', $patient);
 
         $validated = $request->validated();
-    
+        if(has_role('superadmin') )
+        {
+            $validated['company_id'] = $request->has('company_id');
+        }
         // Handle checkbox fields (they won't be present if unchecked)
         $validated['rip'] = $request->has('rip');
         $validated['sms_consent'] = $request->has('sms_consent');

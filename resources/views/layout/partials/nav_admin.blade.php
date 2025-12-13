@@ -114,11 +114,11 @@
                 @endif
 
                 {{-- Patients --}}
-                @if(has_permission('patient-list'))
+                @can('patient-list')
                     <li class="{{ is_guard_route('patients*') ? 'active' : '' }}">
                         <a href="{{ guard_route('patients.index') }}"><i class="fe fe-user"></i> <span>Patients</span></a>
                     </li>
-                @endif
+                @endcan
 
                 {{-- Planner --}}
                 <li class="{{ is_guard_route('planner') ? 'active' : '' }}">

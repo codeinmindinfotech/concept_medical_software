@@ -12,7 +12,8 @@ use Hash;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-    
+use Spatie\Permission\Models\Permission;
+
 class UserController extends Controller
 {
     /**
@@ -41,7 +42,7 @@ class UserController extends Controller
     {
         $query = Role::where('guard_name', 'web');
         if (has_role('manager')) {
-            $query->where('name', 'manager');
+            $query->where('name', '!=', 'superadmin');
         } 
         $roles = $query->pluck('name','name')->all(); 
 
@@ -104,7 +105,7 @@ class UserController extends Controller
         $userRole = $user->roles->pluck('name','name')->all();
         $query = Role::where('guard_name', 'web');
         if (has_role('manager')) {
-            $query->where('name', 'manager');
+            $query->where('name', '!=', 'superadmin');
         } 
         $roles = $query->pluck('name','name')->all(); 
         return view('users.edit',compact('user','roles','userRole'));
@@ -167,4 +168,40 @@ class UserController extends Controller
         return redirect(guard_route('users.index'))
                         ->with('success','User deleted successfully');
     }
+
+    public function editPermissions($userId)
+    {
+        $guard = getCurrentGuard();
+
+        $user = User::findOrFail($userId);
+
+        $rolePermissions = $user->getPermissionsViaRoles()->pluck('id')->toArray();
+        $userPermissions = $user->permissions->pluck('id')->toArray();
+
+        $allPermissions = Permission::where('guard_name', $guard)
+                                    ->where('company_id', $user->company_id)
+                                    ->get();
+
+        return view('users.edit_permissions', compact('user', 'allPermissions', 'rolePermissions', 'userPermissions'));
+    }
+
+    public function updatePermissions(Request $request, $userId)
+    {
+        $guard = getCurrentGuard();
+
+        $user = User::findOrFail($userId);
+        $permissions = $request->input('permissions', []);
+
+        // Filter only permissions that exist for the guard (ignore company_id)
+        $validPermissions = Permission::whereIn('id', $permissions)
+                                    ->where('guard_name', $guard)
+                                    ->pluck('id')
+                                    ->toArray();
+
+        $user->syncPermissions($validPermissions);
+
+        return redirect()->back()->with('success', 'User permissions updated successfully.');
+    }
+
+
 }

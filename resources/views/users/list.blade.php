@@ -31,6 +31,10 @@
                     <a class="btn btn-sm bg-primary-light" href="{{guard_route('users.edit',$user->id) }}">
                         <i class="fe fe-pencil"></i> Edit
                     </a>
+                     <!-- New: Change Permissions Button -->
+                    <a class="btn btn-sm bg-warning-light" href="{{ guard_route('users.edit_permissions', $user->id) }}">
+                        <i class="fe fe-lock"></i> Change Permissions
+                    </a>
                     <form action="{{guard_route('users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                         @csrf
                         @method('DELETE')

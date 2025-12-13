@@ -28,14 +28,8 @@ class CompanyRolesSeeder extends Seeder
             ]);
 
             Role::updateOrCreate([
-                'name' => 'clinic',
-                'guard_name' => 'clinic',
-                'company_id' => $company->id
-            ]);
-
-            Role::updateOrCreate([
-                'name' => 'doctor',
-                'guard_name' => 'doctor',
+                'name' => 'consultant',
+                'guard_name' => 'web',
                 'company_id' => $company->id
             ]);
 

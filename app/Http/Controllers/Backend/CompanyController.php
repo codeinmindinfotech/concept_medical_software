@@ -51,13 +51,16 @@ class CompanyController extends Controller
            
             // 2. Create or find the admin user (and associate company)
             $user = User::firstOrCreate(
-                ['email' => $company->email], // company_email
+                [
+                    'email' => $company->email,
+                    'company_id' => $company->id
+                ],
                 [
                     'name' => $company->name,
-                    'password' => Hash::make('123456'), // default password
-                    'company_id' => $company->id // assumes user has company_id field
+                    'password' => Hash::make('123456')
                 ]
             );
+            
             
             setupCompanyRolesAndPermissions($company, $user);
 
@@ -121,12 +124,15 @@ class CompanyController extends Controller
             ->where('company_id', $company->id) // check company_id too
             ->first();        
         if (!$user) {
-            $user = User::firstOrCreate(
-                ['email' => $company->email],
+           // 2. Create or find the admin user (and associate company)
+           $user = User::firstOrCreate(
+                [
+                    'email' => $company->email,
+                    'company_id' => $company->id
+                ],
                 [
                     'name' => $company->name,
-                    'password' => Hash::make('123456'),
-                    'company_id' => $company->id,
+                    'password' => Hash::make('123456')
                 ]
             );
             $recipients = globalNotificationRecipients();

@@ -22,11 +22,11 @@
                 $calendarRoutes = ['patient.calendar', 'doctor.calendar', 'clinic.calendar'];
                 @endphp
                 <ul class="main-nav">
-                    @if(has_role('patient'))
+                    {{-- @if(has_role('patient'))
                     <li class="megamenu {{ in_array(Route::currentRouteName(), $dashboardRoutes) ? 'active' : '' }}">
                         <a href="{{ guard_route('dashboard.index') }}">Dashboard</a>
                     </li>
-                    @endif
+                    @endif --}}
                     <li class="megamenu {{ in_array(Route::currentRouteName(), $calendarRoutes) ? 'active' : '' }}">
                         <a href="{{ guard_route('calendar') }}">Planner</a>
                     </li>
@@ -51,6 +51,20 @@
                         <a href="{{ guard_route('patient.notification.form') }}">Send Notification </a>
                     </li>
                     @endif
+
+                    @can('doctor-list')
+                    <li class="has-submenu">
+                        <a href="javascript:void(0);">Settings <i class="fas fa-chevron-down"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ guard_route('doctors.index') }}">Doctors</a></li>
+                            <li><a href="{{ guard_route('clinics.index') }}">Clinics</a></li>
+                            <li><a href="{{ guard_route('consultants.index') }}">Consultant</a></li>
+                            <li><a href="{{ guard_route('documents.index') }}">Documents</a></li>
+                            <li><a href="{{ guard_route('insurances.index') }}">Insurances</a></li>
+                            <li><a href="{{ guard_route('chargecodes.index') }}">Charge Codes</a></li>
+                        </ul>
+                    </li>
+                    @endcan
                 </ul>
             </div>
 
@@ -205,22 +219,16 @@
                             </div>
                             <div class="user-text">
                                 <h6>{{ Auth::user()->name ?? Auth::user()->full_name }}</h6>
-                                <p class="text-muted mb-0">{{$currentGuard}}</p>
+                                <p class="text-muted mb-0">{{ Auth::user()->getRoleNames()->first() ?? $currentGuard }}</p>
                             </div>
                         </div>
-                        @if(has_permission('doctor-list'))
-                        <!-- Main menu item with submenu -->
-                        <div class="dropdown-submenu">
-                            <a class="dropdown-item dropdown-toggle" href="#">Doctors</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ guard_route('doctors.index') }}">Doctors</a></li>
-                                <li><a class="dropdown-item" href="{{ guard_route('clinics.index') }}">Clinics</a></li>
-                            </ul>
-                        </div>
-                        @endif
                         <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">Set Calendar Days</a>
-                        <a class="dropdown-item" href="{{guard_route('patient.dashboard.index')}}">Dashboard</a>
-                        <a class="dropdown-item" href="{{ guard_route($currentGuard . 's.edit',Auth::user()->id) }}">Change profile</a>
+                        @if($currentGuard == 'patient') 
+                            <a class="dropdown-item" href="{{guard_route('patient.dashboard.index')}}">Dashboard</a>
+                            <a class="dropdown-item" href="{{ guard_route($currentGuard.'s.edit',Auth::user()->id) }}">Change profile</a>
+                        @else
+                            <a class="dropdown-item" href="{{ guard_route('users.edit',Auth::user()->id) }}">Change profile</a>
+                        @endif
                         <a class="dropdown-item" href="{{ guard_route('password.change') }}">Change Password</a>
                         <a class="dropdown-item" href="{{guard_route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -237,24 +245,3 @@
     </div>
 </header>
 <!-- /Header -->
-<style>
-/* Default right-opening submenu */
-.dropdown-submenu {
-    position: relative;
-}
-
-.dropdown-submenu > .dropdown-menu {
-    top: 0;
-    left: 100%; /* opens right by default */
-    margin-left: 0.1rem;
-}
-
-/* Force submenu to open left if dropdown-menu-end is used */
-.dropdown-menu.dropdown-menu-end .dropdown-submenu > .dropdown-menu {
-    left: auto;
-    right: 100%;
-    margin-left: 0;
-    margin-right: 0.1rem;
-}
-
-    </style>

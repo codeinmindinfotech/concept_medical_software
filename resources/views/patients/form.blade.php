@@ -21,7 +21,20 @@
             </select>
             @error('consultant_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
-
+          @if(has_role('superadmin') )
+            <div class="col-md-6">
+              <label for="company_id" class="form-label">Select Company:</label>
+              <select name="company_id" id="company_id" class="form-control select2" required>
+                  <option value="">-- Select Company --</option>
+                  @foreach(\App\Models\Company::all() as $company)
+                  <option value="{{ $company->id }}" {{ old('company_id', $patient->company_id ?? '') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                  @endforeach
+              </select>
+              @error('company_id')
+              <div class="text-danger">{{ $message }}</div>
+              @enderror
+          </div>
+          @endif
         </div>
       </div>
     </div>

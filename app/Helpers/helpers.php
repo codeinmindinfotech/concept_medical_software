@@ -209,17 +209,17 @@ if (!function_exists('guard_route')) {
 
         // Special logic for web guard
         if ($guard === 'web') {
-            if ($user && $user->hasRole('superadmin')) {
-                return route($baseRoute, $params); // e.g. 'dashboard'
-            }
-
-            if ($user && $user->hasRole('manager')) {
-                $prefixedRoute = 'manager' . '.' . $baseRoute; // e.g. clinic.dashboard
+            if(auth()->user()->hasAnyRole(['superadmin', 'manager']))
+            { 
+                return route($baseRoute, $params);
+            } 
+            if ($user && $user->hasRole('consultant')) {
+                $prefixedRoute = $baseRoute; 
 
                 if (Route::has($prefixedRoute)) {
                     return route($prefixedRoute, $params);
                 }
-            }
+            } 
         }
 
         // For other guards, use guard-prefixed route
@@ -330,13 +330,25 @@ if (!function_exists('isActive')) {
     }
 }
 
-if (!function_exists('btnClass')) {
-    function btnClass($pattern, $color) {
-        return isActive($pattern)
-            ? "btn btn-sm w-100 text-start text-white btn-$color fw-semibold shadow-sm"
-            : "btn btn-sm w-100 text-start btn-outline-$color";
+// if (!function_exists('btnClass')) {
+//     function btnClass($pattern, $color) {
+//         return isActive($pattern)
+//             ? "btn btn-load w-100 text-start text-white btn-$color fw-semibold shadow-sm"
+//             : "btn btn-load w-100 text-start btn-outline-$color";
+//     }
+// }
+if (!function_exists('btnClass')){
+    function btnClass($pattern, $color = 'primary') {
+        $isActive = request()->routeIs($pattern);
+    
+        $baseClasses = 'w-100 text-start d-flex align-items-center justify-content-start p-2 mb-1 border rounded shadow-sm';
+        $activeClasses = "bg-$color text-white border-$color";
+        $inactiveClasses = "bg-white text-dark border-light";
+    
+        return $isActive ? "$baseClasses $activeClasses" : "$baseClasses $inactiveClasses";
     }
 }
+
 
 if (!function_exists('isDarkColor')) {
     function isDarkColor($hexColor) {
@@ -374,14 +386,20 @@ if (!function_exists('guard_view')) {
      */
     function guard_view(string $oldLayout, string $newLayout): string
     {
-        $guard = getCurrentGuard();
-
-        // Use old layout for superadmin/manager (web guard)
-        if ($guard === 'web') {
-            return $oldLayout;
+        if (!function_exists('getCurrentGuard') || !function_exists('current_user')) {
+            abort(500, 'Required helper functions not loaded.');
         }
-
-        // Use new layout for doctor/clinic/patient
+        $guard = getCurrentGuard();
+        // Use old layout for superadmin/manager (web guard)
+        if ($guard === 'web') 
+        {
+            if(auth()->user()->hasAnyRole(['superadmin', 'manager'])){
+                return $oldLayout;
+            } else {
+                return $newLayout;
+            }
+        }
+        // Use new layout for patient
         return $newLayout;
     }
 }
@@ -476,8 +494,8 @@ if (!function_exists('setupCompanyRolesAndPermissions')) {
                 'guard_name' => 'web',
                 'permissions' => null, // all permissions
             ],
-            'doctor' => [
-                'guard_name' => 'doctor',
+            'consultant' => [
+                'guard_name' => 'web',
                 'permissions' => [
                     'appointment-list','appointment-create','appointment-edit',
                     'notification-list','notification-create','notification-edit','notification-delete',
@@ -491,15 +509,7 @@ if (!function_exists('setupCompanyRolesAndPermissions')) {
                     'patient-list','patient-edit',
                     'notification-list','notification-create','notification-edit','notification-delete'
                 ],
-            ],
-            'clinic' => [
-                'guard_name' => 'clinic',
-                'permissions' => [
-                    'doctor-list','doctor-create','patient-list',
-                    'appointment-list','appointment-create','appointment-edit',
-                    'notification-list','notification-create','notification-edit','notification-delete'
-                ],
-            ],
+            ]
         ];
 
         foreach ($rolesPermissions as $roleName => $config) {
