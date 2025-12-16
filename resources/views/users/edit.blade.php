@@ -66,7 +66,7 @@
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
                                 <strong>Role:</strong>
-                                <select name="roles[]" class="form-control select2" multiple="multiple">
+                                <select name="roles" class="form-control select2">
                                     @foreach ($roles as $value => $label)
                                         <option value="{{ $value }}" {{ isset($userRole[$value]) ? 'selected' : ''}}>
                                             {{ $label }}

@@ -42,7 +42,7 @@
                         <form method="POST" action="{{ guard_route('notifications.managerform') }}">
                             @csrf
 
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="user_id" class="form-label">Select Superadmin:<span class="txt-error">*</span></label>
                                 <select name="recipients[]" id="user_id" class="form-select form-control form-white select2" multiple>
                                     <option value="">-- Select Users --</option>
@@ -53,31 +53,26 @@
                                 @error('user_id')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
-                            </div>
+                            </div> --}}
 
                             <div class="mb-3">
-                                <label for="recipients" class="form-label">Select Recipients:</label>
-                                <select name="recipients[]" class="form-select form-control form-white select2" multiple>
+                                <label for="recipients" class="form-label">Select Recipients:<span class="txt-error">*</span></label>
+                                <select name="recipients[]" class="form-select form-control form-white select2" multiple required>
                                     <optgroup label="Patients">
                                         @foreach($patients as $patient)
                                         <option value="patient-{{ $patient->id }}">{{ $patient->full_name }}</option>
                                         @endforeach
                                     </optgroup>
-                                    <optgroup label="Clinics">
-                                        @foreach($clinics as $clinic)
-                                        <option value="clinic-{{ $clinic->id }}">{{ $clinic->name }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Doctors">
-                                        @foreach($doctors as $doctor)
-                                        <option value="doctor-{{ $doctor->id }}">Dr. {{ $doctor->name }}</option>
+                                    <optgroup label="Consultant">
+                                        @foreach($consultants as $cons)
+                                        <option value="consultant-{{ $cons->id }}">{{ $cons->name }}</option>
                                         @endforeach
                                     </optgroup>
                                 </select>
                             </div>
 
                             <div class="mb-3">
-                                <label for="message" class="form-label">Notification Message:</label>
+                                <label for="message" class="form-label">Notification Message:<span class="txt-error">*</span></label>
                                 <textarea name="message" id="message" class="form-control" rows="4" required>{{ old('message') }}</textarea>
                                 @error('message')
                                 <div class="text-danger">{{ $message }}</div>

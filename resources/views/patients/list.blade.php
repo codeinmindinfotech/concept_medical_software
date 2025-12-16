@@ -1,4 +1,4 @@
-    <table class="table table-hover align-middle text-nowrap" id="PatientTable">
+   <table class="table table-hover align-middle text-nowrap" id="PatientTable">
         <thead>
             <tr>
                 <th style="width: 40px;">#</th>

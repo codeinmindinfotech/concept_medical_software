@@ -18,9 +18,11 @@
                             <h5 class="mb-0">
                                 <i class="fas fa-user-clock me-2"></i> WaitingList Management
                             </h5>
+                            @if(has_permission('patient-edit'))
                             <a href="{{guard_route('waiting-lists.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                                 <i class="fas fa-plus-circle me-1"></i> Waiting Add
                             </a>
+                            @endif
                         </div>
                         <div class="card-body">
                             @if(session('success'))
@@ -47,14 +49,18 @@
                                             <td>{{ $visit->category->value ?? '-' }}</td>
                                             <td>{{ $visit->consult_note ?? '-' }}</td>
                                             <td >
+                                            @if(has_permission('patient-edit'))
                                               <a href="{{guard_route('waiting-lists.edit', ['patient' => $patient, 'waiting_list' => $visit->id]) }}" class="btn btn-sm bg-primary-light" title="Edit">
                                                 <i class="fa fa-edit"></i>
                                               </a>
+                                            @endif
+                                            @if(has_permission('patient-delete'))
                                               <form action="{{guard_route('waiting-lists.destroy',['patient' => $patient, 'waiting_list' => $visit->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this item?');" style="display: inline;">
                                                 @csrf
                                                   @method('DELETE')
                                                   <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                                               </form>
+                                            @endif
                                             </td>
                                         </tr>
                                         @endforeach

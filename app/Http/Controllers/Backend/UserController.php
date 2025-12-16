@@ -12,7 +12,8 @@ use Hash;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-    
+use Spatie\Permission\Models\Permission;
+
 class UserController extends Controller
 {
     /**
@@ -24,14 +25,21 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $query = User::with(['creator', 'updater'])->companyOnly();
-        $data = $query->latest()->paginate(5);
+        if (has_role('manager')) {
+            $query->where('name', '!=', 'superadmin');
+        } 
+        if (has_role('consultant')) {
+            $query->where('name', '=', 'consultant');
+        } 
+        $data = $query->latest()->get();
 
         if ($request->ajax()) {
             return view('users.list', compact('data'))->render();
         }
-        return view('users.index',compact('data'));
+        
+        return view(guard_view('users.index', 'patient_admin.user.index'),compact('data'));
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -41,11 +49,11 @@ class UserController extends Controller
     {
         $query = Role::where('guard_name', 'web');
         if (has_role('manager')) {
-            $query->where('name', 'manager');
+            $query->where('name', '!=', 'superadmin');
         } 
         $roles = $query->pluck('name','name')->all(); 
 
-        return view('users.create',compact('roles'));
+        return view(guard_view('users.create', 'patient_admin.user.create'),compact('roles'));
     }
     
     /**
@@ -69,7 +77,11 @@ class UserController extends Controller
         $input['password'] = Hash::make($input['password']);
         $input['created_by'] = auth()->id();
         $user = User::create($input);
-        $user->assignRole($request->input('roles'));
+        // Assign role using company-aware helper
+        $roleName = $request->input('roles');  // assuming a single role
+        assignRoleToGuardedModel($user, $roleName, 'web', $companyId);
+
+        // $user->assignRole($request->input('roles'));
     
         return redirect(guard_route('users.index'))
                         ->with('success','User created successfully');
@@ -85,7 +97,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        return view('users.show',compact('user'));
+        return view(guard_view('users.show', 'patient_admin.user.show'),compact('user'));
     }
     
     /**
@@ -100,46 +112,56 @@ class UserController extends Controller
         $userRole = $user->roles->pluck('name','name')->all();
         $query = Role::where('guard_name', 'web');
         if (has_role('manager')) {
-            $query->where('name', 'manager');
+            $query->where('name', '!=', 'superadmin');
         } 
         $roles = $query->pluck('name','name')->all(); 
-        return view('users.edit',compact('user','roles','userRole'));
+        return view(guard_view('users.edit', 'patient_admin.user.edit'),compact('user','roles','userRole'));
     }
     
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id): RedirectResponse
     {
         $companyId = auth()->user()->company_id;
+
         $this->validate($request, [
-            'name' => 'required',
-            'email' => ['required', 'email', new UniquePerCompany('users', 'email', $companyId, $id)],
-            'password' => 'same:confirm-password',
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                // Ignore the current user ID
+                function ($attribute, $value, $fail) use ($companyId, $id) {
+                    $exists = User::where('email', $value)
+                                ->where('company_id', $companyId)
+                                ->where('id', '<>', $id)
+                                ->exists();
+                    if ($exists) {
+                        $fail('This email is already taken for this company.');
+                    }
+                }
+            ],
+            'password' => 'nullable|same:confirm-password',
             'roles' => 'required'
         ]);
+
     
-        $input = $request->all();
-        if(!empty($input['password'])){ 
-            $input['password'] = Hash::make($input['password']);
-        }else{
-            $input = Arr::except($input,array('password'));    
+        $user = User::findOrFail($id);
+        $input = $request->except('password');
+    
+        if ($request->filled('password')) {
+            $input['password'] = Hash::make($request->password);
         }
     
-        $user = User::find($id);
         $input['updated_by'] = auth()->id();
         $user->update($input);
-        DB::table('model_has_roles')->where('model_id',$id)->delete();
     
-        $user->assignRole($request->input('roles'));
-    
+        // Assign company-scoped role with all permissions
+        $roleName = $request->input('roles');
+        $userCompanyId = $user->company_id;
+        assignRoleToGuardedModel($user, $roleName, 'web', $userCompanyId);
         return redirect(guard_route('users.index'))
-                        ->with('success','User updated successfully');
+            ->with('success', 'User updated successfully');
     }
+    
+
     
     /**
      * Remove the specified resource from storage.
@@ -153,4 +175,40 @@ class UserController extends Controller
         return redirect(guard_route('users.index'))
                         ->with('success','User deleted successfully');
     }
+
+    public function editPermissions($userId)
+    {
+        $guard = getCurrentGuard();
+
+        $user = User::findOrFail($userId);
+
+        $rolePermissions = $user->getPermissionsViaRoles()->pluck('id')->toArray();
+        $userPermissions = $user->permissions->pluck('id')->toArray();
+
+        $allPermissions = Permission::where('guard_name', $guard)
+                                    ->where('company_id', $user->company_id)
+                                    ->get();
+
+        return view(guard_view('users.edit_permissions', 'patient_admin.user.edit_permissions'), compact('user', 'allPermissions', 'rolePermissions', 'userPermissions'));
+    }
+
+    public function updatePermissions(Request $request, $userId)
+    {
+        $guard = getCurrentGuard();
+
+        $user = User::findOrFail($userId);
+        $permissions = $request->input('permissions', []);
+
+        // Filter only permissions that exist for the guard (ignore company_id)
+        $validPermissions = Permission::whereIn('id', $permissions)
+                                    ->where('guard_name', $guard)
+                                    ->pluck('id')
+                                    ->toArray();
+
+        $user->syncPermissions($validPermissions);
+
+        return redirect()->back()->with('success', 'User permissions updated successfully.');
+    }
+
+
 }

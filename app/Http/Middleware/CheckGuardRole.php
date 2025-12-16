@@ -3,15 +3,13 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class CheckGuardRole
 {
     public function handle($request, Closure $next)
     {
-        $guard = request()->segment(1); // Assuming the route prefix is the guard (e.g., /doctor/dashboard)
+        $guard = $request->segment(1); // e.g., /doctor/dashboard
         if (!in_array($guard, ['doctor', 'clinic', 'patient', 'web'])) {
             abort(403, 'Unauthorized guard.');
         }
@@ -20,7 +18,23 @@ class CheckGuardRole
             return redirect()->route("$guard.login");
         }
 
+        $user = Auth::guard($guard)->user();
+
+        // Superadmin bypass
+        if ($user->hasRole('superadmin')) {
+            return $next($request);
+        }
+
+        // Company restriction (assuming company_id column exists in users)
+        if ($request->route()->hasParameter('company_id')) {
+            $companyId = $request->route('company_id');
+            if ($companyId != $user->company_id) {
+                abort(403, 'Unauthorized company access.');
+            }
+        }
+
         return $next($request);
     }
 }
+
 

@@ -57,7 +57,7 @@ class DoctorController extends Controller
     {
         $this->authorize('create', Doctor::class);
         extract($this->getCommonDropdowns());
-        return view('doctors.create',compact('contactTypes','paymentMethods'));
+        return view(guard_view('doctors.create', 'patient_admin.doctor.create'),compact('contactTypes','paymentMethods'));
     }
     
     /**
@@ -71,7 +71,7 @@ class DoctorController extends Controller
         $this->authorize('create', Doctor::class);
         $validated = $request->validated();
         $doctor = Doctor::create($validated);
-        assignRoleToGuardedModel($doctor, 'doctor', 'doctor');
+        // assignRoleToGuardedModel($doctor, 'doctor', 'doctor',  $doctor->company_id);
 
          // Handle signature
         if ($doctor) {
@@ -80,15 +80,15 @@ class DoctorController extends Controller
             $doctor->save();
         }
 
-        if ($doctor) {
-            try {
-                $resetService->sendResetLink($doctor, 'doctor', 'doctors');
-            } catch (\Exception $e) {
-                return response()->json([
-                    'error' => $e->getMessage()
-                ], 500);
-            }
-        }
+        // if ($doctor) {
+        //     try {
+        //         $resetService->sendResetLink($doctor, 'doctor', 'doctors');
+        //     } catch (\Exception $e) {
+        //         return response()->json([
+        //             'error' => $e->getMessage()
+        //         ], 500);
+        //     }
+        // }
 
         return response()->json([
             'redirect' =>guard_route('doctors.index'),
@@ -133,6 +133,8 @@ class DoctorController extends Controller
         $this->authorize('update', $doctor);
         $validated = $request->validated();
         $doctor->update($validated);
+        // assignRoleToGuardedModel($doctor, 'doctor', 'doctor',  $doctor->company_id);
+
         // Handle signature
         $signaturePath = $this->handleSignature($request, $doctor);
         if ($signaturePath) {

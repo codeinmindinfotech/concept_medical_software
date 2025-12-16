@@ -3875,4 +3875,7 @@ table.table-inbox tbody tr.checked {
   }
 }
 
+.txt-error{
+  color: red;
+}
 /*# sourceMappingURL=custom.css.map */

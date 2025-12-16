@@ -45,24 +45,24 @@ class ClinicController extends Controller
     public function create(): View
     {
         $pageTitle = "Create Clinic";
-        return view('clinics.create', compact('pageTitle'));
+        return view(guard_view('clinics.create', 'patient_admin.clinic.create'), compact('pageTitle'));
     }
 
     public function store(ClinicRequest $request, PasswordResetService $resetService): JsonResponse
     {
         $data = $this->extractDayFields($request);
         $clinic = Clinic::create($data);
-        assignRoleToGuardedModel($clinic, 'clinic', 'clinic');
+        // assignRoleToGuardedModel($clinic, 'clinic', 'clinic',  $clinic->company_id);
 
-        if ($clinic) {
-            try {
-                $resetService->sendResetLink($clinic, 'clinic', 'clinics');     
-            } catch (\Exception $e) {
-                return response()->json([
-                    'error' => $e->getMessage()
-                ], 500);
-            }
-        }
+        // if ($clinic) {
+        //     try {
+        //         $resetService->sendResetLink($clinic, 'clinic', 'clinics');     
+        //     } catch (\Exception $e) {
+        //         return response()->json([
+        //             'error' => $e->getMessage()
+        //         ], 500);
+        //     }
+        // }
 
         return response()->json([
             'redirect' => guard_route('clinics.index'),
@@ -80,6 +80,7 @@ class ClinicController extends Controller
     {
         $data = $this->extractDayFields($request);
         $clinic->update($data);
+        // assignRoleToGuardedModel($clinic, 'clinic', 'clinic',  $clinic->company_id);
 
         return response()->json([
             'redirect' =>guard_route('clinics.index'),

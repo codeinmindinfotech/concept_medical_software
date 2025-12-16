@@ -149,4 +149,4 @@ $('#libraryForm').submit(function(e){
 
 </script>
 
-   @endpush
+@endpush

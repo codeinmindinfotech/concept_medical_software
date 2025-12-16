@@ -2,27 +2,44 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use App\Models\Company;
 
 class RolesTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $roles = [
-            ['name' => 'superadmin', 'guard_name' => 'web'],     // For User model
-            ['name' => 'manager', 'guard_name' => 'web'],        // For User model
-            ['name' => 'doctor', 'guard_name' => 'doctor'],      // For Doctor model
-            ['name' => 'patient', 'guard_name' => 'patient'],    // For Patient model
-            ['name' => 'clinic', 'guard_name' => 'clinic'],      // For Clinic model
+        /* -------------------------------------------------------
+         * 1️⃣ CREATE GLOBAL SUPERADMIN ROLE (company_id = null)
+         * ------------------------------------------------------*/
+        Role::updateOrCreate(
+            ['name' => 'superadmin', 'guard_name' => 'web'],
+            ['company_id' => null]
+        );
+
+        /* -------------------------------------------------------
+         * 2️⃣ COMPANY-SPECIFIC ROLES
+         * ------------------------------------------------------*/
+        $roleDefinitions = [
+            ['name' => 'manager', 'guard_name' => 'web'],
+            ['name' => 'consultant', 'guard_name' => 'web'],
+            ['name' => 'patient', 'guard_name' => 'patient'],
         ];
 
-        foreach ($roles as $role) {
-            Role::firstOrCreate($role);
+        $companies = Company::all();
+
+        foreach ($companies as $company) {
+            foreach ($roleDefinitions as $role) {
+                Role::updateOrCreate(
+                    [
+                        'name'       => $role['name'],
+                        'guard_name' => $role['guard_name'],
+                        'company_id' => $company->id
+                    ],
+                    [] // no need for values — updateOrCreate only updates changed fields
+                );
+            }
         }
     }
 }

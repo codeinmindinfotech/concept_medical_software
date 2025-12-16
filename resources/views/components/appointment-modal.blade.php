@@ -20,7 +20,7 @@
                             <select class="form-select select2" id="patient-id" name="patient_id" style="width:100%">
                                 <option value="">-- Select Patient --</option>
                                 @foreach ($patients as $p)
-                                <option value="{{ $p->id }}" data-dob="{{ format_date($p->dob) }}" data-consultant="{{ $p->consultant->name }}">{{ $p->full_name }}</option>
+                                <option value="{{ $p->id }}" data-dob="{{ format_date($p->dob) }}" data-consultant="{{ $p->consultant->name }}">{{ $p->full_name }} ({{ format_date($p->dob) }})</option>
                                 @endforeach
                             </select>
                         </div>

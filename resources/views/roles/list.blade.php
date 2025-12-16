@@ -3,6 +3,7 @@
         <tr>
             <th width="100px">No</th>
             <th>Name</th>
+            <th>Company Name</th>
             <th width="280px">Action</th>
         </tr>
     </thead>
@@ -11,6 +12,7 @@
         <tr>
             <td>{{ ++$key }}</td>
             <td>{{ $role->name }}</td>
+            <td>{{ $role->company_name }}</td>
             <td>
                 <a class="btn btn-sm bg-success-light" href="{{guard_route('roles.show',$role->id) }}" title="Show"><i class="fe fe-eye"></i> Show</a>
                 @can('role-edit')

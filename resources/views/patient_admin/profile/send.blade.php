@@ -35,14 +35,14 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="doctor_id" class="form-label">Select Doctors:</label>
-                            <select name="recipients[]" id="doctor_id" class="form-control select2" multiple required>
+                            <label for="consultant_id" class="form-label">Select Consultant:</label>
+                            <select name="recipients[]" id="consultant_id" class="form-control select2" multiple required>
                                 <option value="">-- Select Doctors --</option>
-                                @foreach($doctors as $doctor)
-                                <option value="doctor-{{ $doctor->id }}">{{ $doctor->name }}</option>
+                                @foreach($consultants as $cons)
+                                <option value="consultant-{{ $cons->id }}">{{ $cons->name }}</option>
                                 @endforeach
                             </select>
-                            @error('doctor_id')
+                            @error('consultant_id')
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>

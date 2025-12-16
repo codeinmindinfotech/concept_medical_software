@@ -1,10 +1,8 @@
-<?php $page = 'patient-dashboard'; ?>
 @extends('layout.mainlayout')
 @section('content')
 <!-- Page Content -->
 <div class="content">
     <div class="container">
-
         <div class="row">
     <!-- / Profile Sidebar -->
             @php

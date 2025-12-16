@@ -3948,6 +3948,16 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 });
 
+document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function(element){
+    element.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        let submenu = this.nextElementSibling;
+        submenu.classList.toggle('show');
+    });
+});
+
+
 $(document).on('click', '.load-more', function () {
 
     let btn = $(this);
@@ -3973,4 +3983,23 @@ $(document).on('click', '.load-more', function () {
         }
     });
 
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	const selectAll = document.getElementById('selectAll');
+	if (selectAll) {
+		selectAll.addEventListener('change', function () {
+			const checked = this.checked;
+			document.querySelectorAll('.perm-checkbox').forEach(cb => cb.checked = checked);
+			document.querySelectorAll('.select-module').forEach(cb => cb.checked = checked);
+		});
+	}
+
+	document.querySelectorAll('.select-module').forEach(moduleCheckbox => {
+		moduleCheckbox.addEventListener('change', function () {
+			const module = this.dataset.module;
+			const checked = this.checked;
+			document.querySelectorAll(`.${module}-perm`).forEach(cb => cb.checked = checked);
+		});
+	});
 });

@@ -19,7 +19,10 @@ class ConfigTableSeeder extends Seeder
         ];
 
         foreach ($configs as $config) {
-            Configuration::firstOrCreate($config);
+            Configuration::updateOrCreate(
+                ['key' => $config['key']],   // match only on 'key'
+                ['value' => $config['value']] // update value if exists
+            );
         }
     }
 }

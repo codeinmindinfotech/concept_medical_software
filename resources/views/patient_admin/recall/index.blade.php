@@ -17,9 +17,11 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Recall Management
                         </h5>
+                        @if(has_permission('patient-create'))
                         <a href="{{guard_route('recalls.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                             <i class="fas fa-plus-circle me-1"></i> New Recall
                         </a>
+                        @endif
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -44,14 +46,18 @@
                                         <td>{{ $recall->note }}</td>
                                         <td>{{ $recall->status?->value }}</td>
                                         <td>
+                                            @if(has_permission('patient-edit'))
                                             <a href="{{guard_route('recalls.edit', ['patient' => $patient, 'recall' => $recall]) }}" class="btn btn-sm bg-primary-light" title="Edit">
                                                 <i class="fe fe-pencil"></i> Edit
                                             </a>
+                                            @endif
+                                            @if(has_permission('patient-delete'))
                                             <form action="{{guard_route('recalls.destroy', ['patient' => $patient, 'recall' => $recall]) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Delete this task?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                                             </form>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

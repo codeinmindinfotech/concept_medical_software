@@ -27,7 +27,7 @@ class DocumentTemplateController extends Controller
                                     ->where('file_path', '!=', '')                             
                                     ->orderBy('id', 'desc')
                                     ->get();
-        return view('documents.index', compact('templates'));
+        return view(guard_view('documents.index', 'patient_admin.main.document.index'), compact('templates'));
     }
 
     public function create()
@@ -46,7 +46,7 @@ class DocumentTemplateController extends Controller
             'file_path' => '',   // empty initially
             'company_id' => auth()->user()->company_id ?? null,
         ]);
-        return view('documents.create', compact('template'));
+        return view(guard_view('documents.create', 'patient_admin.main.document.create'), compact('template'));
     }
     
     /**
@@ -131,7 +131,7 @@ class DocumentTemplateController extends Controller
             'token' => $token, // your JWT token
         ];
 
-        return view('documents.show', [
+        return view(guard_view('documents.show', 'patient_admin.main.document.show'), [
             'document' => $document,
             'config' => json_encode($config),
         ]);
@@ -174,7 +174,7 @@ class DocumentTemplateController extends Controller
             'token' => $token, // your JWT token
         ];
         
-        return view('documents.edit', compact('template','config'));
+        return view(guard_view('documents.edit', 'patient_admin.main.document.edit'), compact('template','config'));
     }
 
     /**
@@ -383,7 +383,5 @@ class DocumentTemplateController extends Controller
         ];
 
         return view('documents.doc', compact('config'));
-    }
-
-    
+    }   
 }

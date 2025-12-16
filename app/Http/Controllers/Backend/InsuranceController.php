@@ -28,7 +28,7 @@ class InsuranceController extends Controller
             return view('insurances.list', compact('insurances'))->render();
         }
 
-        return view('insurances.index',compact('insurances','pageTitle'));
+        return view(guard_view('insurances.index', 'patient_admin.insurance.index'),compact('insurances','pageTitle'));
     }
     
     /**
@@ -39,7 +39,7 @@ class InsuranceController extends Controller
     public function create(): View
     {
         $pageTitle = "Insurances Create";
-        return view('insurances.create', compact('pageTitle'));
+        return view(guard_view('insurances.create', 'patient_admin.insurance.create'), compact('pageTitle'));
     }
     
     /**
@@ -68,7 +68,7 @@ class InsuranceController extends Controller
     public function show(Insurance $insurance): View
     {
         $pageTitle = "Show Insurance";
-        return view('insurances.show',compact('insurance','pageTitle'));
+        return view(guard_view('insurances.show', 'patient_admin.insurance.show'),compact('insurance','pageTitle'));
     }
     
     /**
@@ -80,7 +80,7 @@ class InsuranceController extends Controller
     public function edit(Insurance $insurance): View
     {
         $pageTitle = "Edit Insurance";
-        return view('insurances.edit',compact('insurance','pageTitle'));
+        return view(guard_view('insurances.edit', 'patient_admin.insurance.edit'),compact('insurance','pageTitle'));
     }
     
     /**

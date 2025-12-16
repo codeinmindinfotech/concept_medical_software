@@ -9,34 +9,38 @@ use Spatie\Permission\Models\Permission;
 
 class CreateAdminUserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Create or find the admin user
+        // 1️⃣ Create or find the global superadmin role
+        $role = Role::firstOrCreate([
+            'name' => 'superadmin',
+            'guard_name' => 'web',
+            'company_id' => null, // global
+        ]);
+
+        // 2️⃣ Create or get all global permissions (company_id=null)
+        $permissions = Permission::where('guard_name', 'web')
+                                 ->whereNull('company_id')
+                                 ->get();
+
+        // 3️⃣ Assign all permissions to the role
+        $role->syncPermissions($permissions);
+
+        // 4️⃣ Create or find superadmin user
         $user = User::firstOrCreate(
             ['email' => 'niru@codeinmindinfotech.com'],
             [
                 'name' => 'Niru Patel',
-                'password' => bcrypt('123456')  // default password
+                'password' => bcrypt('123456'),
+                'company_id' => null, // global
             ]
         );
 
-        // Create or find the superadmin role with correct guard
-        $role = Role::firstOrCreate(
-            ['name' => 'superadmin', 'guard_name' => 'web']
-        );
-
-        // Get all permissions (web guard only)
-        $permissions = Permission::where('guard_name', 'web')->get();
-
-        // Assign all permissions to the role
-        $role->syncPermissions($permissions);
-
-        // Assign role to the user if not already assigned
-        if (!$user->hasRole($role->name)) {
-            $user->assignRole($role->name);
+        // 5️⃣ Assign role to user
+        if (!$user->hasRole($role)) {
+            $user->assignRole($role); // IMPORTANT: pass the Role model
         }
+
+        $this->command->info("✅ Superadmin user seeded successfully with all global permissions!");
     }
 }

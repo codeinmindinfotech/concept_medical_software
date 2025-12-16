@@ -23,13 +23,13 @@ class ChargeCodeController extends Controller
         if ($request->ajax()) {
             return view('chargecodes.list', compact('chargecodes'))->render();
         }
-
-        return view('chargecodes.index', compact('chargecodes'));
+        
+        return view(guard_view('chargecodes.index', 'patient_admin.chargecode.index'), compact('chargecodes'));
     }
     public function create()
     {
         $this->authorize('create', ChargeCode::class);
-        return view('chargecodes.create', [
+        return view(guard_view('chargecodes.create', 'patient_admin.chargecode.create'), [
             'insurances' => Insurance::companyOnly()->get(),
             'groupTypes' => $this->getDropdownOptions('CHARGE_GROUP_TYPE')
         ]);
@@ -86,7 +86,7 @@ class ChargeCodeController extends Controller
         $insurances = Insurance::companyOnly()->get();
         $groupTypes = $this->getDropdownOptions('CHARGE_GROUP_TYPE');
 
-        return view('chargecodes.show',compact('chargecode','insurances','groupTypes'));
+        return view(guard_view('chargecodes.show', 'patient_admin.chargecode.show'),compact('chargecode','insurances','groupTypes'));
     }
 
     public function edit(ChargeCode $chargecode): View
@@ -94,7 +94,7 @@ class ChargeCodeController extends Controller
         $this->authorize('update', $chargecode);
         $insurances = Insurance::companyOnly()->get();
         $groupTypes = $this->getDropdownOptions('CHARGE_GROUP_TYPE');
-        return view('chargecodes.edit',compact('chargecode', 'insurances', 'groupTypes'));
+        return view(guard_view('chargecodes.edit', 'patient_admin.chargecode.edit'),compact('chargecode', 'insurances', 'groupTypes'));
     }
 
     public function update(Request $request, ChargeCode $chargecode): JsonResponse

@@ -18,15 +18,15 @@
             <div class="main-menu-wrapper">
                 @php
                 $currentGuard = getCurrentGuard();
-                $dashboardRoutes = ['patient.dashboard', 'doctor.dashboard', 'clinic.dashboard'];
-                $calendarRoutes = ['patient.calendar', 'doctor.calendar', 'clinic.calendar'];
+                $dashboardRoutes = ['patient.dashboard'];
+                $calendarRoutes = ['patient.calendar', 'calendar'];
                 @endphp
                 <ul class="main-nav">
-                    @if(has_role('patient'))
+                    {{-- @if(has_role('patient'))
                     <li class="megamenu {{ in_array(Route::currentRouteName(), $dashboardRoutes) ? 'active' : '' }}">
                         <a href="{{ guard_route('dashboard.index') }}">Dashboard</a>
                     </li>
-                    @endif
+                    @endif --}}
                     <li class="megamenu {{ in_array(Route::currentRouteName(), $calendarRoutes) ? 'active' : '' }}">
                         <a href="{{ guard_route('calendar') }}">Planner</a>
                     </li>
@@ -38,19 +38,34 @@
                         <a href="{{ guard_route('patients.index') }}">Patients </a>
                     </li>
                     {{-- Notifications based on guard/role --}}
-                    @if ($currentGuard === 'doctor')
-                    <li class="megamenu {{ is_guard_route('notification') ? 'active' : '' }}">
-                        <a href="{{ guard_route('doctor.notification.form') }}">Send Notification </a>
+                    @if (has_role('consultant'))
+                    <li class="megamenu {{ is_guard_route('send-manager-notification*') ? 'active' : '' }}">
+                        <a href="{{ guard_route('notifications.managerform') }}">Send Notification </a>
                     </li>
-                    @elseif ($currentGuard === 'clinic')
-                    <li class="megamenu {{ is_guard_route('clinic.notification*') ? 'active' : '' }}">
-                        <a href="{{ guard_route('clinic.notification.form') }}">Send Notification </a>
-                    </li>
-                    @elseif ($currentGuard === 'patient')
+                    @endif
+
+                    @if ($currentGuard === 'patient')
                     <li class="megamenu {{ Request::is('send-notification*') ? 'active' : '' }}">
                         <a href="{{ guard_route('patient.notification.form') }}">Send Notification </a>
                     </li>
                     @endif
+
+                   
+                    <li class="has-submenu">
+                        <a href="javascript:void(0);">Settings <i class="fas fa-chevron-down"></i></a>
+                        <ul class="submenu">
+                            @can('doctor-list') <li><a href="{{ guard_route('doctors.index') }}">Doctors</a></li>@endcan
+                            @can('clinic-list')<li><a href="{{ guard_route('clinics.index') }}">Clinics</a></li>@endcan
+                            @can('consultant-list')<li><a href="{{ guard_route('consultants.index') }}">Consultant</a></li>@endcan
+                            @can('document-list')<li><a href="{{ guard_route('documents.index') }}">Documents</a></li>@endcan
+                            @can('insurance-list')<li><a href="{{ guard_route('insurances.index') }}">Insurances</a></li>@endcan
+                            @can('chargecode-list')<li><a href="{{ guard_route('chargecodes.index') }}">Charge Codes</a></li>@endcan
+                            @if (has_role('consultant'))<li><a href="{{ guard_route('users.index') }}">Users</a></li>@endif
+                            @can('role-list')<li><a href="{{ guard_route('roles.index') }}">Roles</a></li>@endcan
+                            @can('configuration-list')<li><a href="{{ guard_route('configurations.index') }}">Configuration</a></li>@endcan
+                        </ul>
+                    </li>
+                    
                 </ul>
             </div>
 
@@ -205,12 +220,16 @@
                             </div>
                             <div class="user-text">
                                 <h6>{{ Auth::user()->name ?? Auth::user()->full_name }}</h6>
-                                <p class="text-muted mb-0">{{$currentGuard}}</p>
+                                <p class="text-muted mb-0">{{ Auth::user()->getRoleNames()->first() ?? $currentGuard }}</p>
                             </div>
                         </div>
                         <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#setCalendarDaysModal">Set Calendar Days</a>
-                        <a class="dropdown-item" href="{{guard_route('patient.dashboard.index')}}">Dashboard</a>
-                        <a class="dropdown-item" href="{{ guard_route($currentGuard . 's.edit',Auth::user()->id) }}">Change profile</a>
+                        @if($currentGuard == 'patient') 
+                            <a class="dropdown-item" href="{{guard_route('patient.dashboard.index')}}">Dashboard</a>
+                            <a class="dropdown-item" href="{{ guard_route($currentGuard.'s.edit',Auth::user()->id) }}">Change profile</a>
+                        @else
+                            <a class="dropdown-item" href="{{ guard_route('users.edit',Auth::user()->id) }}">Change profile</a>
+                        @endif
                         <a class="dropdown-item" href="{{ guard_route('password.change') }}">Change Password</a>
                         <a class="dropdown-item" href="{{guard_route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

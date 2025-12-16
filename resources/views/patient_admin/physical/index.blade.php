@@ -17,9 +17,11 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Physical Management
                         </h5>
-                        <a href="{{guard_route('patients.physical.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                            <i class="fas fa-plus-circle me-1"></i> New Physical
-                        </a>
+                        @if(has_permission('patient-create'))                        
+                            <a href="{{guard_route('patients.physical.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
+                                <i class="fas fa-plus-circle me-1"></i> New Physical
+                            </a>
+                        @endif
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

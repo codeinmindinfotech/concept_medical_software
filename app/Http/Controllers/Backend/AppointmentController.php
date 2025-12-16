@@ -20,8 +20,8 @@ class AppointmentController extends Controller
     
     public function schedulePage(Request $request, ?Patient $patient = null)
     {
-        $flag = $request->route('flag');
         $this->authorize('viewAny', Appointment::class);
+        $flag = $request->route('flag');
         if (has_role('patient')) {
             $user = auth()->user();
             $patients = Patient::companyOnly()->with('title')->where('id', $user->id)->paginate(1);
