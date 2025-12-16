@@ -32,7 +32,7 @@ class ManagerMessageNotification extends Notification implements ShouldQueue
             'message' => $this->message,
             'sender' => $this->manager->name,
             'manager_id' => $this->manager->id,
-            'role' => 'manager',
+            'role' => (has_role('manager')) ? 'manager' : 'consultant',
         ];
     }
 

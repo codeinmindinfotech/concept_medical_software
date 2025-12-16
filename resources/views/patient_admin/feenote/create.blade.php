@@ -32,8 +32,7 @@
                             <form action="{{guard_route('fee-notes.store', ['patient' => $patient->id]) }}" data-ajax class="needs-validation" novalidate
                                 method="POST">
                                 @csrf
-                                <input type="hidden" name="patient_id" value="{{ $patient->id ?? '' }}">
-                        
+                       
                                 <div class="row g-3">
                                   <input type="hidden" name="id" id="fee_note_id">
                                   <input type="hidden" name="patient_id" id="patient_id" value="{{ $patient->id }}">

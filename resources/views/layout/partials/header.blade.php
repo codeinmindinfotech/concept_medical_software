@@ -18,8 +18,8 @@
             <div class="main-menu-wrapper">
                 @php
                 $currentGuard = getCurrentGuard();
-                $dashboardRoutes = ['patient.dashboard', 'doctor.dashboard', 'clinic.dashboard'];
-                $calendarRoutes = ['patient.calendar', 'doctor.calendar', 'clinic.calendar'];
+                $dashboardRoutes = ['patient.dashboard'];
+                $calendarRoutes = ['patient.calendar', 'calendar'];
                 @endphp
                 <ul class="main-nav">
                     {{-- @if(has_role('patient'))
@@ -38,15 +38,13 @@
                         <a href="{{ guard_route('patients.index') }}">Patients </a>
                     </li>
                     {{-- Notifications based on guard/role --}}
-                    @if ($currentGuard === 'doctor')
-                    <li class="megamenu {{ is_guard_route('notification') ? 'active' : '' }}">
-                        <a href="{{ guard_route('doctor.notification.form') }}">Send Notification </a>
+                    @if (has_role('consultant'))
+                    <li class="megamenu {{ is_guard_route('send-manager-notification*') ? 'active' : '' }}">
+                        <a href="{{ guard_route('notifications.managerform') }}">Send Notification </a>
                     </li>
-                    @elseif ($currentGuard === 'clinic')
-                    <li class="megamenu {{ is_guard_route('clinic.notification*') ? 'active' : '' }}">
-                        <a href="{{ guard_route('clinic.notification.form') }}">Send Notification </a>
-                    </li>
-                    @elseif ($currentGuard === 'patient')
+                    @endif
+
+                    @if ($currentGuard === 'patient')
                     <li class="megamenu {{ Request::is('send-notification*') ? 'active' : '' }}">
                         <a href="{{ guard_route('patient.notification.form') }}">Send Notification </a>
                     </li>

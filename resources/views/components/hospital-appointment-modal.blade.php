@@ -23,7 +23,7 @@
                                 @foreach ($patients as $pt)
                                     <option value="{{ $pt->id }}"
                                         data-dob="{{ format_date($pt->dob) }}"
-                                        data-consultant="{{ $pt->consultant->name }}">{{ $pt->full_name }}</option>
+                                        data-consultant="{{ $pt->consultant->name }}">{{ $pt->full_name }} ({{ format_date($pt->dob) }})</option>
                                 @endforeach
                             </select>
                         </div>                        

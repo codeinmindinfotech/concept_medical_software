@@ -18,17 +18,18 @@ class PatientMessageController extends Controller
     {
         $patient = auth('patient')->user();
 
-        $doctorIds = collect([
-            $patient->doctor_id,
-            $patient->referral_doctor_id,
-            $patient->other_doctor_id,
-            $patient->solicitor_doctor_id,
-        ])->filter()->unique()->values(); // Remove nulls and duplicates
+        // $doctorIds = collect([
+        //     $patient->doctor_id,
+        //     $patient->referral_doctor_id,
+        //     $patient->other_doctor_id,
+        //     $patient->solicitor_doctor_id,
+        // ])->filter()->unique()->values(); // Remove nulls and duplicates
 
-        $doctors = Doctor::whereIn('id', $doctorIds)->get();
-
-        $managers = User::where('company_id', $patient->company_id )->get();
-        return view(guard_view('patients.notifications.send', 'patient_admin.profile.send'), compact( 'doctors','managers'));
+        // $doctors = Doctor::whereIn('id', $doctorIds)->get();
+        
+        $managers = User::where('company_id', $patient->company_id )->role('manager')->get();
+        $consultants = User::where('company_id', $patient->company_id )->role('consultant')->get();
+        return view(guard_view('patients.notifications.send', 'patient_admin.profile.send'), compact('consultants','managers'));
     }
     public function send(Request $request)
     {
@@ -44,7 +45,7 @@ class PatientMessageController extends Controller
 
         foreach ($request->recipients as $recipient) {
             [$type, $id] = explode('-', $recipient);
-            $modelClass = $type === 'manager' ? \App\Models\User::class : \App\Models\Doctor::class;
+            $modelClass = $type === 'manager' ? \App\Models\User::class : \App\Models\User::class;
 
             if ($recipientModel = $modelClass::find($id)) {
                 $recipientModel->notify($notification);

@@ -277,22 +277,32 @@ Route::group(['middleware' => ['auth']], function() use ($resources, $patientSub
         });
 
         // Manager-specific extra routes
-        Route::middleware('role:manager')->group(function() {
-            Route::prefix('send-manager-notification')->group(function () { 
-                Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-                Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-            });
-        });
+        // Route::middleware('role:manager')->group(function() {
+        //     Route::prefix('send-manager-notification')->group(function () { 
+        //         Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
+        //         Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
+        //     });
+        // });
 
 
-        // Manager-specific extra routes
-        Route::middleware('role:consultant')->group(function() {
-            Route::prefix('send-manager-notification')->group(function () { 
-                Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-                Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
+        // // Manager-specific extra routes
+        // Route::middleware('role:consultant')->group(function() {
+        //     Route::prefix('send-manager-notification')->group(function () { 
+        //         Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
+        //         Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
+        //     });
+        //     // Apply patient sub-routes
+        // });
+        Route::middleware('role:manager|consultant')->group(function () {
+            Route::prefix('send-manager-notification')->group(function () {
+                Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])
+                    ->name('notifications.managerform');
+        
+                Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])
+                    ->name('notifications.managersend');
             });
-            // Apply patient sub-routes
         });
+        
 
         // Common routes for all web roles
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

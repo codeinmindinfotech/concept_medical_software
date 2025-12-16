@@ -18,23 +18,28 @@
         ])
         <!-- Header: Date Navigation + Clinic + Patient -->
         <div class="d-flex align-items-center mb-3 gap-2">
-
             <button id="prevDay" class="btn btn-outline-primary">&larr;</button>
             <input type="date" id="selectedDate" class="form-control" style="width: 150px;" value="{{ date('Y-m-d') }}">
             <button id="nextDay" class="btn btn-outline-primary">&rarr;</button>
-            <select id="clinic-select" class="form-select ms-3" style="width: 200px;">
-                @foreach($clinics as $clinic)
-                    <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
-                @endforeach
-            </select>
-
-            <select id="patient-select" class="form-select" style="width: 200px;">
-                <option value="">Select Patient</option>
-                @foreach($patients as $pat)
-                    <option value="{{ $pat->id }}">{{ $pat->full_name }}</option>
-                @endforeach
-            </select>
-            <button class="btn btn-secondary ms-auto" id="fullDayReportBtn">View Full Day Report</button>
+            
+            <div class="col-md-3">
+                <select id="clinic-select" class="form-select select2 ms-3" style="width: 200px;">
+                    @foreach($clinics as $clinic)
+                        <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="patient-select" class="form-select select2 ms-3" style="width: 200px;">
+                    <option value="">Select Patient</option>
+                    @foreach($patients as $pat)
+                        <option value="{{ $pat->id }}">{{ $pat->full_name }} ({{ format_date($pat->dob) }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-secondary ms-auto" id="fullDayReportBtn">View Full Day Report</button>
+            </div>
         </div>
 
         <!-- Appointment slots -->

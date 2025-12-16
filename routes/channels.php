@@ -24,4 +24,9 @@ Broadcast::channel('user.{id}', function ($user, $id) {
     Log::info("Broadcast channel auth for guard user");
     return $user->id == $id && $user instanceof \App\Models\User;
 });
+
+Broadcast::channel('consultant.{id}', function ($user, $id) {
+    Log::info("Broadcast channel auth for guard user");
+    return $user->id == $id && $user instanceof \App\Models\User;
+});
 ?>

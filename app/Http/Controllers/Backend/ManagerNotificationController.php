@@ -20,11 +20,10 @@ class ManagerNotificationController extends Controller
     public function showManagerForm()
     {
         $user = current_user();
-        $users = User::role('superadmin')->get();
+        // $users = User::role('superadmin')->get();
         $patients = Patient::where('company_id', $user->company_id)->get();
-        $clinics = Clinic::where('company_id', $user->company_id)->get();
-        $doctors = Doctor::where('company_id', $user->company_id)->get();
-        return view('notifications.managersend', compact('patients', 'clinics','doctors', 'users'));
+        $consultants = User::where('company_id', $user->company_id)->get();
+        return view(guard_view('notifications.managersend', 'patient_admin.notification.managerform'), compact('patients', 'consultants'));
     }
 
     public function sendFromManager(Request $request)
@@ -40,7 +39,6 @@ class ManagerNotificationController extends Controller
         $companyId = $user->company_id;
 
         $message = $request->input('message');
-
         foreach ($request->recipients as $recipient) {
             [$type, $id] = explode('-', $recipient);
 
@@ -51,11 +49,11 @@ class ManagerNotificationController extends Controller
                 case 'patient':
                     $model = \App\Models\Patient::find($id);
                     break;
-                case 'doctor':
-                    $model = \App\Models\Doctor::find($id);
-                    break;
-                case 'clinic':
-                    $model = \App\Models\Clinic::find($id);
+                // case 'doctor':
+                //     $model = \App\Models\Doctor::find($id);
+                //     break;
+                case 'consultant':
+                    $model = \App\Models\User::find($id);
                     break;
                 default:
                     $model = null;
