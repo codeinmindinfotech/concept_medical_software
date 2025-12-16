@@ -17,7 +17,11 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Communication Management
                         </h5>
-                        
+                        @if(has_permission('patient-create'))
+                        <a class="btn bg-primary text-white btn-light btn-sm" href="{{ guard_route('sms.index', ['patient' => $patient]) }}">
+                            <i class="fas fa-plus-circle me-1"></i> Add SMS
+                        </a>
+                        @endif
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

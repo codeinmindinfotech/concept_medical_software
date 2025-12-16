@@ -8,6 +8,16 @@
         <div class="row">
             <!-- General -->
             <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-clock me-2"></i> Doctor Management
+                    </h5>
+                   @can('viewAny', \App\Models\Doctor::class)
+                    <a class="btn bg-primary text-white btn-light btn-sm" href="{{guard_route('doctors.index') }}">
+                        <i class="fas fa-plus-circle me-1"></i> List Doctor
+                    </a>
+                    @endcan
+                </div>
                 <ul class="nav nav-tabs nav-tabs-bottom">
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" role="tab">

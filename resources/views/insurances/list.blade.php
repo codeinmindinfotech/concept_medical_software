@@ -1,4 +1,4 @@
-<table class="datatable table table-hover table-center mb-0" id="InsuranceTable">
+<table class="table table-hover table-center mb-0" id="InsuranceTable">
     <thead>
         <tr>
             <th>No</th>

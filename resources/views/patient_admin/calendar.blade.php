@@ -13,12 +13,51 @@
         padding: 1px;
         cursor: pointer;
     }
+.fc-clinic-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.clinic-pill {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.clinic-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .fc-right {
+        justify-content: flex-start !important;
+        margin-top: 6px;
+    }
+}
+
 </style>
 @endpush
 
 <div class="content">
     <div class="container mt-4">
-
+        <div id="clinicLegend" class="fc-clinic-legend">
+            @foreach($clinics as $clinic)
+                <span class="clinic-pill">
+                    <span class="clinic-dot" style="background: {{ $clinic->color }}"></span>
+                    {{ $clinic->name }}
+                </span>
+            @endforeach
+        </div>
+        
         <div class="card shadow-sm">
             <div class="card-body">
                 <div id="calendar"></div>
@@ -162,12 +201,11 @@
                 , center: 'title'
                 , right: ''
             },
-
             events: {
                 url: calendarConfig.fetchAllAppointments
                 , type: 'GET'
-            }
-            , eventClick: function(event) {
+            },
+            eventClick: function(event) {
                 Swal.fire({
                     title: "Choose Action"
                     , showCancelButton: true

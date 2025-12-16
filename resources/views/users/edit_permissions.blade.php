@@ -42,6 +42,8 @@
                         <thead>
                             <tr>
                                 <th>Module</th>
+                                <th><input type="checkbox" id="selectAll"> All</th>
+
                                 <th>List</th>
                                 <th>Create</th>
                                 <th>Edit</th>
@@ -61,6 +63,9 @@
                             @foreach($groupedPermissions as $module => $perms)
                                 <tr>
                                     <td>{{ ucfirst($module) }}</td>
+                                    <td>
+                                        <input type="checkbox" class="select-module" data-module="{{ $module }}">
+                                    </td>
                                     @foreach($actions as $action)
                                         @php $perm = $perms[$action] ?? null; @endphp
                                         <td>

@@ -57,7 +57,7 @@ class DoctorController extends Controller
     {
         $this->authorize('create', Doctor::class);
         extract($this->getCommonDropdowns());
-        return view('doctors.create',compact('contactTypes','paymentMethods'));
+        return view(guard_view('doctors.create', 'patient_admin.doctor.create'),compact('contactTypes','paymentMethods'));
     }
     
     /**

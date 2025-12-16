@@ -12,6 +12,11 @@
                     <h5 class="mb-0">
                         <i class="fas fa-user-clock me-2"></i> Doctor Management
                     </h5>
+                   @can('create', \App\Models\Doctor::class)
+                    <a class="btn bg-primary text-white btn-light btn-sm" href="{{guard_route('doctors.create') }}">
+                        <i class="fas fa-plus-circle me-1"></i> Add Doctor
+                    </a>
+                    @endcan
                 </div>
                 <div class="card-body">
                     @if ($errors->any())

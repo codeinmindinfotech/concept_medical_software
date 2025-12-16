@@ -17,9 +17,11 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Note Management
                         </h5>
-                        <a href="{{guard_route('patients.notes.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                            <i class="fas fa-plus-circle me-1"></i> Note Add
-                        </a>
+                        @if(has_permission('patient-create'))
+                            <a class="btn bg-primary text-white btn-light btn-sm" href="{{guard_route('patients.notes.create', $patient) }}" >
+                                <i class="fas fa-plus-circle me-1"></i> Note Add
+                            </a>
+                        @endif
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

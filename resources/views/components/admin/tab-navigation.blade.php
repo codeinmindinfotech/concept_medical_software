@@ -11,7 +11,7 @@
         <div class="card shadow-sm">
             
             {{-- Card Header --}}
-            <div class="card-header py-2 px-3 bg-light border-bottom">
+            <div class="card-header px-1 py-2 bg-light border-bottom">
                 <strong class="text-dark"><i class="fas fa-user-md me-2"></i> Patient Actions</strong>
             </div>
 
@@ -31,15 +31,16 @@
                         <a href="{{ guard_route('patients.edit', $patient->id) }}" class="{{ btnClass('patients.edit', 'primary') }}">
                             <i class="fa-solid fa-pen-to-square me-2"></i> Edit
                         </a>
-
+                    @endcan
+                    @can('view', $patient)
                         <a href="{{ guard_route('patients.notes.index', $patient->id) }}" class="{{ btnClass('patients.notes.*', 'success') }}">
                             <i class="fa-solid fa-notes-medical me-2"></i> Notes 
-                            <span class="badge bg-success border border-white">{{ $patients->notes_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-success border border-white">{{ $patients->notes_count ?? 0 }}</span>
                         </a>
 
                         <a href="{{ guard_route('patients.history.index', $patient->id) }}" class="{{ btnClass('patients.history.*', 'warning') }}">
                             <i class="fas fa-history me-2"></i> History
-                            <span class="badge bg-warning border border-white">{{ $patients->histories_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-warning border border-white">{{ $patients->histories_count ?? 0 }}</span>
                         </a>
 
                         <a href="{{ guard_route('patients.physical.index', $patient->id) }}" class="{{ btnClass('patients.physical.*', 'secondary') }}">
@@ -52,22 +53,22 @@
 
                         <a href="{{ guard_route('tasks.index', ['patient' => $patient]) }}" class="{{ btnClass('tasks.*', 'info') }}">
                             <i class="fas fa-tasks me-2"></i> Tasks 
-                            <span class="badge bg-info border border-white">{{ $patients->tasks_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-info border border-white">{{ $patients->tasks_count ?? 0 }}</span>
                         </a>
 
                         <a href="{{ guard_route('recalls.index', ['patient' => $patient]) }}" class="{{ btnClass('recalls.*', 'success') }}">
                             <i class="fas fa-bell me-2"></i> Recalls
-                            <span class="badge bg-success border border-white">{{ $patients->recall_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-success border border-white">{{ $patients->recall_count ?? 0 }}</span>
                         </a>
 
                         <a href="{{ guard_route('waiting-lists.index', ['patient' => $patient]) }}" class="{{ btnClass('waiting-lists.*', 'warning') }}">
                             <i class="fas fa-notes-medical me-2"></i> Waiting List
-                            <span class="badge bg-warning border border-white">{{ $patients->waiting_lists_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-warning border border-white">{{ $patients->waiting_lists_count ?? 0 }}</span>
                         </a>
 
                         <a href="{{ guard_route('fee-notes.index', ['patient' => $patient]) }}" class="{{ btnClass('fee-notes.*', 'secondary') }}">
                             <i class="fas fa-money-check-alt me-2"></i> Fee Notes
-                            <span class="badge bg-secondary border border-white">{{ $patients->fee_note_list_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-secondary border border-white">{{ $patients->fee_note_list_count ?? 0 }}</span>
                         </a>
 
                         <a href="{{ guard_route('sms.index', ['patient' => $patient]) }}" class="{{ btnClass('sms.*', 'danger') }}">
@@ -80,12 +81,12 @@
 
                         <a href="{{ guard_route('apts.index', ['patient' => $patient]) }}" class="{{ btnClass('apts.*', 'primary') }}">
                             <i class="fas fa-calendar-check me-2"></i> Apt/Surgery
-                            <span class="badge bg-primary border border-white">{{ $patients->appointments_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-primary border border-white">{{ $patients->appointments_count ?? 0 }}</span>
                         </a>
 
                         <a href="{{ guard_route('patient-documents.index', ['patient' => $patient]) }}" class="{{ btnClass('patient-documents.*', 'warning') }}">
                             <i class="fas fa-file-alt me-2"></i> Documents
-                            <span class="badge bg-warning border border-white">{{ $patients->documents_count ?? 0 }}</span>
+                            <span class="m-1 badge bg-warning border border-white">{{ $patients->documents_count ?? 0 }}</span>
                         </a>
                     @endcan
 

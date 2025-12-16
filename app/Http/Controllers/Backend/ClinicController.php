@@ -45,7 +45,7 @@ class ClinicController extends Controller
     public function create(): View
     {
         $pageTitle = "Create Clinic";
-        return view('clinics.create', compact('pageTitle'));
+        return view(guard_view('clinics.create', 'patient_admin.clinic.create'), compact('pageTitle'));
     }
 
     public function store(ClinicRequest $request, PasswordResetService $resetService): JsonResponse

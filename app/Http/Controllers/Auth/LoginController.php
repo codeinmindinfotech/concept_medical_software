@@ -77,16 +77,22 @@ class LoginController extends Controller
             if (auth()->guard($guard)->check()) {
                 if ($guard === 'web') {
                     $user = auth()->guard('web')->user();
+                    if ($user?->hasRole('consultant')) {
+                        return '/patients';
+                    }
                     return '/dashboard';
                     // if ($user?->hasRole('manager')) {
                     //     return '/manager/dashboard';
                     // } elseif ($user?->hasRole('superadmin')) {
                     //     return '/dashboard';
                     // }
-                } elseif($guard === 'clinic' || $guard === 'doctor') {
-                    return "/$routePrefix/patients";
+                } 
+                // elseif($guard === 'clinic' || $guard === 'doctor') {
+                //     return "/$routePrefix/patients";
 
-                } else {
+                // } 
+                
+                else {
                     return "/$routePrefix/dashboard";
                 }
         

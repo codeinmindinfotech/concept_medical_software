@@ -32,9 +32,11 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Task Management
                         </h5>
+                        @if(has_permission('patient-create'))
                         <a href="{{guard_route('tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                             <i class="fas fa-plus-circle me-1"></i> New Task
                         </a>
+                        @endif
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -67,25 +69,27 @@
                                         <td>{{ format_date($task->start_date) }}</td>
                                         <td>{{ format_date($task->end_date) }}</td>
                                         <td>
-                                            <a class="btn btn-sm bg-primary-light" href="{{guard_route('tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" title="Edit">
-                                                <i class="fe fe-pencil"></i> Edit
-                                            </a>
-                                            <button type="button" class="btn btn-sm bg-success-light open-add-followup" data-task-id="{{ $task->id }}" data-task-subject="{{ $task->subject }}" data-bs-toggle="modal" data-bs-target="#addFollowupModal">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                
+                                            @if(has_permission('patient-edit'))
+                                                <a class="btn btn-sm bg-primary-light" href="{{guard_route('tasks.edit', ['patient' => $patient, 'task' => $task->id]) }}" title="Edit">
+                                                    <i class="fe fe-pencil"></i> Edit
+                                                </a>
+                                                <button type="button" class="btn btn-sm bg-success-light open-add-followup" data-task-id="{{ $task->id }}" data-task-subject="{{ $task->subject }}" data-bs-toggle="modal" data-bs-target="#addFollowupModal">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            @endif
                 
                                             @if($task->followups->count())
                                             <button class="btn btn-sm bg-success-light toggle-followups" data-task-id="{{ $task->id }}">
                                                 <i class="fa fa-comments"></i>
                                             </button>
                                             @endif
-                
+                                            @if(has_permission('patient-delete'))
                                             <form action="{{guard_route('tasks.destroy', ['patient' => $patient, 'task' => $task->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this Task?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                                             </form>
+                                            @endif
                 
                                         </td>
                                     </tr>

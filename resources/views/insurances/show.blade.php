@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
+@extends('layout.mainlayout_admin')
 
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -58,5 +60,6 @@
         
     </div>
     
+</div>
 </div>
 @endsection

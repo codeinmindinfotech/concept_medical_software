@@ -22,8 +22,11 @@ class RoleController extends Controller
 
         if (!has_role('superadmin')) {
             $query->where('company_id', current_company_id());
+            if (has_role('consultant')) {
+                $query->where('name', '=', 'consultant');
+            }
         }
-
+         
         $roles = $query->orderBy('id', 'DESC')->get();
 
         // Attach company name to each role
@@ -35,7 +38,7 @@ class RoleController extends Controller
             return view('roles.list', compact('roles'))->render();
         }
 
-        return view('roles.index', compact('roles'));
+        return view(guard_view('roles.index', 'patient_admin.role.index'), compact('roles'));
     }
 
 
@@ -48,7 +51,7 @@ class RoleController extends Controller
     public function create(): View
     {
         $permission = Permission::get();
-        return view('roles.create',compact('permission'));
+        return view(guard_view('roles.create', 'patient_admin.role.create'),compact('permission'));
     }
     
     /**
@@ -88,7 +91,7 @@ class RoleController extends Controller
             ->where("role_has_permissions.role_id",$id)
             ->get();
     
-        return view('roles.show',compact('role','rolePermissions'));
+        return view(guard_view('roles.show', 'patient_admin.role.show'),compact('role','rolePermissions'));
     }
     
     public function edit($id): View
@@ -104,7 +107,7 @@ class RoleController extends Controller
         $rolePermissions = $role->permissions->pluck('id')->toArray();
         $companies = Company::all(); // For dropdown
 
-        return view('roles.edit', compact('role', 'permission', 'rolePermissions', 'companies'));
+        return view(guard_view('roles.edit', 'patient_admin.role.edit'), compact('role', 'permission', 'rolePermissions', 'companies'));
     }
 
 

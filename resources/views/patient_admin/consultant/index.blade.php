@@ -12,9 +12,9 @@
                     <h5 class="mb-0">
                         <i class="fas fa-user-clock me-2"></i> Consultant Management
                     </h5>
-                   @can('create', \App\Models\Consultant::class)
-                    <a class="btn btn-sm bg-success-light" href="{{guard_route('consultants.create') }}">
-                        <i class="fe fe-eye"></i> Add
+                    @can('create', \App\Models\Consultant::class)
+                    <a class="btn bg-primary text-white btn-light btn-sm" href="{{guard_route('consultants.create') }}">
+                        <i class="fas fa-plus-circle me-1"></i> Add Consultant
                     </a>
                     @endcan
                 </div>

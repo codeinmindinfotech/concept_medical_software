@@ -41,7 +41,7 @@
                             <i class="fa fa-pencil-square"></i> Edit
                         </a>
                     @endif
-                    <a class="btn bg-warning" onclick="openStatusModal({{ $apt->id }}, {{ $apt->patient->id }}, {{ $apt->appointment_status }});"
+                    <a class="btn bg-info-light btn-sm " onclick="openStatusModal({{ $apt->id }}, {{ $apt->patient->id }}, {{ $apt->appointment_status }});"
                         href="javascript:void(0)">
                         <i class="fa fa-pencil-square"></i> Status
                     </a>

@@ -25,12 +25,19 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $query = User::with(['creator', 'updater'])->companyOnly();
+        if (has_role('manager')) {
+            $query->where('name', '!=', 'superadmin');
+        } 
+        if (has_role('consultant')) {
+            $query->where('name', '=', 'consultant');
+        } 
         $data = $query->latest()->get();
 
         if ($request->ajax()) {
             return view('users.list', compact('data'))->render();
         }
-        return view('users.index',compact('data'));
+        
+        return view(guard_view('users.index', 'patient_admin.user.index'),compact('data'));
     }
 
     /**
@@ -46,7 +53,7 @@ class UserController extends Controller
         } 
         $roles = $query->pluck('name','name')->all(); 
 
-        return view('users.create',compact('roles'));
+        return view(guard_view('users.create', 'patient_admin.user.create'),compact('roles'));
     }
     
     /**
@@ -90,7 +97,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        return view('users.show',compact('user'));
+        return view(guard_view('users.show', 'patient_admin.user.show'),compact('user'));
     }
     
     /**
@@ -108,7 +115,7 @@ class UserController extends Controller
             $query->where('name', '!=', 'superadmin');
         } 
         $roles = $query->pluck('name','name')->all(); 
-        return view('users.edit',compact('user','roles','userRole'));
+        return view(guard_view('users.edit', 'patient_admin.user.edit'),compact('user','roles','userRole'));
     }
     
     public function update(Request $request, $id): RedirectResponse
@@ -182,7 +189,7 @@ class UserController extends Controller
                                     ->where('company_id', $user->company_id)
                                     ->get();
 
-        return view('users.edit_permissions', compact('user', 'allPermissions', 'rolePermissions', 'userPermissions'));
+        return view(guard_view('users.edit_permissions', 'patient_admin.user.edit_permissions'), compact('user', 'allPermissions', 'rolePermissions', 'userPermissions'));
     }
 
     public function updatePermissions(Request $request, $userId)

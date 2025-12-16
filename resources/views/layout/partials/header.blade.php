@@ -52,19 +52,22 @@
                     </li>
                     @endif
 
-                    @can('doctor-list')
+                   
                     <li class="has-submenu">
                         <a href="javascript:void(0);">Settings <i class="fas fa-chevron-down"></i></a>
                         <ul class="submenu">
-                            <li><a href="{{ guard_route('doctors.index') }}">Doctors</a></li>
-                            <li><a href="{{ guard_route('clinics.index') }}">Clinics</a></li>
-                            <li><a href="{{ guard_route('consultants.index') }}">Consultant</a></li>
-                            <li><a href="{{ guard_route('documents.index') }}">Documents</a></li>
-                            <li><a href="{{ guard_route('insurances.index') }}">Insurances</a></li>
-                            <li><a href="{{ guard_route('chargecodes.index') }}">Charge Codes</a></li>
+                            @can('doctor-list') <li><a href="{{ guard_route('doctors.index') }}">Doctors</a></li>@endcan
+                            @can('clinic-list')<li><a href="{{ guard_route('clinics.index') }}">Clinics</a></li>@endcan
+                            @can('consultant-list')<li><a href="{{ guard_route('consultants.index') }}">Consultant</a></li>@endcan
+                            @can('document-list')<li><a href="{{ guard_route('documents.index') }}">Documents</a></li>@endcan
+                            @can('insurance-list')<li><a href="{{ guard_route('insurances.index') }}">Insurances</a></li>@endcan
+                            @can('chargecode-list')<li><a href="{{ guard_route('chargecodes.index') }}">Charge Codes</a></li>@endcan
+                            @if (has_role('consultant'))<li><a href="{{ guard_route('users.index') }}">Users</a></li>@endif
+                            @can('role-list')<li><a href="{{ guard_route('roles.index') }}">Roles</a></li>@endcan
+                            @can('configuration-list')<li><a href="{{ guard_route('configurations.index') }}">Configuration</a></li>@endcan
                         </ul>
                     </li>
-                    @endcan
+                    
                 </ul>
             </div>
 
