@@ -51,6 +51,7 @@ use App\Http\Controllers\OnlyOfficeController;
 use App\Http\Controllers\patient\AppointmentController as PatientAppointmentController;
 use App\Http\Controllers\patient\DashboardController as PatientDashboardController;
 use App\Http\Controllers\EmailTestController;
+use App\Http\Controllers\InternalChatController;
 
 Route::get('/email-test', [EmailTestController::class, 'showForm']);
 Route::post('/email-test', [EmailTestController::class, 'sendEmail'])->name('email.send');
@@ -276,23 +277,6 @@ Route::group(['middleware' => ['auth']], function() use ($resources, $patientSub
             });           
         });
 
-        // Manager-specific extra routes
-        // Route::middleware('role:manager')->group(function() {
-        //     Route::prefix('send-manager-notification')->group(function () { 
-        //         Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-        //         Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-        //     });
-        // });
-
-
-        // // Manager-specific extra routes
-        // Route::middleware('role:consultant')->group(function() {
-        //     Route::prefix('send-manager-notification')->group(function () { 
-        //         Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-        //         Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-        //     });
-        //     // Apply patient sub-routes
-        // });
         Route::middleware('role:manager|consultant')->group(function () {
             Route::prefix('send-manager-notification')->group(function () {
                 Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])
@@ -319,6 +303,19 @@ Route::group(['middleware' => ['auth']], function() use ($resources, $patientSub
         Route::get('{user}/edit-permissions', [UserController::class, 'editPermissions'])->name('users.edit_permissions');
         Route::put('{user}/update-permissions', [UserController::class, 'updatePermissions'])->name('users.update_permissions');
 
+        Route::get('/internal-chat', [InternalChatController::class, 'index'])->name('chat.index');
+        Route::post('/internal-chat/get-or-create', [InternalChatController::class, 'getOrCreateConversation'])->name('chat.getconversation');
+        Route::post('/internal-chat/send', [InternalChatController::class, 'send'])->name('chat.send');
+        Route::post('/internal-chat/send-message', [InternalChatController::class, 'sendMessage'])->name('chat.sendMessage');
+
+        // Route::post('/internal-chat/create', [InternalChatController::class, 'create'])->name('internal-chat.create');        
+
+
+        // Route::get('/internal-chat/users-by-role', [InternalChatController::class, 'usersByRole']);
+        // Route::get('/internal-chat/patients', [InternalChatController::class, 'patients']);
+
+
+   
     });
 });
 
@@ -346,4 +343,10 @@ Route::prefix('patient')->name('patient.')->middleware(['auth:patient', 'check.g
     $patientSubRoutes();
     Route::get('/patient/list/dashboard/', [PatientController::class, 'patient_list_dashboard'])->name('patient.patient_list_dashboard');
     Route::post('/clinic-overview-counts', [AppointmentController::class, 'clinicOverviewCounts'])->name('appointments.clinicOverviewCounts')->defaults('flag', 0);
+    
+    Route::get('/internal-chat', [InternalChatController::class, 'index'])->name('chat.index');
+    Route::post('/internal-chat/get-or-create', [InternalChatController::class, 'getOrCreateConversation'])->name('chat.getconversation');
+    Route::post('/internal-chat/send', [InternalChatController::class, 'send'])->name('chat.send');
+    Route::post('/internal-chat/send-message', [InternalChatController::class, 'sendMessage'])->name('chat.sendMessage');
+
 });

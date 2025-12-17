@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Patient;
 use Carbon\Carbon;
 
-
 class AppServiceProvider extends ServiceProvider
 {
 

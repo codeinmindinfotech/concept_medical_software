@@ -120,4 +120,11 @@ class User extends Authenticatable
                     ->where('permissions.company_id', $this->company_id)
                     ->exists();
     }
+
+
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class);
+    }
+
 }
