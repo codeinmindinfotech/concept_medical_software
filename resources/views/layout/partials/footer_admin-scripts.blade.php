@@ -32,6 +32,8 @@
  
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets_admin/js/script.js') }}"></script>
+<script src="{{ asset('theme/patient-dashboard.js') }}"></script>
+
 <script>
     window.calendarConfig = {
         calendarDays: "{{ guard_route('calendar.days') }}",
@@ -39,7 +41,6 @@
 </script>
 <script src="{{ URL::asset('/assets/js/calendar-days.js') }}"></script>
 
-@stack('scripts')
 
  @php
  $guards = ['doctor', 'patient', 'clinic', 'web'];
@@ -57,7 +58,7 @@
 
 @if ($user)
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
-    <script>
+<script>
     window.NotificationConfig = {
     pusherKey: "{{ config('broadcasting.connections.pusher.key') }}",
     pusherCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
@@ -66,9 +67,12 @@
     markReadUrl: "{{ guard_route('notifications.markRead') }}",
     unreadUrl: "{{ guard_route('notifications.unread') }}"
     };
+
     </script>
     <script>
     const defaultAvatar = "{{ URL::asset('/assets_admin/img/doctors/doctor-thumb-01.jpg') }}";
     </script>
     <script src="{{ URL::asset('/assets_admin/js/notification.js') }}"></script>
 @endif
+
+@stack('scripts')

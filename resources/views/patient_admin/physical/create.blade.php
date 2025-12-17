@@ -13,7 +13,7 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Physical Management
                         </h5>
-                        @if(has_permission('patient-index'))                        
+                        @if(has_permission('patient-list'))                        
                         <a href="{{guard_route('patients.physical.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                             <i class="fas fa-plus-circle me-1"></i> Physical List
                         </a>

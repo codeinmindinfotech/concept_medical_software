@@ -7,10 +7,10 @@
 			
     <!-- Logo -->
     <div class="header-left">
-        <a href="{{url('admin/index_admin')}}" class="logo">
+        <a href="{{ guard_route('patients.index') }}" class="logo">
             <img src="{{ URL::asset('/assets_admin/img/logo.png')}}" alt="Logo">
         </a>
-        <a href="{{url('admin/index_admin')}}" class="logo logo-small">
+        <a href="{{ guard_route('patients.index') }}" class="logo logo-small">
             <img src="{{ URL::asset('/assets_admin/img/logo-small.png')}}" alt="Logo" width="30" height="30">
         </a>
     </div>
@@ -57,7 +57,11 @@
             </div>
         </li>
         <!-- /Notifications -->
-        
+        <li class="nav-item">
+            <a href="{{guard_route('chat.index')}}" class="dropdown-toggle nav-link active-dot active-dot-success p-0">
+                <i class="fas fa-message me-2"></i>
+            </a>
+        </li>
         <li class="nav-item dropdown">
             <a href="javascript:;" class="dropdown-toggle nav-link" data-bs-toggle="dropdown" id="recallsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fe fe-calendar"></i> 

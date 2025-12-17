@@ -51,6 +51,7 @@ use App\Http\Controllers\OnlyOfficeController;
 use App\Http\Controllers\patient\AppointmentController as PatientAppointmentController;
 use App\Http\Controllers\patient\DashboardController as PatientDashboardController;
 use App\Http\Controllers\EmailTestController;
+use App\Http\Controllers\InternalChatController;
 
 Route::get('/email-test', [EmailTestController::class, 'showForm']);
 Route::post('/email-test', [EmailTestController::class, 'sendEmail'])->name('email.send');
@@ -218,6 +219,14 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
 
     Route::get("$prefix/upload-picture", [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
+    // Internal chat system
+    Route::get('/internal-chat', [InternalChatController::class, 'index'])->name('chat.index');
+    Route::post('/internal-chat/get-or-create', [InternalChatController::class, 'getOrCreateConversation'])->name('chat.getconversation');
+    Route::post('/internal-chat/send', [InternalChatController::class, 'send'])->name('chat.send');
+    Route::post('/internal-chat/send-message', [InternalChatController::class, 'sendMessage'])->name('chat.sendMessage');
+
+    Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
+
 };
 
 $resources = [
@@ -276,23 +285,6 @@ Route::group(['middleware' => ['auth']], function() use ($resources, $patientSub
             });           
         });
 
-        // Manager-specific extra routes
-        // Route::middleware('role:manager')->group(function() {
-        //     Route::prefix('send-manager-notification')->group(function () { 
-        //         Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-        //         Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-        //     });
-        // });
-
-
-        // // Manager-specific extra routes
-        // Route::middleware('role:consultant')->group(function() {
-        //     Route::prefix('send-manager-notification')->group(function () { 
-        //         Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])->name('notifications.managerform');
-        //         Route::post('/', [ManagerNotificationController::class, 'sendFromManager'])->name('notifications.managersend');
-        //     });
-        //     // Apply patient sub-routes
-        // });
         Route::middleware('role:manager|consultant')->group(function () {
             Route::prefix('send-manager-notification')->group(function () {
                 Route::get('/', [ManagerNotificationController::class, 'showManagerForm'])
@@ -309,7 +301,6 @@ Route::group(['middleware' => ['auth']], function() use ($resources, $patientSub
         Route::get('/change-password', [PasswordChangeController::class, 'showForm'])->name('password.change');
         Route::post('/change-password', [PasswordChangeController::class, 'update'])->name('password.user.update');
         Route::get('/planner', [PlannerController::class, 'index'])->name('planner.index');
-        Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
         Route::post('/patients/upload-picture', [PatientController::class, 'uploadPicture'])->name('patients.upload-picture');
 
         // Apply patient sub-routes
@@ -319,6 +310,7 @@ Route::group(['middleware' => ['auth']], function() use ($resources, $patientSub
         Route::get('{user}/edit-permissions', [UserController::class, 'editPermissions'])->name('users.edit_permissions');
         Route::put('{user}/update-permissions', [UserController::class, 'updatePermissions'])->name('users.update_permissions');
 
+          
     });
 });
 

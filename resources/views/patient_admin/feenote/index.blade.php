@@ -26,10 +26,9 @@
                             @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                             @endif
-                            <div class="table-responsive">
                                 <div class="table-responsive">
                                     @if($feeNotes->count())
-                                    <table class="table table-hover table-center mb-0" id="FeeNoteTable">
+                                    <table class="table table-hover align-middle text-nowrap" id="FeeNoteTable">
                                         <thead>
                                             <tr>
                                                 <th>Id</th>
@@ -72,7 +71,6 @@
                                     @endif
             
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
