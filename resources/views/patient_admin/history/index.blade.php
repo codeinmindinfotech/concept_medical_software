@@ -17,9 +17,11 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> History Management
                         </h5>
+                        @if(has_permission('patient-edit'))
                         <a href="{{guard_route('patients.history.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                             <i class="fas fa-plus-circle me-1"></i> History Add
                         </a>
+                        @endif
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

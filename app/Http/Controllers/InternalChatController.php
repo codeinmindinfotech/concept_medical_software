@@ -78,9 +78,13 @@ class InternalChatController extends Controller
     {
         $authUser = auth()->user();
 
-        // Get all users and patients for chat list
         $users = \App\Models\User::companyOnly()->where('id', '!=', $authUser->id)->get();
-        $patients = \App\Models\Patient::companyOnly()->get();
+        if(getCurrentGuard() === 'patient') {
+            $patients = \App\Models\Patient::companyOnly()->where('id', '!=', $authUser->id)->get();
+        }
+        else {
+            $patients = \App\Models\Patient::companyOnly()->get();
+        }
 
         return view(guard_view('chat.chat', 'patient_admin.chat.chat'), compact('users', 'patients'));
     }
@@ -155,77 +159,30 @@ class InternalChatController extends Controller
  
          return response()->json($message);
      }
-    // // Get all messages for a conversation
-    // public function messages($id)
+    
+    // public function usersByRole(Request $request)
     // {
-    //     return Chatmessages::where('conversation_id', $id)
-    //         ->orderBy('created_at')
-    //         ->get();
+    //     $role = $request->query('role');
+    //     $companyId = auth()->user()->company_id;
+
+    //     $query = User::role($role);
+    //     if (!auth()->user()->hasRole('superadmin')) {
+    //         $query->where('company_id', $companyId);
+    //     }
+    //     return $query->get(['id','name']);
     // }
 
-    // // Create a new conversation
-    // public function create(Request $request)
+    // public function patients()
     // {
-    //     $user = auth()->user();
+    //     $companyId = auth()->user()->company_id;
 
-    //     $sender = $this->getAuthEntity(); // returns ['id' => ..., 'type' => ..., 'company_id' => ...]
-    //     $senderType   = $sender['type'] === 'user' ? \App\Models\User::class : \App\Models\Patient::class;
-
-    //     $conversation = Conversation::create([
-    //         'title' => $request->title ?? null,
-    //         'created_by_id' => $user->id,
-    //         'created_by_type' => $senderType,
-    //         'company_id' => $user->role === 'superadmin' ? null : $user->company_id
-    //     ]);
-
-    //     // Attach the creator as a participant
-    //     ConversationParticipant::create([
-    //         'conversation_id' => $conversation->id,
-    //         'participant_id' => $user->id,
-    //         'participant_type' => $senderType,
-    //         'company_id' => $conversation->company_id
-    //     ]);
-
-    //     // Optionally attach other participants if sent in the request
-    //     if ($request->filled('participants')) {
-    //         foreach ($request->participants as $p) {
-    //             ConversationParticipant::create([
-    //                 'conversation_id' => $conversation->id,
-    //                 'participant_id' => $p['id'],
-    //                 'participant_type' => $p['type'], // 'user' or 'patient'
-    //                 'company_id' => $user->role === 'superadmin' ? null : $user->company_id
-    //             ]);
-    //         }
+    //     $query = Patient::query();
+    //     if (!auth()->user()->hasRole('superadmin')) {
+    //         $query->where('company_id', $companyId);
     //     }
 
-    //     return response()->json(['id' => $conversation->id]);
+    //     return $query->get(['id','first_name']);
     // }
-
-   
-
-    public function usersByRole(Request $request)
-    {
-        $role = $request->query('role');
-        $companyId = auth()->user()->company_id;
-
-        $query = User::role($role);
-        if (!auth()->user()->hasRole('superadmin')) {
-            $query->where('company_id', $companyId);
-        }
-        return $query->get(['id','name']);
-    }
-
-    public function patients()
-    {
-        $companyId = auth()->user()->company_id;
-
-        $query = Patient::query();
-        if (!auth()->user()->hasRole('superadmin')) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->get(['id','first_name']);
-    }
 
 
 }

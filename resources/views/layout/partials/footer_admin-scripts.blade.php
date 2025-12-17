@@ -32,6 +32,8 @@
  
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets_admin/js/script.js') }}"></script>
+<script src="{{ asset('theme/patient-dashboard.js') }}"></script>
+
 <script>
     window.calendarConfig = {
         calendarDays: "{{ guard_route('calendar.days') }}",

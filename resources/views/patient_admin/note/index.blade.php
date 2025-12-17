@@ -17,7 +17,7 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Note Management
                         </h5>
-                        @if(has_permission('patient-create'))
+                        @if(has_permission('patient-edit'))
                             <a class="btn bg-primary text-white btn-light btn-sm" href="{{guard_route('patients.notes.create', $patient) }}" >
                                 <i class="fas fa-plus-circle me-1"></i> Note Add
                             </a>

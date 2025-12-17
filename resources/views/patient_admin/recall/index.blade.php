@@ -17,7 +17,7 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Recall Management
                         </h5>
-                        @if(has_permission('patient-create'))
+                        @if(has_permission('patient-edit'))
                         <a href="{{guard_route('recalls.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                             <i class="fas fa-plus-circle me-1"></i> New Recall
                         </a>

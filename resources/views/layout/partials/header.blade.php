@@ -11,7 +11,7 @@
                         <span></span>
                     </span>
                 </a>
-                <a href="{{url('index')}}" class="navbar-brand logo">
+                <a href="{{ guard_route('patients.index') }}" class="navbar-brand logo">
                     <img src="{{URL::asset('assets/img/logo.png')}}" class="img-fluid" alt="Logo">
                 </a>
             </div>
@@ -101,7 +101,11 @@
                     </div>
                 </li>
                 <!-- /Notifications -->
-
+                <li class="nav-item noti-nav me-3 pe-0">
+                    <a href="{{guard_route('chat.index')}}" class="dropdown-toggle nav-link active-dot active-dot-success p-0">
+                        <i class="isax isax-message-2"></i>
+                    </a>
+                </li>
                 <li class="nav-item dropdown me-3 pe-0">
                     <a href="javascript:;"
                     class="dropdown-toggle nav-link active-dot active-dot-purple p-0 position-relative"

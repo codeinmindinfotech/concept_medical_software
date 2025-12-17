@@ -45,6 +45,7 @@
 
 <!-- Custom JS -->
 <script src="{{ URL::asset('/assets/js/script.js') }}"></script>
+<script src="{{ asset('theme/patient-dashboard.js') }}"></script>
 
 <script>
     window.calendarConfig = {

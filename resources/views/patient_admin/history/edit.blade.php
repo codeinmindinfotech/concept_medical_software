@@ -19,9 +19,11 @@
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> History Management
                         </h5>
+                        @if(has_permission('patient-list'))
                         <a href="{{guard_route('patients.history.index', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                             <i class="fas fa-plus-circle me-1"></i> History List
                         </a>
+                        @endif
                     </div>
                     <div class="card-body">               
                         <form action="{{guard_route('patients.history.update',[$patient->id, $history->id]) }}" method="POST" data-ajax class="needs-validation" novalidate>
