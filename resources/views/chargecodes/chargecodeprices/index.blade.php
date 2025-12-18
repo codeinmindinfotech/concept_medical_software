@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
-
+<?php $page = 'chargecodeprices-list'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -9,7 +11,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Maintain Prices',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('chargecodes.create'),
@@ -25,19 +27,22 @@
     @php
     $hasFilters = request()->hasAny(['search']);
     @endphp
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-table me-1"></i> Maintain Prices
-            </div>
-        </div>
-        <div class="card-body ">
-            <div id="chargecodeprices-list" data-pagination-container>
-                @include('chargecodes.chargecodeprices.list', ['insurances' => $insurances])
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        @include('chargecodes.chargecodeprices.list', ['insurances' => $insurances])
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+</div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
 @endsection
 @push('scripts')
 <script>

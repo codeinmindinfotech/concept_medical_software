@@ -18,12 +18,13 @@ class PatientNoteController extends Controller
         if ($request->ajax()) {
             return view('patients.notes.list', compact('patient', 'notes'))->render();
         }
-        return view('patients.notes.index', compact('patient', 'notes'));
+        
+        return view(guard_view('patients.notes.index', 'patient_admin.note.index'), compact('patient', 'notes'));
     }
 
     public function create(Patient $patient): View
     {
-        return view('patients.notes.create', [
+        return view(guard_view('patients.notes.create', 'patient_admin.note.create'), [
             'patient' => $patient,
             'note' => null,
         ]);
@@ -32,14 +33,15 @@ class PatientNoteController extends Controller
     public function store(Request $request, Patient $patient): JsonResponse
     {
         $data = $request->validate([
-            'method' => 'required|in:phone message,note',
+            'contact_method' => 'required|in:phone message,note',
             'notes' => 'nullable|string',
             'completed' => 'boolean',
         ]);
 
         $patient->notes()->create([
-            ...$data,
-            'completed' => $request->boolean('completed'),
+            'notes' => $data['notes'] ?? null,
+            'method' => $data['contact_method'],
+            'completed' => $data['completed'] ?? false,
         ]);
 
         return response()->json([
@@ -50,20 +52,22 @@ class PatientNoteController extends Controller
 
     public function edit(Patient $patient, PatientNote $note): View
     {
-        return view('patients.notes.edit', compact('patient', 'note'));
+        return view(guard_view('patients.notes.edit', 'patient_admin.note.edit'), compact('patient', 'note'));
     }
 
     public function update(Request $request, Patient $patient, PatientNote $note): JsonResponse
     {
         $data = $request->validate([
-            'method' => 'required|in:phone message,note',
+            'contact_method' => 'required|in:phone message,note',
             'notes' => 'nullable|string',
             'completed' => 'boolean',
         ]);
-
+    
+        // Update the note using validated data
         $note->update([
-            ...$data,
-            'completed' => $request->boolean('completed'),
+            'notes' => $data['notes'] ?? null,
+            'method' => $data['contact_method'],
+            'completed' => $data['completed'] ?? false,
         ]);
 
         return response()->json([
@@ -76,7 +80,7 @@ class PatientNoteController extends Controller
     {
         PatientNote::destroy($noteId);
     
-        return redirect()->route('patients.notes.index', $patientId)
+        return redirect(guard_route('patients.notes.index', $patientId))
                         ->with('success','Note deleted successfully');
     }
 

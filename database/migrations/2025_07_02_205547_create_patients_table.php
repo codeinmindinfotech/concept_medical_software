@@ -34,7 +34,7 @@ return new class extends Migration
             $table->text('medical_history')->nullable();
 
             // Updated/new fields
-            $table->foreignId('preferred_contact_id')->constrained('drop_down_values')->onDelete('cascade');
+            $table->foreignId('preferred_contact_id')->nullable()->constrained('drop_down_values')->onDelete('cascade');
             $table->unsignedBigInteger('insurance_id')->nullable(); // FK to insurances table or dropdownvalues
             $table->string('insurance_plan')->nullable();
             $table->string('policy_no')->nullable();

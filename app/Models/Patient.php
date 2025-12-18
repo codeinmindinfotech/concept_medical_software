@@ -10,10 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Models\Permission;
 
 class Patient extends Authenticatable
 {
-    use BelongsToCompany, HasFactory, HasRoles, Notifiable;
+    use BelongsToCompany, HasFactory, HasRoles, Notifiable, SoftDeletes;
     protected $guard_name = 'patient';
     protected $fillable = [
         'company_id',
@@ -139,6 +141,16 @@ class Patient extends Authenticatable
         return $this->hasMany(Recall::class);
     }
 
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+    
     public function communication()
     {
         return $this->hasMany(Communication::class);
@@ -165,4 +177,81 @@ class Patient extends Authenticatable
         $this->notify(new \App\Notifications\ClinicResetPasswordNotification($token, $this->company_id, $this->guard_name));
     }
 
+    public function documents()
+    {
+        return $this->hasMany(PatientDocument::class);
+    }
+
+    public function company_roles()
+    {
+        return $this->roles()->where('roles.company_id', $this->company_id);
+    }
+
+    public function company_permissions()
+    {
+        return $this->permissions()->where('permissions.company_id', $this->company_id);
+    }
+
+    public function hasCompanyRole(string $roleName, ?string $guardName = null): bool
+    {
+        $guard = $this->guard_name ?: getCurrentGuard();
+        // Superadmin check: global roles (company_id = null)
+        if ($this->roles()
+                 ->where('roles.name', 'superadmin')
+                 ->where('roles.guard_name', $guard)
+                 ->whereNull('roles.company_id')
+                 ->exists()) {
+            return true;
+        }
+    
+        // Normal company-specific role
+        return $this->roles()
+                    ->where('roles.name', $roleName)
+                    ->where('roles.guard_name', $guard)
+                    ->where('roles.company_id', $this->company_id)
+                    ->exists();
+    }
+    
+
+
+    public function hasCompanyPermission(string $permission, ?string $guardName = null): bool
+    {
+        $guard = $this->guard_name ?: getCurrentGuard();
+    
+        // Superadmin: global
+        if ($this->hasCompanyRole('superadmin', $guard)) {
+            return $this->permissions()
+                        ->where('permissions.name', $permission)
+                        ->where('permissions.guard_name', $guard)
+                        ->whereNull('permissions.company_id')
+                        ->exists();
+        }
+    
+        return $this->permissions()
+                    ->where('permissions.name', $permission)
+                    ->where('permissions.guard_name', $guard)
+                    ->where('permissions.company_id', $this->company_id) // << prefix table
+                    ->exists();
+    }
+    
+
+
+    public function hasPermissionTo($permission, $guardName = null): bool
+    {
+        $guardName = $this->guard_name ?: getCurrentGuard();
+        // Superadmin has global permissions
+        if ($this->hasRole('superadmin', $guardName)) {
+            return Permission::where('name', $permission)
+                             ->where('guard_name', $guardName)
+                             ->whereNull('company_id') // global
+                             ->exists();
+        }
+
+        // Normal company user
+        return $this->permissions()
+                    ->where('permissions.name', $permission)
+                    ->where('permissions.guard_name', $guardName)
+                    ->where('permissions.company_id', $this->company_id)
+                    ->exists();
+    }
 }

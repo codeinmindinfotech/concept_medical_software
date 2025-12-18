@@ -1,0 +1,24 @@
+{
+  "name": "Signature",
+  "guid": "signature-plugin",
+  "version": "1.0",
+  "description": "Add handwritten or uploaded signatures",
+  "isViewer": false,
+  "isModal": true,
+  "icons": ["icon.png"],
+  "init": "init.js",
+  "variations": [
+    {
+      "description": "Signature tool",
+      "url": "index.html",
+      "toolbar": [
+        {
+          "type": "button",
+          "text": "Signature",
+          "icon": "icon.png",
+          "action": "onSignatureClick"
+        }
+      ]
+    }
+  ]
+}

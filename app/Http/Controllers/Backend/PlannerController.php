@@ -20,7 +20,7 @@ class PlannerController extends Controller
         $diary_status = $this->getDropdownOptions('DIARY_CATEGORIES');
         $procedures = ChargeCode::companyOnly()->get();
         $appointments = Appointment::companyOnly()->with(['patient', 'appointmentType','appointmentStatus','procedure'])
-            ->whereDate('start_time', $date);
+            ->whereDate('appointment_date', $date);
 
         if ($request->filled('clinic_id')) {
             $appointments->where('clinic_id', $request->clinic_id);
@@ -37,16 +37,16 @@ class PlannerController extends Controller
         
         if (has_role('patient')) {
             $user = auth()->user();
-            $patients = Patient::with(['title','preferredContact'])->companyOnly()->where('id', $user->id)->paginate(1);
+            $patients = Patient::companyOnly()->with(['title','preferredContact'])->where('id', $user->id)->paginate(1);
         } else {
-            $patients = Patient::with(['title', 'preferredContact'])->companyOnly()->get();
+            $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
         }
         $patient = null; // Pass blank $patient
-
-        return view('planner.index', [
+        
+        return view(guard_view('planner.index', 'patient_admin.planner.index'), [
             'appointments' => $appointments,
             'date' => $date,
-            'clinics' => Clinic::orderBy('planner_seq', 'asc')->get(),
+            'clinics' => Clinic::companyOnly()->orderBy('planner_seq', 'asc')->get(),
             'patients' => $patients, 
             'patient' => $patient, 
             'appointmentTypes' => $appointment_types,

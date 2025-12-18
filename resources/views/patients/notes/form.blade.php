@@ -19,19 +19,19 @@
 
           {{-- Method --}}
           <div class="col-md-6">
-            <label for="method" class="form-label"><strong>Contact Method <span class="txt-error">*</span></strong></label>
-            <select id="method" name="method" class="select2 @error('method') is-invalid @enderror">
+            <label for="contact_method" class="form-label"><strong>Contact Method <span class="txt-error">*</span></strong></label>
+            <select id="contact_method" name="contact_method" class="form-control select2 @error('contact_method') is-invalid @enderror" required>
               <option value="">-- Select Method --</option>
-              <option value="phone message" {{ old('method', $note->method ?? '') === 'phone message' ? 'selected' : '' }}>Phone Message</option>
-              <option value="note" {{ old('method', $note->method ?? '') === 'note' ? 'selected' : '' }}>Note</option>
+              <option value="phone message" {{ old('contact_method', $note->method ?? '') === 'phone message' ? 'selected' : '' }}>Phone Message</option>
+              <option value="note" {{ old('contact_method', $note->method ?? '') === 'note' ? 'selected' : '' }}>Note</option>
             </select>
-            @error('method') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            @error('contact_method') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           {{-- Notes --}}
           <div class="col-md-12">
-            <label for="notes" class="form-label"><strong>Note</strong></label>
-            <textarea id="notes" name="notes" class="form-control @error('notes') is-invalid @enderror" rows="4">{{ old('notes', $note->notes ?? '') }}</textarea>
+            <label for="notes" class="form-label"><strong>Note <span class="txt-error">*</span></strong></label>
+            <textarea id="notes" name="notes" class="form-control @error('notes') is-invalid @enderror" rows="4" required>{{ old('notes', $note->notes ?? '') }}</textarea>
             @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 

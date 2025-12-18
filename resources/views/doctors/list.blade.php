@@ -1,5 +1,5 @@
-<table class="table table-striped table-bordered" id="doctorTable">
-    <thead class="table-dark">
+<table class="table table-hover table-center mb-0" id="DoctorTable">
+    <thead>
         <tr>
             <th>No</th>
             <th>Name</th>
@@ -7,36 +7,41 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($doctors as $i => $doctor)
+        @foreach ($doctors as $i => $doctor)
         <tr>
             <td>{{ ++$i }}</td>
-            <td>{{ $doctor->name }}</td>
             <td>
-                <form action="{{guard_route('doctors.destroy',$doctor->id) }}" method="POST">
-                    @can('view', $doctor)
-                        <a class="btn btn-info btn-sm" href="{{guard_route('doctors.show',$doctor->id) }}" title="Show">
-                            <i class="fa-solid fa-eye text-white"></i>
-                        </a>
-                    @endcan
-                    @can('update', $doctor)
-                        <a class="btn btn-primary btn-sm" href="{{guard_route('doctors.edit',$doctor->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                    @endcan
-
-
+                <div class="align-items-center gap-2 d-flex">
+                    @if ($doctor->doctor_picture)
+                    <img src="{{ asset('storage/' . $doctor->doctor_picture) }}" alt="Patient Picture" class="rounded-circle" width="40" height="40">
+                    @else
+                    <div class="rounded-circle bg-secondary d-inline-block text-white text-center" style="width: 40px; height: 40px; line-height: 40px;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    @endif
+                    {{ $doctor->name }}
+                </div>
+            </td>
+            <td>
+                @can('view', $doctor)
+                <a class="btn btn-sm bg-success-light" href="{{guard_route('doctors.show',$doctor->id) }}">
+                    <i class="fe fe-eye"></i> Show
+                </a>
+                @endcan
+                @can('update', $doctor)
+                <a class="btn btn-sm bg-primary-light" href="{{guard_route('doctors.edit',$doctor->id) }}">
+                    <i class="fe fe-pencil"></i> Edit
+                </a>
+                @endcan
+                @can('delete', $doctor)
+                <form action="{{guard_route('doctors.destroy', $doctor->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this doctor?');">
                     @csrf
                     @method('DELETE')
-
-                    @can('delete', $doctor)
-                        <button type="submit" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
-                    @endcan
+                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                 </form>
+                @endcan
             </td>
         </tr>
-        @empty
-            <tr>
-                <td colspan="3">There are no doctors.</td>
-            </tr>
-        @endforelse
-    </tbody>    
+        @endforeach
+    </tbody>
 </table>
-{{-- {!! $doctors->links('pagination::bootstrap-5') !!} --}}

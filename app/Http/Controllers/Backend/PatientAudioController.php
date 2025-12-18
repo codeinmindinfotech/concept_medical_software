@@ -40,12 +40,12 @@ class PatientAudioController extends Controller
         if ($request->ajax()) {
             return view('patients.audio.list', compact('patient', 'audios'))->render();
         }
-        return view('patients.audio.index', compact('patient', 'audios'));
+        return view(guard_view('patients.audio.index', 'patient_admin.audio.index'), compact('patient', 'audios'));
     }
 
     public function create(Patient $patient): View
     {
-        return view('patients.audio.create', [
+        return view(guard_view('patients.audio.create', 'patient_admin.audio.create'), [
             'patient' => $patient
         ]);
     }
@@ -124,8 +124,7 @@ class PatientAudioController extends Controller
                 if (file_exists($fullWavPath)) unlink($fullWavPath);
                 if (file_exists($txtPath)) unlink($txtPath);
     
-                return redirect()
-                    ->route('patients.audio.index', $patient->id)
+                return redirect(guard_route('patients.audio.index', $patient->id))
                     ->with('success', 'Audio uploaded and transcribed successfully!');
             } catch (\Throwable $e) {
                 return back()->withErrors(['transcription_error' => 'Transcription failed: ' . $e->getMessage()]);
@@ -149,7 +148,7 @@ class PatientAudioController extends Controller
         $audio->delete();
 
     
-        return redirect()->route('patients.audio.index', $patientId)
+        return redirect(guard_route('patients.audio.index', $patientId))
                         ->with('success','Audio Recording deleted successfully');
     }
 }

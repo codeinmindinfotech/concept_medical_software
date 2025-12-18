@@ -16,13 +16,13 @@ class ConfigurationController extends Controller
 
     public function index()
     {
-        $configs = Configuration::paginate(15);
-        return view('configurations.index', compact('configs'));
+        $configs = Configuration::get();
+        return view(guard_view('configurations.index', 'patient_admin.configuration.index'), compact('configs'));
     }
 
     public function create()
     {
-        return view('configurations.create');
+        return view(guard_view('configurations.create', 'patient_admin.configuration.create'));
     }
 
     public function store(Request $request)
@@ -37,15 +37,16 @@ class ConfigurationController extends Controller
             'value' => 'nullable|string',
         ]);
 
-        Configuration::create($request->only('key', 'value'));
-
-        return redirect()->route('configurations.index')
-            ->with('success', 'Configuration created successfully.');
-    }
+      Configuration::create($request->only('key', 'value'));
+      return response()->json([
+        'redirect' =>guard_route('configurations.index'),
+        'message' => 'Configuration created successfully',
+    ]);
+  }
 
     public function edit(Configuration $configuration)
     {
-        return view('configurations.edit', compact('configuration'));
+        return view(guard_view('configurations.edit', 'patient_admin.configuration.edit'), compact('configuration'));
     }
 
     public function update(Request $request, Configuration $configuration)
@@ -65,8 +66,10 @@ class ConfigurationController extends Controller
         // Clear cache on update
         \Illuminate\Support\Facades\Cache::forget("config:{$configuration->key}");
 
-        return redirect()->route('configurations.index')
-            ->with('success', 'Configuration updated successfully.');
+        return response()->json([
+            'redirect' =>guard_route('configurations.index'),
+            'message' => 'Configuration updated successfully',
+        ]);
     }
 
     public function destroy(Configuration $configuration)
@@ -76,7 +79,7 @@ class ConfigurationController extends Controller
 
         $configuration->delete();
 
-        return redirect()->route('configurations.index')
+        return redirect(guard_route('configurations.index'))
             ->with('success', 'Configuration deleted successfully.');
     }
 }

@@ -19,18 +19,6 @@ class InsuranceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // function __construct()
-    // {
-    //      $this->middleware('permission:insurance-list|insurance-create|insurance-edit|insurance-delete', ['only' => ['index','show']]);
-    //      $this->middleware('permission:insurance-create', ['only' => ['create','store']]);
-    //      $this->middleware('permission:insurance-edit', ['only' => ['edit','update']]);
-    //      $this->middleware('permission:insurance-delete', ['only' => ['destroy']]);
-    // }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request): View|string
     {
         $pageTitle = "Insurances List";
@@ -40,7 +28,7 @@ class InsuranceController extends Controller
             return view('insurances.list', compact('insurances'))->render();
         }
 
-        return view('insurances.index',compact('insurances','pageTitle'));
+        return view(guard_view('insurances.index', 'patient_admin.insurance.index'),compact('insurances','pageTitle'));
     }
     
     /**
@@ -51,7 +39,7 @@ class InsuranceController extends Controller
     public function create(): View
     {
         $pageTitle = "Insurances Create";
-        return view('insurances.create', compact('pageTitle'));
+        return view(guard_view('insurances.create', 'patient_admin.insurance.create'), compact('pageTitle'));
     }
     
     /**
@@ -80,7 +68,7 @@ class InsuranceController extends Controller
     public function show(Insurance $insurance): View
     {
         $pageTitle = "Show Insurance";
-        return view('insurances.show',compact('insurance','pageTitle'));
+        return view(guard_view('insurances.show', 'patient_admin.insurance.show'),compact('insurance','pageTitle'));
     }
     
     /**
@@ -92,7 +80,7 @@ class InsuranceController extends Controller
     public function edit(Insurance $insurance): View
     {
         $pageTitle = "Edit Insurance";
-        return view('insurances.edit',compact('insurance','pageTitle'));
+        return view(guard_view('insurances.edit', 'patient_admin.insurance.edit'),compact('insurance','pageTitle'));
     }
     
     /**
@@ -124,7 +112,7 @@ class InsuranceController extends Controller
     {
         $insurance->delete();
     
-        return redirect()->route('insurances.index')
+        return redirect(guard_route('insurances.index'))
                         ->with('success','Insurance deleted successfully');
     }
 }

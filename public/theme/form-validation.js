@@ -38,13 +38,13 @@ $(document).ready(function () {
         success: function (response) {
           // Hide loader
           $('#globalLoader').hide();
-          Swal.fire({
-            icon: 'success',
-            title: 'Saved',
-            text: response.message || 'Form submitted successfully!',
-            timer: 2000,
-            showConfirmButton: false
-          });
+              Swal.fire({
+                icon: 'success',
+                title: 'Saved',
+                text: response.message || 'Form submitted successfully!',
+                timer: 2000,
+                showConfirmButton: false
+              });
   
           setTimeout(function () {
             if (response.redirect) {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!form) return;
   form.addEventListener('submit', async function (e) {
       e.preventDefault();
-
+      const flag = document.getElementById('flag').value;
       const id = document.getElementById('appointment-id').value || '';
       const patient_input = document.getElementById('appointment-patient-id');
       var patientId = '';
@@ -97,7 +97,11 @@ document.addEventListener('DOMContentLoaded', () => {
         patientId = document.getElementById('patient-id').value || '';
       }
       
-      const selectedClinic = document.getElementById('clinic-select')?.value || null;
+      const selectedClinic =
+    document.getElementById('appointment-clinic-id')?.value ||
+    document.getElementById('clinic-select')?.value ||
+    null;
+      // const selectedClinic = document.getElementById('clinic-select')?.value || null;
       
       const data = {
           appointment_id: id,
@@ -134,23 +138,30 @@ document.addEventListener('DOMContentLoaded', () => {
                   showConfirmButton: false
               });
               bootstrap.Modal.getInstance(document.getElementById('bookAppointmentModal')).hide();
-              if (typeof loadSlotsAndAppointments === 'function') {
-                  loadSlotsAndAppointments();
-              }
-              if (typeof refreshCalendarEvents === 'function') {
-                refreshCalendarEvents();
-              }
-              if (typeof initCalendar === 'function') {
-                initCalendar();
+              if (flag == 1) {
+                location.reload();
+              } else {
+                  if (typeof loadSlotsAndAppointments === 'function') {
+                    loadSlotsAndAppointments();
+                  }
+                  if (typeof refreshCalendarEvents === 'function') {
+                    refreshCalendarEvents();
+                  }
+                  if (typeof initCalendar === 'function') {
+                    initCalendar();
+                  }
               }
           } else if (response.status === 422 && result.errors) {
               handleValidationErrors(result.errors, form);
           } else {
-              alert(result.message || 'Operation failed.');
+            console.log(result.message);
+            Swal.fire("Error", 'Operation failed.', "warning");
+              // alert(result.message || 'Operation failed.');
           }
       } catch (error) {
           console.error(error);
-          alert('Something went wrong. Please try again.');
+          Swal.fire("Error", 'Something went wrong. Please try again.', "warning");
+          // alert('Something went wrong. Please try again.');
       }
   });
 });

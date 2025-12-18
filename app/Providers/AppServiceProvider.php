@@ -13,6 +13,9 @@ use App\Auth\CustomPasswordBrokerManager;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use App\Auth\CustomDatabaseTokenRepository; 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Patient;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,20 +48,67 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrapFive(); // 👈 This is the key line
+        View::composer('*', function ($view) {
+            $view->with('clinics', \App\Models\Clinic::companyOnly()->get());
+        });
+        View::composer(
+            [
+                'layout.partials.tab-navigation',
+                'components.admin.tab-navigation'
+            ],
+            function ($view) {
+            $today = Carbon::today();
 
+            // Get patients with count of tasks, recalls, and appointments after today
+            $patients = Patient::companyOnly()->withCount([
+                'tasks' => function($query) use ($today) {
+                    $query->where('start_date', '>', $today);
+                },
+                'recall' => function($query) use ($today) {
+                    $query->where('recall_date', '>', $today);
+                },
+                'appointments' => function($query) use ($today) {
+                    // $query->where('appointment_date', '>', $today);
+                },
+                'notes' => function($query) use ($today) {
+                    $query->where('created_at', '>', $today);
+                },
+                'histories' => function($query) use ($today) {
+                    $query->where('created_at', '>', $today);
+                },
+                'WaitingLists' => function($query) use ($today) {
+                    $query->where('visit_date', '>', $today);
+                },
+                'FeeNoteList' => function($query) use ($today) {
+                    $query->where('admission_date', '>', $today);
+                },
+                'documents' => function($query) use ($today) {
+                    // $query->where('admission_date', '>', $today);
+                }
+                
+            ])->find($view->patient->id);
+            // Share the $patients variable with the view
+            $view->with('patients', $patients);
+        });
         
-         View::composer('backend.theme.header', function ($view) {
+         View::composer(
+            [
+                'layout.partials.header_admin',
+                'layout.partials.header'
+            ],
+            function ($view) {
             $user = Auth::user();
 
             // === Recall Data ===
             $currentMonth = now()->month;
             $currentYear = now()->year;
 
-            $recallQuery = Recall::whereMonth('recall_date', $currentMonth)
+            $recallQuery = Recall::companyOnly()->whereMonth('recall_date', $currentMonth)
                 ->whereYear('recall_date', $currentYear);
 
-            if ($user && $user->hasRole('patient')) {
-                $recallQuery->where('patient_id', $user->userable_id);
+            if (has_role('patient')) {
+                $user = auth()->user();
+                $recallQuery->where('patient_id', $user->id);
             }
 
             $monthlyRecallCount = $recallQuery->count();
@@ -69,19 +119,20 @@ class AppServiceProvider extends ServiceProvider
                 ->get();
 
             // === Task Data ===
-            $taskQuery = Task::query();
+            $taskQuery = Task::companyOnly();
 
             // Optional: filter tasks by owner or creator based on role
             if ($user) {
                 if (has_role('patient')) {
                     $user = auth()->user();
                     $taskQuery->where('patient_id', $user->id);
-                } else {
-                    $taskQuery->where(function ($q) use ($user) {
-                        $q->where('task_owner_id', $user->id)
-                        ->orWhere('task_creator_id', $user->id);
-                    });
-                }
+                } 
+                // else {
+                //     $taskQuery->where(function ($q) use ($user) {
+                //         $q->where('task_owner_id', $user->id)
+                //         ->orWhere('task_creator_id', $user->id);
+                //     });
+                // }
             }
             $taskQuery->whereDate('start_date', '>=', now())
                     ->orderBy('start_date', 'asc');

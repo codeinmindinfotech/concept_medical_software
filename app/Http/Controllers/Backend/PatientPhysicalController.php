@@ -18,12 +18,12 @@ class PatientPhysicalController extends Controller
         if ($request->ajax()) {
             return view('patients.physical.list', compact('patient', 'physicals'))->render();
         }
-        return view('patients.physical.index', compact('patient', 'physicals'));
+        return view(guard_view('patients.physical.index', 'patient_admin.physical.index'), compact('patient', 'physicals'));
     }
 
     public function create(Patient $patient): View
     {
-        return view('patients.physical.create', [
+        return view(guard_view('patients.physical.create', 'patient_admin.physical.create'), [
             'patient' => $patient,
             'physical' => null,
         ]);
@@ -41,13 +41,13 @@ class PatientPhysicalController extends Controller
 
         return response()->json([
             'redirect' =>guard_route('patients.physical.index', $patient->id),
-            'message' => 'Physical Notes added successfully',
+            'message' => 'Patient Physical added successfully',
         ]);
     }
 
     public function edit(Patient $patient, PatientPhysical $physical): View
     {
-        return view('patients.physical.edit', compact('patient', 'physical'));
+        return view(guard_view('patients.physical.edit', 'patient_admin.physical.edit'), compact('patient', 'physical'));
     }
 
     public function update(Request $request, Patient $patient, PatientPhysical $physical): JsonResponse
@@ -62,7 +62,7 @@ class PatientPhysicalController extends Controller
 
         return response()->json([
             'redirect' =>guard_route('patients.physical.index', $patient->id),
-            'message' => 'Note updated successfully',
+            'message' => 'Patient physical updated successfully',
         ]);
     }
 
@@ -70,7 +70,7 @@ class PatientPhysicalController extends Controller
     {
         PatientPhysical::destroy($noteId);
     
-        return redirect()->route('patients.physical.index', $patientId)
-                        ->with('success','Note deleted successfully');
+        return redirect(guard_route('patients.physical.index', $patientId))
+                        ->with('success','Patient physical deleted successfully');
     }
 }

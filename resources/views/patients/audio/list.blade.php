@@ -1,5 +1,5 @@
 <table class="table table-hover align-middle text-nowrap" id="PatientAudioTable">
-    <thead class="table-dark">
+    <thead>
         <tr>
             <th>#</th>
             <th>Audio</th>
@@ -35,13 +35,13 @@
                 >
                     <i class="fa-solid fa-align-left"></i> Transcription
                 </button>
+                @if(has_permission('patient-delete'))
                 <form method="POST" action="{{guard_route('patients.audio.destroy', [$patient->id, $audio->id]) }}" style="display:inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
                 </form>
+                @endif
             </td>
         </tr>
         @endforeach

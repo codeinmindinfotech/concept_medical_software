@@ -10,7 +10,13 @@
         <tbody>
             @forelse($appointmentCounts as $appointment)
                 <tr onclick="loadSlotsAndAppointments('{{ $appointment->clinic_id }}', '{{ $appointment->appointment_date }}')">
-                    <td>{{ $appointment->clinic_name }}</td>
+                    <td>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="me-2 rounded-circle"
+                                style="width:12px; height:12px; background:{{ $appointment->clinic->color }};"></div>
+                            <span>{{ $appointment->clinic_name }}</span>
+                        </div>
+                    </td>
                     <td>{{ $appointment->appointment_count }}</td>
                     <td>{{ format_date($appointment->appointment_date) }}</td>
                 </tr>

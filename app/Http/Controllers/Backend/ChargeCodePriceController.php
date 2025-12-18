@@ -27,8 +27,8 @@ class ChargeCodePriceController extends Controller
         if ($request->ajax()) {
             return view('chargecodes.chargecodeprices.list', compact('insurances'))->render();
         }
-
-        return view('chargecodes.chargecodeprices.index', compact('insurances'));
+        
+        return view(guard_view('chargecodes.chargecodeprices.index', 'patient_admin.chargecode.chargecodeprices.index'), compact('insurances'));
     }
 
     public function showAdjustPrices(Insurance $insurance)
@@ -37,7 +37,7 @@ class ChargeCodePriceController extends Controller
             $query->where('insurance_id', $insurance->id);
         }])->orderBy('id')->get();
         
-        return view('chargecodes.chargecodeprices.adjust_prices', compact('insurance','chargePrices'));
+        return view(guard_view('chargecodes.chargecodeprices.adjust_prices', 'patient_admin.chargecode.chargecodeprices.adjust_prices'), compact('insurance','chargePrices'));
     }
 
     public function processAdjustPrices(Request $request, Insurance $insurance)
@@ -72,8 +72,15 @@ class ChargeCodePriceController extends Controller
             );
         }
     
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Prices updated successfully!',
+                'redirect' => guard_route('chargecodeprices.adjust-prices', $insurance->id)
+            ]);
+        }
 
-        return redirect()->route('chargecodeprices.adjust-prices', $insurance->id)
+        return redirect(guard_route('chargecodeprices.adjust-prices', $insurance->id))
                         ->with('success', 'Prices updated successfully.');
     }
 

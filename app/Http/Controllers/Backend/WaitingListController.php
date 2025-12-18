@@ -26,18 +26,19 @@ class WaitingListController extends Controller
             ->get();
 
         if (request()->ajax()) {
-            return view('patients.dashboard.waiting_lists.index', compact('patient', 'clinics', 'categories','waitingLists'));
+            return view(guard_view('patients.dashboard.waiting_lists.index', 'patient_admin.waitinglist.index'), compact('patient', 'clinics', 'categories','waitingLists'));
         }
-        return view('patients.dashboard.waiting_lists.index', compact('patient', 'clinics', 'categories','waitingLists'));
+        
+        return view(guard_view('patients.dashboard.waiting_lists.index', 'patient_admin.waitinglist.index'), compact('patient', 'clinics', 'categories','waitingLists'));
     }
 
     public function create(Patient $patient)
     {
         $patient = Patient::findOrFail($patient->id); // <-- Add this line
-        $clinics = Clinic::orderBy('name')->get();
+        $clinics = Clinic::companyOnly()->orderBy('name')->get();
         extract($this->getCommonDropdowns());
 
-        return view('patients.dashboard.waiting_lists.create', compact('patient', 'clinics', 'categories'));
+        return view(guard_view('patients.dashboard.waiting_lists.create', 'patient_admin.waitinglist.create'), compact('patient', 'clinics', 'categories'));
     }
 
     
@@ -53,7 +54,7 @@ class WaitingListController extends Controller
         WaitingList::create($data);
     
         return response()->json([
-            'redirect' => route('waiting-lists.index', ['patient' => $request->patient_id]),
+            'redirect' => guard_route('waiting-lists.index', ['patient' => $request->patient_id]),
             'message' => 'Waiting List created successfully',
         ]);
     }
@@ -64,7 +65,7 @@ class WaitingListController extends Controller
         $clinics = Clinic::orderBy('name')->get();
         extract($this->getCommonDropdowns());
 
-        return view('patients.dashboard.waiting_lists.edit', compact('waitingList','patient', 'clinics', 'categories'));
+        return view(guard_view('patients.dashboard.waiting_lists.edit', 'patient_admin.waitinglist.edit'), compact('waitingList','patient', 'clinics', 'categories'));
     }
 
     public function update(Request $request, $patientId, $id): JsonResponse
@@ -80,7 +81,7 @@ class WaitingListController extends Controller
       $waitingList->update($data);
     
       return response()->json([
-        'redirect' => route('waiting-lists.index', ['patient' => $request->patient_id]),
+        'redirect' => guard_route('waiting-lists.index', ['patient' => $request->patient_id]),
         'message' => 'Waiting List Updated successfully',
     ]);
    }
@@ -89,8 +90,7 @@ class WaitingListController extends Controller
     {
         $waitingList->delete();
 
-        return redirect()
-            ->route('waiting-lists.index', ['patient' => $patient->id])
+        return redirect(guard_route('waiting-lists.index', ['patient' => $patient->id]))
             ->with('success', 'WaitingList deleted successfully.');
     }
     

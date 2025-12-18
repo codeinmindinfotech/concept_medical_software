@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\Clinic;
-
+use App\Models\User;
 use App\Notifications\DoctorMessageNotification;
 use Illuminate\Support\Facades\Mail;
 
@@ -25,9 +25,10 @@ class DoctorMessageController extends Controller
             })
             ->get();
 
-        $clinics = Clinic::where('company_id', auth('doctor')->user()->company_id)->get();
+        $managers = User::where('company_id', $user->company_id )->get();
+        $clinics = Clinic::where('company_id', $user->company_id)->get();
 
-        return view('doctors.notifications.send', compact('patients', 'clinics'));
+        return view(guard_view('doctors.notifications.send', 'patient_admin.profile.doctor-send'), compact('patients', 'clinics', 'managers'));
     }
 
     public function send(Request $request)
@@ -44,7 +45,12 @@ class DoctorMessageController extends Controller
 
         foreach ($request->recipients as $recipient) {
             [$type, $id] = explode('-', $recipient);
-            $modelClass = $type === 'patient' ? \App\Models\Patient::class : \App\Models\Clinic::class;
+            // $modelClass = $type === 'patient' ? \App\Models\Patient::class : \App\Models\Clinic::class;
+            $modelClass = match ($type) {
+                'manager' => \App\Models\User::class,
+                'patient' => \App\Models\Patient::class,
+                default   => \App\Models\Doctor::class,
+            };
 
             if ($recipientModel = $modelClass::find($id)) {
                 $recipientModel->notify($notification);

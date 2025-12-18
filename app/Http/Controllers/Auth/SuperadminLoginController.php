@@ -20,7 +20,6 @@ class SuperadminLoginController extends Controller
         return view('auth.superadmin-login');
     }
 
-    // Handle login
     public function login(Request $request)
     {
         $request->validate([
@@ -28,22 +27,18 @@ class SuperadminLoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        // Attempt login on default DB with web guard
-        if (Auth::guard('web')->attempt(
-            ['email' => $request->email, 'password' => $request->password],
-            $request->filled('remember')
-        )) {
-            $user = Auth::guard('web')->user();
+        $credentials = $request->only('email', 'password');
 
-            if (!$user->hasRole('superadmin')) {
-                Auth::guard('web')->logout(); 
-                return back()->withErrors([
-                    'email' => 'Access denied. You are not a super-admin.',
-                ]);
+        if (Auth::guard('web')->attempt($credentials, $request->filled('remember'))) {
+            $user = Auth::guard('web')->user();
+            if ($user->hasRole('superadmin', 'web')) {
+                return redirect()->intended('/dashboard');
             }
-            return redirect()->intended('/dashboard'); 
-        } 
+            Auth::guard('web')->logout();
+            return back()->withErrors([
+                'email' => 'Access denied. You are not a super-admin.',
+            ]);
+        }
 
         return back()->withErrors([
             'email' => 'Invalid credentials.',

@@ -11344,3 +11344,40 @@ input.error:focus, select.error:focus, textarea.error:focus {
   }
 }
 
+/* Custom Badge Position */
+.badge-custom {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.75rem;
+  transform: translate(50%, -50%);
+}
+
+footer.py-4.bg-light.mt-auto {
+  /* position: fixed; */
+  bottom: 0;
+  width: 100%;
+  z-index: 9999;
+}
+#placeholder {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+
+    .bg-gradient-primary {
+        background: linear-gradient(90deg, #4e73df, #224abe);
+    }
+    .btn-gradient-primary {
+        background: linear-gradient(90deg, #4e73df, #224abe);
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+    .btn-gradient-primary:hover {
+        filter: brightness(1.1);
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.15) !important;
+        transition: all 0.3s ease;
+    }
+

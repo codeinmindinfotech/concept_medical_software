@@ -26,9 +26,10 @@ class FeeNoteController extends Controller
         $clinics = Clinic::companyOnly()->orderBy('name')->get();
 
         if (request()->ajax()) {
-            return view('patients.dashboard.fee_notes.index', compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
+            return view(guard_view('patients.dashboard.fee_notes.index', 'patient_admin.feenote.index'), compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
         }
-        return view('patients.dashboard.fee_notes.index', compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
+        
+        return view(guard_view('patients.dashboard.fee_notes.index', 'patient_admin.feenote.index'), compact('consultants', 'chargecodes', 'patient', 'feeNotes', 'narrative', 'clinics'));
     }
 
     public function create(Patient $patient)
@@ -38,7 +39,7 @@ class FeeNoteController extends Controller
         $chargecodes = ChargeCode::companyOnly()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::companyOnly()->orderBy('name')->get();
-        return view('patients.dashboard.fee_notes.create', compact('consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
+        return view(guard_view('patients.dashboard.fee_notes.create', 'patient_admin.feenote.create'), compact('consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
     }
 
     public function store(Request $request, Patient $patient): JsonResponse
@@ -80,7 +81,7 @@ class FeeNoteController extends Controller
         $chargecodes = ChargeCode::companyOnly()->get();
         $narrative = $this->getDropdownOptions('NARRATIVE');
         $clinics = Clinic::companyOnly()->orderBy('name')->get();
-        return view('patients.dashboard.fee_note.edit', compact('feeNote','consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
+        return view(guard_view('patients.dashboard.fee_notes.edit', 'patient_admin.feenote.edit'), compact('feeNote','consultants', 'chargecodes', 'patient', 'narrative', 'clinics'));
     }
 
     public function update(Request $request, Patient $patient, FeeNote $feeNote): JsonResponse
@@ -110,8 +111,7 @@ class FeeNoteController extends Controller
     {
         $feeNote->delete();
 
-        return redirect()
-            ->route('fee-notes.index', ['patient' => $patient->id])
+        return redirect(guard_route('fee-notes.index', ['patient' => $patient->id]))
             ->with('success', 'Fee Note deleted successfully.');
     } 
 }

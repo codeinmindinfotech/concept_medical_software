@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -13,7 +13,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Patients List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('patients.notes.create', $patient->id),
@@ -31,7 +31,7 @@
             Patient Notes Management
         </div>
         <div class="card-body">
-            <div id="patient-notes-list" data-pagination-container>
+            <div class="table-responsive">
                 @include('patients.notes.list', [
                     'patient' => $patient,
                     'notes'=> $notes
@@ -39,7 +39,6 @@
             </div>
         </div> 
     </div>        
-
 @endsection
 @push('scripts')
 <script>
@@ -58,7 +57,7 @@
      ]
    });
     $(document).ready(function() {
-        $('.data-table').on('click', '.toggle-completed', function() {
+        $('#PatientNote').on('click', '.toggle-completed', function() {
             var badge = $(this);
             var toggleUrl = badge.data('url');
 
@@ -77,7 +76,7 @@
                     }
                 },
                 error: function() {
-                    alert('Failed to toggle completed status.');
+                    Swal.fire("Error", 'Failed to toggle completed status.', "warning");
                 }
             });
         });

@@ -1,6 +1,5 @@
-<div class="table-responsive">
-    <table class="table table-hover align-middle text-nowrap" id="PatientTable">
-        <thead class="table-dark">
+   <table class="table table-hover align-middle text-nowrap" id="PatientTable">
+        <thead>
             <tr>
                 <th style="width: 40px;">#</th>
                 <th>Doctor</th>
@@ -8,10 +7,14 @@
                 <th>Address</th>
                 <th>Phone</th>
                 <th style="width: 120px;">Date of Birth</th>
+                <th>Status</th>
+                @if(isset($trashed) && $trashed)
+                <th>action</th>
+                @endif
             </tr>
         </thead>
         <tbody>
-            @forelse ($patients as $index => $patient)
+            @foreach ($patients as $index => $patient)
             <tr onclick="window.location='{{ guard_route('patients.show', $patient->id) }}'" style="cursor: pointer;">
 
                 <td>{{ $patients->firstItem() + $index }}</td>
@@ -31,14 +34,27 @@
                 <td>{{ $patient->address ?? '-' }}</td>
                 <td>{{ $patient->phone ?? '' }}</td>
                 <td>{{ format_date($patient->dob) }}</td>
+                <td>
+                    @if($patient->trashed())
+                        <span class="badge bg-danger">Trashed</span>
+                    @else
+                        <span class="badge bg-success">Active</span>
+                    @endif
+                </td>
+                @if(isset($trashed) && $trashed)
+                <td>
+                    <form action="{{ route('patients.restore', $patient->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="fas fa-undo"></i> Restore
+                        </button>
+                    </form>
+                </td>
+                @endif
             </tr>
-            @empty
-            <tr>
-                <td colspan="5" class="text-center">No patients found.</td>
-            </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
-</div>
+
 
 {!! $patients->appends(request()->query())->links('pagination::bootstrap-5') !!}

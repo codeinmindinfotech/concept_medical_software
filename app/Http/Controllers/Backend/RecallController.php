@@ -19,16 +19,17 @@ class RecallController extends Controller
         $recalls = $patient->recall()->companyOnly()->with('status')->latest()->get();
         $statuses = $this->getDropdownOptions('STATUS');
         if (request()->ajax()) {
-            return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
+            return view(guard_view('patients.dashboard.recalls.index', 'patient_admin.recall.index'), compact('recalls', 'statuses', 'patient'));
         }
-        return view('patients.dashboard.recalls.index', compact('recalls', 'statuses', 'patient'));
+        
+        return view(guard_view('patients.dashboard.recalls.index', 'patient_admin.recall.index'), compact('recalls', 'statuses', 'patient'));
     }
 
     public function create(Patient $patient)
     {
         $patient = Patient::findOrFail($patient->id); 
         $statuses = $this->getDropdownOptions('STATUS');
-        return view('patients.dashboard.recalls.create', compact('patient','statuses'));
+        return view(guard_view('patients.dashboard.recalls.create', 'patient_admin.recall.create'), compact('patient','statuses'));
     }
 
     public function store(Request $request, Patient $patient): JsonResponse
@@ -50,7 +51,7 @@ class RecallController extends Controller
         $patient = Patient::find($patient->id);
 
         return response()->json([
-            'redirect' =>guard_route('recalls.recalls.index', ['patient' => $patient]),
+            'redirect' =>guard_route('recalls.index', ['patient' => $patient]),
             'message' => 'Recall created successfully',
         ]);
     }
@@ -60,7 +61,7 @@ class RecallController extends Controller
         $recall = Recall::findOrFail($recallId);
         $patient = Patient::findOrFail($patient->id); 
         $statuses = $this->getDropdownOptions('STATUS');
-        return view('patients.dashboard.recalls.edit', compact('patient','recall', 'statuses'));
+        return view(guard_view('patients.dashboard.recalls.edit', 'patient_admin.recall.edit'), compact('patient','recall', 'statuses'));
     }
 
     public function show(Recall $recall)
@@ -82,7 +83,7 @@ class RecallController extends Controller
         $recall->update($request->all());
 
         return response()->json([
-            'redirect' =>guard_route('recalls.recalls.index', ['patient' => $patient->id]),
+            'redirect' =>guard_route('recalls.index', ['patient' => $patient->id]),
             'message' => 'Recall updated successfully',
         ]);
     }
@@ -91,8 +92,7 @@ class RecallController extends Controller
     {
         $recall->delete();
 
-        return redirect()
-            ->route('recalls.recalls.index', ['patient' => $patient->id])
+        return redirect(guard_route('recalls.index', ['patient' => $patient->id]))
             ->with('success', 'Recall deleted successfully.');
     }    
 }

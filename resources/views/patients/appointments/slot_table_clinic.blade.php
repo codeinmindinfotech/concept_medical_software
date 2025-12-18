@@ -15,6 +15,10 @@
                 $type = strtolower($appointment->appointmentType->value ?? '');
                 $rowClass =  $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' ;
 
+                 // Default message
+                $defaultMessage = "Hello, I wanted to confirm my appointment for " . $time;
+                $phoneNumber = "+918460870599";// $appointment->patient->phone_number; // Patient phone number
+            
             @endphp
 
             <tr class="align-middle"
@@ -27,7 +31,7 @@
                     ondragover="onDragOver(event)"
                 @endif
             >
-                <td class="fw-bold text-primary">{{ $time }}{{$user->hasRole('manager')}}</td>
+                <td class="fw-bold text-primary">{{ $time }}</td>
                 <td>
                     <span class="badge {{ $rowClass }} text-dark px-3">
                         {{ $appointment->appointmentType->value ?? '-' }}
@@ -63,6 +67,18 @@
                     </span>
                 </td>
                 <td>
+                    <button class="btn btn-sm btn-outline-success"
+                            data-bs-toggle="modal"
+                            data-bs-target="#whatsAppModal"
+                            data-appointment-id="{{ $appointment->id }}"
+                            data-patient-name="{{ $appointment->patient->full_name }}"
+                            data-patient-phone="{{ $appointment->patient->phone }}"
+                            data-appointment-time="{{ $time }}">
+                        <i class="fab fa-whatsapp"></i> Send Message
+                    </button>
+                </td>
+                  
+                <td>
                     <div class="dropdown">
                         <button class="btn btn-sm btn-light border dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
@@ -72,6 +88,7 @@
                                 <li>
                                     <a href="javascript:void(0)" class="dropdown-item edit-appointment"
                                         data-id="{{ $appointment->id }}"
+                                        data-consultant="{{ $appointment->patient->consultant->name }}"
                                         data-dob="{{ format_date($appointment->patient->dob) }}"
                                         data-patient_id="{{ $appointment->patient->id }}"
                                         data-patient_name="{{ $appointment->patient->full_name }}"
@@ -109,7 +126,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.recalls.create', ['patient' => $appointment->patient->id]) }}">
+                                <a class="dropdown-item" target="_blank" href="{{guard_route('recalls.create', ['patient' => $appointment->patient->id]) }}">
                                     <i class="fas fa-bell me-2"></i> Add Recall
                                 </a>
                             </li>
@@ -126,7 +143,7 @@
     @else
         <tr ondrop="onDrop(event)" ondragover="onDragOver(event)" data-time-slot="{{ $time }}">
             <td class="fw-bold text-primary">{{ $time }}</td>
-            <td colspan="5">
+            <td colspan="6">
                 <div class="d-flex align-items-center text-muted">
                     <i class="fas fa-calendar-check me-2 text-success"></i>
                     <span class="fst-italic">This time slot is available. Book now!</span>

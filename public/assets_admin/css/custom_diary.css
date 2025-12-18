@@ -1,0 +1,355 @@
+    .fc .fc-event-background {
+        opacity: 1 !important;   /* full color */
+    }
+
+    .fc .fc-event {
+        border-width: 1px;
+        border-style: solid;
+        padding: 1px !important;
+        margin:1px !important;
+    }
+
+    .fc .fc-daygrid-day-bg {
+        z-index: 1;
+    }
+
+    h2.fc-toolbar-title {
+        font-size: 1em !important;
+    }
+    .fc .fc-toolbar.fc-header-toolbar {
+        margin-bottom: 1.5em;
+    }
+    .fc .fc-toolbar {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .fc .fc-daygrid-day-frame {
+        position: relative;
+    }
+
+    #slot-table {
+        max-height: 700px;
+        overflow-y: auto; /* or overflow: auto */
+    }
+    #slot-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #343a40;
+        color: white;
+        z-index: 10;
+    }
+
+    #slot-table td, #slot-table th {
+        vertical-align: middle;
+    }
+
+    #slot-table .fa-user {
+        font-size: 20px;
+        line-height: 40px;
+    }
+
+    .dropdown-menu {
+        font-size: 0.9rem;
+    }
+    .fc-h-event .fc-event-main{
+        color: #000 !important; 
+    }
+    .color-circle {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid #ccc;
+    }
+    
+    a.fc-event.fc-event-start.fc-event-end.fc-daygrid-event.fc-daygrid-block-event.fc-h-event.custom-event-color {
+        color: #000 !important;
+        background-color: #fff !important;
+    }
+      
+    .fc .fc-scrollgrid, .fc .fc-scrollgrid table {
+        table-layout: fixed;
+        width: 100%;
+    }
+    #calendar {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        /* slightly stronger shadow for better depth */
+        width: 100%;
+        max-width: 100%;
+        min-height: 312px;
+        box-sizing: border-box;
+    }
+
+    /* General calendar font and spacing */
+    .fc {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .fc-toolbar-title {
+        font-size: 20px;
+        /* slightly larger for emphasis */
+        font-weight: 700;
+        color: #343a40;
+        margin-bottom: 8px;
+    }
+
+    /* Buttons */
+    .fc-button {
+        background-color: #17a2b8;
+        border: none;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .fc-button:hover,
+    .fc-button:focus {
+        background-color: #138496;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Highlight selected date */
+    .fc-daygrid-day.selected-date {
+        background-color: #007bff !important;
+        color: #fff !important;
+        border-radius: 8px;
+        box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Hover effect on day cells */
+    .fc-daygrid-day:hover {
+        background-color: #e6f0ff;
+        transition: background-color 0.25s ease-in-out;
+        cursor: pointer;
+    }
+
+    /* Sunday - soft red background */
+    .fc-day-sun {
+        background-color: #ffe6e6;
+    }
+
+    /* Saturday - dark background with white text */
+    .fc-day-sat {
+        background-color: #e6f2ff;
+        /* light blue tint */
+        color: #333;
+        /* dark text */
+    }
+
+    /* Day headers */
+    .fc-col-header-cell {
+        background-color: #000000;
+        font-weight: 700;
+        padding: 12px 0;
+        text-transform: uppercase;
+        font-size: 14px;
+        border-bottom: 2px solid #343a40;
+    }
+
+    .fc-col-header-cell a {
+        color: #ffffff !important;
+        text-decoration: none;
+        /* optional: removes underline */
+    }
+
+    /* Today highlight */
+    .fc-day-today {
+        background-color: #fff3cd !important;
+        border: 2px solid #ffeeba;
+        border-radius: 6px;
+        font-weight: 700;
+    }
+
+    /* Day numbers */
+    .fc-daygrid-day-number {
+        font-weight: 700;
+        color: #495057;
+    }
+
+    /* Fix contrast on Saturday numbers */
+    .fc-day-sat .fc-daygrid-day-number {
+        color: #000000;
+    }
+
+    .fc .fc-daygrid-day-frame {
+        max-height: 34px;
+        position: relative;
+    }
+
+    /* Removes default link styling in table cells */
+    td a {
+        color: inherit;       /* Inherits the text color from parent (usually black) */
+        text-decoration: none; /* Removes underline */
+    }
+
+    td a:hover {
+        text-decoration: underline; /* Optional: add underline on hover for better UX */
+        color: #0d6efd; /* Optional: Bootstrap primary color on hover */
+    }
+
+
+
+/* === Appointment Type Colors === */
+.appointment-first_visit {
+    background-color: #e6f7ff; /* light blue */
+    border-left-color: #1890ff;
+}
+
+.appointment-injection {
+    background-color: #fff3cd; /* light yellow */
+    border-left-color: #ffc107;
+}
+
+.appointment-medical_legal {
+    background-color: #f0f0f0; /* light gray */
+    border-left-color: #6c757d;
+}
+
+.appointment-post_op {
+    background-color: #fce4ec; /* light pink */
+    border-left-color: #e83e8c;
+}
+
+.appointment-review_visit {
+    background-color: #d4edda; /* light green */
+    border-left-color: #28a745;
+}
+
+.appointment-default {
+    background-color: #f5f5f5;
+    border-left-color: #adb5bd;
+    color: #333;
+}
+
+/* Limit the note column and enable ellipsis */
+.appointment-note {
+    display: inline-block;
+    max-width: 100px;     /* Control width here */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+/* Show full note on hover */
+.appointment-note:hover {
+    white-space: normal;
+    max-width: none;
+    background-color: #f8f9fa;
+    position: relative;
+    z-index: 1;
+    padding: 4px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+/* === Hover & Drag Styles === */
+table tr {
+    transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    border-radius: 4px;
+    border-left: 6px solid transparent;
+}
+
+tr[draggable="true"]:hover {
+    background-color: #f8f9fa;
+    cursor: grab;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+tr.dragging {
+    opacity: 0.6;
+    transform: scale(1.01);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background-color: #e9ecef !important;
+    cursor: grabbing !important;
+}
+
+tr.drag-over {
+    background-color: #dbeafe !important;
+    outline: 2px dashed #60a5fa;
+    border-left-color: #60a5fa;
+}
+
+tr.dropped {
+    animation: dropFlash 0.4s ease;
+}
+
+@keyframes dropFlash {
+    0%   { background-color: #d1e7dd; }
+    100% { background-color: inherit; }
+}
+
+/* === Appointment Card Drag Styles === */
+.draggable-appointment {
+    cursor: grab;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    border-left: 4px solid transparent;
+    border-radius: 4px;
+}
+
+.draggable-appointment:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.draggable-appointment.dragging {
+    opacity: 0.6;
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background-color: #e9ecef !important;
+    cursor: grabbing !important;
+}
+
+/* === Dropzone Cell Styles === */
+.dropzone {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    border: 1px dashed transparent;
+    min-height: 80px; /* ensure height even if no appointment */
+    position: relative;
+}
+
+.dropzone.drag-over {
+    background-color: #dbeafe !important; /* Light blue */
+    border: 2px dashed #60a5fa; /* Tailwind's blue-400 */
+}
+
+/* Optional: visual flash on successful drop */
+.dropzone.dropped {
+    animation: dropFlash 0.4s ease;
+}
+
+
+
+/* === Patient Info Alignment === */
+td .d-flex {
+    align-items: center;
+    gap: 10px;
+}
+
+/* === Avatar Enhancements === */
+img.rounded-circle {
+    border: 2px solid #dee2e6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* === Optional Row Hover Pulse === */
+tr[draggable="true"]:hover {
+    animation: hoverPulse 0.2s ease-in-out;
+}
+
+@keyframes hoverPulse {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.005); }
+    100% { transform: scale(1); }
+}

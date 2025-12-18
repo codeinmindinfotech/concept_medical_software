@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TaskFollowup extends Model
 {
-    use BelongsToCompany;
     protected $fillable = [
-        'company_id',
         'task_id',
         'note',
         'followup_date',
@@ -20,10 +18,4 @@ class TaskFollowup extends Model
     {
         return $this->belongsTo(Task::class);
     }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
-    }
-
 }

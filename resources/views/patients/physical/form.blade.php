@@ -20,7 +20,7 @@
           {{-- physicals --}}
           <div class="col-md-12">
             <label for="physical_notes" class="form-label"><strong>Physical Notes</strong></label>
-            <textarea id="physical_notes" name="physical_notes" class="form-control @error('physical_notes') is-invalid @enderror" rows="4">{{ old('physical_notes', $physical->physical_notes ?? '') }}</textarea>
+            <textarea id="physical_notes" name="physical_notes" class="form-control @error('physical_notes') is-invalid @enderror" rows="4" required>{{ old('physical_notes', $physical->physical_notes ?? '') }}</textarea>
             @error('physical_notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 

@@ -24,7 +24,7 @@ class ConsultantController extends Controller
             return view('consultants.list', compact('consultants'))->render();
         }
 
-        return view('consultants.index', compact('consultants', 'pageTitle'));
+        return view(guard_view('consultants.index', 'patient_admin.consultant.index'), compact('consultants', 'pageTitle'));
     }
 
     public function create(): View
@@ -33,7 +33,7 @@ class ConsultantController extends Controller
 
         $pageTitle = "Consultants Create";
         $insurances = Insurance::companyOnly()->get();
-        return view('consultants.create', compact('pageTitle', 'insurances'));
+        return view(guard_view('consultants.create', 'patient_admin.consultant.create'), compact('pageTitle', 'insurances'));
     }
 
     public function store(ConsultantRequest $request): JsonResponse
@@ -60,7 +60,7 @@ class ConsultantController extends Controller
         $this->authorize('view', $consultant);
 
         $pageTitle = "Show Consultant";
-        return view('consultants.show', compact('consultant', 'pageTitle'));
+        return view(guard_view('consultants.show', 'patient_admin.consultant.show'), compact('consultant', 'pageTitle'));
     }
 
     public function edit(Consultant $consultant): View
@@ -69,7 +69,7 @@ class ConsultantController extends Controller
 
         $pageTitle = "Edit Consultant";
         $insurances = Insurance::companyOnly()->get();
-        return view('consultants.edit', compact('consultant', 'pageTitle', 'insurances'));
+        return view(guard_view('consultants.edit', 'patient_admin.consultant.edit'), compact('consultant', 'pageTitle', 'insurances'));
     }
 
     public function update(ConsultantRequest $request, Consultant $consultant): JsonResponse
@@ -102,6 +102,6 @@ class ConsultantController extends Controller
 
         $consultant->delete();
 
-        return redirect()->route('consultants.index')->with('success', 'Consultant deleted successfully');
+        return redirect(guard_route('consultants.index'))->with('success', 'Consultant deleted successfully');
     }
 }

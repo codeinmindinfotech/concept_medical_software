@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 use App\Services\PasswordResetService;
 use Illuminate\Support\Facades\Password;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;  // or Imagick
+use Intervention\Image\Facades\Image;
 
 
 class PatientController extends Controller
@@ -38,6 +41,7 @@ class PatientController extends Controller
     public function index(Request $request): View|string
     {
         $this->authorize('viewAny',  Patient::class);
+        
         if (has_role('patient')) {
             $user = auth()->user();
             $patients = Patient::with('title')->companyOnly()->where('id', $user->id)->paginate(1);
@@ -53,21 +57,16 @@ class PatientController extends Controller
                 $query->where('surname', 'like', '%' . $request->surname . '%');
             }
 
-            // if ($request->filled('title')) {
-            //     $query->whereHas('title', function ($q) use ($request) {
-            //         $q->where('value', $request->title);
-            //     });
-            // }
             if ($request->filled('phone')) {
                 $query->where('phone', 'like', '%' . $request->phone . '%');
             }
     
-            // if ($request->filled('pin')) {
-            //     $query->where('pin', 'like', '%' . $request->pin . '%');
-            // }
-    
             if ($request->filled('dob')) {
                 $query->whereDate('dob', $request->dob);
+            }
+
+            if ($request->get('tab') === 'trashed') {
+                $query->onlyTrashed();
             }
 
             $patients = $query->paginate(10)->withQueryString();
@@ -77,7 +76,44 @@ class PatientController extends Controller
             return view('patients.list', compact('patients'))->render();
         }
 
-        return view('patients.index', compact('patients'));
+        try {
+            return view(guard_view('patients.index', 'patient_admin.profile.index'), compact('patients'));
+        } catch (\Throwable $e) {
+            dd($e->getMessage(), $e->getTraceAsString());
+        }
+        
+        // return view(guard_view('patients.index', 'patient_admin.profile.index'), compact('patients'));
+    }
+
+    public function ajax(Request $request)
+    {
+        $query = Patient::with(['doctor'])
+            ->companyOnly()
+            ->latest();
+
+        if ($request->get('tab') === 'trashed') {
+            $query->onlyTrashed();
+        }
+
+        $patients = $query->get();
+
+        $data = $patients->map(function ($patient, $index) {
+            return [
+                'id'        => $patient->id,
+                'index'     => $index + 1,
+                'doctor'    => $patient->doctor?->name ?? '-',
+                'patient_name' => $patient->full_name,
+                'address'   => $patient->address ?? '-',
+                'phone'     => $patient->phone ?? '-',
+                'dob'       => format_date($patient->dob),
+                'status'    => $patient->trashed() ? 'Trashed' : 'Active',
+                'patient_picture' => $patient->patient_picture 
+                    ? asset('storage/' . $patient->patient_picture)
+                    : asset('assets_admin/img/patients/default.jpg'),
+            ];
+        });
+
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -93,7 +129,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $consultants = Consultant::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get(); 
-        return view('patients.create', compact('pageTitle','titles','insurances','relations','consultants', 'preferredContact','doctors'));
+        return view(guard_view('patients.create', 'patient_admin.profile.create'), compact('pageTitle','titles','insurances','relations','consultants', 'preferredContact','doctors'));
     }
     
     /**
@@ -106,13 +142,24 @@ class PatientController extends Controller
     {
         $this->authorize('create', Patient::class);
         $validated = $request->validated();
-    
+
+        if(has_role('superadmin') )
+        {
+            $validated['company_id'] = $request->has('company_id');
+        }
         $validated['rip'] = $request->has('rip');
         $validated['sms_consent'] = $request->has('sms_consent');
         $validated['email_consent'] = $request->has('email_consent');
 
         $patient = Patient::create($validated);
-        assignRoleToGuardedModel($patient, 'patient', 'patient');
+        $PatientCompanyId = $patient->company_id;
+        assignRoleToGuardedModel($patient, 'patient', 'patient', $PatientCompanyId);
+         // Handle signature
+        if ($patient) {
+            $signaturePath = $this->handleSignature($request, $patient);
+            $patient->patient_signature = $signaturePath;
+            $patient->save();
+        }
 
         if ($patient) {
             try {
@@ -142,7 +189,7 @@ class PatientController extends Controller
     {
         $this->authorize('viewAny', $patient);
         $pageTitle = "Show Patient";
-        return view('patients.show',compact('patient','pageTitle'));
+        return view(guard_view('patients.show', 'patient_admin.profile.view'),compact('patient','pageTitle'));
     }
     
     /**
@@ -159,7 +206,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get();
         $consultants = Consultant::companyOnly()->orderBy('name')->get();
-        return view('patients.edit',compact('patient','pageTitle','titles','relations','consultants','insurances', 'preferredContact','doctors'));
+        return view(guard_view('patients.edit', 'patient_admin.profile.edit'), compact('patient', 'pageTitle', 'titles', 'relations', 'consultants', 'insurances', 'preferredContact','doctors'));
     }
     
     /**
@@ -174,7 +221,10 @@ class PatientController extends Controller
         $this->authorize('update', $patient);
 
         $validated = $request->validated();
-    
+        if(has_role('superadmin') )
+        {
+            $validated['company_id'] = $request->has('company_id');
+        }
         // Handle checkbox fields (they won't be present if unchecked)
         $validated['rip'] = $request->has('rip');
         $validated['sms_consent'] = $request->has('sms_consent');
@@ -182,7 +232,17 @@ class PatientController extends Controller
 
         // Update the patient
         $patient->update($validated);
-        assignRoleToGuardedModel($patient, 'patient', 'patient');
+        $PatientCompanyId = $patient->company_id;
+        assignRoleToGuardedModel($patient, 'patient', 'patient', $PatientCompanyId);
+       
+
+        // Handle signature
+        $signaturePath = $this->handleSignature($request, $patient);
+        if ($signaturePath) {
+            $patient->patient_signature = $signaturePath;
+            $patient->save();
+        }
+
         
         return response()->json([
             'redirect' =>guard_route('patients.edit', $patient->id),
@@ -202,7 +262,7 @@ class PatientController extends Controller
 
         $patient->delete();
     
-        return redirect()->route('patients.index')
+        return redirect(guard_route('patients.index'))
                         ->with('success','Patient deleted successfully');
     }
 
@@ -217,35 +277,155 @@ class PatientController extends Controller
     {
         $request->validate([
             'patient_id' => 'required|exists:patients,id',
-            'patient_picture' => 'required|image|max:2048',
+            'patient_picture' => 'nullable|image|max:4096',
+            'patient_picture_webcam' => 'nullable|string',
         ]);
-
+    
         $patient = Patient::findOrFail($request->patient_id);
+    
+        // Create Image Manager instance (v3)
+        $manager = new ImageManager(new Driver());
 
+        // Delete old images
+        $dir = "patient_pictures/{$patient->id}";
+        Storage::disk('public')->deleteDirectory($dir);
+        Storage::disk('public')->makeDirectory($dir);
+    
+        // Load image from file upload
         if ($request->hasFile('patient_picture')) {
-            $file = $request->file('patient_picture');
-
-            // 🔁 Delete ALL previous versions with different extensions
-            $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            foreach ($extensions as $ext) {
-                $existingPath = "patient_pictures/picture_{$patient->id}." . $ext;
-                if (Storage::disk('public')->exists($existingPath)) {
-                    Storage::disk('public')->delete($existingPath);
-                }
-            }
-
-            $ext = strtolower($file->getClientOriginalExtension());
-            $filename = "picture_{$patient->id}." . $ext;
-            $path = $file->storeAs('patient_pictures', $filename, 'public');
-
-            $patient->patient_picture = $path;
-            $patient->save();
+            $img = $manager->read($request->file('patient_picture')->getRealPath());
         }
+        // Load image from webcam base64
+        elseif ($request->patient_picture_webcam) {
+            $data = $request->patient_picture_webcam;
+            $data = str_replace('data:image/png;base64,', '', $data);
+            $data = base64_decode($data);
+    
+            $img = $manager->read($data);
+        } else {
+            return back()->with('error', 'No image uploaded.');
+        }
+    
+        // Save main profile (400x400)
+        $img->cover(400, 400)->toJpeg()->save(storage_path("app/public/$dir/profile.jpg"));
+    
+        // Save small (150x150)
+        $small = clone $img;
+        $small->cover(150, 150)->toJpeg()->save(storage_path("app/public/$dir/small.jpg"));
+    
+        // Save medium (300x300)
+        $medium = clone $img;
+        $medium->cover(300, 300)->toJpeg()->save(storage_path("app/public/$dir/medium.jpg"));
+    
+        // Save large (600x600)
+        $large = clone $img;
+        $large->cover(600, 600)->toJpeg()->save(storage_path("app/public/$dir/large.jpg"));
+    
+        // DB save
+        $patient->patient_picture = "$dir/profile.jpg";
+        $patient->save();
+    
+        return back()->with('success', 'Profile picture updated successfully!');
+    }
+    
 
-        return response()->json([
-            'message' => 'Profile picture updated successfully.',
-            'image_url' => asset('storage/' . $patient->patient_picture),
-        ]);
+    public function restore($id)
+    {
+        $patient = Patient::onlyTrashed()->findOrFail($id);
+        $patient->restore();
+
+        return redirect(guard_route('patients.index'))
+            ->with('success','Patient restored successfully');
     }
 
+    protected function handleSignature($request, $patient)
+    {
+        $dir = "patient_signatures/{$patient->id}";
+        $manager = new ImageManager(new Driver());
+    
+        // 1. Uploaded file
+        if ($request->hasFile('signature_file')) {
+            if (!Storage::disk('public')->exists($dir)) {
+                Storage::disk('public')->makeDirectory($dir);
+            } else {
+                Storage::disk('public')->deleteDirectory($dir);
+                Storage::disk('public')->makeDirectory($dir);
+            }
+    
+            $img = $manager->read($request->file('signature_file')->getRealPath());
+            // Resize image
+            $img->resize(100, 80);
+        // 2. Drawn signature
+        } elseif ($request->signature_draw) {
+            if (!Storage::disk('public')->exists($dir)) {
+                Storage::disk('public')->makeDirectory($dir);
+            } else {
+                Storage::disk('public')->deleteDirectory($dir);
+                Storage::disk('public')->makeDirectory($dir);
+            }
+    
+            $data = str_replace('data:image/png;base64,', '', $request->signature_draw);
+            $data = base64_decode($data);
+    
+            $img = $manager->read($data);
+            // Resize image
+            $img->resize(100, 80);
+        // 3. Existing signature
+        } elseif ($patient->patient_signature && Storage::disk('public')->exists($patient->patient_signature)) {
+            $img = $manager->read(storage_path("app/public/" . $patient->patient_signature));
+            \Log::info('Using existing patient signature: ' . $patient->patient_signature);
+    
+        // 4. Create blank canvas
+        }  else {
+            $text = $patient->full_name;
+            $fontPath = public_path('assets/fonts/DancingScript-VariableFont_wght.ttf');
+            $fontSize = 16;
+        
+            // Measure text bounding box
+            $box = imagettfbbox($fontSize, 0, $fontPath, $text);
+            $textWidth  = abs($box[2] - $box[0]);
+            $textHeight = abs($box[7] - $box[1]);
+        
+            // Define padding (px)
+            $padding = 4;
+        
+            // Create GD canvas with padding
+            $canvasWidth  = $textWidth + ($padding * 2);
+            $canvasHeight = $textHeight + ($padding * 2);
+        
+            $gdResource = imagecreatetruecolor($canvasWidth, $canvasHeight);
+        
+            // Optional: fill with white
+            $white = imagecolorallocate($gdResource, 255, 255, 255);
+            imagefill($gdResource, 0, 0, $white);
+        
+            // Load into Intervention
+            $img = $manager->read($gdResource);
+        
+            // Draw text centered inside the padded canvas
+            $img->text($text, $canvasWidth / 2, $canvasHeight / 2, function ($font) use ($fontPath, $fontSize) {
+                $font->filename($fontPath);
+                $font->size($fontSize);
+                $font->color('#1b5a90');
+                $font->align('center');
+                $font->valign('middle');
+            });
+        
+            // $img now has padding and correct proportions
+        }
+   
+        $filename = "signature.png";
+        $path = "$dir/$filename";
+    
+        // Save image
+        if (!Storage::disk('public')->exists($dir)) {
+            Storage::disk('public')->makeDirectory($dir);
+        }
+    
+        $img->save(storage_path("app/public/" . $path));
+    
+        return $path;
+    }
+    
+    
 }

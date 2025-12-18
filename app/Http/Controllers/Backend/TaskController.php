@@ -24,7 +24,8 @@ class TaskController extends Controller
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
-        return view('patients.dashboard.tasks.index', compact('patient', 'tasks', 'users', 'taskcategories', 'statuses'));
+        
+        return view(guard_view('patients.dashboard.tasks.index', 'patient_admin.task.index'), compact('patient', 'tasks', 'users', 'taskcategories', 'statuses'));
     }
 
     public function create(Patient $patient)
@@ -35,7 +36,7 @@ class TaskController extends Controller
         $statuses = $this->getDropdownOptions('STATUS');
         $taskcategories = $this->getDropdownOptions('CATEGORY');
 
-        return view('patients.dashboard.tasks.create', compact('patient', 'users', 'taskcategories', 'statuses'));
+        return view(guard_view('patients.dashboard.tasks.create', 'patient_admin.task.create'), compact('patient', 'users', 'taskcategories', 'statuses'));
     }
 
 
@@ -57,7 +58,7 @@ class TaskController extends Controller
 
         Task::create($request->all());
         return response()->json([
-            'redirect' =>guard_route('tasks.tasks.index', ['patient' => $request->patient_id]),
+            'redirect' =>guard_route('tasks.index', ['patient' => $request->patient_id]),
             'message' => 'Task created successfully',
         ]);
     }
@@ -70,7 +71,7 @@ class TaskController extends Controller
         $taskCategories = $this->getDropdownOptions('CATEGORY');
 
 
-        return view('patients.dashboard.tasks.edit', compact('patient','task', 'users', 'statuses', 'taskCategories'));
+        return view(guard_view('patients.dashboard.tasks.edit', 'patient_admin.task.edit'), compact('patient','task', 'users', 'statuses', 'taskCategories'));
     }
 
     public function update(Request $request, Patient $patient, $taskId): JsonResponse
@@ -90,7 +91,7 @@ class TaskController extends Controller
         $task->update($request->all());
 
         return response()->json([
-            'redirect' =>guard_route('tasks.tasks.index', ['patient' => $patient->id]),
+            'redirect' =>guard_route('tasks.index', ['patient' => $patient->id]),
             'message' => 'Task updated successfully',
         ]);
     }
@@ -98,8 +99,7 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return redirect()
-            ->route('tasks.tasks.index', ['patient' => $patient->id])
+        return redirect(guard_route('tasks.index', ['patient' => $patient->id]))
             ->with('success', 'Task deleted successfully.');
     }
 
@@ -110,7 +110,7 @@ class TaskController extends Controller
         $taskcategories = $this->getDropdownOptions('CATEGORY');
         $user = auth()->user();
 
-        $query = Task::with(['creator', 'owner', 'category', 'status','followups'])->latest();
+        $query = Task::companyOnly()->with(['creator', 'owner', 'category', 'status','followups'])->latest();
         
         if (has_role('patient')) {
             $user = auth()->user();
@@ -155,9 +155,9 @@ class TaskController extends Controller
                     ->orderBy('start_date', 'asc');
         $tasks = $query->get();
         if ($request->ajax()) {
-            return view('patients.dashboard.tasks.notifications', compact('tasks','users', 'taskcategories', 'statuses'))->render();
+            return view(guard_view('patients.dashboard.tasks.notifications', 'patient_admin.task.notifications'), compact('tasks','users', 'taskcategories', 'statuses'))->render();
         }
-
-        return view('patients.dashboard.tasks.notifications', compact('tasks','users', 'taskcategories', 'statuses'));
+        
+        return view(guard_view('patients.dashboard.tasks.notifications', 'patient_admin.task.notifications'), compact('tasks','users', 'taskcategories', 'statuses'));
     }
 }

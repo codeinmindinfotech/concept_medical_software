@@ -10,18 +10,17 @@ class PasswordResetService
     public function sendResetLink($user, string $type, string $brokerName)
     {
         $status = Password::RESET_LINK_SENT;
-        if (App::environment('local')) {
-            $brokerManager = app('auth.password');
-            $brokerManager->setCompanyId($user->company_id ?? null);
-            $brokerManager->setType($type);
 
-            $broker = $brokerManager->broker($brokerName);
+        $brokerManager = app('auth.password');
+        $brokerManager->setCompanyId($user->company_id ?? null);
+        $brokerManager->setType($type);
 
-            $status = $broker->sendResetLink(['email' => $user->email]);
+        $broker = $brokerManager->broker($brokerName);
 
-            if ($status !== Password::RESET_LINK_SENT) {
-                throw new \Exception("Failed to send reset link. Status: $status");
-            }
+        $status = $broker->sendResetLink(['email' => $user->email]);
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            throw new \Exception("Failed to send reset link. Status: $status");
         }
         return $status;
     }

@@ -39,6 +39,9 @@ class CompanyController extends Controller
                 'regex:/^[A-Za-z0-9_]+$/',
             ],
             'email' => 'nullable|email|max:255|unique:companies,email',
+            'whatsapp_phone_number_id' => 'nullable|string|max:50',
+            'whatsapp_business_account_id' => 'nullable|string|max:50',
+            'whatsapp_access_token' => 'nullable|string',
         ]);
         
 
@@ -48,34 +51,23 @@ class CompanyController extends Controller
            
             // 2. Create or find the admin user (and associate company)
             $user = User::firstOrCreate(
-                ['email' => $company->email], // company_email
+                [
+                    'email' => $company->email,
+                    'company_id' => $company->id
+                ],
                 [
                     'name' => $company->name,
-                    'password' => Hash::make('123456'), // default password
-                    'company_id' => $company->id // assumes user has company_id field
+                    'password' => Hash::make('123456')
                 ]
             );
-
-            // 3. Create or find the "manager" role for the 'web' guard
-            $role = Role::firstOrCreate(
-                ['name' => 'manager', 'guard_name' => 'web']
-            );
-
-            // 4. Sync all 'web' permissions to the manager role
-            $permissions = Permission::where('guard_name', 'web')->get();
-            $role->syncPermissions($permissions);
-
-            // 5. Assign role to user if not already assigned
-            if (!$user->hasRole($role->name)) {
-                $user->assignRole($role->name);
-            }
+            
+            
+            setupCompanyRolesAndPermissions($company, $user);
 
 
             $recipients = globalNotificationRecipients();
             if (!empty($recipients) && filter_var($company->email, FILTER_VALIDATE_EMAIL)) {
-                if (App::environment('local')) {
-                    Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
-                }
+                Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
             } else {
                 \Log::error('Invalid recipients or company email', [
                     'to' => $company->email,
@@ -119,10 +111,41 @@ class CompanyController extends Controller
                 'regex:/^[A-Za-z0-9_]+$/',
             ],
             'email' => 'nullable|email|max:255|unique:companies,email,'. $id,
+            'whatsapp_phone_number_id' => 'nullable|string|max:50',
+            'whatsapp_business_account_id' => 'nullable|string|max:50',
+            'whatsapp_access_token' => 'nullable|string',
         ]);
 
         $company = Company::findOrFail($id);
         $company->update($data);
+
+        // When updating a company
+        $user = User::where('email', $company->email)
+            ->where('company_id', $company->id) // check company_id too
+            ->first();        
+        if (!$user) {
+           // 2. Create or find the admin user (and associate company)
+           $user = User::firstOrCreate(
+                [
+                    'email' => $company->email,
+                    'company_id' => $company->id
+                ],
+                [
+                    'name' => $company->name,
+                    'password' => Hash::make('123456')
+                ]
+            );
+            $recipients = globalNotificationRecipients();
+            if (!empty($recipients) && filter_var($company->email, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($company->email)->cc($recipients)->send(new CompanyCreatedMail($company));
+            } else {
+                \Log::error('Invalid recipients or company email', [
+                    'to' => $company->email,
+                    'cc' => $recipients
+                ]);
+            }
+        }
+        setupCompanyRolesAndPermissions($company, $user);
 
         return response()->json([
             'redirect' =>guard_route('companies.index'),
@@ -137,7 +160,7 @@ class CompanyController extends Controller
             $company = Company::findOrFail($companyId);
             $company->delete();
 
-            return redirect()->route('companies.index')->with('success', 'Company deleted successfully.');
+            return redirect(guard_route('companies.index'))->with('success', 'Company deleted successfully.');
 
         } catch (\Exception $e) {
             \Log::error('Failed to delete company: ' . $e->getMessage());

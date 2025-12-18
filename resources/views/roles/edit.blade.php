@@ -1,107 +1,125 @@
-@extends('backend.theme.default')
-
+<?php $page = 'user-show'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
-@php
-    $breadcrumbs = [
-        ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-        ['label' => 'Roles', 'url' =>guard_route('roles.index')],
-        ['label' => 'Edit Role'],
-    ];
-@endphp
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
+        @php
+            $breadcrumbs = [
+                ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
+                ['label' => 'Roles', 'url' => guard_route('roles.index')],
+                ['label' => 'Edit Role'],
+            ];
+        @endphp
 
-@include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Edit Role',
-    'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('roles.index'),
-    'isListPage' => false
-])
+        @include('layout.partials.breadcrumb', [
+            'pageTitle' => 'Edit Role',
+            'breadcrumbs' => $breadcrumbs,
+            'backUrl' => guard_route('roles.index'),
+            'isListPage' => false
+        ])
 
-@if (count($errors) > 0)
-    <div class="alert alert-danger">
-        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-        <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-        </ul>
-    </div>
-@endif
-
-<form method="POST" action="{{guard_route('roles.update', $role->id) }}">
-    @csrf
-    @method('PUT')
-
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Name:</strong>
-                <input type="text" name="name" placeholder="Name" class="form-control" value="{{ $role->name }}">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
-        
-    @php
-    // Group permissions by module and action
-        $groupedPermissions = [];
+        @endif
 
-        foreach ($permission as $perm) {
-            if (strpos($perm->name, '-') !== false) {
-                [$module, $action] = explode('-', $perm->name);
-                $groupedPermissions[$module][$action] = $perm;
-            }
-        }
-        $actions = ['list', 'create', 'edit', 'delete']; // Define expected actions
-    @endphp
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Permission:</strong>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Module</th>
-                                <th><input type="checkbox" id="selectAll"> All</th>
-                                @foreach($actions as $action)
-                                    <th>{{ ucfirst($action) }}</th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($groupedPermissions as $module => $perms)
-                                <tr>
-                                    <td><strong>{{ ucfirst($module) }}</strong></td>
-                                    <td>
-                                        <input type="checkbox" class="select-module" data-module="{{ $module }}">
-                                    </td>
-                                    @foreach($actions as $action)
-                                        @php
-                                            $perm = $perms[$action] ?? null;
-                                        @endphp
-                                        <td>
-                                            @if($perm)
-                                                <input type="checkbox"
-                                                    name="permission[{{ $perm->id }}]"
-                                                    value="{{ $perm->id }}"
-                                                    class="perm-checkbox {{ $module }}-perm"
-                                                    {{ in_array($perm->id, $rolePermissions) ? 'checked' : '' }}>
+        <form method="POST" action="{{ guard_route('roles.update', $role->id) }}">
+            @csrf
+            @method('PUT')
 
-                                            @endif
-                                        </td>
-                                        
+            <div class="row">
+                <!-- Role Name -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <strong>Name:</strong>
+                        <input type="text" name="name" class="form-control" value="{{ $role->name }}">
+                    </div>
+                </div>
 
-                                    @endforeach
-                                </tr>
-
+                <!-- Company Dropdown -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <strong>Company:</strong>
+                        <select name="company_id" class="form-control">
+                            <option value="">-- Select Company --</option>
+                            @foreach($companies as $company)
+                                <option value="{{ $company->id }}"
+                                    {{ $role->company_id == $company->id ? 'selected' : '' }}>
+                                    {{ $company->name }}
+                                </option>
                             @endforeach
-                        </tbody>
-                    </table>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Permissions Table -->
+                @php
+                    $groupedPermissions = [];
+                    foreach ($permission as $perm) {
+                        if (strpos($perm->name, '-') !== false) {
+                            [$module, $action] = explode('-', $perm->name);
+                            $groupedPermissions[$module][$action] = $perm;
+                        }
+                    }
+                    $actions = ['list', 'create', 'edit', 'delete'];
+                @endphp
+
+                <div class="col-12 mt-3">
+                    <div class="form-group">
+                        <strong>Permissions:</strong>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th><input type="checkbox" id="selectAll"> All</th>
+                                        @foreach($actions as $action)
+                                            <th>{{ ucfirst($action) }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($groupedPermissions as $module => $perms)
+                                        <tr>
+                                            <td><strong>{{ ucfirst($module) }}</strong></td>
+                                            <td>
+                                                <input type="checkbox" class="select-module" data-module="{{ $module }}">
+                                            </td>
+                                            @foreach($actions as $action)
+                                                @php
+                                                    $perm = $perms[$action] ?? null;
+                                                @endphp
+                                                <td>
+                                                    @if($perm)
+                                                        <input type="checkbox"
+                                                            name="permission[{{ $perm->id }}]"
+                                                            value="{{ $perm->id }}"
+                                                            class="perm-checkbox {{ $module }}-perm"
+                                                            {{ in_array($perm->id, $rolePermissions) ? 'checked' : '' }}>
+                                                    @endif
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center mt-3">
+                    <button type="submit" class="btn btn-primary btn-sm mb-3">
+                        <i class="fa-solid fa-floppy-disk"></i> Submit
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-            <button type="submit" class="btn btn-primary btn-sm mb-3"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
-        </div>
+        </form>
     </div>
-</form>
+</div>
 @endsection
-@push('scripts')
-    <script src="{{ asset('theme/custom.js') }}"></script>
-@endpush

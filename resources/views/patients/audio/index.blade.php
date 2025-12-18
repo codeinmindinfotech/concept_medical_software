@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -13,7 +13,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Patients Consultation List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' =>guard_route('patients.audio.create',$patient->id),
@@ -46,7 +46,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('theme/transcription.js') }}"></script>
+<script src="{{ asset('assets_admin/js/transcription.js') }}"></script>
 <script>
     $(document).ready(function() {
     if ( $.fn.DataTable.isDataTable('#PatientAudioTable') ) {

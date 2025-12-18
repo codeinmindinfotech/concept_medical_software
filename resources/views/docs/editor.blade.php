@@ -1,25 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>ONLYOFFICE Editor</title>
-    <script type="text/javascript" src="{{ $documentServer }}/web-apps/apps/api/documents/api.js"></script>
+    <meta charset="UTF-8">
+    <title>OnlyOffice Editor</title>
+    <script type="text/javascript" src="{{ env('ONLYOFFICE_DOC_SERVER') }}/web-apps/apps/api/documents/api.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* prevents scrollbars */
+        }
+        
+        #onlyoffice-editor {
+            width: 100%;
+            height: 100vh; /* or 100% */
+            border: none;
+        }
+        </style>
+        
 </head>
 <body>
-    <div id="placeholder" style="width:100%; height:90vh;"></div>
-
-    <script>
-        const config = {!! $config !!};
-
-        // Instantiate the editor
-        const docEditor = new DocsAPI.DocEditor("placeholder", {
-            width: "100%",
-            height: "100%",
-            documentType: "text",
-            token: config.token ?? null,
-            document: config.document,
-            editorConfig: config.editorConfig
-        });
-    </script>
+        <h1>Editing Document</h1>
+        <div id="onlyoffice-editor" style="width: 100%; height: 100vh;"></div>
+    
+        <script type="text/javascript">
+    const config = {!! json_encode($config) !!};
+console.log(config);
+    const docEditor = new DocsAPI.DocEditor("onlyoffice-editor", config);
+</script> 
 </body>
 </html>

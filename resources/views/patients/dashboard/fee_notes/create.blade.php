@@ -1,7 +1,7 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-@include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
@@ -16,7 +16,7 @@
       </a>
     </div>
     <div class="card-body">
-      <form action="{{guard_route('fee-note.store', ['patient' => $patient->id]) }}" class="validate-form"
+      <form action="{{guard_route('fee-notes.store', ['patient' => $patient->id]) }}" data-ajax class="needs-validation" novalidate
         method="POST">
         @csrf
         <input type="hidden" name="patient_id" value="{{ $patient->id ?? '' }}">
@@ -27,7 +27,7 @@
 
           <div class="mb-3 col-md-4">
             <label>Charge Code<span class="txt-error">*</span></label>
-            <select name="chargecode_id" id="chargecode_id" class="select2">
+            <select name="chargecode_id" id="chargecode_id" class="form-control select2" required>
               <option value="">-- Charge Code --</option>
               @foreach($chargecodes as $code)
               <option value="{{ $code->id }}" data-code="{{ json_encode($code) }}">{{ $code->code }}</option>
@@ -49,37 +49,34 @@
           <div class="mb-3 col-md-4">
             <label for="procedure_date" class="form-label"><strong>Procedure Date<span
                   class="txt-error">*</span></strong></label>
-            <div class="input-group">
-              <input id="procedure_date" name="procedure_date" type="text" class="form-control flatpickr"
-                placeholder="YYYY-MM-DD">
-              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+            <div class="cal-icon">
+              <input id="procedure_date" name="procedure_date" type="text" class="form-control datetimepicker"
+                placeholder="YYYY-MM-DD" required>
             </div>
           </div>
 
           <!-- Admission Date -->
           <div class="mb-3 col-md-4">
             <label for="admission_date" class="form-label"><strong>Admission Date</strong></label>
-            <div class="input-group">
-              <input id="admission_date" name="admission_date" type="text" class="form-control flatpickr"
+            <div class="cal-icon">
+              <input id="admission_date" name="admission_date" type="text" class="form-control datetimepicker"
                 placeholder="YYYY-MM-DD">
-              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
             </div>
           </div>
 
           <!-- Discharge Date -->
           <div class="mb-3 col-md-4">
             <label for="discharge_date" class="form-label"><strong>Discharge Date</strong></label>
-            <div class="input-group">
-              <input id="discharge_date" name="discharge_date" type="text" class="form-control flatpickr"
+            <div class="cal-icon">
+              <input id="discharge_date" name="discharge_date" type="text" class="form-control datetimepicker"
                 placeholder="YYYY-MM-DD">
-              <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
             </div>
           </div>
 
           <!-- Narrative -->
           <div class="col-md-3">
             <label for="narrative" class="form-label">Narrative</label>
-            <select class="select2" id="narrative" name="narrative">
+            <select class="form-control select2" id="narrative" name="narrative">
               @foreach($narrative as $id => $value)
               <option value="{{ $id }}" {{ old('narrative')==$id ? 'selected' : '' }}>
                 {{ $value }}
@@ -97,7 +94,7 @@
           <!-- Gross -->
           <div class="col-md-2">
             <label>Gross<span class="txt-error">*</span></label>
-            <input type="number" name="charge_gross" id="charge_gross" class="form-control">
+            <input type="number" name="charge_gross" id="charge_gross" class="form-control" required>
           </div>
 
           <!-- Reduction % -->
@@ -109,19 +106,19 @@
           <!-- Net -->
           <div class="col-md-2">
             <label>Net<span class="txt-error">*</span></label>
-            <input type="number" name="charge_net" id="charge_net" class="form-control">
+            <input type="number" name="charge_net" id="charge_net" class="form-control" required>
           </div>
 
           <!-- VAT % -->
           <div class="col-md-2">
             <label>VAT %<span class="txt-error">*</span></label>
-            <input type="number" name="vat_rate_percent" id="vat_rate_percent" class="form-control">
+            <input type="number" name="vat_rate_percent" id="vat_rate_percent" class="form-control" required>
           </div>
 
           <!-- Total -->
           <div class="col-md-2">
             <label>Total<span class="txt-error">*</span></label>
-            <input type="number" name="line_total" id="line_total" class="form-control" readonly>
+            <input type="number" name="line_total" id="line_total" class="form-control" readonly required>
           </div>
 
 
@@ -130,9 +127,9 @@
         <!-- Separate section for Clinic and Consultant -->
         <hr>
         <div class="row g-3">
-          <div class="col-md-3">
+          <div class="col-md-5">
             <label>Clinic<span class="txt-error">*</span></label>
-            <select name="clinic_id" id="clinic_id" class="form-select select2">
+            <select name="clinic_id" id="clinic_id" class="form-control select2" required>
               <option value="">-- Select --</option>
               @foreach($clinics as $clinic)
               <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
@@ -140,9 +137,9 @@
             </select>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-5">
             <label>Consultant<span class="txt-error">*</span></label>
-            <select name="consultant_id" id="consultant_id" class="select2">
+            <select name="consultant_id" id="consultant_id" class="form-control select2" required>
               <option value="">-- Consultant --</option>
               @foreach($consultants as $consultant)
               <option value="{{ $consultant->id }}">{{ $consultant->name }}</option>

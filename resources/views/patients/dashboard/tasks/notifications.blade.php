@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
-
+<?php $page = 'Planner-index'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
     @php
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -10,7 +12,7 @@
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
     'pageTitle' => 'Task Notification List',
     'breadcrumbs' => $breadcrumbs,
     'backUrl' => guard_route('patients.index'),
@@ -25,142 +27,162 @@
     @php
     $hasFilters = request()->hasAny(['first_name', 'surname','owner', 'status', 'category']);
     @endphp
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-table me-1"></i> Task Management
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-table me-1"></i> Task Management
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseSearch" aria-expanded="{{ $hasFilters ? 'true' : 'false' }}"
+                        aria-controls="collapseSearch">
+                        <i class="fas fa-filter me-1"></i> Advanced Search
+                    </button>
+                </div>
             </div>
-            <div>
-                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseSearch" aria-expanded="{{ $hasFilters ? 'true' : 'false' }}"
-                    aria-controls="collapseSearch">
-                    <i class="fas fa-filter me-1"></i> Advanced Search
-                </button>
-            </div>
-        </div>
 
-        <div class="card-body">
-            <div class="accordion mb-4" id="searchAccordion">
-                <div class="accordion-item border-0 shadow-sm">
-                    <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : '' }}"
-                        aria-labelledby="headingSearch" data-bs-parent="#searchAccordion">
-                        <div class="accordion-body">
-                            <form method="GET" action="{{guard_route('tasks.notifications') }}">
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="first_name" class="form-label"><strong>First Name</strong></label>
-                                        <input type="text" name="first_name" id="first_name" class="form-control"
-                                            placeholder="e.g. John" value="{{ request('first_name') }}">
+            <div class="card-body">
+                <div class="accordion mb-4" id="searchAccordion">
+                    <div class="accordion-item border-0 shadow-sm">
+                        <div id="collapseSearch" class="accordion-collapse {{ $hasFilters ? 'show' : '' }}"
+                            aria-labelledby="headingSearch" data-bs-parent="#searchAccordion">
+                            <div class="accordion-body">
+                                <form method="GET" action="{{guard_route('tasks.notifications') }}">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="first_name" class="form-label"><strong>First Name</strong></label>
+                                            <input type="text" name="first_name" id="first_name" class="form-control"
+                                                placeholder="e.g. John" value="{{ request('first_name') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="surname" class="form-label"><strong>Surname</strong></label>
+                                            <input type="text" name="surname" id="surname" class="form-control"
+                                                placeholder="e.g. Doe" value="{{ request('surname') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="status" class="form-label"><strong>Status</strong></label>
+                                            <select name="status" id="status" class="form-control" >
+                                                <option value="">-- Select Status --</option>
+                                                @foreach($statuses as $id => $val)
+                                                <option value="{{ $id }}" {{ (string) request('status') === (string) $id ? 'selected' : '' }}>
+                                                    {{ $val }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="category" class="form-label"><strong>Category</strong></label>
+                                            <select name="category" id="category" class="form-control" >
+                                                <option value="">-- Select Category --</option>
+                                                @foreach($taskcategories as $id => $value)
+                                                <option value="{{ $id }}" {{ (string) request('category') === (string) $id ? 'selected' : '' }}>
+                                                    {{ $value }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="owner" class="form-label"><strong>Task Owner</strong></label>
+                                            <select name="owner" id="owner" class="form-control" >
+                                                <option value="">-- Select Owner --</option>
+                                                @foreach($users as $user)
+                                                <option value="{{ $user->id }}" {{ (string) request('owner') === (string) $user->id ? 'selected' : '' }}>
+                                                    {{ $user->name }} ({{ $user->email }})
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label for="surname" class="form-label"><strong>Surname</strong></label>
-                                        <input type="text" name="surname" id="surname" class="form-control"
-                                            placeholder="e.g. Doe" value="{{ request('surname') }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="status" class="form-label"><strong>Status</strong></label>
-                                        <select name="status" id="status" class="form-control" >
-                                            <option value="">-- Select Status --</option>
-                                            @foreach($statuses as $id => $val)
-                                            <option value="{{ $id }}" {{ (string) request('status') === (string) $id ? 'selected' : '' }}>
-                                                {{ $val }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="category" class="form-label"><strong>Category</strong></label>
-                                        <select name="category" id="category" class="form-control" >
-                                            <option value="">-- Select Category --</option>
-                                            @foreach($taskcategories as $id => $value)
-                                            <option value="{{ $id }}" {{ (string) request('category') === (string) $id ? 'selected' : '' }}>
-                                                {{ $value }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="owner" class="form-label"><strong>Task Owner</strong></label>
-                                        <select name="owner" id="owner" class="form-control" >
-                                            <option value="">-- Select Owner --</option>
-                                            @foreach($users as $user)
-                                            <option value="{{ $user->id }}" {{ (string) request('owner') === (string) $user->id ? 'selected' : '' }}>
-                                                {{ $user->name }} ({{ $user->email }})
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
 
-                                <div class="text-end mt-4">
-                                    <button type="submit" class="btn btn-primary me-2">
-                                        <i class="fas fa-search me-1"></i> Search
-                                    </button>
-                                    <a href="{{guard_route('tasks.notifications') }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-sync-alt me-1"></i> Reset
-                                    </a>
-                                </div>
-                            </form>
+                                    <div class="text-end mt-4">
+                                        <button type="submit" class="btn btn-primary me-2">
+                                            <i class="fas fa-search me-1"></i> Search
+                                        </button>
+                                        <a href="{{guard_route('tasks.notifications') }}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-sync-alt me-1"></i> Reset
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="recall-notification-list" data-pagination-container>
-                <table class="table table-bordered" id="recallNotificationTable">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Owner</th>
-                            <th>Patient</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Subject</th>
-                            <th>Category</th>
-                            <th>Priority</th>
-                            <th>Status</th>
-                            <th>Note</th>
-                            <th style="width: 170px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if($tasks->count())
-                        @foreach($tasks as $task)
-                        <tr>
-                            <td> {{ $task->owner->name ?? 'N/A' }} </td>
-                            <td> {{ $task->patient->full_name }} </td>
-                            <td>{{ format_date($task->start_date) }}</td>
-                            <td>{{ format_date($task->end_date) }}</td>
-                            <td>{{ $task->subject }}</td>
-                            <td>{{ $task->category->value ?? 'N/A' }}</td>
-                            <td>{{ ucfirst($task->priority) }}</td>
-                            <td>{{ $task->status->value ?? 'N/A' }}</td>
-                            <td>{{ $task->task }}</td>
-                            <td>
-                                <a href="{{guard_route('patients.show', $task->patient_id) }}"
-                                   class="btn btn-info btn-sm me-2" 
-                                   title="View Patient">
-                                   <i class="fas fa-user"></i> View Patient
-                                </a>
-                                <a href="{{guard_route('tasks.tasks.edit', ['patient' => $task->patient_id, 'task' => $task]) }}"
-                                   class="btn btn-warning btn-sm" 
-                                   title="Edit Task">
-                                   <i class="fas fa-edit"></i> Edit Task
-                                </a>
-                            </td>
-                            
-                        </tr>
-                        @endforeach
-                        @else
-                        <tr><td colspan="10">No tasks found for this month.</td></tr>
-                        @endif 
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="recallNotificationTable">
+                        <thead>
+                            <tr>
+                                <th>Owner</th>
+                                <th>Patient</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Subject</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Note</th>
+                                <th style="width: 170px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if($tasks->count())
+                            @foreach($tasks as $task)
+                            <tr>
+                                <td> {{ $task->owner->name ?? 'N/A' }} </td>
+                                <td> {{ $task->patient->full_name }} </td>
+                                <td>{{ format_date($task->start_date) }}</td>
+                                <td>{{ format_date($task->end_date) }}</td>
+                                <td>{{ $task->subject }}</td>
+                                <td>{{ $task->category->value ?? 'N/A' }}</td>
+                                <td>{{ ucfirst($task->priority) }}</td>
+                                <td>{{ $task->status->value ?? 'N/A' }}</td>
+                                <td>{{ $task->task }}</td>
+                                <td>
+                                    <a href="{{guard_route('patients.show', $task->patient_id) }}"
+                                    class="btn bg-info-light btn-sm me-2" 
+                                    title="View Patient">
+                                    <i class="fas fa-user"></i> View Patient
+                                    </a>
+                                    <a href="{{guard_route('tasks.edit', ['patient' => $task->patient_id, 'task' => $task]) }}"
+                                    class="btn bg-warning-light btn-sm" 
+                                    title="Edit Task">
+                                    <i class="fas fa-edit"></i> Edit Task
+                                    </a>
+                                </td>
+                                
+                            </tr>
+                            @endforeach
+                            @else
+                            <tr><td colspan="10">No tasks found for this month.</td></tr>
+                            @endif 
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
 @endsection
 @push('scripts')
+<!-- Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+
+<!-- JSZip (Excel) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- pdfmake (PDF) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<!-- HTML5 Export Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
 <script>
+    
 document.addEventListener('DOMContentLoaded', function () {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -185,7 +207,7 @@ $('#recallNotificationTable').DataTable({
         {
             extend: 'print',
             text: '<i class="fa fa-print"></i> Print',
-            className: 'btn btn-outline-secondary me-2',
+            className: 'btn btn-sm bg-primary-light me-2',
 
             title: '',  // remove default title
             exportOptions: {
@@ -208,7 +230,7 @@ $('#recallNotificationTable').DataTable({
         {
             extend: 'excelHtml5',
             text: '<i class="fa fa-file-excel"></i> Excel',
-            className: 'btn btn-outline-success me-2',
+            className: 'btn btn-sm bg-success-light me-2',
             title: 'Task Notification List',
             exportOptions: {
                 columns: ':not(:last-child)'
@@ -217,7 +239,7 @@ $('#recallNotificationTable').DataTable({
         {
             extend: 'pdfHtml5',
             text: '<i class="fa fa-file-pdf"></i> PDF',
-            className: 'btn btn-outline-danger me-2',
+            className: 'btn btn-sm bg-danger-light me-2',
             title: '', // remove default title for custom header
             pageSize: 'A4',
             orientation: 'landscape',

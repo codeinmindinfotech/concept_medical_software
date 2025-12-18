@@ -1,21 +1,22 @@
-@extends('backend.theme.default')
-
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="content container-fluid">
     @php
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
-    ['label' => 'Charge Code List'],
+    ['label' => 'ChargeCodees', 'url' =>guard_route('chargecodes.index')],
+    ['label' => 'Create ChargeCodee'],
     ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
-    'pageTitle' => 'Charge Code List',
+    @include('layout.partials.breadcrumb', [
+    'pageTitle' => 'Create ChargeCodee',
     'breadcrumbs' => $breadcrumbs,
-    'backUrl' =>guard_route('chargecodes.create'),
-    'isListPage' => true
+    'backUrl' =>guard_route('fee-note.create', ['patient' => $patient]),
+    'isListPage' => false
     ])
-
     @session('success')
     <div class="alert alert-success" role="alert">
         {{ $value }}
@@ -80,6 +81,7 @@
                 </form>
         </div>
     </div>
+</div>
 </div>
 @endsection
 @push('scripts')

@@ -1,7 +1,9 @@
-@extends('backend.theme.default')
-
+<?php $page = 'insurances-list'; ?>
+@extends('layout.mainlayout_admin')
 @section('content')
-<div class="container-fluid px-4">
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
@@ -9,7 +11,7 @@
         ];
     @endphp
 
-    @include('backend.theme.breadcrumb', [
+    @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Insurances List',
         'breadcrumbs' => $breadcrumbs,
         'backUrl' => guard_route('insurances.create'),
@@ -21,18 +23,22 @@
             {{ $value }}
         </div>
     @endsession
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            Insurances Management
-        </div>
-        <div class="card-body">
-            <div id="insurances-list" data-pagination-container>
-                @include('insurances.list', ['insurances' => $insurances])
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        @include('insurances.list', ['insurances' => $insurances])
+                    </div>
+                </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
+</div>
+<!-- /Page Wrapper -->
+</div>
+<!-- /Main Wrapper -->
 @endsection
 @push('scripts')
 <script>

@@ -51,43 +51,42 @@ $(document).ready(function () {
   }
  
   
-  $('#patient_picture_input').on('change', function () {
-    const form = $('#uploadPatientPictureForm')[0];
-    const formData = new FormData(form);
+  // $('#patient_picture_input').on('change', function () {
+  //   const form = $('#uploadPatientPictureForm')[0];
+  //   const formData = new FormData(form);
   
-    const file = this.files[0];
-    if (!file) return;
+  //   const file = this.files[0];
+  //   if (!file) return;
   
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      $('#patient_picture_preview').attr('src', e.target.result);
-    };
-    reader.readAsDataURL(file);
+  //   const reader = new FileReader();
+  //   reader.onload = function (e) {
+  //     $('#patient_picture_preview').attr('src', e.target.result);
+  //   };
+  //   reader.readAsDataURL(file);
   
-    $.ajax({
-      url: form.action, 
-      method: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success(response) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Updated',
-          text: response.message || 'Picture uploaded successfully!',
-          timer: 1500,
-          showConfirmButton: false
-        });
-  
-        if (response.image_url) {
-          $('#patient_picture_preview').attr('src', response.image_url);
-        }
-      },
-      error(xhr) {
-        handleErrors(xhr, $(form));
-      }
-    });
-  });
+  //   $.ajax({
+  //     url: form.action, 
+  //     method: 'POST',
+  //     data: formData,
+  //     processData: false,
+  //     contentType: false,
+  //     success(response) {
+  //       Swal.fire({
+  //         icon: 'success',
+  //         title: 'Updated',
+  //         text: response.message || 'Picture uploaded successfully!',
+  //         timer: 1500,
+  //         showConfirmButton: false
+  //       });
+  //       if (response.image_url) {
+  //         $('#patient_picture_preview').attr('src', response.image_url);
+  //       }
+  //     },
+  //     error(xhr) {
+  //       handleServerErrors(xhr, $(form));
+  //     }
+  //   });
+  // });
 
 function calculateRecallDate(interval) {
   const today = new Date();

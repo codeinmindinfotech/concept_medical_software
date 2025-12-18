@@ -13,7 +13,7 @@ class PasswordChangeController extends Controller
 
     public function showForm()
     {
-        return view('auth.change-password');
+        return view(guard_view('auth.change-password', 'auth.change-password-layout'));
     }
 
     public function update(Request $request) : JsonResponse

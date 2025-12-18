@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Backend;
 
 use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
+use App\Models\Appointment;
+use App\Models\Clinic;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\Doctor;
-
+use App\Models\User;
 use App\Notifications\ClinicMessageNotification;
 use Illuminate\Support\Facades\Mail;
 
@@ -18,15 +20,17 @@ class ClinicMessageController extends Controller
         $clinic = auth('clinic')->user();
 
         // Get all appointments for this clinic
-        $appointments = $clinic->appointments()->with('patient')->get();
+        $appointments = Appointment::with('clinic','patient')->get()->where('id',$clinic->id)->where('company_id', $clinic->company_id);
 
         // Extract patients from appointments (unique)
         $patients = $appointments->pluck('patient')->unique('id')->values();
 
+        $managers = User::where('company_id', $clinic->company_id )->get();
+
         // Optional: Get all doctors under same company
         $doctors = Doctor::where('company_id', $clinic->company_id)->get();
 
-        return view('clinics.notifications.send', compact('patients', 'doctors'));
+        return view(guard_view('clinics.notifications.send', 'patient_admin.profile.clinic-send'), compact('patients', 'doctors','managers'));
     }
     public function send(Request $request)
     {
@@ -42,7 +46,12 @@ class ClinicMessageController extends Controller
 
         foreach ($request->recipients as $recipient) {
             [$type, $id] = explode('-', $recipient);
-            $modelClass = $type === 'patient' ? \App\Models\Patient::class : \App\Models\Doctor::class;
+
+            $modelClass = match ($type) {
+                'manager' => \App\Models\User::class,
+                'patient' => \App\Models\Patient::class,
+                default   => \App\Models\Doctor::class,
+            };
 
             if ($recipientModel = $modelClass::find($id)) {
                 $recipientModel->notify($notification);

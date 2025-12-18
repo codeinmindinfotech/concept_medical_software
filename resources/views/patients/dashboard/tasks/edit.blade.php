@@ -1,38 +1,29 @@
-@extends('backend.theme.tabbed')
+@extends('layout.tabbed')
 
 @section('tab-navigation')
-    @include('backend.theme.tab-navigation', ['patient' => $patient])
+@include('layout.partials.tab-navigation', ['patient' => $patient])
 @endsection
 
 @section('tab-content')
-<div class="tab-pane fade show active" id="tasks" role="tabpanel">
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center  ">
-            <h5 class="mb-0">
-                <i class="fas fa-user-clock me-2"></i> Task Management
-            </h5>
-            <a href="{{guard_route('tasks.tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
-                <i class="fas fa-plus-circle me-1"></i> New Task
-            </a>
-        </div>
-        <div class="card-body">
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
 
-    @if($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
-    <form action="{{guard_route('tasks.tasks.update', ['patient' => $task->patient_id, 'task' => $task->id]) }}" method="POST" class="validate-form">
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if($errors->any())
+<div class="alert alert-danger">
+    <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+    <form action="{{guard_route('tasks.update', ['patient' => $task->patient_id, 'task' => $task->id]) }}" method="POST" data-ajax class="needs-validation" novalidate >
         @csrf
         @method('PUT')
         <input type="hidden" name="patient_id" value="{{ $task->patient_id }}">
@@ -99,12 +90,16 @@
 
             <div class="col-md-6 mb-3">
                 <label for="start_date" class="form-label">Start Date</label>
-                <input id="start_date" name="start_date" type="text" class="form-control flatpickr" value="{{ $task->start_date }}" placeholder="YYYY-MM-DD">
+                <div class="cal-icon">
+                    <input id="start_date" name="start_date" type="text" class="form-control datetimepicker" value="{{ $task->start_date }}" placeholder="YYYY-MM-DD">
+                </div>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label for="end_date" class="form-label">End Date</label>
-                <input id="end_date" name="end_date" type="text" class="form-control flatpickr" value="{{ $task->end_date }}" placeholder="YYYY-MM-DD">
+                <div class="cal-icon">
+                    <input id="end_date" name="end_date" type="text" class="form-control datetimepicker" value="{{ $task->end_date }}" placeholder="YYYY-MM-DD">
+                </div>
             </div>
 
             <div class="col-12 mb-3">
@@ -114,10 +109,8 @@
         </div>
 
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Task</button>
-        <a href="{{guard_route('tasks.tasks.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{guard_route('tasks.index', ['patient' => $patient->id]) }}" class="btn btn-secondary">Cancel</a>
     </form>
 
-</div>
-</div>
-</div>
+
 @endsection

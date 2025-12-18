@@ -24,8 +24,8 @@ class NotificationController extends Controller
         if ($request->ajax()) {
             return view('notifications.list', compact('notifications'))->render();
         }
-
-        return view('notifications.index',compact('notifications'));
+        
+        return view(guard_view('notifications.index', 'patient_admin.notification.index'),compact('notifications'));
 
     }
 
@@ -37,17 +37,14 @@ class NotificationController extends Controller
     public function sendToCompany(Request $request)
     {
         $user = auth('web')->user(); // SuperAdmin or Manager
-        // $request->validate([
-        //     'message' => 'required|string|max:1000',
-        //     'company_id' => $user->hasRole('superadmin') ? 'required|exists:companies,id' : '',
-        // ]);
-        $request->validate([
+        $data = $request->validate([
             'message' => 'required|string|max:1000',
             'user_ids' => $user->hasRole('superadmin') ?'required|array':'',
             'user_ids.*' => 'exists:users,id',
             'company_id' => $user->hasRole('superadmin') ? 'required|exists:companies,id' : '',
         ]);
         
+
         $companyId = has_role('superadmin')
             ? $request->input('company_id')
             : $user->company_id;
@@ -72,7 +69,6 @@ class NotificationController extends Controller
                 $latestNotification = $recipient->notifications()->latest()->first();
                 event(new MessageSent($latestNotification, $recipient->id, $recipient));
             }
-
         } else {
             foreach ([Doctor::class, Patient::class, Clinic::class, User::class] as $model) {
                 $model::where('company_id', $companyId)->each(function ($recipient) use ($notification) {
@@ -82,9 +78,19 @@ class NotificationController extends Controller
                     event(new MessageSent($latestNotification, $recipient->id, $recipient));
                 });
             }
-        }       
-        
-        return redirect()->back()->with('success', 'Notification sent successfully!');
+        }    
+           
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Notification sent successfully!',
+                'redirect' => route('notifications.form')
+            ]);
+        }
+
+    // Normal browser request → redirect
+    return redirect(guard_route('notifications.form'))
+        ->with('success', 'Notification sent successfully!');
     }
 
     // public function markAsRead(Request $request)

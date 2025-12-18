@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('patients', function (Blueprint $table) {
-            $table->string('next_of_kin')->after('fully_covid_19_vaccinated');
-            $table->string('kin_contact_no')->after('next_of_kin');
-            $table->text('kin_address')->after('kin_contact_no');
+            $table->string('next_of_kin')->after('fully_covid_19_vaccinated')->nullable();
+            $table->string('kin_contact_no')->after('next_of_kin')->nullable();
+            $table->text('kin_address')->after('kin_contact_no')->nullable();
             $table->unsignedBigInteger('relationship')->after('kin_address')->nullable();
             $table->string('kin_email')->after('relationship')->nullable();
     

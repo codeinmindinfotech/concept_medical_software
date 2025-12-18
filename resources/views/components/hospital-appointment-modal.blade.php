@@ -1,10 +1,10 @@
 @props(['clinics', 'procedures', 'flag', 'action','patient','patients'])
 <div class="modal fade" id="manualBookingModal" tabindex="-1" aria-labelledby="manualBookingLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg"><!-- wider dialog -->
-        <form id="manualBookingForm">
+        <form id="manualBookingForm" class="needs-validation" novalidate>
             @csrf
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary-light">
                     <h5 class="modal-title" id="manualBookingLabel">Add Hospital Appointment</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -15,25 +15,18 @@
                         <input type="hidden" class="form-control" id="hospital-clinic-id" name="clinic_id">
                     @endif
                     <input type="hidden" class="form-control" id="hospital-appointment-id" name="hospital_id">
-                    <div class="row g-3">
-                        @if ($patient)
-                        <div class="col-md-6">
-                            <input type="hidden" id="hospital-patient-id" name="patient_id" value="">
-                            <label class="form-label">Patient Name<span class="txt-error">*</span></label>
-                            <input type="text" class="form-control" id="hospital-patient-name" readonly>
-                        </div>
-                        @else 
+                    <div class="row g-3"> 
                         <div class="col-md-6">
                             <label class="form-label">Select Patient<span class="txt-error">*</span></label>
                             <select class="select2 form-select" id="hospital-patient-id" name="patient_id" style="width:100%">
                                 <option value="">-- Select Patient --</option>
-                                @foreach ($patients as $p)
-                                    <option value="{{ $p->id }}"
-                                        data-dob="{{ format_date($p->dob) }}">{{ $p->full_name }}</option>
+                                @foreach ($patients as $pt)
+                                    <option value="{{ $pt->id }}"
+                                        data-dob="{{ format_date($pt->dob) }}"
+                                        data-consultant="{{ $pt->consultant->name }}">{{ $pt->full_name }} ({{ format_date($pt->dob) }})</option>
                                 @endforeach
                             </select>
                         </div>                        
-                        @endif
                         <div class="col-md-6">
                             <label class="form-label">Date of Birth<span class="txt-error">*</span></label>
                             <div class="input-group">
@@ -44,33 +37,31 @@
 
                         <div class="col-md-6">
                             <label for="hospital_appointment_date" class="form-label">Procedure Date<span class="txt-error">*</span></label>
-                            <div class="input-group">
-                                <input id="hospital_appointment_date" name="appointment_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD" readonly>
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                            <div class="cal-icon">
+                                <input id="hospital_appointment_date" name="appointment_date" type="text"  required class="form-control datetimepicker @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD" readonly>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <label for="hospital_start_time" class="form-label">Procedure Time<span class="txt-error">*</span></label>
-                            <input type="time" class="form-control" id="hospital_start_time" name="start_time" >
+                            <input type="time" class="form-control" id="hospital_start_time" required name="start_time" >
                         </div>
 
                         <div class="col-md-6">
                             <label for="admission_date" class="form-label">Admission Date<span class="txt-error">*</span></label>
-                            <div class="input-group">
-                                <input id="admission_date" name="admission_date" type="text" class="form-control flatpickr @error('dob') is-invalid @enderror" placeholder="YYYY-MM-DD">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                            <div class="cal-icon">
+                                <input id="admission_date" name="admission_date" type="text" required class="form-control datetimepicker @error('admission_date') is-invalid @enderror" placeholder="YYYY-MM-DD">
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <label for="admission_time" class="form-label">Admission Time<span class="txt-error">*</span></label>
-                            <input type="time" class="form-control" id="admission_time" name="admission_time" >
+                            <input type="time" class="form-control" id="admission_time" required name="admission_time" >
                         </div>
 
                         <div class="col-md-6">
                             <label for="procedure_id" class="form-label">Procedure<span class="txt-error">*</span></label>
-                            <select class="form-select select2" id="procedure_id" name="procedure_id" style="width:100%" >
+                            <select class="form-select select2" id="procedure_id" name="procedure_id" required style="width:100%" >
                                 <option value="">Select Procedure</option>
                                 @foreach($procedures as $procedure)
                                     <option value="{{ $procedure->id }}">{{ $procedure->code }} - {{ $procedure->description }}</option>
@@ -106,6 +97,11 @@
                                 </select>
                             </div>
                         @endif
+
+                        <div class="col-md-6">
+                            <label for="consultant" class="form-label">Consultant</label>
+                            <input type="text" id="consultant" class="form-control" readonly >
+                        </div>
 
                         <div class="col-12">
                             <label for="notes" class="form-label">Notes</label>
