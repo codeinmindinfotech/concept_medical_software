@@ -1,5 +1,7 @@
 @extends('layout.mainlayout')
+@push('styles')
 
+@endpush
 @section('content')
 @php
 $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'];
@@ -28,9 +30,13 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
                                 <div class="row align-items-center">
                                     <div class="col-auto profile-image">
                                         <a href="javascript:;">
-                                            <img class="rounded-circle" alt="User Image"
-                                                src="{{ URL::asset('/assets_admin/img/profiles/avatar-01.jpg') }}">
-                                        </a>
+                                            @if ($doctor->doctor_picture)
+                                            <img src="{{ asset('storage/' . $doctor->doctor_picture) }}" alt="Patient Picture" class="rounded-circle" width= "120px" height="auto">
+                                            @else
+                                            <img class="rounded-circle" width= "120px" height="auto" alt="User Image"
+                                            src="{{ URL::asset('/assets_admin/img/profiles/avatar-01.jpg') }}">
+                                            @endif
+                                            </a>
                                     </div>
                                     <div class="col ml-md-n2 profile-user-info">
                                         <h4 class="user-name mb-0">{{$doctor->name}}</h4>
