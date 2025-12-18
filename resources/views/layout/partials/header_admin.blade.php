@@ -59,7 +59,7 @@
         <!-- /Notifications -->
         <li class="nav-item">
             <a href="{{guard_route('chat.index')}}" class="dropdown-toggle nav-link active-dot active-dot-success p-0">
-                <i class="fas fa-message me-2"></i>
+                <i class="fas fa-comment-dots me-2"></i>
             </a>
         </li>
         <li class="nav-item dropdown">

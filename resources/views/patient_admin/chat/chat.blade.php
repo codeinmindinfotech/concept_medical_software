@@ -1,5 +1,20 @@
 @extends('layout.mainlayout')
+@push('styles')
+<style>
+    .user-item {
+        cursor: pointer;
+    }
 
+    .user-item.active {
+        background-color: #e9f5ff;
+        border-left: 4px solid #0d6efd;
+    }
+
+    .user-item.active h6 {
+        font-weight: 600;
+    }
+</style>
+@endpush
 @section('content')
 
 <div class="content">
@@ -107,39 +122,59 @@
 
     console.log('Echo OK:', typeof window.Echo.private); // function
 </script>
-
-
-
-
-
-
-
 <script>
 
     let currentConversation = null;
 
     // Click user/patient → get conversation
     $('#chat-user-list').on('click', '.user-item', function () {
-    
+        // 🔹 Remove active from all
+        $('.user-item').removeClass('active');
+
+        // 🔹 Add active to clicked item
+        $(this).addClass('active');
+
         let participantId = $(this).data('id');
         let participantType = $(this).data('type');
-        let name = $(this).text().trim();
-    
+        let name = $(this).find('h6').text().trim();
+
         $('#chat-title').text(name);
         $('#chat-messages').html('<p class="text-muted">Loading...</p>');
-    
+
         axios.post('{{guard_route("chat.getconversation")}}', {
             participant_id: participantId,
             participant_type: participantType
         }).then(res => {
-    
+
             currentConversation = res.data.conversation_id;
             $('#chat-messages').html('');
-    
+
             res.data.messages.forEach(m => appendMessage(m));
             listen(currentConversation);
         });
     });
+
+    // $('#chat-user-list').on('click', '.user-item', function () {
+    
+    //     let participantId = $(this).data('id');
+    //     let participantType = $(this).data('type');
+    //     let name = $(this).text().trim();
+    
+    //     $('#chat-title').text(name);
+    //     $('#chat-messages').html('<p class="text-muted">Loading...</p>');
+    
+    //     axios.post('{{guard_route("chat.getconversation")}}', {
+    //         participant_id: participantId,
+    //         participant_type: participantType
+    //     }).then(res => {
+    
+    //         currentConversation = res.data.conversation_id;
+    //         $('#chat-messages').html('');
+    
+    //         res.data.messages.forEach(m => appendMessage(m));
+    //         listen(currentConversation);
+    //     });
+    // });
     
     // Send message
     $('#sendMessageBtn').on('click', function () {
@@ -194,11 +229,11 @@
 
     function listen(id) {
         // Leave previous channel
-        if (chatChannel) window.EchoInstance.leave(chatChannel);
+        if (chatChannel) window.Echo.leave(chatChannel);
 
         chatChannel = `conversation.${id}`;
 
-        window.EchoInstance
+        window.Echo
             .private(chatChannel)
             .listen('.message.sent', e => appendMessage(e.message));
     }
