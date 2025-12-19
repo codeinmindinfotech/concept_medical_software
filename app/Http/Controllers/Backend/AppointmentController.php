@@ -26,7 +26,7 @@ class AppointmentController extends Controller
             $user = auth()->user();
             $patients = Patient::companyOnly()->with('title')->where('id', $user->id)->paginate(1);
         } else {
-            $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
+            $patients = Patient::companyOnly()->with(['title'])->get();
         }
         
         $clinics = Clinic::companyOnly()->get()->map(function ($clinic) {
@@ -153,7 +153,7 @@ class AppointmentController extends Controller
             $stats = $appointments->groupBy(fn($apt) => optional($apt->appointmentType)->value)
             ->map(fn($group) => $group->count());
                 return response()->json([
-                    'html' => view('patients.appointments.slot_table_clinic_new', [
+                    'html' => view('patients.appointments.slot_table_clinic', [
                         'appointments' => $appointments,
                         'slots' => $slots,
                         'patient' => $patient,
@@ -205,7 +205,7 @@ class AppointmentController extends Controller
         $isOpen = $clinic->{$dayField}; 
 
         return response()->json([
-            'html' => view('patients.appointments.slot_table_hospital_new', [
+            'html' => view('patients.appointments.slot_table_hospital', [
                 'appointments' => $hospitalAppointments,
                 'patient' => $patient,
                 'isOpen' => $isOpen,

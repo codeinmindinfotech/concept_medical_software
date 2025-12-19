@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Recall;
 use App\Models\Patient; // Assuming you have a Patient model
 use Carbon\Carbon;
+use App\Models\Company;
+use App\Services\WebexInteractSms;
 use Illuminate\Contracts\View\View;
 
 class RecallNotificationController extends Controller
@@ -66,14 +68,24 @@ class RecallNotificationController extends Controller
         return redirect()->back()->with('success', 'Email sent successfully to patient #' . $recall->patient_id);
     }
 
-    public function sendSms($id)
+    public function sendSms($id,  WebexInteractSms $sms)
     {
         $recall = Recall::findOrFail($id);
 
-        // TODO: Implement your SMS sending logic here
         // For example, integrate with Twilio or another SMS service
+        // $company = Company::find(current_company_id());
 
+        // if (!$company) {
+        //     return response()->json(['error' => 'Company not found'], 404);
+        // }
+    
+        // $data = [
+        //     'message_body' => $request->message,
+        //     'to' => [$request->phone], // array of recipients
+        // ];
+    
+        // $result = $sms->sendSms($data, $company);
+    
         return redirect()->back()->with('success', 'SMS sent successfully to patient #' . $recall->patient_id);
     }
 }
-

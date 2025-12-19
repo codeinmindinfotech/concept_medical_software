@@ -10,12 +10,16 @@
             ['label' => 'Companies', 'url' =>guard_route('companies.index')],
             ['label' => 'Companies List'],
         ];
+        $backurl = '';
+        if(has_role('superadmin')){
+            $backurl = guard_route('companies.create');
+        }
     @endphp
 
     @include('layout.partials.breadcrumb', [
         'pageTitle' => 'Companies List',
         'breadcrumbs' => $breadcrumbs,
-        'backUrl' =>guard_route('companies.create'),
+        'backUrl' => $backurl,
         'isListPage' => true
     ])
 

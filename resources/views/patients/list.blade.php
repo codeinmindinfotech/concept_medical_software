@@ -2,7 +2,7 @@
         <thead>
             <tr>
                 <th style="width: 40px;">#</th>
-                <th>Doctor</th>
+                <th>Appointment</th> 
                 <th>Patient Name</th>
                 <th>Address</th>
                 <th>Phone</th>
@@ -15,10 +15,34 @@
         </thead>
         <tbody>
             @foreach ($patients as $index => $patient)
+
+           
             <tr onclick="window.location='{{ guard_route('patients.show', $patient->id) }}'" style="cursor: pointer;">
 
                 <td>{{ $patients->firstItem() + $index }}</td>
-                <td>{{ $patient->doctor?->name ?? '' }}</td>
+                <td>
+                    @if($patient->nextAppointment)
+                    @php
+                        $rowClass =  $patient->nextAppointment?->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $patient->nextAppointment?->appointmentType?->value)) : '' ;
+                    @endphp
+                        <div>
+                            <strong>
+                                <!-- Appointment Type -->
+                                <span class="badge {{ $rowClass }} text-dark me-3 px-3" style="min-width: 120px;">
+                                    {{ $patient->nextAppointment?->appointmentType?->value ?? '-' }}
+                                </span>
+                            </strong><br>
+                
+                            <small class="text-muted">
+                                {{ format_date($patient->nextAppointment->appointment_date) }}
+                                {{ $patient->nextAppointment->start_time }}
+                            </small>
+                        </div>
+                    @else
+                        <span class="text-muted">No upcoming appointment</span>
+                    @endif
+                </td>
+                
                 <td>
                     <div class="align-items-center gap-2 d-flex">
                         @if ($patient->patient_picture)

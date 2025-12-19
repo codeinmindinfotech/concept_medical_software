@@ -39,6 +39,14 @@
     }
 
     Swal.fire("Validation Error", "Please fix the highlighted fields.", "warning");
+  }  
+
+  function showGlobalLoader() {
+    document.getElementById("global-loader")?.classList.remove("d-none");
+  }
+
+  function hideGlobalLoader() {
+    document.getElementById("global-loader")?.classList.add("d-none");
   }
 
   // FORM SUBMIT HANDLER FOR needs-validation FORMS
@@ -58,6 +66,8 @@
           form.classList.add("was-validated");
           return;
         }
+
+        showGlobalLoader();
 
         // AJAX MODE
         if (form.hasAttribute("data-ajax")) {
@@ -112,6 +122,9 @@
               }
           
               Swal.fire("Error", "Something went wrong", "error");
+          })
+          .finally(() => {
+            hideGlobalLoader();
           });
         }
 

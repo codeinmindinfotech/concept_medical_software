@@ -63,6 +63,7 @@
                             @if (has_role('consultant'))<li><a href="{{ guard_route('users.index') }}">Users</a></li>@endif
                             @can('role-list')<li><a href="{{ guard_route('roles.index') }}">Roles</a></li>@endcan
                             @can('configuration-list')<li><a href="{{ guard_route('configurations.index') }}">Configuration</a></li>@endcan
+                            @can('company-list')<li><a href="{{ guard_route('companies.index') }}">Company</a></li>@endcan
                         </ul>
                     </li>
                     

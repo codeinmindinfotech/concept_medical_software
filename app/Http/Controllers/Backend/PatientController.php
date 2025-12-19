@@ -44,10 +44,10 @@ class PatientController extends Controller
         
         if (has_role('patient')) {
             $user = auth()->user();
-            $patients = Patient::with('title')->companyOnly()->where('id', $user->id)->paginate(1);
+            $patients = Patient::with(['title','nextAppointment'])->companyOnly()->where('id', $user->id)->paginate(1);
         } else {
             // Admins can search all patients
-            $query = Patient::with('title')->companyOnly()->latest();
+            $query = Patient::with(['title','nextAppointment'])->companyOnly()->latest();
 
             if ($request->filled('first_name')) {
                 $query->where('first_name', 'like', '%' . $request->first_name . '%');
@@ -129,7 +129,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $consultants = Consultant::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get(); 
-        return view(guard_view('patients.create', 'patient_admin.profile.create'), compact('pageTitle','titles','insurances','relations','consultants', 'preferredContact','doctors'));
+        return view(guard_view('patients.create', 'patient_admin.profile.create'), compact('pageTitle','titles','insurances','relations','consultants','doctors'));
     }
     
     /**
@@ -206,7 +206,7 @@ class PatientController extends Controller
         $doctors = Doctor::companyOnly()->orderBy('name')->get(); 
         $insurances = Insurance::companyOnly()->orderBy('code')->get();
         $consultants = Consultant::companyOnly()->orderBy('name')->get();
-        return view(guard_view('patients.edit', 'patient_admin.profile.edit'), compact('patient', 'pageTitle', 'titles', 'relations', 'consultants', 'insurances', 'preferredContact','doctors'));
+        return view(guard_view('patients.edit', 'patient_admin.profile.edit'), compact('patient', 'pageTitle', 'titles', 'relations', 'consultants', 'insurances',  'doctors'));
     }
     
     /**
