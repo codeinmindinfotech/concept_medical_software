@@ -12,6 +12,8 @@ class Company extends Model
         'whatsapp_phone_number_id',
         'whatsapp_business_account_id',
         'whatsapp_access_token',
+        'webex_token',
+        'webex_sender'
     ];
     
     public function users()

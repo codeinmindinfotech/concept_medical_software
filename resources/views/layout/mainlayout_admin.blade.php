@@ -38,6 +38,9 @@ dd($currentRoute);
     @yield('content')
 	@stack('modals')
     @include('layout.partials.footer_admin-scripts')
+	@component('components.admin.loader')
+	@endcomponent
+	
 </body>
 
 </html>

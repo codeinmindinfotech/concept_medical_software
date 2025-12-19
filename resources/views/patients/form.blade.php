@@ -212,20 +212,6 @@
               value="{{ old('email', $patient->email ?? '') }}" required>
             @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
-          <div class="col-md-4">
-            <label for="preferred_contact_id" class="form-label"><strong>Preferred Contact Method</strong></label>
-            <select id="preferred_contact_id" name="preferred_contact_id"
-              class="form-control select2 @error('preferred_contact_id') is-invalid @enderror">
-              <option value="">-- Select --</option>
-              @foreach($preferredContact as $method)
-              <option value="{{ $method->id }}" {{ old('preferred_contact_id', $patient->preferred_contact_id ?? '') ==
-                $method->id ? 'selected' : '' }}>
-                {{ $method->value }}
-              </option>
-              @endforeach
-            </select>
-            @error('preferred_contact_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          </div>
         </div>
         <div class="row g-3 mt-3">
           <div class="col-12">
@@ -371,46 +357,6 @@
               old('email_consent', $patient->email_consent ?? false) ? 'checked' : '' }}>
             <label for="email_consent" class="form-check-label">Email Consent</label>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card shadow-sm mb-3">
-      <div class="card-header">
-        <h5 class="card-title mb-0"><strong>COVID-19 Vaccination Info</strong></h5>
-      </div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label for="covid_19_vaccination_date" class="form-label"><strong>Vaccination Date</strong></label>
-            <div class="cal-icon">
-              <input type="date"
-                    name="covid_19_vaccination_date"
-                    id="covid_19_vaccination_date"
-                    class="form-control datetimepicker @error('covid_19_vaccination_date') is-invalid @enderror"
-                    value="{{ old('covid_19_vaccination_date', optional(optional($patient ?? null)->covid_19_vaccination_date)->format('Y-m-d')) }}">
-            </div>
-            @error('covid_19_vaccination_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-          </div>
-          
-          <div class="col-md-6 form-check mt-4 pt-2">
-            <input id="fully_covid_19_vaccinated" name="fully_covid_19_vaccinated" type="checkbox"
-              class="form-check-input" value="1" {{ old('fully_covid_19_vaccinated', optional(optional($patient ?? null)->fully_covid_19_vaccinated)
-            ?? false) ? 'checked' : '' }}>
-            <label for="fully_covid_19_vaccinated" class="form-check-label"><strong>Fully Vaccinated</strong></label>
-          </div>
-
-          <div class="col-md-12">
-            <label for="covid_19_vaccination_note" class="form-label"><strong>Vaccination Note</strong></label>
-            <textarea name="covid_19_vaccination_note" id="covid_19_vaccination_note"
-              class="form-control @error('covid_19_vaccination_note') is-invalid @enderror" rows="2"
-              placeholder="Any additional information...">
-              {{ old('covid_19_vaccination_note', $patient->covid_19_vaccination_note ?? '') }}
-            </textarea>
-              @error('covid_19_vaccination_note') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-          </div>
-
-          
         </div>
       </div>
     </div>

@@ -34,7 +34,6 @@
         @csrf
         @include('patients.form', [
             'insurances' => $insurances,
-            'preferredContact' => $preferredContact,
             'doctors' => $doctors,
             'titles' => $titles
             ])

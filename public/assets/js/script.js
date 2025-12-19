@@ -4002,4 +4002,4 @@ document.addEventListener('DOMContentLoaded', function () {
 			document.querySelectorAll(`.${module}-perm`).forEach(cb => cb.checked = checked);
 		});
 	});
-});
+});  

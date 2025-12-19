@@ -29,10 +29,10 @@
 @if (Route::is(['forgot-password2', 'patient-signup', 'reset-password', 'signup-success', 'signup', 'login-phone']))
 <body class="login-body">
 @endif
-
-<x-set-calendar-days-modal :clinics="$clinics" />
-
-@include('layout.partials.header')
+<!-- Main Wrapper -->
+<div class="main-wrapper">
+    <x-set-calendar-days-modal :clinics="$clinics" />
+    @include('layout.partials.header')
 
     @yield('content')
 
@@ -40,14 +40,13 @@
     @component('components.admin.cursor')
     @endcomponent
     </div>
-    <!-- /Main Wrapper -->
-    {{-- <div class="load-more-spinner">
-        <i class="fa fa-spinner"></i>
-    </div> --}}
+
     @stack('modals')
     <!-- Modal -->
-    
-    @include('layout.partials.footer-scripts')
+</div>
+@component('components.admin.loader')
+@endcomponent
+@include('layout.partials.footer-scripts')
 
 </body>
 

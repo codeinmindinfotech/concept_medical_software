@@ -241,6 +241,7 @@ $resources = [
     'chargecodes' => ChargeCodeController::class,
     'chargecodeprices' => ChargeCodePriceController::class,
     'configurations' => ConfigurationController::class,
+    'companies' =>  CompanyController::class
 ];
 
 // Web guard roles: superadmin, manager, consultant
@@ -265,7 +266,7 @@ Route::group(['middleware' => ['auth']], function() use ($resources, $patientSub
             Route::get('documents/load-file/{id}', [DocumentTemplateController::class, 'loadFile'])->name('documents.loadFile');
             Route::get('/doc', [DocumentTemplateController::class, 'doc']);
 
-            Route::resource('companies', CompanyController::class);
+            
             Route::get('/companies/{company}/managers', [CompanyController::class, 'getManagers'])->name('company.manager');
             Route::post('/patients/{id}/restore', [PatientController::class, 'restore'])->name('patients.restore');
 

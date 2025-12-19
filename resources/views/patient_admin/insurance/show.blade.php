@@ -18,9 +18,14 @@
                         </a>
                         @endif
                     </div>
-                    <div class="card-body">
-                        <div class="tab-content border border-top-0 p-3">
-                            <div class="row g-3">
+                    <div class="col-12">
+                        <div class="card border-start border-warning shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-file-invoice-dollar me-2 text-warning"></i>Insurance Information
+                                </h5>
+                            </div>
+                            <div class="card-body row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label"><strong>Code:</strong></label>
                                     <div class="form-control-plaintext">{{ $insurance->code ?? '-' }}</div>
@@ -56,10 +61,8 @@
                                     <div class="form-control-plaintext">{{ $insurance->fax ?? '-' }}</div>
                                 </div>
                             </div>
-                            
                         </div>
-                        
-                    </div>                        
+                    </div>                      
                 </div>
             </div>
         </div>

@@ -1,20 +1,18 @@
 @extends('layout.mainlayout')
+
 @section('content')
-<!-- Page Content -->
 <div class="content">
     <div class="container">
-        <div class="row">
+
     <!-- / Profile Sidebar -->
             @php
             $hasFilters = request()->hasAny(['first_name', 'surname', 'phone', 'dob']);
             @endphp
-            <div class="row">
-                <div class="col-sm-12">
                     <div class="card">
 
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <div>
-                                <i class="fas fa-table me-1"></i> Patients Management
+                                <i class="fas fa-table me-1"></i> Patients Search
                             </div>
                             <div>
                                 <button class="btn btn-sm btn-primary {{ $hasFilters ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSearch" aria-expanded="{{ $hasFilters ? 'true' : 'false' }}" aria-controls="collapseSearch">
@@ -87,14 +85,10 @@
 
                         </div>
                     </div>
-                </div>
-            </div>
 
 
-        </div>
 
-    </div>
-
+</div>
 </div>
 <!-- /Page Content -->
 @endsection

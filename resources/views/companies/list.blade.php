@@ -12,16 +12,20 @@
             <td>{{ $index + 1 }}</td>
             <td>{{ $company->name }} </td>
             <td>
-                
+                @can('company-edit')
                 <a class="btn btn-sm bg-primary-light" href="{{guard_route('companies.edit',$company->id) }}">
                     <i class="fe fe-pencil"></i> Edit
                 </a>
-                <form action="{{guard_route('companies.destroy', $company->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this company? This will also delete the associated database.');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
-                </form>
-
+                @endcan
+                @if(has_role('superadmin'))
+                    @can('company-delete')
+                    <form action="{{guard_route('companies.destroy', $company->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this company? This will also delete the associated database.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm bg-danger-light" title="Delete"><i class="fe fe-trash"></i> Delete</button>
+                    </form>
+                    @endcan
+                @endif  
                    
             </td>
         </tr>

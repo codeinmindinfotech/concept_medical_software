@@ -22,12 +22,12 @@ class CompanyController extends Controller
     public function index()
     {
         $companies = Company::all();
-        return view('companies.index', compact('companies'));
+        return view(guard_view('companies.index', 'patient_admin.company.index'), compact('companies'));
     }
 
     public function create()
     {
-        return view('companies.create');
+        return view(guard_view('companies.create', 'patient_admin.company.create'));
     }
 
     public function store(Request $request) : JsonResponse
@@ -42,6 +42,8 @@ class CompanyController extends Controller
             'whatsapp_phone_number_id' => 'nullable|string|max:50',
             'whatsapp_business_account_id' => 'nullable|string|max:50',
             'whatsapp_access_token' => 'nullable|string',
+            'webex_token' => 'nullable|string',
+            'webex_sender' => 'nullable|string'
         ]);
         
 
@@ -93,13 +95,13 @@ class CompanyController extends Controller
     {
         $company = Company::find($id);
     
-        return view('companies.show',compact('company'));
+        return view(guard_view('companies.show', 'patient_admin.company.show'),compact('company'));
     }
 
     public function edit($companyId)
     {
         $company = Company::findOrFail($companyId);
-        return view('companies.edit', compact('company'));
+        return view(guard_view('companies.edit', 'patient_admin.company.edit'), compact('company'));
     }
 
     public function update(Request $request, $id): JsonResponse
@@ -114,9 +116,19 @@ class CompanyController extends Controller
             'whatsapp_phone_number_id' => 'nullable|string|max:50',
             'whatsapp_business_account_id' => 'nullable|string|max:50',
             'whatsapp_access_token' => 'nullable|string',
+            'webex_token' => 'nullable|string',
+            'webex_sender' => 'nullable|string'
         ]);
 
         $company = Company::findOrFail($id);
+        $data = $request->all();
+
+        // Prevent non-superadmins from changing name/email
+        if (!has_role('superadmin')) {
+            unset($data['name'], $data['email']);
+        }
+
+        // Now update the company safely
         $company->update($data);
 
         // When updating a company

@@ -31,7 +31,7 @@ class PatientAptController extends Controller
             $user = auth()->user();
             $patients = Patient::companyOnly()->with('title')->where('id', $user->id)->paginate(1);
         } else {
-            $patients = Patient::companyOnly()->with(['title', 'preferredContact'])->get();
+            $patients = Patient::companyOnly()->with(['title'])->get();
         }
         
         $clinics = Clinic::companyOnly()->get()->map(function ($clinic) {

@@ -44,14 +44,10 @@ class Patient extends Authenticatable
         'patient_needs',
         'allergies',
         'diagnosis',
-        'preferred_contact_id',
         'rip',
         'rip_date',
         'sms_consent',
         'email_consent',
-        'covid_19_vaccination_date',
-        'covid_19_vaccination_note',
-        'fully_covid_19_vaccinated',
         'next_of_kin',
         'kin_contact_no',
         'kin_address',
@@ -74,11 +70,6 @@ class Patient extends Authenticatable
     public function title()
     {
         return $this->belongsTo(DropDownValue::class, 'title_id');
-    }
-    
-    public function preferredContact()
-    {
-        return $this->belongsTo(DropDownValue::class, 'preferred_contact_id');
     }
     
     public function doctor()
@@ -181,6 +172,15 @@ class Patient extends Authenticatable
     {
         return $this->hasMany(PatientDocument::class);
     }
+
+    public function nextAppointment()
+    {
+        return $this->hasOne(Appointment::class)
+            ->where('appointment_date', '>=', now()->toDateString())
+            ->orderBy('appointment_date')
+            ->orderBy('start_time');
+    }
+
 
     public function company_roles()
     {
