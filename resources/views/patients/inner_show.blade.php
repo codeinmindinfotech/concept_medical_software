@@ -201,19 +201,13 @@
             <div class="card-body">
                 @if($patient->insurance)
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Code:</label>
-                        <p class="text-muted mb-0">{{ $patient->insurance->code }}</p>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Email:</label>
-                        <p class="text-muted mb-0">{{ $patient->insurance->email }}</p>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Phone:</label>
-                        <p class="text-muted mb-0">{{ $patient->insurance->contact }}</p>
-                    </div>
+                    <x-show-field label="Insurance Provider:" :value="$patient?->insurance->code" col="4" />
+                    <x-show-field label="Email:" :value="$patient?->insurance->email" col="4" />
+                    <x-show-field label="Phone:" :value="$patient?->insurance->contact" col="4" />
+                    <x-show-field label="Insurance Plan:" :value="$patient?->insurance_plan" col="4" />
+                    <x-show-field label="Policy Number:" :value="$patient?->policy_no" col="4" />
                 </div>
+
                 @else
                 <p class="text-muted">No insurance information available.</p>
                 @endif
