@@ -18,7 +18,6 @@
                     </a>
                     @endif
                 </div>
-                <div class="card-body">
                     @if ($errors->any())
                     <div class="alert alert-danger">
                         <strong>Whoops!</strong> There were some problems with your input.<br><br>
@@ -31,25 +30,17 @@
                     @endif
                     <div class="row">
                         <div class="col-12">
-                            <!-- General -->
-                            <div class="card">
-                                <div class="card-body">
-                                    <form action="{{guard_route('companies.update', $company->id) }}" method="POST" data-ajax class="needs-validation" novalidate>
-                                        @csrf
-                                        @method('PUT')
-            
-                                        @include('companies.form', [
-                                        'company' => $company
-                                        ])
-            
-                                    </form>
-                                </div>
-                            </div>
-                            <!-- /General -->
-            
+                            <form action="{{guard_route('companies.update', $company->id) }}" method="POST" data-ajax class="needs-validation" novalidate>
+                                @csrf
+                                @method('PUT')
+    
+                                @include('companies.form', [
+                                'company' => $company
+                                ])
+    
+                            </form>
                         </div>
                     </div>
-                </div>
             </div>
 
         </div>
