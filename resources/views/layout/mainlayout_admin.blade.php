@@ -38,6 +38,7 @@ dd($currentRoute);
     @yield('content')
 	@stack('modals')
     @include('layout.partials.footer_admin-scripts')
+	<x-floating-chat />
 	@component('components.admin.loader')
 	@endcomponent
 	

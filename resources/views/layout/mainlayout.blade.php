@@ -25,7 +25,6 @@
     @include('layout.partials.head')
 </head>
 @stack('styles')
-
 @if (Route::is(['forgot-password2', 'patient-signup', 'reset-password', 'signup-success', 'signup', 'login-phone']))
 <body class="login-body">
 @endif
@@ -46,8 +45,13 @@
 </div>
 @component('components.admin.loader')
 @endcomponent
-@include('layout.partials.footer-scripts')
 
+
+<!-- Chat System -->
+
+
+@include('layout.partials.footer-scripts')
+<x-floating-chat />
 </body>
 
 </html>
