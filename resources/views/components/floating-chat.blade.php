@@ -46,6 +46,7 @@
 
     #chat-user-list .user-item:hover {
         background-color: #f1f5f9;
+        color: black;
     }
 
     .user-avatar i {
