@@ -62,9 +62,10 @@ $loadAppointmentsUrl = (!empty($patient) && !empty($patient->id))
     : guard_route('appointments.byDateGlobal');
 @endphp
 @push('scripts')
-<script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
+
 <script>
     window.appConfig = {
+        whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}",
         loadAppointmentsUrl: "{{ $loadAppointmentsUrl }}",
         updateSlotUrl: "{{ guard_route('appointments.update-slot') }}",
         reportUrl: "{{ guard_route('reports.entire-day') }}",
@@ -84,9 +85,9 @@ $loadAppointmentsUrl = (!empty($patient) && !empty($patient->id))
     };
 </script>
 <script src="{{ URL::asset('/assets/js/appointment.js') }}"></script>
-
+<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
+<script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
 @endpush
-
 @push('modals')
     <!-- WhatsApp Modal (Only One Modal for All Appointments) -->
     <div class="modal fade" id="whatsAppModal" tabindex="-1" aria-labelledby="whatsAppModalLabel" aria-hidden="true">

@@ -73,18 +73,6 @@
                         onclick="event.stopPropagation(); openWhatsAppModal({appointmentId: '{{ $patient?->nextAppointment?->id }}',patientName: '{{ $patient?->full_name }}',patientPhone: '{{ $patient?->phone }}',appointmentTime: '{{ $patient?->nextAppointment?->start_time }}'});">
                         <i class="fab fa-whatsapp"></i>
                     </button>
-
-                    {{-- <button class="btn btn-sm btn-outline-success me-2"
-                        onclick="event.stopPropagation();"
-                        data-bs-toggle="modal"
-                        data-bs-target="#whatsAppModal"
-                        data-appointment-id="{{ $patient?->nextAppointment?->id }}"
-                        data-patient-name="{{ $patient?->full_name }}"
-                        data-patient-phone="{{ $patient?->phone }}"
-                        data-appointment-time="{{ $patient?->nextAppointment->start_time }}">
-                            <i class="fab fa-whatsapp"></i>
-                    </button> --}}
-
                 @endif
                 @if(isset($trashed) && $trashed)
                     <form action="{{ route('patients.restore', $patient->id) }}" method="POST" class="d-inline">
