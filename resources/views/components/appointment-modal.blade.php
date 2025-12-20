@@ -106,6 +106,13 @@
             </div>
 
             <div class="modal-footer">
+                @if($patient)
+                    <a href="{{ guard_route('patient-documents.create', $patient) }}"
+                    class="btn btn-primary"
+                    onclick="event.stopPropagation();">
+                        <i class="fa-solid fa-file-lines me-1"></i> Create Letter
+                    </a>
+                @endif
                 <button type="submit" class="btn btn-success" id="modal-submit-btn">Confirm Booking</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>

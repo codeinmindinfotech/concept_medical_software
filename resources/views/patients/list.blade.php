@@ -8,9 +8,9 @@
                 <th>Phone</th>
                 <th style="width: 120px;">Date of Birth</th>
                 <th>Status</th>
-                @if(isset($trashed) && $trashed)
+                {{-- @if(isset($trashed) && $trashed) --}}
                 <th>action</th>
-                @endif
+                {{-- @endif --}}
             </tr>
         </thead>
         <tbody>
@@ -65,16 +65,37 @@
                         <span class="badge bg-success">Active</span>
                     @endif
                 </td>
+            <td>
+                @if($patient->nextAppointment)
+                    <!-- WhatsApp Button -->
+                    <button
+                        class="btn btn-sm btn-outline-success me-2"
+                        onclick="event.stopPropagation(); openWhatsAppModal({appointmentId: '{{ $patient?->nextAppointment?->id }}',patientName: '{{ $patient?->full_name }}',patientPhone: '{{ $patient?->phone }}',appointmentTime: '{{ $patient?->nextAppointment?->start_time }}'});">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+
+                    {{-- <button class="btn btn-sm btn-outline-success me-2"
+                        onclick="event.stopPropagation();"
+                        data-bs-toggle="modal"
+                        data-bs-target="#whatsAppModal"
+                        data-appointment-id="{{ $patient?->nextAppointment?->id }}"
+                        data-patient-name="{{ $patient?->full_name }}"
+                        data-patient-phone="{{ $patient?->phone }}"
+                        data-appointment-time="{{ $patient?->nextAppointment->start_time }}">
+                            <i class="fab fa-whatsapp"></i>
+                    </button> --}}
+
+                @endif
                 @if(isset($trashed) && $trashed)
-                <td>
                     <form action="{{ route('patients.restore', $patient->id) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-success">
                             <i class="fas fa-undo"></i> Restore
                         </button>
                     </form>
-                </td>
+                
                 @endif
+            </td>
             </tr>
             @endforeach
         </tbody>

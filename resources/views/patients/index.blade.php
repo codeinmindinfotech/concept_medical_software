@@ -127,11 +127,41 @@
 <!-- /Page Wrapper -->
 </div>
 <!-- /Main Wrapper -->
-
+@push('modals')
+    <!-- WhatsApp Modal (Only One Modal for All Appointments) -->
+    <div class="modal fade" id="whatsAppModal" tabindex="-1" aria-labelledby="whatsAppModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="whatsAppModalLabel">Send WhatsApp Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Custom Message Input -->
+                    <textarea id="customMessage" class="form-control" rows="4" placeholder="Enter your message here...">
+                        Hello, I wanted to confirm my appointment for
+                    </textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="sendWhatsAppMessage()">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endpush    
     
 @endsection
 @push('scripts')
 <script>
+    window.appConfig = {
+        whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}"
+     };
+</script>
+<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
+<script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
+<script>
+    
 document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
