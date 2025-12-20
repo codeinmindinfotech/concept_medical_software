@@ -68,7 +68,12 @@
                                 </span>
                             @endif
 
-                            <!-- WhatsApp Button -->
+                            <button
+                                class="btn btn-sm btn-outline-success me-2"
+                                onclick="event.stopPropagation(); openWhatsAppModal({appointmentId: '{{ $appointment->id }}',patientName: '{{ $appointment->patient->full_name }}',patientPhone: '{{ $appointment->patient->phone }}',appointmentTime: '{{ $appointment->start_time }}'});">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                            {{-- <!-- WhatsApp Button -->
                             <button class="btn btn-sm btn-outline-success me-2"
                                     data-bs-toggle="modal"
                                     data-bs-target="#whatsAppModal"
@@ -77,7 +82,7 @@
                                     data-patient-phone="{{ $appointment->patient->phone }}"
                                     data-appointment-time="{{ $time }}">
                                 <i class="fab fa-whatsapp"></i>
-                            </button>
+                            </button> --}}
 
                             <!-- Dropdown actions -->
                             <div class="dropdown">
