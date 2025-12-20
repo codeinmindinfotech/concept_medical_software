@@ -51,7 +51,9 @@
 
 
 @include('layout.partials.footer-scripts')
+@if(auth()->user())
 <x-floating-chat />
+@endif
 </body>
 
 </html>
