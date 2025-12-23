@@ -2,13 +2,13 @@
 @section('content')
 
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
 
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
 
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Insurance Management
                         </h5>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-12">
                         <div class="card border-start border-warning shadow-sm">
-                            <div class="card-header bg-light">
+                            <div class="card-header bg-light mb-1 p-2">
                                 <h5 class="card-title mb-0">
                                     <i class="fas fa-file-invoice-dollar me-2 text-warning"></i>Insurance Information
                                 </h5>

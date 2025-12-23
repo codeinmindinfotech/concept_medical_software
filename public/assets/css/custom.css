@@ -60638,3 +60638,18 @@ ul li {
   transform: translate(-50%, -50%);
   text-align: center;
 }
+
+.fsmall {
+  font-size: 0.7rem;
+}
+.note-truncate {
+  display: inline-block; /* or block */
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-body {
+  padding: 0px;
+}

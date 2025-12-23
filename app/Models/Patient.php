@@ -24,6 +24,7 @@ class Patient extends Authenticatable
         'title_id',
         'patient_picture',
         'first_name',
+        'last_name',
         'surname',
         'dob',
         'gender',
@@ -155,7 +156,7 @@ class Patient extends Authenticatable
     public function getFullNameAttribute()
     {
         $title = $this->title_value;
-        return ($title ? $title . ' ' : '') . "{$this->first_name} {$this->surname}";
+        return ($title ? $title . ' ' : '') . "{$this->first_name}  {$this->surname}";
     }
 
     public function company()

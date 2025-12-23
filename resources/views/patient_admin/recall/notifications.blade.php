@@ -2,14 +2,14 @@
 
 @section('content')
 
-@component('components.admin.breadcrumb')
+{{-- @component('components.admin.breadcrumb')
 @slot('title') Recall Notification @endslot
 @slot('li_1') Notification @endslot
 @slot('li_2') Recall Notification @endslot
-@endcomponent
+@endcomponent --}}
 
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
         @session('success')
         <div class="alert alert-success" role="alert">
             {{ $value }}
@@ -19,7 +19,7 @@
         $hasFilters = request()->hasAny(['first_name', 'surname', 'from', 'to', 'recall_filter']);
         @endphp
         <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                 <div>
                     <i class="fas fa-table me-1"></i> Recall Management
                 </div>
@@ -36,7 +36,7 @@
             </div>
         
             <div class="card-body">
-                <div class="accordion mb-4" id="searchAccordion">
+                <div class="accordion mb-1" id="searchAccordion">
                     <div class="accordion-item border-0 shadow-sm">
                         <div id="collapseSearch"
                              class="accordion-collapse collapse {{ $hasFilters ? 'show' : '' }}"

@@ -19,7 +19,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="content container-fluid"> 
+    <div class="content container-fluid px-1"> 
         @php
             $breadcrumbs = [
                 ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -49,7 +49,7 @@
             <!-- LEFT PANEL: Users/Patients -->
             <div class="col-md-4">
                 <div class="card">
-                    <div class="card-header"><h5>All Chats</h5></div>
+                    <div class="card-header mb-1 p-2"><h5>All Chats</h5></div>
                     <div class="card-body p-0" style="max-height: 500px; overflow-y:auto;">
                         <ul class="list-group list-group-flush" id="chat-user-list">
 
@@ -96,7 +96,7 @@
             <!-- RIGHT PANEL: Conversation -->
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header"><h5 id="chat-title">Select a user to start chat</h5></div>
+                    <div class="card-header mb-1 p-2"><h5 id="chat-title">Select a user to start chat</h5></div>
                     <div class="card-body">
                         <div id="chat-messages" style="height: 400px; overflow-y:auto; border:1px solid #ddd; padding:10px;"></div>
                         <div class="chat-footer mt-2 d-flex">

@@ -1,15 +1,39 @@
-<div class="row g-4">
+<div class="row">
   {{-- ▶ Doctor Information --}}
   <div class="col-12">
     <div class="row g-3">
       <!-- Name -->
+      <!-- Salutation -->
       <div class="col-md-4">
-        <label for="name" class="form-label"><strong>Name<span class="txt-error">*</span></strong></label>
+        <label for="salutation" class="form-label"><strong>Salutation <span class="txt-error">*</span></strong></label>
+        <select id="salutation" name="salutation" class="form-control select2 @error('salutation') is-invalid @enderror" data-placeholder="-- Select --" required>
+          <option value=""></option>
+          @foreach($titles as $title)
+          <option value="{{ $title->id }}" {{ old('salutation', $doctor->salutation ?? '') == $title->id ? 'selected' :
+            '' }}>
+            {{ $title->value }}
+          </option>
+          @endforeach
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="name" class="form-label"><strong>First Name<span class="txt-error">*</span></strong></label>
         <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
           value="{{ old('name', $doctor->name ?? '') }}" required>
         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
         <div class="invalid-feedback">
           Please provide a valid name.
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label for="name" class="form-label"><strong>Last Name<span class="txt-error">*</span></strong></label>
+        <input type="text" name="last_name" id="last_name" class="form-control @error('last_name') is-invalid @enderror"
+          value="{{ old('last_name', $doctor->last_name ?? '') }}" required>
+        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <div class="invalid-feedback">
+          Please provide a valid Last Name.
         </div>
       </div>
 
@@ -21,14 +45,7 @@
         @error('company') <div class="invalid-feedback">{{ $message }}</div> @enderror
       </div>
 
-      <!-- Salutation -->
-      <div class="col-md-4">
-        <label for="salutation" class="form-label"><strong>Salutation</strong></label>
-        <input type="text" name="salutation" id="salutation"
-          class="form-control @error('salutation') is-invalid @enderror"
-          value="{{ old('salutation', $doctor->salutation ?? '') }}">
-        @error('salutation') <div class="invalid-feedback">{{ $message }}</div> @enderror
-      </div>
+      
 
       <!-- Address -->
       <div class="col-md-6">

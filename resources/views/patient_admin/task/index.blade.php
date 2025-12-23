@@ -8,7 +8,7 @@
 @endcomponent --}}
 <!-- Page Content -->
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
 
         <div class="row">
             @php
@@ -27,12 +27,12 @@
                 });
             @endphp
             <div class="col-lg-9 col-xl-10">
-			    <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+			    <div class="card mb-4 shadow-sm p-3">
+                    <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Task Management
                         </h5>
-                        @if(has_permission('patient-create'))
+                        @if(has_permission('patient-edit'))
                         <a href="{{guard_route('tasks.create', $patient) }}" class="btn bg-primary text-white btn-light btn-sm">
                             <i class="fas fa-plus-circle me-1"></i> New Task
                         </a>

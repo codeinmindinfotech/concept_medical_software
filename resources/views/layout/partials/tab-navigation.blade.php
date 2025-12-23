@@ -4,13 +4,13 @@
     $route = request()->route()->getName();
 @endphp
 
-<div class="card shadow-sm">
+<div class="card shadow-sm p-3">
     <div class="card-header px-1 py-2 bg-light border-bottom">
         <strong class="text-dark"><i class="fas fa-user-md me-2"></i>Patient Actions</strong>
     </div>
 
     <div class="card-body px-1 py-1">
-        <div class="d-grid gap-1">
+        <div class="d-grid gap-0">
 
             @can('view', $patient)
                 <a href="{{ guard_route('patients.show', $patient->id) }}" class="{{ btnClass('patients.show', 'info') }}">

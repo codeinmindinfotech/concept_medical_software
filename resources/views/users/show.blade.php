@@ -3,7 +3,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-1">
         @php
         $breadcrumbs = [
         ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -21,7 +21,7 @@
 
         {{-- User Information Card --}}
         <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header mb-1 p-2">
                 <h5 class="mb-0">User Information</h5>
             </div>
             <div class="card-body">

@@ -7,12 +7,12 @@
 $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'];
 @endphp
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
 
         <div class="row">
 
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card mb-4 shadow-sm p-3">
+                <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                     <h5 class="mb-0">
                         <i class="fas fa-user-clock me-2"></i> Doctor Management
                     </h5>
@@ -39,7 +39,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
                                             </a>
                                     </div>
                                     <div class="col ml-md-n2 profile-user-info">
-                                        <h4 class="user-name mb-0">{{$doctor->name}}</h4>
+                                        <h4 class="user-name mb-0">{{$doctor->full_name}}</h4>
                                         <h6 class="text-muted">{{$doctor->email}}</h6>
                                         <div class="user-Location"><i class="fa-solid fa-location-dot"></i> {{$doctor->address}}
                                         , {{$doctor->postcode}}</div>
@@ -74,7 +74,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
                                                     </h5>
                                                     <div class="row">
                                                         <p class="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Name</p>
-                                                        <p class="col-sm-10">{{$doctor->salutation}} {{$doctor->name}}</p>
+                                                        <p class="col-sm-10">{{$doctor->full_name}}</p>
                                                     </div>
                                                     <div class="row">
                                                         <p class="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Company</p>

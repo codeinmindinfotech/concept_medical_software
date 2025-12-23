@@ -18,10 +18,10 @@
 @section('content')
 
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
         <div class="row">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card mb-4 shadow-sm p-3">
+                <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                     <h5 class="mb-0">
                         <i class="fas fa-user-clock me-2"></i> Internal Chat System
                     </h5>
@@ -35,7 +35,7 @@
                     <!-- LEFT PANEL: Users/Patients -->
                     <div class="col-md-4">
                         <div class="card">
-                            <div class="card-header"><h5>All Chats</h5></div>
+                            <div class="card-header mb-1 p-2"><h5>All Chats</h5></div>
                             <div class="card-body p-0" style="max-height: 500px; overflow-y:auto;">
                                 <ul class="list-group list-group-flush" id="chat-user-list">
 
@@ -82,7 +82,7 @@
                     <!-- RIGHT PANEL: Conversation -->
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header"><h5 id="chat-title">Select a user to start chat</h5></div>
+                            <div class="card-header mb-1 p-2"><h5 id="chat-title">Select a user to start chat</h5></div>
                             <div class="card-body">
                                 <div id="chat-messages" style="height: 400px; overflow-y:auto; border:1px solid #ddd; padding:10px;"></div>
                                 <div class="chat-footer mt-2 d-flex">

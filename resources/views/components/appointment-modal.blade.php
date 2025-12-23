@@ -85,7 +85,7 @@
                         <label for="clinic_consultant" class="form-label">Consultant</label>
                         <input type="text" id="clinic_consultant" class="form-control" readonly>
                     </div>
-
+                    
                     @if ($flag == 1)
                     <div class="col-md-6">
                         <label for="appointment-clinic-id" class="form-label fw-semibold">Select Clinic:</label>
@@ -101,6 +101,16 @@
                     @else
                     <input type="hidden" name="clinic_id" id="appointment-clinic-id">
                     @endif
+
+                    <div class="col-md-6 mt-3">
+                        <label class="form-label">Send SMS to Patient</label>
+                        <div class="form-check mt-1">
+                            <input class="form-check-input" type="checkbox" value="1" name="sms_sent" id="sms_sent">
+                            <label class="form-check-label" for="sms_sent">
+                                Check to send SMS after booking
+                            </label>
+                        </div>
+                    </div>
 
                 </div>
             </div>

@@ -1,5 +1,5 @@
-{{-- <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
-    <div class="card-header">
+{{-- <div class="card shadow-sm p-3" style="max-width: 400px; width: 100%;">
+    <div class="card-header mb-1 p-2">
         <h5 class="mb-0"><i class="fas fa-camera"></i> Upload Patient Picture</h5>
     </div>
 
@@ -68,8 +68,8 @@
     $fieldName = $fieldName ?? 'image';
 @endphp
 
-<div class="card shadow-sm" style="max-width: 400px; width: 100%;">
-    <div class="card-header">
+<div class="card shadow-sm p-3" style="max-width: 400px; width: 100%;">
+    <div class="card-header mb-1 p-2">
         <h5 class="mb-0"><i class="fas fa-camera"></i> {{ $title }}</h5>
     </div>
 

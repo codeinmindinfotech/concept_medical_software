@@ -9,12 +9,12 @@
 @endcomponent --}}
 
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
 
         <div class="row">
             <div class="col-lg-9 col-xl-10">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card mb-4 shadow-sm p-3">
+                    <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                         <ul class="nav nav-tabs nav-tabs-bottom">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" role="tab">

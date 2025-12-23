@@ -3,7 +3,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="content container-fluid">
+    <div class="content container-fluid px-1">
         @php
         $breadcrumbs = [
         ['label' => 'Dashboard', 'url' => guard_route('dashboard.index')],
@@ -39,7 +39,7 @@
         </div>
         @endsession
         <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header mb-1 p-2">
                 <i class="fas fa-table me-1"></i>
                 Notifictaion Management
             </div>

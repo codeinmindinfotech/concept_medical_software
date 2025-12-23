@@ -3,7 +3,7 @@
 @section('content')
     <!-- Page Wrapper -->
     <div class="page-wrapper">
-        <div class="content container-fluid">
+        <div class="content container-fluid px-1">
             <!-- Page Header -->
             @php
                 $breadcrumbs = [
@@ -36,7 +36,7 @@
                                 </a>
                             </div>
                             <div class="col ml-md-n2 profile-user-info">
-                                <h4 class="user-name mb-0">{{$doctor->name}}</h4>
+                                <h4 class="user-name mb-0">{{$doctor->full_name}}</h4>
                                 <h6 class="text-muted">{{$doctor->email}}</h6>
                                 <div class="user-Location"><i class="fa-solid fa-location-dot"></i> {{$doctor->address}}
                                 , {{$doctor->postcode}}</div>
@@ -74,7 +74,7 @@
                                             </h5>
                                             <div class="row">
                                                 <p class="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Name</p>
-                                                <p class="col-sm-10">{{$doctor->salutation}} {{$doctor->name}}</p>
+                                                <p class="col-sm-10">{{$doctor->full_name}}</p>
                                             </div>
                                             <div class="row">
                                                 <p class="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Company</p>

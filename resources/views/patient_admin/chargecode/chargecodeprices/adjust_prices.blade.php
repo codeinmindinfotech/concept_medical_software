@@ -3,12 +3,12 @@
 @section('content')
 
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
 
         <div class="row">
 
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card mb-4 shadow-sm p-3">
+                    <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                         <h5 class="mb-0">
                             <i class="fas fa-user-clock me-2"></i> Charge Code Management
                         </h5>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="card-body">
                         <div class="card mb-4 shadow-sm border-primary">
-                            <div class="card-header bg-primary text-white">
+                            <div class="card-header bg-primary text-white mb-1 p-1">
                                 <h5 class="mb-0"><i class="fas fa-hospital-user me-1"></i> Adjust Prices for: <strong>{{ $insurance->code }}</strong></h5>
                             </div>
                             <div class="card-body">
@@ -42,7 +42,7 @@
                             @csrf
         
                             <div class="card mb-4 border-success">
-                                <div class="card-header bg-success text-white">
+                                <div class="card-header bg-success text-white mb-1 p-1">
                                     <strong><i class="fas fa-percent me-1"></i> Percentage Adjustment</strong>
                                 </div>
                                 <div class="card-body row g-3">
@@ -60,7 +60,7 @@
                             </div>
         
                             <div class="card border-secondary">
-                                <div class="card-header bg-light">
+                                <div class="card-header bg-light mb-1 p-2">
                                     <strong><i class="fas fa-list-ul me-1"></i> Charge Code Prices</strong>
                                 </div>
                                 <div class="card-body p-0">

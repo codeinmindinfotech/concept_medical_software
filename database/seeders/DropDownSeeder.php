@@ -41,7 +41,7 @@ class DropDownSeeder extends Seeder
             ]);
         }
 
-        $contactTypes = ['Doctor', 'Referral', 'Solicitor', 'Other'];
+        $contactTypes = ['Doctor', 'Referral', 'Solicitor', 'Other', 'Pharmacy'];
         foreach ($contactTypes as $val) {
             DropDownValue::firstOrCreate([
                 'drop_down_id' => $contactType->id,

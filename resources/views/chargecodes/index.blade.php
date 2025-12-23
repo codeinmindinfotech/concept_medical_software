@@ -3,7 +3,7 @@
 @section('content')
     <!-- Page Wrapper -->
     <div class="page-wrapper">
-        <div class="container-fluid px-4">
+        <div class="container-fluid px-1">
             @php
             $breadcrumbs = [
                 ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -32,7 +32,7 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                                 <div>
                                 </div>
                                 <div>

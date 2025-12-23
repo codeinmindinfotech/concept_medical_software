@@ -341,7 +341,7 @@ if (!function_exists('btnClass')){
     function btnClass($pattern, $color = 'primary') {
         $isActive = request()->routeIs($pattern);
     
-        $baseClasses = 'w-100 text-start d-flex align-items-center justify-content-start p-1 mb-0 border rounded shadow-sm';
+        $baseClasses = 'w-100 text-start d-flex align-items-center justify-content-start p-0 mb-0 border rounded shadow-sm';
         $activeClasses = "bg-$color text-white border-$color";
         $inactiveClasses = "bg-white text-dark border-light";
     

@@ -5,9 +5,9 @@
             $appointmentsForSlot = $appointments->filter(fn($apt) => \Illuminate\Support\Str::substr($apt->start_time, 0, 5) === $time);
         @endphp
 
-        <div class="d-flex align-items-start mb-1">
+        <div class="d-flex align-items-center">
             <!-- Time Column -->
-            <div class="text-center me-1" style="width: 80px;">
+            <div class="text-center me-1" style="width: 50px;">
                 <span class="fw-bold text-primary">{{ $time }}</span>
             </div>
 
@@ -20,7 +20,7 @@
                             $isSuperAdmin = (($user->hasRole('superadmin') || $user->hasRole('manager')) && $flag == 1);
                             $isPatientUserEditingOwnAppointment = ((getCurrentGuard() == 'patient') && $appointment->patient_id === $user->id);
                             $isCurrentPatient = (($user->hasRole('superadmin') || $user->hasRole('manager')) && isset($patient) && $appointment->patient->id === $patient->id);
-                            $isclinic = (getCurrentGuard() == "clinic");
+                            $isclinic = (auth()->user()->hasRole('consultant') && auth()->user()->can('update',$appointment->patient));
                             $rowClass =  $appointment->appointmentType ? 'appointment-' . strtolower(str_replace(' ', '_', $appointment->appointmentType->value)) : '' ;
                         @endphp
 
@@ -63,9 +63,9 @@
 
                             <!-- Note -->
                             @if($appointment->appointment_note)
-                                <span class="text-muted small me-3">
+                                <span class="text-muted small note-truncate" title="{{ $appointment->appointment_note }}">
                                     {{ $appointment->appointment_note }}
-                                </span>
+                                </span>                           
                             @endif
 
                             <button
@@ -110,7 +110,7 @@
                                             </a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
-                                    @endif
+                                    
                                     <li>
                                         <a class="dropdown-item" target="_blank" href="{{guard_route('patients.edit', $appointment->patient->id) }}">
                                             <i class="fa-solid fa-user-pen me-2"></i> Edit Patient
@@ -131,13 +131,14 @@
                                             <i class="fas fa-sms me-2"></i> Send SMS
                                         </a>
                                     </li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
                     @endforeach
                 @else
                     <div class="d-flex align-items-center justify-content-between p-1 border rounded shadow-sm" ondrop="onDrop(event)" ondragover="onDragOver(event)" data-time-slot="{{ $time }}">
-                        <span class="text-muted fst-italic">This time slot is available.</span>
+                        <span class="text-muted fst-italic fsmall">This time slot is available.</span>
                         <button class="btn btn-sm btn-outline-primary p-1" onclick="bookSlot('{{ $time }}')">
                             <i class="fas fa-plus me-1"></i> Book
                         </button>

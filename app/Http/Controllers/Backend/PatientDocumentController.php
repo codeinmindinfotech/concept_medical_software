@@ -33,9 +33,15 @@ class PatientDocumentController extends Controller
 
     public function create(Patient $patient)
     {
-        $templates = DocumentTemplate::all();
+        $templates = DocumentTemplate::companyOnly()->get();
 
-        $documents = PatientDocument::whereNull('file_path')->orWhere('file_path', '')->where('patient_id', $patient->id)->get();
+        $documents = PatientDocument::where('patient_id', $patient->id)
+            ->where(function($q) {
+                $q->whereNull('file_path')
+                ->orWhere('file_path', '');
+            })
+            ->get();
+
         foreach ($documents as $document) {
             if ($document->tempPath && Storage::disk('public')->exists($document->tempPath)) {
                 Storage::disk('public')->delete($document->tempPath);
@@ -43,12 +49,21 @@ class PatientDocumentController extends Controller
             $document->delete();
         }
 
+
         $document = PatientDocument::create([
             'patient_id' => $patient->id,
             'file_path' => '', 
-            'document_template_id' => 2,   
+            'document_template_id' => $templates->first()->id ?? null,   
             'company_id' => auth()->user()->company_id ?? null,
         ]);
+        
+
+        // $document = PatientDocument::create([
+        //     'patient_id' => $patient->id,
+        //     'file_path' => '', 
+        //     'document_template_id' => 1,   
+        //     'company_id' => auth()->user()->company_id ?? null,
+        // ]);
 
         $fileUrl = '';
 
@@ -102,7 +117,7 @@ class PatientDocumentController extends Controller
 
     public function edit(Patient $patient, $documentId)
     {
-        $templates = DocumentTemplate::all();
+        $templates = DocumentTemplate::companyOnly()->get();
         $document = PatientDocument::where('id', $documentId)
             ->where('patient_id', $patient->id)
             ->firstOrFail();

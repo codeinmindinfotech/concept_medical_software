@@ -1,6 +1,6 @@
 {{-- <!-- Breadcrumb -->
 <div class="breadcrumb-bar-two">
-    <div class="container">
+    <div class="container pt-3">
         <div class="row align-items-center inner-banner">
             <div class="col-md-12 col-12 text-center">
                 <h2 class="breadcrumb-title">{{ $title }}</h2>
@@ -18,7 +18,7 @@
 
 <!-- Breadcrumb -->
 <div class="breadcrumb-bar" style="padding: 70px 0 2px;">
-    <div class="container">
+    <div class="container pt-3">
         <div class="row align-items-center inner-banner">
             <div class="col-md-12 col-12 text-center">
                 <nav aria-label="breadcrumb" class="page-breadcrumb">

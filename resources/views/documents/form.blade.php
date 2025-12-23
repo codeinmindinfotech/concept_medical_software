@@ -1,8 +1,8 @@
-<div class="row g-4">
+<div class="row">
   {{-- ▶ Document Template Information --}}
   <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header">
+    <div class="card shadow-sm p-3">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Document Template</strong></h5>
       </div>
       <div class="card-body">
@@ -46,8 +46,8 @@
 
           {{-- ▶ Tags Panel --}}
           <div class="col-12 mt-3">
-            <div class="card shadow-sm">
-              <div class="card-header">
+            <div class="card shadow-sm p-3">
+              <div class="card-header mb-1 p-2">
                 <h6 class="mb-0"><strong>Insert Tags</strong></h6>
               </div>
               <div class="card-body">

@@ -1,5 +1,13 @@
 const PopupForm = (() => {
 
+    function showLoader() {
+        $('#global-loader').removeClass('d-none');
+    }
+
+    function hideLoader() {
+        $('#global-loader').addClass('d-none');
+    }
+
     function init(modalSelector, formSelector, onSuccess) {
         const $modal = $(modalSelector);
         const $form = $modal.find(formSelector);
@@ -18,6 +26,7 @@ const PopupForm = (() => {
                 $form.addClass('was-validated');
                 return false;
             }
+            showLoader(); // <--- show loader here
 
             const url = $form.data('action');
             const method = $form.attr('method') || 'POST';
@@ -28,6 +37,8 @@ const PopupForm = (() => {
                 type: method,
                 data: formData,
                 success: function (response) {
+                    hideLoader(); // <--- hide loader on success
+
                     if (!response.success && response.errors) {
                         showErrors($form, response.errors);
                         Swal.fire({
@@ -60,6 +71,8 @@ const PopupForm = (() => {
                     }
                 },
                 error: function (xhr) {
+                    hideLoader(); // <--- hide loader on error
+
                     console.error(xhr.responseText);
                     Swal.fire({
                         icon: 'error',

@@ -1,6 +1,6 @@
-<div class="row g-4">
+<div class="row">
     <div class="col-12">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm p-3">
             
             <div class="card-body">
 

@@ -46,19 +46,27 @@ class WhatsAppController extends Controller
             'message' => 'required|string',
             'appointment_id' => 'nullable|integer'
         ]);
-
-        // get current company (adjust if company is tied to user/session)
         $company = auth()->user()->company; // or auth()->user()->company etc.
-        // If no company (superadmin), fallback to .env credentials
-        if (!$company) {
-            $company = new \App\Models\Company([
-                'id' => 0, // virtual ID, not in DB
-                'name' => 'SuperAdmin',
-                'whatsapp_phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
-                'whatsapp_business_account_id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID'),
-                'whatsapp_access_token' => env('WHATSAPP_ACCESS_TOKEN'),
-            ]);
+
+        if (auth()->user()->hasRole('superadmin')) {
+            // If no company (superadmin), fallback to .env credentials
+            if (!$company) {
+                $company = new \App\Models\Company([
+                    'id' => 0, // virtual ID, not in DB
+                    'name' => 'SuperAdmin',
+                    'whatsapp_phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+                    'whatsapp_business_account_id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID'),
+                    'whatsapp_access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+                ]);
+            } 
+        } else {
+            $user = current_user();
+            $companyId = $user->company_id ?? null;
+            if ((int)$companyId > 0) {
+                $company = Company::where('id', $companyId)->get();
+            }
         }
+
         if (!$company || !$company->whatsapp_access_token) {
             return response()->json(['error' => 'Company WhatsApp credentials missing'], 422);
         }

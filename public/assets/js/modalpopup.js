@@ -97,6 +97,8 @@ function openEditModal(data) {
     document.getElementById('appointment_type').value = data.appointment_type || '';
     document.getElementById('appointment-clinic-id').value = data.clinic_id || '';
     document.getElementById('modal-appointment-date').value = data.appointment_date || '';
+    // document.getElementById('sms_sent').value = data.sms_sent == 1 || data.sms_sent === true;
+    document.getElementById('sms_sent').checked = data.sms_sent == 1 || data.sms_sent === true;
     // Set patient select2 value
     $('#patient-id').val(data.patient_id || '').trigger('change');
     $('#patient-id').on('change', function () {
@@ -132,6 +134,7 @@ function openHospitalModal(data) {
     document.getElementById('allergy').value = data.allergy || '';
     document.getElementById('hospital-clinic-id').value = data.clinic_id || '';
     document.getElementById('procedure_id').value = data.procedure_id || '';
+    document.getElementById('hospital_sms_sent').checked = data.sms_sent == 1 || data.sms_sent === true;
 
     // Set patient select2
     $('#hospital-patient-id').val(data.patient_id || '').trigger('change');

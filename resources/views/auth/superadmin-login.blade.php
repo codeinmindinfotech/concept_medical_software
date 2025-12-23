@@ -4,7 +4,7 @@
     <!-- Main Wrapper -->
     <div class="main-wrapper login-body">
         <div class="login-wrapper">
-            <div class="container">
+            <div class="container pt-3">
                 <div class="loginbox">
                     <div class="login-left">
                         <img class="img-fluid" src="{{ asset('theme/assets/img/logor.png') }}" alt="Logo">

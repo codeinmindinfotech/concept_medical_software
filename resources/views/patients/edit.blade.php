@@ -19,7 +19,7 @@
         'backUrl' =>guard_route('patients.index'),
         'isListPage' => false
     ])
-<div class="card-header d-flex justify-content-between align-items-center">
+<div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
     <ul class="nav nav-tabs nav-tabs-bottom">
         <li class="nav-item" role="presentation">
             <a class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" role="tab">

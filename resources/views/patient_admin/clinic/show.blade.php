@@ -5,12 +5,12 @@
 $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'];
 @endphp
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
 
         <div class="row">
 
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card mb-4 shadow-sm p-3">
+                <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                     <h5 class="mb-0">
                         <i class="fas fa-user-clock me-2"></i> Clinic Management
                     </h5>
@@ -23,11 +23,11 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
                 <!-- General -->
                 <div class="card">
                     <div class="card-body">
-                        <div class="row g-4">
+                        <div class="row">
                             <!-- Clinic Information Card -->
                             <div class="col-md-6">
                                 <div class="card shadow-sm border-start border-primary">
-                                    <div class="card-header bg-light">
+                                    <div class="card-header bg-light mb-1 p-2">
                                         <h5 class="card-title mb-0">
                                             <i class="fas fa-clinic-medical me-2 text-primary"></i>Clinic Information
                                         </h5>
@@ -45,7 +45,7 @@ $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','
                             <!-- Contact & Address Card -->
                             <div class="col-md-6">
                                 <div class="card shadow-sm border-start border-info">
-                                    <div class="card-header bg-light">
+                                    <div class="card-header bg-light mb-1 p-2">
                                         <h5 class="card-title mb-0">
                                             <i class="fas fa-map-marker-alt me-2 text-info"></i>Contact & Address
                                         </h5>

@@ -24,7 +24,7 @@ class UserController extends Controller
     public function index(Request $request): View|string
     {
         $user = auth()->user();
-        $query = User::with(['creator', 'updater'])->companyOnly();
+        $query = User::with(['creator', 'updater','company'])->companyOnly();
         if (has_role('manager')) {
             $query->where('name', '!=', 'superadmin');
         } 

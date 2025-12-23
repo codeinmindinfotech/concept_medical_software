@@ -14,7 +14,7 @@
 
             <!-- Modal Body -->
             <div class="modal-body p-4">
-                <div class="row g-4">
+                <div class="row">
                     <!-- Left Section -->
                     <div class="col-md-6">
 
