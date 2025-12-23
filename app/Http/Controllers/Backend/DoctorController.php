@@ -33,7 +33,7 @@ class DoctorController extends Controller
     public function index(Request $request): View|string
     {
         $this->authorize('viewAny', Doctor::class);
-        $query = Doctor::companyOnly();
+        $query = Doctor::with('salutationOption')->companyOnly();
 
         if (has_role('doctor')) {
             $user = auth()->user();
@@ -57,7 +57,7 @@ class DoctorController extends Controller
     {
         $this->authorize('create', Doctor::class);
         extract($this->getCommonDropdowns());
-        return view(guard_view('doctors.create', 'patient_admin.doctor.create'),compact('contactTypes','paymentMethods'));
+        return view(guard_view('doctors.create', 'patient_admin.doctor.create'),compact('contactTypes','titles', 'paymentMethods'));
     }
     
     /**
@@ -66,29 +66,17 @@ class DoctorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(DoctorRequest $request, PasswordResetService $resetService): JsonResponse
+    public function store(DoctorRequest $request): JsonResponse
     {
         $this->authorize('create', Doctor::class);
         $validated = $request->validated();
         $doctor = Doctor::create($validated);
-        // assignRoleToGuardedModel($doctor, 'doctor', 'doctor',  $doctor->company_id);
-
          // Handle signature
         if ($doctor) {
             $signaturePath = $this->handleSignature($request, $doctor);
             $doctor->doctor_signature = $signaturePath;
             $doctor->save();
         }
-
-        // if ($doctor) {
-        //     try {
-        //         $resetService->sendResetLink($doctor, 'doctor', 'doctors');
-        //     } catch (\Exception $e) {
-        //         return response()->json([
-        //             'error' => $e->getMessage()
-        //         ], 500);
-        //     }
-        // }
 
         return response()->json([
             'redirect' =>guard_route('doctors.index'),
@@ -118,7 +106,7 @@ class DoctorController extends Controller
     {
         $this->authorize('update', $doctor);
         extract($this->getCommonDropdowns());
-        return view(guard_view('doctors.edit', 'patient_admin.doctor.edit'),compact('doctor','contactTypes','paymentMethods'));
+        return view(guard_view('doctors.edit', 'patient_admin.doctor.edit'),compact('doctor','titles', 'contactTypes','paymentMethods'));
     }
     
     /**

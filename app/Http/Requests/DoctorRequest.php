@@ -13,8 +13,9 @@ class DoctorRequest extends FormRequest
         $companyId = $this->user()?->company_id;
         return [
             'name'              => ['required', 'string', 'max:255'],
+            'last_name'         => ['required', 'string', 'max:255'], 
             'company'           => ['nullable', 'string', 'max:255'],
-            'salutation'        => ['nullable', 'string', 'max:50'],
+            'salutation'        => 'required|exists:drop_down_values,id',
             'address'           => ['nullable', 'string', 'max:500'],
             'postcode'          => ['nullable', 'string', 'max:10'],
             'mobile'            => ['nullable', 'regex:/^(\+\d{1,3}[- ]?)?\d{7,15}$/'],

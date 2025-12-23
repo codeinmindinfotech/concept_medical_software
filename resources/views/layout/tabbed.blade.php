@@ -27,7 +27,7 @@
         @include('layout.partials.nav_admin')
     @endif
     <div class="page-wrapper">
-        <div class="container-fluid px-4">
+        <div class="container-fluid px-1">
             <div class="row">
                 <div class="col-12 col-md-10">
                     <div class="tab-content" id="tab-content">

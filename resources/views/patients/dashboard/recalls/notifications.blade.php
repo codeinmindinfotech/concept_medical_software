@@ -3,7 +3,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="content container-fluid">
+    <div class="content container-fluid px-1">
     @php
     $breadcrumbs = [
     ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -28,7 +28,7 @@
     $hasFilters = request()->hasAny(['first_name', 'surname', 'from', 'to', 'recall_filter']);
     @endphp
     <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
             <div>
                 <i class="fas fa-table me-1"></i> Recall Management
             </div>
@@ -45,7 +45,7 @@
         </div>
     
         <div class="card-body">
-            <div class="accordion mb-4" id="searchAccordion">
+            <div class="accordion mb-1" id="searchAccordion">
                 <div class="accordion-item border-0 shadow-sm">
                     <div id="collapseSearch"
                          class="accordion-collapse collapse {{ $hasFilters ? 'show' : '' }}"

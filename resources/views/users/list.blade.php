@@ -5,6 +5,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Company Name</th>
             <th>Created By</th>
             <th width="280px">Action</th>
         </tr>
@@ -22,8 +23,13 @@
                     @endforeach
                 @endif
                 </td>
+                <td>
+                @can('company-edit')
+                @if($user->company_id)                
+                    <a href="{{ guard_route('companies.edit', $user->company_id) }}"> {{ $user->company?->name }}</a></td>
+                @endif
+                @endcan
                 <td>{{ $user->creator?->name ?? '—' }}</td>
-
                 <td>
                     <a class="btn btn-sm bg-success-light" href="{{guard_route('users.show',$user->id) }}">
                         <i class="fe fe-eye"></i> Show

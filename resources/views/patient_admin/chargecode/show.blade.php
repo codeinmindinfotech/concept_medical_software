@@ -5,12 +5,12 @@
 $days = ['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'];
 @endphp
 <div class="content">
-    <div class="container">
+    <div class="container pt-3">
 
         <div class="row">
 
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card mb-4 shadow-sm p-3">
+                <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                     <h5 class="mb-0">
                         <i class="fas fa-user-clock me-2"></i> Charge Code Management
                     </h5>

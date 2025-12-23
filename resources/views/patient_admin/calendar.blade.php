@@ -58,7 +58,7 @@
             @endforeach
         </div>
         
-        <div class="card shadow-sm">
+        <div class="card shadow-sm p-3">
             <div class="card-body">
                 <div id="calendar"></div>
             </div>

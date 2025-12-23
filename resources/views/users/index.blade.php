@@ -3,7 +3,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-1">
         @php
         $breadcrumbs = [
         ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -53,7 +53,7 @@
         , lengthChange: true
         , pageLength: 10
         , columnDefs: [{
-            targets: 4, // column index for "Start Date" (0-based)
+            targets: 6, // column index for "Start Date" (0-based)
             orderable: false // Disable sorting
         }]
     });

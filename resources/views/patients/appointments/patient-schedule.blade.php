@@ -1,7 +1,7 @@
 @extends('layout.mainlayout_admin')
 @section('content')
 <div class="page-wrapper">
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-1">
         @php
         $breadcrumbs = [
         ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -17,7 +17,7 @@
         'isListPage' => false
         ])
         <!-- Header: Date Navigation + Clinic + Patient -->
-        <div class="d-flex align-items-center mb-3 gap-2">
+        <div class="d-flex align-items-center mb-1 gap-2">
             <button id="prevDay" class="btn btn-outline-primary">&larr;</button>
             <input type="date" id="selectedDate" class="form-control" style="width: 150px;" value="{{ date('Y-m-d') }}">
             <button id="nextDay" class="btn btn-outline-primary">&rarr;</button>

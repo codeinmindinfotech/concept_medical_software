@@ -3,7 +3,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="content container-fluid">
+    <div class="content container-fluid px-1">
         @php
         $breadcrumbs = [
         ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -23,8 +23,8 @@
                 <!-- General -->
                 <div class="card">
                     <div class="card-body">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-primary text-white">
+                        <div class="card shadow-sm p-3">
+                            <div class="card-header bg-primary text-white mb-1 p-1">
                                 <h5><i class="fas fa-file-invoice-dollar me-2"></i> Charge Code: {{ $chargecode->code }}</h5>
                             </div>
 

@@ -26,7 +26,7 @@
         </div>
     @endsession
     <div class="card mb-4">
-        <div class="card-header">
+        <div class="card-header mb-1 p-2">
             <i class="fas fa-notes-medical me-1"></i>
             Patient Notes Management
         </div>

@@ -5,8 +5,8 @@
 @endsection
 
 @section('tab-content')
-<div class="card mb-4 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
+<div class="card mb-4 shadow-sm p-3">
+    <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
         <h5 class="mb-0">
             <i class="fas fa-user-clock me-2"></i> Task Management
         </h5>

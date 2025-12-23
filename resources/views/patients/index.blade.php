@@ -3,7 +3,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-1">
     @php
         $breadcrumbs = [
             ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -31,7 +31,7 @@
         <div class="col-sm-12">
             <div class="card">
 
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center mb-1 p-2">
                     <div>
                         <i class="fas fa-table me-1"></i> Patients Search
                     </div>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="accordion mb-4" id="searchAccordion">
+                    <div class="accordion mb-1" id="searchAccordion">
                         <div class="accordion-item border-0 shadow-sm">
                             <div id="collapseSearch"
                                  class="accordion-collapse collapse {{ $hasFilters ? 'show' : '' }}"

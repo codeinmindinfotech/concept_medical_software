@@ -27,7 +27,8 @@ class Appointment extends Model
         'procedure_id',
         'operation_duration',
         'ward',
-        'allergy'
+        'allergy',
+        'send_sms'
     ];
 
     public function patient()

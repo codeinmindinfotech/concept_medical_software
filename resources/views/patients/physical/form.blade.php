@@ -1,9 +1,9 @@
-<div class="row g-4">
+<div class="row">
 
   {{-- ▶ Patient physical Information --}}
   <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header">
+    <div class="card shadow-sm p-3">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Patient Physical Exam</strong></h5>
       </div>
       <div class="card-body">

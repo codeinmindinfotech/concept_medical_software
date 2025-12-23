@@ -27,7 +27,7 @@ $breadcrumbs = [
 @endsession
 
 <div class="card mb-4">
-    <div class="card-header">
+    <div class="card-header mb-1 p-2">
         <i class="fas fa-book-open"></i>
         Patient Physical Exam Management
     </div>

@@ -83,8 +83,12 @@ class AppServiceProvider extends ServiceProvider
                     $query->where('admission_date', '>', $today);
                 },
                 'documents' => function($query) use ($today) {
-                    // $query->where('admission_date', '>', $today);
+                    $query->where(function($q) {
+                        $q->whereNotNull('file_path')
+                        ->where('file_path', '!=', '');
+                    });
                 }
+
                 
             ])->find($view->patient->id);
             // Share the $patients variable with the view

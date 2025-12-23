@@ -103,9 +103,19 @@
                             <input type="text" id="consultant" class="form-control" readonly >
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-6">
                             <label for="notes" class="form-label">Notes</label>
                             <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Additional notes"></textarea>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label class="form-label">Send SMS to Patient</label>
+                            <div class="form-check mt-1">
+                                <input class="form-check-input" type="checkbox" value="1" name="sms_sent" id="hospital_sms_sent">
+                                <label class="form-check-label" for="sms_sent">
+                                    Check to send SMS after booking
+                                </label>
+                            </div>
                         </div>
 
                     </div>

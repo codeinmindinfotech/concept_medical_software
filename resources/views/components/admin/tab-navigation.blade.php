@@ -8,7 +8,7 @@
     <div class="nav flex-column nav-pills position-sticky" id="tab-nav" style="top: 60px; z-index: 989;" role="tablist" aria-orientation="vertical">
 
         {{-- Card Wrapper --}}
-        <div class="card shadow-sm">
+        <div class="card shadow-sm p-3">
             
             {{-- Card Header --}}
             <div class="card-header px-1 py-2 bg-light border-bottom">

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container pt-3">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header"><img src="{{ asset('theme/assets/img/logo.png') }}" alt="Company Logo" width="150" style="display: block; margin: 0 auto;">
+                <div class="card-header mb-1 p-2"><img src="{{ asset('theme/assets/img/logo.png') }}" alt="Company Logo" width="150" style="display: block; margin: 0 auto;">
                     {{ __('Reset Password') }}</div>
 
                 <div class="card-body">

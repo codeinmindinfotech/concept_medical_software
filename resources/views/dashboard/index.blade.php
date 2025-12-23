@@ -3,7 +3,7 @@
 @section('content')
     <!-- Page Wrapper -->
     <div class="page-wrapper">
-        <div class="content container-fluid">
+        <div class="content container-fluid px-1">
             <!-- Page Header -->
             <div class="page-header">
                 <div class="row">
@@ -107,7 +107,7 @@
 						
                     <!-- Sales Chart -->
                     <div class="card card-chart">
-                        <div class="card-header">
+                        <div class="card-header mb-1 p-2">
                             <h4 class="card-title">Revenue</h4>
                         </div>
                         <div class="card-body">
@@ -121,7 +121,7 @@
                 
                     <!-- Invoice Chart -->
                     <div class="card card-chart">
-                        <div class="card-header">
+                        <div class="card-header mb-1 p-2">
                             <h4 class="card-title">Status</h4>
                         </div>
                         <div class="card-body">
@@ -137,7 +137,7 @@
                 
                     <!-- Recent Orders -->
                     <div class="card card-table flex-fill">
-                        <div class="card-header">
+                        <div class="card-header mb-1 p-2">
                             <h4 class="card-title">Doctors List</h4>
                         </div>
                         <div class="card-body">
@@ -249,7 +249,7 @@
                 
                     <!-- Feed Activity -->
                     <div class="card  card-table flex-fill">
-                        <div class="card-header">
+                        <div class="card-header mb-1 p-2">
                             <h4 class="card-title">Patients List</h4>
                         </div>
                         <div class="card-body">
@@ -333,7 +333,7 @@
 
                     <!-- Recent Orders -->
                     <div class="card card-table">
-                        <div class="card-header">
+                        <div class="card-header mb-1 p-2">
                             <h4 class="card-title">Appointment List</h4>
                         </div>
                         <div class="card-body">

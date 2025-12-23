@@ -37,8 +37,8 @@
         </div>
     @endif
     
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+    <div class="card shadow-sm p-3">
+        <div class="card-header bg-primary text-white mb-1 p-1">
             <i class="fas fa-microphone"></i> Patients Consultation Management
         </div>
         <div class="card-body">

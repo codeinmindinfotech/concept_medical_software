@@ -3,7 +3,7 @@
 @section('content')
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-1">
         @php
             $breadcrumbs = [
                 ['label' => 'Dashboard', 'url' =>guard_route('dashboard.index')],
@@ -30,7 +30,7 @@
             </div>
         @endif
         <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header mb-1 p-2">
             <h5 class="mb-0">User Information</h5>
             </div>
             <div class="card-body">
@@ -39,31 +39,31 @@
                     @method('PUT')
 
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
                                 <strong>Name:</strong>
                                 <input type="text" name="name" placeholder="Name" class="form-control" value="{{ $user->name }}">
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
                                 <strong>Email:</strong>
                                 <input type="email" name="email" placeholder="Email" class="form-control" value="{{ $user->email }}">
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
                                 <strong>Password:</strong>
                                 <input type="password" name="password" placeholder="Password" class="form-control">
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
                                 <strong>Confirm Password:</strong>
                                 <input type="password" name="confirm-password" placeholder="Confirm Password" class="form-control">
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
                                 <strong>Role:</strong>
                                 <select name="roles" class="form-control select2">

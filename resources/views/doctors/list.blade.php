@@ -19,7 +19,7 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     @endif
-                    {{ $doctor->name }}
+                    {{ $doctor->full_name }}
                 </div>
             </td>
             <td>

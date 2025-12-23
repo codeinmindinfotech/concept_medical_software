@@ -1,8 +1,8 @@
-<div class="row g-4">
+<div class="row">
 
   <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header">
+    <div class="card shadow-sm p-3">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Consultant Information</strong></h5>
       </div>
       <div class="card-body">
@@ -42,8 +42,8 @@
   
   {{-- ▶ Personal Information --}}
   <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header">
+    <div class="card shadow-sm p-3">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Personal Information</strong></h5>
       </div>
       <div class="card-body">
@@ -124,8 +124,8 @@
 
   {{-- ▶ Doctor Information --}}
 <div class="col-12">
-  <div class="card shadow-sm">
-    <div class="card-header">
+  <div class="card shadow-sm p-3">
+    <div class="card-header mb-1 p-2">
       <h5 class="card-title mb-0"><strong>Doctor Information</strong></h5>
     </div>
     <div class="card-body">
@@ -194,8 +194,8 @@
 
   {{-- ▶ Contact Information --}}
   <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header">
+    <div class="card shadow-sm p-3">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Contact Information</strong></h5>
       </div>
       <div class="card-body">
@@ -226,7 +226,7 @@
   </div>
   <div class="col-12">
     <div class="card shadow-sm mb-3">
-      <div class="card-header">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Insurance Information</strong></h5>
       </div>
       <div class="card-body">
@@ -266,7 +266,7 @@
   {{-- ▶ Emergency & Medical Info --}}
   <div class="col-6 ">
     <div class="card shadow-sm mb-3">
-      <div class="card-header">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Emergency & Medical Information</strong></h5>
       </div>
       <div class="card-body">
@@ -328,7 +328,7 @@
     
 
     <div class="card shadow-sm mb-3">
-      <div class="card-header">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Patient Status & Consent</strong></h5>
       </div>
       <div class="card-body">
@@ -362,7 +362,7 @@
     </div>
 
     <div class="card shadow-sm mb-3">
-      <div class="card-header">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Next of Kin Information</strong></h5>
       </div>
       <div class="card-body">
@@ -424,7 +424,7 @@
   {{-- ▶ Signature --}}
   <div class="col-12">
     <div class="card shadow-sm mb-3">
-      <div class="card-header">
+      <div class="card-header mb-1 p-2">
         <h5 class="card-title mb-0"><strong>Patient Signature</strong></h5>
       </div>
       <div class="card-body">

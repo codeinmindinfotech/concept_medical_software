@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-
+use App\Services\WebexInteractSms;
 class AppointmentController extends Controller
 {
     use DropdownTrait;
@@ -251,6 +251,7 @@ class AppointmentController extends Controller
             'appointment_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'apt_slots' => 'required|integer|min:1|max:10',
+            'sms_sent' => 'nullable|boolean',
         ]);
     
         if ($validator->fails()) {
@@ -298,6 +299,7 @@ class AppointmentController extends Controller
                 'apt_slots' => 1,
                 'patient_need' => $request->patient_need,
                 'appointment_note' => $request->appointment_note,
+                'sms_sent' => $request->boolean('sms_sent'),
                 'updated_at' => $now,
             ]);
 
@@ -322,6 +324,7 @@ class AppointmentController extends Controller
                 'patient_need' => $request->patient_need,
                 'appointment_note' => $request->appointment_note,
                 'arrival_time' => $request->arrival_time,
+                'sms_sent' => $request->boolean('sms_sent'),
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -329,9 +332,35 @@ class AppointmentController extends Controller
 
         Appointment::insert($appointments);
 
+        // Send SMS if checked
+        // if ($request->boolean('sms_sent') && $request->filled('sms_message')) {
+        //     $this->sendSmsNow($patientId, $request->sms_message);
+        // }
+        
+
         return response()->json(['success' => true, 'message' => 'Appointment(s) created']);
     }
-
+    
+    protected function sendSmsNow(int $patientId, string $message): void
+    {
+        $patient = Patient::find($patientId);
+    
+        if (!$patient || empty($patient->phone)) {
+            return; // No patient or phone number
+        }
+    
+        $company = current_company_id();
+    
+        if (!$company) {
+            return;
+        }
+    
+        app(WebexInteractSms::class)->sendSms([
+            'to' => $patient->phone,
+            'message_body' => $message,
+        ], $company);
+    }
+    
     public function storeHospitalAppointment(Request $request, Patient $patient)
     {
         $this->authorize('create', Appointment::class);
@@ -843,6 +872,7 @@ class AppointmentController extends Controller
             'operation_duration' => $appointment->operation_duration,
             'ward' => $appointment->ward,
             'allergy' => $appointment->allergy,
+            'sms_sent' => $appointment->sms_sent,
             'appointment_status' => $appointment->appointment_status,
         ]);
     }

@@ -6,7 +6,7 @@
     </li>
     <li class="nav-item" role="presentation">
         <a class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" role="tab">
-            <i class="fas fa-user-md me-1"></i>Doctor
+            <i class="fas fa-user-md me-1"></i>External Contacts
         </a>
     </li>
     <li class="nav-item" role="presentation">
@@ -20,11 +20,11 @@
 
     {{-- Patient Information --}}
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-        <div class="row g-4">
+        <div class="row">
             {{-- ▶ Consultant Information --}}
-            <div class="col-md-6">
-                <div class="card border-start border-warning shadow-sm h-100">
-                    <div class="card-header bg-light">
+            <div class="col-md-6 p-2">
+                <div class="card border-start border-warning shadow-sm h-100 ">
+                    <div class="card-header bg-light mb-1 p-2">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-stethoscope me-2 text-warning"></i>Consultant Information
                         </h5>
@@ -35,9 +35,9 @@
                 </div>
             </div>
             {{-- ▶ Contact Information --}}
-            <div class="col-md-6">
+            <div class="col-md-6 p-2">
                 <div class="card border-start border-info shadow-sm h-100">
-                    <div class="card-header bg-light">
+                    <div class="card-header bg-light mb-1 p-2">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-phone-alt me-2 text-info"></i>Contact Information
                         </h5>
@@ -54,9 +54,9 @@
             </div>
 
             {{-- ▶ Personal Information --}}
-            <div class="col-md-6">
+            <div class="col-md-6 p-2">
                 <div class="card border-start border-primary shadow-sm h-100">
-                    <div class="card-header bg-light">
+                    <div class="card-header bg-light mb-1 p-2">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-user me-2 text-primary"></i>Personal Information
                         </h5>
@@ -74,7 +74,7 @@
 
             <div class="col-6">
                 <div class="card border-start border-primary shadow-sm">
-                    <div class="card-header bg-light">
+                    <div class="card-header bg-light mb-1 p-2">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-user-friends me-2 text-primary"></i>Next Of Kin Info
                         </h5>
@@ -99,7 +99,7 @@
             {{-- ▶ Emergency & Medical Info --}}
             <div class="col-7">
                 <div class="card border-start border-danger shadow-sm">
-                    <div class="card-header bg-light">
+                    <div class="card-header bg-light mb-1 p-2">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-briefcase-medical me-2 text-danger"></i>Emergency & Medical Info
                         </h5>
@@ -125,7 +125,7 @@
             {{-- ▶ Patient Status & Consent --}}
             <div class="col-md-5 mt-4">
                 <div class="card border-start border-success shadow-sm">
-                    <div class="card-header bg-light">
+                    <div class="card-header bg-light mb-1 p-2">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-check-circle me-2 text-success"></i>Patient Status & Consent
                         </h5>
@@ -145,7 +145,7 @@
     {{-- Doctor Information --}}
     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
         <div class="card border-start border-primary shadow-sm mb-4">
-            <div class="card-header bg-light">
+            <div class="card-header bg-light mb-1 p-2">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-user-md text-primary me-2"></i><strong>Doctor Information</strong>
                 </h5>
@@ -163,7 +163,7 @@
 
                 @foreach($doctorTypes as $label => $doc)
                 <div class="border rounded p-3 mb-4 position-relative bg-light-subtle">
-                    <span class="badge bg-primary position-absolute top-0 start-0 rounded-0 rounded-end px-3 py-2">{{ $label }}</span>
+                    <span class="badge bg-primary position-absolute top-0 start-0 rounded-0 rounded-end px-1 py-1">{{ $label }}</span>
 
                     @if($doc)
                     <div class="row g-3 mt-3">
@@ -193,7 +193,7 @@
     {{-- Invoice or Contact --}}
     <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
         <div class="card border-start border-info shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-light mb-1 p-2">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-file-invoice-dollar text-info me-2"></i>Insurance / Invoice Information
                 </h5>

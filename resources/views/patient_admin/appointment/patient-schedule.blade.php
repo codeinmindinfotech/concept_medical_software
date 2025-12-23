@@ -4,7 +4,7 @@
 <div class="content">
     <div class="container mt-5">
         <!-- Header: Date Navigation + Clinic + Patient -->
-        <div class="d-flex align-items-center mb-3 gap-2">
+        <div class="d-flex align-items-center mb-1 gap-2">
             <button id="prevDay" class="btn btn-outline-primary">&larr;</button>
             <input type="date" id="selectedDate" class="form-control" style="width: 150px;" value="{{ date('Y-m-d') }}">
             <button id="nextDay" class="btn btn-outline-primary">&rarr;</button>
@@ -80,9 +80,9 @@
     <x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="$flag" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 @endpush
 @push('scripts')
-<script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
 <script>
     window.appConfig = {
+        whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}",
         loadAppointmentsUrl: "{{ $patient ? guard_route('patients.appointments.byDate', ['patient' => $patient->id]) : guard_route('appointments.byDateGlobal') }}",
         updateSlotUrl: "{{ guard_route('appointments.update-slot') }}",
         reportUrl: "{{ guard_route('reports.entire-day') }}",
@@ -102,4 +102,38 @@
     };
 </script>
 <script src="{{ URL::asset('/assets/js/appointment.js') }}"></script>
+<script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>
+<script src="{{ URL::asset('/assets/js/popupForm.js') }}"></script>
+@endpush
+@push('modals')
+    <!-- WhatsApp Modal (Only One Modal for All Appointments) -->
+    <div class="modal fade" id="whatsAppModal" tabindex="-1" aria-labelledby="whatsAppModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="whatsAppModalLabel">Send WhatsApp Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Custom Message Input -->
+                    <textarea id="customMessage" class="form-control" rows="4" placeholder="Enter your message here...">
+                        Hello, I wanted to confirm my appointment for
+                    </textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="sendWhatsAppMessage()">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hospital Booking Modal -->
+    <x-hospital-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :procedures="$procedures" :flag="$flag" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
+
+    <!-- Status Change Modal -->
+    <x-status-modal :diary_status="$diary_status" :flag="$flag" />
+
+    <!-- Appointment Booking Modal -->
+    <x-appointment-modal :clinics="$clinics" :patients="$patients" :patient="$patient ? $patient : ''" :appointmentTypes="$appointmentTypes" :flag="$flag" :action="$patient ?guard_route('patients.appointments.store', ['patient' => $patient->id]) :guard_route('appointments.storeGlobal')" />
 @endpush

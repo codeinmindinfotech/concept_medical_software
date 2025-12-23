@@ -10,11 +10,11 @@ $clinic_type = strtolower($appointment->clinic->clinic_type);
                     <div class="patinet-information">
 
                         @if ($appointment->patient->patient_picture)
-                        <img src="{{ asset('storage/' . $appointment->patient->patient_picture) }}" class="rounded-circle me-2" width="40" height="40">
+                            <img src="{{ asset('storage/' . $appointment->patient->patient_picture) }}" class="rounded-circle me-2" width="40" height="40">
                         @else
-                        <div class="rounded-circle bg-secondary text-white text-center me-2" style="width:40px;height:40px;line-height:40px;">
-                            <i class="fas fa-user"></i>
-                        </div>
+                            <div class="rounded-circle bg-secondary text-white text-center me-2" style="width:40px;height:40px;line-height:40px;">
+                                <i class="fas fa-user"></i>
+                            </div>
                         @endif
 
                         <div class="patient-info">
