@@ -17,6 +17,9 @@ const savecalendarDayUrl = window.appConfig.savecalendarDays || null;
 const whatsappSend = window.appConfig.whatsappSend || null;
 const destroyAppointment = window.appConfig.destroyAppointment || null;
 
+// create letter
+const patientDocumentCreateUrl = window.appConfig.patientDocumentCreateUrl || null;
+ 
 
 /**
  * Fetch appointment data for Edit modal
@@ -35,6 +38,7 @@ async function fetchAppointmentData(appointmentId) {
         if (!res.ok) throw new Error('Network response was not ok');
 
         const data = await res.json();
+        console.log(data);
         openEditModal(data);       
 
     } catch (err) {
@@ -97,7 +101,6 @@ function openEditModal(data) {
     document.getElementById('appointment_type').value = data.appointment_type || '';
     document.getElementById('appointment-clinic-id').value = data.clinic_id || '';
     document.getElementById('modal-appointment-date').value = data.appointment_date || '';
-    // document.getElementById('sms_sent').value = data.sms_sent == 1 || data.sms_sent === true;
     document.getElementById('sms_sent').checked = data.sms_sent == 1 || data.sms_sent === true;
     // Set patient select2 value
     $('#patient-id').val(data.patient_id || '').trigger('change');
@@ -114,6 +117,9 @@ function openEditModal(data) {
     const patientOption = $('#patient-id').find(`option[value="${data.patient_id}"]`);
     $('#modal-dob').val(patientOption.data('dob') || '');
     $('#clinic_consultant').val(patientOption.data('consultant') || '');
+
+    // Setup the Create Letter button
+    setupCreateLetterBtn();
 
     modal.show();
 }
@@ -331,6 +337,52 @@ function clearSelections() {
     document.getElementById('timeSlotsForTarget').innerHTML = '<div class="text-muted">Please select clinic and date</div>';
 }
 
+function setupCreateLetterBtn() {
+    const $patientSelect = $('#patient-id'); // the <select>
+    const $appointmentType = $('#appointment_type'); // appointment type <select>
+    const createBtn = document.getElementById('create-letter-btn');
+
+    // Initialize Select2 if not already
+    if (!$patientSelect.hasClass("select2-hidden-accessible")) {
+        $patientSelect.select2({ dropdownParent: $('#bookAppointmentModal') });
+    }
+
+    const updateCreateBtn = () => {
+        const patientId = $patientSelect.val();
+        const aptType = $appointmentType.val();
+        if (patientId && aptType) {
+            const url = new URL(patientDocumentCreateUrl.replace('__PATIENT_ID__', patientId));
+            url.searchParams.set('appointment_type', aptType);
+            createBtn.href = url.toString();
+            createBtn.classList.remove('disabled');
+        } else {
+            createBtn.href = '#';
+            createBtn.classList.add('disabled');
+        }
+    };
+    
+    // Run when patient or appointment type changes
+    $patientSelect.on('change.createLetter', updateCreateBtn);
+    $appointmentType.on('change', updateCreateBtn);
+    
+    // Run immediately if pre-selected
+    updateCreateBtn();
+
+    // Add click handler to include appointment type
+    createBtn.addEventListener('click', function (e) {
+        const aptType = $appointmentType.val();
+        if (!aptType) {
+            e.preventDefault();
+            alert('Please select appointment type first');
+            return;
+        }
+
+        // Append appointment_type as query param
+        const url = new URL(this.href);
+        url.searchParams.set('appointment_type', aptType);
+        this.href = url.toString();
+    });
+}
 // Submit the appointment move request
 function submitMoveAppointment() {
     const reason = document.getElementById('moveReason').value;
@@ -516,3 +568,4 @@ function deleteAppointment(appointmentId, patientId, flag) {
         }
     });
 };
+

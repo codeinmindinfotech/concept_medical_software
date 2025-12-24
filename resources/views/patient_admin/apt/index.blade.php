@@ -73,7 +73,8 @@ $loadAppointmentsUrl = (!empty($patient) && !empty($patient->id))
                 `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
                 .replace('__PATIENT_ID__', patientId)
                 .replace('__APPOINTMENT_ID__', appointmentId),
-        };
+            patientDocumentCreateUrl: "{{ guard_route('patient-documents.create', ['patient' => '__PATIENT_ID__']) }}",
+            };
 
         $('#PatientApt').DataTable({
             paging: true,

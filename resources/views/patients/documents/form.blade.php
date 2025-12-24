@@ -13,7 +13,7 @@
                         <input type="hidden" name="document_id" value="{{ $document->id }}">
                     </div>
   
-                    <div class="mb-3">
+                    <div class="col-md-6">
                         <label for="document_template_id" class="form-label">Select Document Template</label>
                         <select name="document_template_id" id="document_template_id" class="form-control" required>
                             <option value="">-- Select Template --</option>
@@ -26,6 +26,17 @@
                         </select>
                     </div>
   
+                    @if($appointmentTypeId)
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>Appointment Type</strong></label>
+                            <input type="text"
+                                class="form-control"
+                                value="{{ optional(\App\Models\DropDownValue::find($appointmentTypeId))->value }}"
+                                readonly>
+                            <input type="hidden" name="appointment_type" value="{{ $appointmentTypeId }}">
+                        </div>
+                    @endif
+                                    
                     <div style="width: 100%; height: 80vh; display: none;" id="onlyoffice-container">
                       <div id="onlyoffice-editor"></div>
                   </div>
@@ -119,6 +130,15 @@
       .catch(err => console.error('Preview error:', err));
   });
   
+    document.addEventListener('DOMContentLoaded', function () {
+        const templateSelect = document.getElementById('document_template_id');
+
+        if (templateSelect && templateSelect.value) {
+            // 🔥 Auto-trigger change to load document
+            templateSelect.dispatchEvent(new Event('change'));
+        }
+    });
+
       @if(isset($document))
           window.addEventListener('DOMContentLoaded', function() {
               const templateSelect = document.getElementById('document_template_id');

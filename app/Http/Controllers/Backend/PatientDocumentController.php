@@ -31,9 +31,15 @@ class PatientDocumentController extends Controller
         return view(guard_view('patients.documents.index', 'patient_admin.document.index'), compact('documents', 'patient'));
     }
 
-    public function create(Patient $patient)
+    public function create(Request $request, Patient $patient)
     {
-        $templates = DocumentTemplate::companyOnly()->get();
+        $appointmentTypeId = $request->query('appointment_type'); // may be null
+
+        $templates = DocumentTemplate::when($appointmentTypeId, function ($q) use ($appointmentTypeId) {
+            $q->where('appointment_type', $appointmentTypeId);
+        })->get();
+
+        // $templates = DocumentTemplate::companyOnly()->get();
 
         $documents = PatientDocument::where('patient_id', $patient->id)
             ->where(function($q) {
@@ -94,7 +100,7 @@ class PatientDocumentController extends Controller
             ],
             'token' => $token, // your JWT token
         ];
-        return view(guard_view('patients.documents.create', 'patient_admin.document.create'), compact('patient', 'templates', 'config', 'document', 'token'));
+        return view(guard_view('patients.documents.create', 'patient_admin.document.create'), compact('patient','appointmentTypeId', 'templates', 'config', 'document', 'token'));
     }
 
     public function store(Request $request, Patient $patient)

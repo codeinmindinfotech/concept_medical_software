@@ -13,9 +13,11 @@ class AppointmentManager {
         this.statusAppointment = config.statusAppointment;
         this.destroyAppointment = config.destroyAppointment;  
         this.fetchAppointmentRoute = config.fetchAppointmentRoute; // <--- Add this
+        this.patientDocumentCreateUrl = config.patientDocumentCreateUrl;
         this.csrfToken = config.csrfToken;
         this.patientId = config.patientId;
         this.selectedDate = config.initialDate;
+        
         this.selectedClinic = this.clinicSelect.value || null;
         this.selectedPatient = this.patientSelect.value || null;
         this.slotDuration = window.currentSlotDuration || 15;
@@ -242,12 +244,11 @@ class AppointmentManager {
             });
         }
     }
-
     async bookSlot(startTime) {
-        const endTime = await this.addMinutesToTime(startTime, 15); // Default 15 min slot
+        const endTime = await this.addMinutesToTime(startTime, 15);
+    
         // Fill modal inputs
-
-        document.getElementById('modal-dob').value = window.appConfig.patientDob || '';
+        document.getElementById('modal-dob').value = '';
         document.getElementById('start_time').value = startTime;
         document.getElementById('end_time').value = endTime;
         document.getElementById('modal-appointment-date').value = this.selectedDate;
@@ -255,33 +256,79 @@ class AppointmentManager {
         document.getElementById('patient_need').value = '';
         document.getElementById('appointment_type').value = '';
         document.getElementById('appointment_note').value = '';
-       
-        // Initialize select2 inside modal
-        $('#patient-id').select2({
-            theme: 'bootstrap-5',
-            dropdownParent: $('#bookAppointmentModal')
-        });
-
-        // Auto-select patient if coming from URL or previous selection
-        if (this.patientId) {
-            $('#patient-id').val(this.patientId).trigger('change');
+    
+        const $patientSelect = $('#patient-id');
+    
+        // Reset patient select each time
+        $patientSelect.val(null).trigger('change'); // <-- important: clear previous selection
+    
+        // Initialize Select2 if not already
+        if (!$patientSelect.hasClass('select2-hidden-accessible')) {
+            $patientSelect.select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#bookAppointmentModal')
+            });
         }
-
-        // Update DOB + Consultant when patient changes
-        $('#patient-id').on('change', function () {
+    
+        // Auto-select patient if coming from URL / predefined
+        if (this.patientId) {
+            $patientSelect.val(this.patientId).trigger('change');
+        }
+    
+        // Update DOB & Consultant on patient change
+        $patientSelect.off('change.createLetter').on('change.createLetter', function () {
             const selectedOption = $(this).find(':selected');
-            const dob = selectedOption.data('dob') || '';
-            const consultant = selectedOption.data('consultant') || '';
-
-            $('#modal-dob').val(dob);
-            $('#clinic_consultant').val(consultant);
+            $('#modal-dob').val(selectedOption.data('dob') || '');
+            $('#clinic_consultant').val(selectedOption.data('consultant') || '');
         });
-
+    
+        // Setup the Create Letter button
+        this.setupCreateLetterButton();
+    
         const modal = new bootstrap.Modal(document.getElementById('bookAppointmentModal'));
         modal.show();
-
+    
         this.setupSlotChangeHandler(startTime);
     }
+    
+    
+    // async bookSlot(startTime) {
+    //     const endTime = await this.addMinutesToTime(startTime, 15); // Default 15 min slot
+    //     // Fill modal inputs
+
+    //     document.getElementById('modal-dob').value = window.appConfig.patientDob || '';
+    //     document.getElementById('start_time').value = startTime;
+    //     document.getElementById('end_time').value = endTime;
+    //     document.getElementById('modal-appointment-date').value = this.selectedDate;
+    //     document.getElementById('appointment-clinic-id').value = this.selectedClinic;
+    //     document.getElementById('patient_need').value = '';
+    //     document.getElementById('appointment_type').value = '';
+    //     document.getElementById('appointment_note').value = '';
+       
+    //     // Initialize select2 inside modal
+    //     $('#patient-id').select2({
+    //         theme: 'bootstrap-5',
+    //         dropdownParent: $('#bookAppointmentModal')
+    //     });
+
+    //     // Auto-select patient if coming from URL or previous selection
+    //     if (this.patientId) {
+    //         $('#patient-id').val(this.patient_id || '').trigger('change');
+    //     }
+    //     $('#patient-id').on('change', function () {
+    //         const selectedOption = $(this).find(':selected');
+    //         $('#modal-dob').val(selectedOption.data('dob') || '');
+    //         $('#clinic_consultant').val(selectedOption.data('consultant') || '');
+    //     });
+
+    //     // Setup the Create Letter button
+    //     this.setupCreateLetterButton();
+
+    //     const modal = new bootstrap.Modal(document.getElementById('bookAppointmentModal'));
+    //     modal.show();
+
+    //     this.setupSlotChangeHandler(startTime);
+    // }
 
     async openManualBookingModal() {
         const form = document.getElementById('manualBookingForm');
@@ -371,11 +418,24 @@ class AppointmentManager {
             $('#modal-dob').val(selectedOption.data('dob') || '');
             $('#clinic_consultant').val(selectedOption.data('consultant') || '');
         });
-
-        // Set DOB & Consultant immediately if editing
+        // Set DOB & Consultant
         const patientOption = $('#patient-id').find(`option[value="${data.patient_id}"]`);
         $('#modal-dob').val(patientOption.data('dob') || '');
         $('#clinic_consultant').val(patientOption.data('consultant') || '');
+
+
+        // Setup the Create Letter button
+        this.setupCreateLetterButton();
+
+
+        // $('#patient-id').val(data.patient_id || '').trigger('change');
+
+       
+
+        // // Set DOB & Consultant immediately if editing
+        // const patientOption = $('#patient-id').find(`option[value="${data.patient_id}"]`);
+        // $('#modal-dob').val(patientOption.data('dob') || '');
+        // $('#clinic_consultant').val(patientOption.data('consultant') || '');
 
         modal.show();
     }
@@ -407,56 +467,6 @@ class AppointmentManager {
         }
     }
      
-    // async renderCalendarDaysDots() {
-    //     $.get(window.appConfig.calendarDays, function(days) {
-    //         // Remove previous dots
-    //         $("td.fc-day-top").find(".appointment-dot-container").remove();
-    
-    //         // Group colors by date
-    //         const groupedDays = {};
-    //         days.forEach(d => {
-    //             if (!groupedDays[d.date]) groupedDays[d.date] = [];
-    //             groupedDays[d.date].push(d.color);
-    //         });
-    
-    //         // Add dots and borders
-    //         Object.keys(groupedDays).forEach(date => {
-    //             const colors = groupedDays[date];
-    
-    //             // Get the top cell with date number
-    //             const cell = $("td.fc-day-top[data-date='" + date + "']");
-    //             if (!cell.length) return;
-    
-    //             // Create a container for dots
-    //             const dotContainer = $("<div>").addClass("appointment-dot-container");
-    //             dotContainer.css({
-    //                 "display": "flex"
-    //                 , "gap": "2px"
-    //                 , "justify-content": "flex-end"
-    //                 , "position": "relative"
-    //                 , "top": "2px"
-    //                 , "right": "2px"
-    //             });
-    
-    //             // Add a dot for each color
-    //             colors.forEach(color => {
-    //                 const dot = $("<div>").css({
-    //                     "width": "8px"
-    //                     , "height": "8px"
-    //                     , "border-radius": "50%"
-    //                     , "background-color": color
-    //                     , "border": "1px solid #fff"
-    //                 });
-    //                 dotContainer.append(dot);
-    //             });
-    
-    //             // Make sure the cell is relative for absolute positioning
-    //             cell.css("position", "relative");
-    //             cell.append(dotContainer);
-    
-    //         });
-    //     });
-    // }
     openHospitalModal(data) {
         const modalEl = document.getElementById('manualBookingModal'); // your hospital modal
         const modal = new bootstrap.Modal(modalEl);
@@ -556,6 +566,56 @@ class AppointmentManager {
         }
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
+
+    setupCreateLetterButton() {
+        const $patientSelect = $('#patient-id'); // the <select>
+        const $appointmentType = $('#appointment_type'); // appointment type <select>
+        const createBtn = document.getElementById('create-letter-btn');
+    
+        // Initialize Select2 if not already
+        if (!$patientSelect.hasClass("select2-hidden-accessible")) {
+            $patientSelect.select2({ dropdownParent: $('#bookAppointmentModal') });
+        }
+    
+        const updateCreateButton = () => {
+            const patientId = $patientSelect.val();
+            const aptType = $appointmentType.val();
+            if (patientId && aptType) {
+                const url = new URL(this.patientDocumentCreateUrl.replace('__PATIENT_ID__', patientId));
+                url.searchParams.set('appointment_type', aptType);
+                createBtn.href = url.toString();
+                createBtn.classList.remove('disabled');
+            } else {
+                createBtn.href = '#';
+                createBtn.classList.add('disabled');
+            }
+        };
+        
+        // Run when patient or appointment type changes
+        $patientSelect.on('change.createLetter', updateCreateButton);
+        $appointmentType.on('change', updateCreateButton);
+        
+        // Run immediately if pre-selected
+        updateCreateButton();
+    
+        // Add click handler to include appointment type
+        createBtn.addEventListener('click', function (e) {
+            const aptType = $appointmentType.val();
+            if (!aptType) {
+                e.preventDefault();
+                alert('Please select appointment type first');
+                return;
+            }
+    
+            // Append appointment_type as query param
+            const url = new URL(this.href);
+            url.searchParams.set('appointment_type', aptType);
+            this.href = url.toString();
+        });
+    }
+    
+    
+    
 }
 
 // Initialize
@@ -573,6 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
     patientSelector: '#patient-select',
     loadUrl: window.appConfig.loadAppointmentsUrl,
     fetchAppointmentRoute: window.appConfig.fetchAppointmentRoute,
+    patientDocumentCreateUrl: window.appConfig.patientDocumentCreateUrl,
     updateSlotUrl: window.appConfig.updateSlotUrl,
     csrfToken: window.appConfig.csrfToken,
     patientId: window.appConfig.patientId,

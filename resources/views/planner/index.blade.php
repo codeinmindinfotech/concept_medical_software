@@ -139,8 +139,9 @@
 
         whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}",
 
-        calendarDays: "{{ guard_route('calendar.days') }}"
-    , };
+        calendarDays: "{{ guard_route('calendar.days') }}",
+        patientDocumentCreateUrl: "{{ guard_route('patient-documents.create', ['patient' => '__PATIENT_ID__']) }}",
+     };
 
     /* EXTRA FOR CALENDAR PAGE */
     window.calendarConfig = {

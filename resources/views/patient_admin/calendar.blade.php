@@ -123,14 +123,15 @@
 
         whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}",
 
-        calendarDays: "{{ guard_route('calendar.days') }}"
-    , };
+        calendarDays: "{{ guard_route('calendar.days') }}",
+        patientDocumentCreateUrl: "{{ guard_route('patient-documents.create', ['patient' => '__PATIENT_ID__']) }}",
+     };
 
     /* EXTRA FOR CALENDAR PAGE */
     window.calendarConfig = {
-        fetchAllAppointments: "{{ guard_route('patients.appointments.index') }}"
-        , patientUrl: "{{ guard_route('patients.show', ['patient' => '__PID__']) }}"
-    , };
+        fetchAllAppointments: "{{ guard_route('patients.appointments.index') }}",
+        patientUrl: "{{ guard_route('patients.show', ['patient' => '__PID__']) }}"
+    };
 
 </script>
 <script>

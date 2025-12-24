@@ -29,7 +29,7 @@
           </div>
 
           <!-- File Upload -->
-          <div class="mb-3">
+          <div class="col-md-6">
             <label for="file" class="form-label"><strong>Upload File {{ empty($template->file_path) ? '*' : '' }}</strong></label>
             <input 
                 class="form-control @error('file') is-invalid @enderror" 
@@ -44,6 +44,15 @@
             <input type="hidden" name="tempPath" id="tempPath" value="{{ old('tempPath', $tempPath ?? '') }}">
           </div>
 
+          <div class="col-md-6">
+              <label for="appointment_type" class="form-label">Appointment Type<span class="txt-error">*</span></label>
+              <select class="form-select" id="appointment_type" name="appointment_type">
+                <option value="">Select Appointment Type</option>
+                  @foreach($appointmentTypes as $id => $value)
+                    <option value="{{ $id }}" {{ old('type', $template->appointment_type ?? '') ==  $id ? 'selected' : '' }}>{{ $value }}</option>
+                  @endforeach
+              </select>
+          </div>
           {{-- ▶ Tags Panel --}}
           <div class="col-12 mt-3">
             <div class="card shadow-sm p-3">
