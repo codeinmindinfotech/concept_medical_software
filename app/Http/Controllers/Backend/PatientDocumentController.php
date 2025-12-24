@@ -123,6 +123,7 @@ class PatientDocumentController extends Controller
 
     public function edit(Patient $patient, $documentId)
     {
+        $appointmentTypeId = null;
         $templates = DocumentTemplate::companyOnly()->get();
         $document = PatientDocument::where('id', $documentId)
             ->where('patient_id', $patient->id)
@@ -163,7 +164,7 @@ class PatientDocumentController extends Controller
             ],
             'token' => $token, 
         ];
-        return view(guard_view('patients.documents.edit', 'patient_admin.document.edit'), compact('patient', 'document', 'templates', 'config', 'token'));
+        return view(guard_view('patients.documents.edit', 'patient_admin.document.edit'), compact('patient', 'document', 'templates', 'config', 'token', 'appointmentTypeId'));
     }
 
     public function update(Request $request, Patient $patient, PatientDocument $document)

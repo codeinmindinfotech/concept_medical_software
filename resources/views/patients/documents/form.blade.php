@@ -48,7 +48,10 @@
   
     <div class="col-12 text-center mb-4">
         <button type="submit" class="btn btn-primary btn-sm">
-            <i class="fa-solid"></i> {{ isset($document) ? 'Update Document' : 'Generate Document' }}
+            <i class="fas fa-file-alt me-2"></i>
+            {{ (url()->current() === guard_route('patient-documents.create', $patient))
+                ? 'Generate Document'
+                : 'Update Document' }}
         </button>
     </div>
   </div>
