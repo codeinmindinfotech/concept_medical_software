@@ -52,6 +52,8 @@ use App\Http\Controllers\patient\AppointmentController as PatientAppointmentCont
 use App\Http\Controllers\patient\DashboardController as PatientDashboardController;
 use App\Http\Controllers\EmailTestController;
 use App\Http\Controllers\InternalChatController;
+use App\Http\Controllers\CompanyEmailTestController;
+
 
 Route::get('/email-test', [EmailTestController::class, 'showForm']);
 Route::post('/email-test', [EmailTestController::class, 'sendEmail'])->name('email.send');
@@ -227,6 +229,8 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 
+    Route::post('/company/email/test', [CompanyEmailTestController::class, 'send'])
+    ->name('company.email.test');
 };
 
 $resources = [

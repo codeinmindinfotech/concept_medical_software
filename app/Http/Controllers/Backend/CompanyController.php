@@ -43,7 +43,11 @@ class CompanyController extends Controller
             'whatsapp_business_account_id' => 'nullable|string|max:50',
             'whatsapp_access_token' => 'nullable|string',
             'webex_token' => 'nullable|string',
-            'webex_sender' => 'nullable|string'
+            'webex_sender' => 'nullable|string',
+            'mail_host' => 'required',
+            'mail_port' => 'required',
+            'mail_username' => 'required',
+            'mail_password' => 'required',
         ]);
         
 
@@ -117,7 +121,11 @@ class CompanyController extends Controller
             'whatsapp_business_account_id' => 'nullable|string|max:50',
             'whatsapp_access_token' => 'nullable|string',
             'webex_token' => 'nullable|string',
-            'webex_sender' => 'nullable|string'
+            'webex_sender' => 'nullable|string',
+            'mail_host' => 'required',
+            'mail_port' => 'required',
+            'mail_username' => 'required',
+            'mail_password' => 'required',
         ]);
 
         $company = Company::findOrFail($id);

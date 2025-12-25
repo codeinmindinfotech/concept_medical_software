@@ -100,9 +100,7 @@
             .replace('__APPOINTMENT_ID__', appointmentId),
         patientDocumentCreateUrl: "{{ guard_route('patient-documents.create', ['patient' => '__PATIENT_ID__']) }}",
         whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}",
-
     };
-    alert(window.appConfig.patientDocumentCreateUrl);
 </script>
 <script src="{{ URL::asset('/assets/js/appointment.js') }}"></script>
 <script src="{{ URL::asset('/assets/js/modalpopup.js') }}"></script>

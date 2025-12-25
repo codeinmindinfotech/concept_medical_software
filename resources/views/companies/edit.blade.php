@@ -56,5 +56,5 @@
 <!-- /Main Wrapper -->
 @endsection
 @push('scripts')
-{{-- <script src="{{ asset('theme/form-validation.js') }}"></script> --}}
+<script src="{{ URL::asset('/assets/js/company-email.js') }}"></script>
 @endpush

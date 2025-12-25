@@ -21,6 +21,11 @@
                             SMS Settings
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email-settings" type="button" role="tab" aria-controls="sms-settings" aria-selected="false">
+                            EMail Settings
+                        </button>
+                    </li>
                 </ul>
 
                 <!-- Tab Content -->
@@ -129,8 +134,113 @@
                         </div>
                     </div>
 
-                </div>
+                    <!-- Email Settings Tab -->
+                    <div class="tab-pane fade" id="email-settings" role="tabpanel" aria-labelledby="sms-tab">
+                        <div class="row">
 
+                            {{-- Mail Host --}}
+                            <div class="col-md-6">
+                                <label for="mail_host" class="form-label"><strong>Mail Host</strong></label>
+                                <input id="mail_host" name="mail_host" type="text"
+                                       class="form-control @error('mail_host') is-invalid @enderror"
+                                       value="{{ old('mail_host', $company->mail_host ?? '') }}"
+                                       placeholder="e.g. smtp.office365.com">
+                                @error('mail_host')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        
+                            {{-- Mail Port --}}
+                            <div class="col-md-6">
+                                <label for="mail_port" class="form-label"><strong>Mail Port</strong></label>
+                                <input id="mail_port" name="mail_port" type="number"
+                                       class="form-control @error('mail_port') is-invalid @enderror"
+                                       value="{{ old('mail_port', $company->mail_port ?? '') }}"
+                                       placeholder="e.g. 587">
+                                @error('mail_port')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        
+                            {{-- Mail Username --}}
+                            <div class="col-md-6 mt-3">
+                                <label for="mail_username" class="form-label"><strong>Mail Username</strong></label>
+                                <input id="mail_username" name="mail_username" type="email"
+                                       class="form-control @error('mail_username') is-invalid @enderror"
+                                       value="{{ old('mail_username', $company->mail_username ?? '') }}"
+                                       placeholder="email@company.com">
+                                @error('mail_username')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        
+                            {{-- Mail Password --}}
+                            <div class="col-md-6 mt-3">
+                                <label for="mail_password" class="form-label"><strong>Mail Password</strong></label>
+                                <input id="mail_password" name="mail_password" type="password"
+                                       class="form-control @error('mail_password') is-invalid @enderror"
+                                       value="{{ old('mail_password', $company->mail_password ?? '') }}"
+                                       placeholder="********">
+                                @error('mail_password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        
+                            {{-- Mail Encryption --}}
+                            <div class="col-md-6 mt-3">
+                                <label for="mail_encryption" class="form-label"><strong>Mail Encryption</strong></label>
+                                <select id="mail_encryption" name="mail_encryption"
+                                        class="form-select @error('mail_encryption') is-invalid @enderror">
+                                    <option value="">None</option>
+                                    <option value="tls" {{ old('mail_encryption', $company->mail_encryption ?? '') == 'tls' ? 'selected' : '' }}>TLS</option>
+                                    <option value="ssl" {{ old('mail_encryption', $company->mail_encryption ?? '') == 'ssl' ? 'selected' : '' }}>SSL</option>
+                                </select>
+                                @error('mail_encryption')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        
+                            {{-- From Email --}}
+                            <div class="col-md-6 mt-3">
+                                <label for="mail_from_address" class="form-label"><strong>From Email Address</strong></label>
+                                <input id="mail_from_address" name="mail_from_address" type="email"
+                                       class="form-control @error('mail_from_address') is-invalid @enderror"
+                                       value="{{ old('mail_from_address', $company->mail_from_address ?? '') }}"
+                                       placeholder="no-reply@company.com">
+                                @error('mail_from_address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        
+                            {{-- From Name --}}
+                            <div class="col-md-6 mt-3">
+                                <label for="mail_from_name" class="form-label"><strong>From Name</strong></label>
+                                <input id="mail_from_name" name="mail_from_name" type="text"
+                                       class="form-control @error('mail_from_name') is-invalid @enderror"
+                                       value="{{ old('mail_from_name', $company->mail_from_name ?? '') }}"
+                                       placeholder="Company Name">
+                                @error('mail_from_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        
+                            <div class="col-12 mt-4">
+                                <button type="button"
+                                    class="btn btn-outline-primary btn-sm"
+                                    id="sendTestEmailBtn"
+                                    data-url="{{ route('company.email.test') }}"
+                                    data-csrf="{{ csrf_token() }}">
+                                <i class="fa-solid fa-paper-plane"></i> Send Test Email
+                                </button>
+                            
+                                <span id="testEmailStatus" class="ms-3"></span>
+                            </div>
+                            
+                        </div>
+                            
+                    </div>
+                        
+                </div>
             </div>
         </div>
     </div>
