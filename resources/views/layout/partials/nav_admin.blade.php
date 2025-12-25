@@ -130,6 +130,15 @@
                     <a href="{{ guard_route('appointments.schedule') }}"><i class="fe fe-clock"></i> <span>Diary</span></a>
                 </li>
 
+                <li class="{{ is_guard_route('company') ? 'active' : '' }}">
+                    <a href="{{ current_company_id() 
+                        ? guard_route('company.mail.folders', ['company' => current_company_id()]) 
+                        : guard_route('company.mail.folders') }}">
+                        <i class="fe fe-mail"></i> <span>Email</span>
+                    </a>
+                </li>
+
+                
             </ul>
         </div>
     </div>

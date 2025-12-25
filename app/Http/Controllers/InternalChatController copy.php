@@ -19,19 +19,24 @@ class InternalChatController extends Controller
             'participant_id'   => 'required|integer',
             'participant_type' => 'required|in:user,patient',
         ]);
+    
+        $sender = $this->getAuthEntity(); // returns ['id' => ..., 'type' => ..., 'company_id' => ...]
 
-        $sender = $this->getAuthEntity(); // ['id'=>..., 'type'=>..., 'company_id'=>...]
-
-        // ❌ Prevent self-chat
-        if ($sender['id'] == $request->participant_id && $sender['type'] === $request->participant_type) {
+        // ❌ Prevent self chat
+        if (
+            $sender['id'] == $request->participant_id &&
+            $sender['type'] === $request->participant_type
+        ) {
             return response()->json(['message' => 'Cannot chat with yourself'], 422);
         }
-
+    
+        $user = auth()->user();
+        // 🔍 Find existing conversation between these two participants
         $senderType   = $sender['type'] === 'user' ? \App\Models\User::class : \App\Models\Patient::class;
         $receiverType = $request->participant_type === 'user' ? \App\Models\User::class : \App\Models\Patient::class;
 
-        // 🔍 Find existing conversation with exactly these 2 participants
-        $conversation = Conversation::whereHas('participants', function ($q) use ($sender, $senderType) {
+        $conversation = Conversation::with(['messages.sender', 'participants'])
+            ->whereHas('participants', function ($q) use ($sender, $senderType) {
                 $q->where('participant_id', $sender['id'])
                 ->where('participant_type', $senderType);
             })
@@ -39,38 +44,35 @@ class InternalChatController extends Controller
                 $q->where('participant_id', $request->participant_id)
                 ->where('participant_type', $receiverType);
             })
-            ->withCount('participants')
-            ->having('participants_count', 2) // exactly 2 participants
             ->first();
-
-        // If not found, create new conversation
-        if (!$conversation) {
+        // If not found, create conversation
+        if(!$conversation){
             $conversation = Conversation::create([
-                'created_by_id'   => $sender['id'],
+                'created_by_id' => $sender['id'],
                 'created_by_type' => $senderType,
             ]);
 
             ConversationParticipant::insert([
                 [
                     'conversation_id' => $conversation->id,
-                    'participant_id'  => $sender['id'],
-                    'participant_type'=> $senderType
+                    'participant_id' => $sender['id'],
+                    'participant_type' => $senderType
                 ],
                 [
                     'conversation_id' => $conversation->id,
-                    'participant_id'  => $request->participant_id,
-                    'participant_type'=> $receiverType
+                    'participant_id' => $request->participant_id,
+                    'participant_type' => $receiverType
                 ]
             ]);
+            $conversation->load(['messages.sender','participants']);
         }
-
-        $conversation->load(['participants', 'messages.sender']);
 
         return response()->json([
             'conversation_id' => $conversation->id,
-            'participants'    => $conversation->participants,
-            'messages'        => $conversation->messages()->with('sender')->orderBy('created_at')->get(),
+            'participants' => $conversation->participants,
+            'messages' => $conversation->messages()->with('sender')->orderBy('created_at')->get(),
         ]);
+    
     }
 
     public function index()
@@ -95,19 +97,20 @@ class InternalChatController extends Controller
             'message' => 'required|string',
         ]);
 
-        $user = auth()->user();
-        $sender = $this->getAuthEntity(); // returns ['id' => ..., 'type' => ..., 'company_id' => ...]
-        $senderType   = $sender['type'] === 'user' ? \App\Models\User::class : \App\Models\Patient::class;
+        $sender = $this->getAuthEntity();
 
-        $message = \App\Models\Chatmessages::create([
+        $senderType = $sender['type'] === 'user'
+            ? User::class
+            : Patient::class;
+
+        $message = Chatmessages::create([
             'conversation_id' => $request->conversation_id,
-            'sender_id' => $user->id,
+            'sender_id' => $sender['id'], // ✅ FIXED
             'sender_type' => $senderType,
             'message' => $request->message,
         ]);
 
-        // Broadcast event (optional)
-        broadcast(new \App\Events\ChatMessageSent($message))->toOthers();
+        broadcast(new ChatMessageSent($message))->toOthers();
 
         return response()->json($message->load('sender'));
     }
@@ -142,20 +145,44 @@ class InternalChatController extends Controller
          $sender = $this->getAuthEntity(); // returns ['id' => ..., 'type' => ..., 'company_id' => ...]
          $senderType   = $sender['type'] === 'user' ? \App\Models\User::class : \App\Models\Patient::class;
  
-         $message = Chatmessages::create([
-             'conversation_id' => $request->conversation_id,
-             'sender_id' => $user->id,
-             'sender_type' => $senderType,
-             'message' => $request->message
-         ]);
+        //  $message = Chatmessages::create([
+        //      'conversation_id' => $request->conversation_id,
+        //      'sender_id' => $user->id,
+        //      'sender_type' => $senderType,
+        //      'message' => $request->message
+        //  ]);
+        $message = Chatmessages::create([
+            'conversation_id' => $request->conversation_id,
+            'sender_id' => $sender['id'],
+            'sender_type' => $senderType,
+            'message' => $request->message,
+        ]);
  
          // Broadcast to all participants of the conversation
          $conversation = Conversation::with('participants')->find($request->conversation_id);
-         foreach ($conversation->participants as $participant) {
-             broadcast(new ChatMessageSent($message))
-                 ->toOthers(); // you can scope by private channels per participant
-         }
+         broadcast(new ChatMessageSent($message))->toOthers();
+
+        //  foreach ($conversation->participants as $participant) {
+        //      broadcast(new ChatMessageSent($message))
+        //          ->toOthers(); // you can scope by private channels per participant
+        //  }
  
          return response()->json($message);
      }
+    
+    public function unreadCount()
+    {
+        $auth = $this->getAuthEntity();
+        
+        $count = Chatmessages::whereHas('conversation.participants', function($q) use ($auth) {
+            $participantType = $auth['type'] === 'user' ? \App\Models\User::class : \App\Models\Patient::class;
+            $q->where('participant_id', $auth['id'])
+            ->where('participant_type', $participantType);
+        })->where('sender_id', '!=', $auth['id']) // exclude your own messages
+        ->whereNull('read_at') // add a read_at column in chatmessages table
+        ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
 }

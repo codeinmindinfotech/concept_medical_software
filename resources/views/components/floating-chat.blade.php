@@ -185,19 +185,28 @@ $('#floating-send').on('click', function () {
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.0/dist/echo.min.js"></script>
 
-<script>
+<script type="module">
+import Echo from "https://cdn.jsdelivr.net/npm/laravel-echo@1.15.0/dist/echo.min.js";
+
+// Initialize Pusher & Echo
 window.Pusher = Pusher;
+
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: "{{ config('broadcasting.connections.pusher.key') }}",
     cluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
-    forceTLS: true
+    forceTLS: true,
+    auth: {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }
 });
 
+
 // Append message
-function appendMessage(m){
+window.appendMessage = function(m){
     let isMine = m.sender_id == {{ auth()->id() }};
     let senderName = isMine ? 'You' : (m.sender?.name ?? 'User');
 
@@ -223,15 +232,20 @@ function appendMessage(m){
 }
 
 // Listen for new messages
-function listen(id){
+// Listen for messages
+window.listen = function(conversationId){
     if(chatChannel) window.Echo.leave(chatChannel);
-    chatChannel = `conversation.${id}`;
-    window.Echo.private(chatChannel).listen('.message.sent', e => {
-        appendMessage(e.message);
-        if($('#floating-chat').hasClass('d-none')){
-            unreadCount++;
-            $('#chat-unread-count').text(unreadCount).show();
-        }
-    });
-}
+
+    chatChannel = `conversation.${conversationId}`;
+    window.Echo.private(chatChannel)
+        .listen('.message.sent', e => {
+            appendMessage(e.message);
+
+            if($('#floating-chat').hasClass('d-none')){
+                unreadCount++;
+                $('#chat-unread-count').text(unreadCount).show();
+            }
+        });
+};
+
 </script>

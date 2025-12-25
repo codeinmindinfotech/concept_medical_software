@@ -17,7 +17,8 @@
         "phpoffice/phpword": "^1.4",
         "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-permission": "^6.21",
-        "symfony/http-foundation": "7.3.7"
+        "symfony/http-foundation": "7.3.7",
+        "webklex/laravel-imap": "^6.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",

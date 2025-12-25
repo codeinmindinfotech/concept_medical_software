@@ -53,7 +53,7 @@ use App\Http\Controllers\patient\DashboardController as PatientDashboardControll
 use App\Http\Controllers\EmailTestController;
 use App\Http\Controllers\InternalChatController;
 use App\Http\Controllers\CompanyEmailTestController;
-
+use App\Http\Controllers\CompanyMailController;
 
 Route::get('/email-test', [EmailTestController::class, 'showForm']);
 Route::post('/email-test', [EmailTestController::class, 'sendEmail'])->name('email.send');
@@ -225,12 +225,22 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     Route::get('/internal-chat', [InternalChatController::class, 'index'])->name('chat.index');
     Route::post('/internal-chat/get-or-create', [InternalChatController::class, 'getOrCreateConversation'])->name('chat.getconversation');
     Route::post('/internal-chat/send', [InternalChatController::class, 'send'])->name('chat.send');
-    Route::post('/internal-chat/send-message', [InternalChatController::class, 'sendMessage'])->name('chat.sendMessage');
+    Route::get('/chat/unread-count', [InternalChatController::class, 'unreadCount'])->name('chat.unread-count');
 
     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 
-    Route::post('/company/email/test', [CompanyEmailTestController::class, 'send'])
-    ->name('company.email.test');
+    /// companys etting email 
+    Route::post('/company/email/test', [CompanyEmailTestController::class, 'send'])->name('company.email.test');
+
+    Route::prefix('company')->group(function () {
+        Route::get('{company?}/mail', [CompanyMailController::class, 'folders'])->name('company.mail.folders');
+        Route::get('{company?}/mail/folder/{folder}', [CompanyMailController::class, 'folder'])->name('company.mail.folder');
+        Route::get('{company?}/mail/message/{id}', [CompanyMailController::class, 'message'])->name('company.mail.message');
+        Route::post('{company?}/mail/send', [CompanyMailController::class, 'send'])->name('company.mail.send');
+    });
+    
+    
+
 };
 
 $resources = [
