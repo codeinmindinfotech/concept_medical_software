@@ -139,8 +139,6 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
         Route::post('/documents/{document}/email/send', [PatientDocumentController::class, 'sendEmail'])->name('patient-documents.email.send');
         Route::post('/documents/{document}/change-template',[PatientDocumentController::class, 'changeTemplate'])->name('patient-documents.changeTemplate');
         Route::resource('documents', PatientDocumentController::class)->except(['show'])->names('patient-documents');
-        // Route::post('/documents/temp-preview', [PatientDocumentController::class, 'previewTemplateCreate'])->name('patient-documents.tempPreview');
-        // Route::get('/documents/load-exiting-file/{id}', [PatientDocumentController::class, 'loadExitingFile'])->name('patient-documents.loadExitingFile');  
     });
 
     // Follow-ups

@@ -5,26 +5,26 @@
             <div class="card-body">
 
                 <!-- Tabs -->
-                <ul class="nav nav-tabs mb-3" id="companyTabs" role="tablist">
+                <ul class="nav nav-tabs nav-tabs-bottom" id="companyTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="company-info-tab" data-bs-toggle="tab" data-bs-target="#company-info" type="button" role="tab" aria-controls="company-info" aria-selected="true">
+                        <a class="nav-link active" id="company-info-tab" data-bs-toggle="tab" data-bs-target="#company-info" type="button" role="tab" aria-controls="company-info" aria-selected="true">
                             Company Info
-                        </button>
+                        </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="whatsapp-tab" data-bs-toggle="tab" data-bs-target="#whatsapp-settings" type="button" role="tab" aria-controls="whatsapp-settings" aria-selected="false">
+                        <a class="nav-link" id="whatsapp-tab" data-bs-toggle="tab" data-bs-target="#whatsapp-settings" type="button" role="tab" aria-controls="whatsapp-settings" aria-selected="false">
                             WhatsApp Settings
-                        </button>
+                        </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="sms-tab" data-bs-toggle="tab" data-bs-target="#sms-settings" type="button" role="tab" aria-controls="sms-settings" aria-selected="false">
+                        <a class="nav-link" id="sms-tab" data-bs-toggle="tab" data-bs-target="#sms-settings" type="button" role="tab" aria-controls="sms-settings" aria-selected="false">
                             SMS Settings
-                        </button>
+                        </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email-settings" type="button" role="tab" aria-controls="sms-settings" aria-selected="false">
+                        <a class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email-settings" type="button" role="tab" aria-controls="sms-settings" aria-selected="false">
                             EMail Settings
-                        </button>
+                        </a>
                     </li>
                 </ul>
 
@@ -61,6 +61,29 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            {{-- Document PDF Password --}}
+                            <div class="col-md-6 mt-3">
+                                <label for="document_password" class="form-label">
+                                    <strong>Document PDF Password</strong>
+                                </label>
+
+                                <input id="document_password"
+                                    name="document_password"
+                                    type="password"
+                                    class="form-control @error('document_password') is-invalid @enderror"
+                                    placeholder="Leave empty for no password"
+                                    autocomplete="new-password">
+
+                                <small class="text-muted">
+                                    Optional. If set, all emailed documents will require this password to open.
+                                </small>
+
+                                @error('document_password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                         </div>
                     </div>
 

@@ -6,36 +6,52 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\PatientDocument;
+
 class PatientDocumentMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data;
-    public $pdfPath;
-    public $document;
+    public array $data;
+    public string $pdfPath;
+    public PatientDocument $document;
+    public bool $isProtected;
 
-    public function __construct($data, $pdfPath, PatientDocument $document)
-    {
+    public function __construct(
+        array $data,
+        string $pdfPath,
+        PatientDocument $document,
+        bool $isProtected = false
+    ) {
         $this->data = $data;
         $this->pdfPath = $pdfPath;
         $this->document = $document;
+        $this->isProtected = $isProtected;
     }
 
     public function build()
     {
-        $message = $this->data['message'] ?? '';
-        \Log::info('Building email: ' . $message);
+        $messageBody = $this->data['message'] ?? '';
+        $subject = $this->data['subject'] ?? 'Patient Document';
 
-        return $this->from($this->data['sender_email'])
-            ->subject($this->data['subject'])
+        \Log::info('Building patient document email');
+
+        $mail = $this->subject($subject)
             ->view('emails.patient-document')
             ->with([
-                'messageBody' => $message,
-                'documentName' => "documentName",//$this->document->name,
+                'messageBody' => $messageBody,
+                'documentName' => $this->document->title ?? 'Document',
+                'isProtected' => $this->isProtected,
             ])
             ->attach($this->pdfPath, [
-                'as' => 'document.pdf',
+                'as' => ($this->document->title ?? 'document') . '.pdf',
                 'mime' => 'application/pdf',
             ]);
+
+        // Set FROM only if provided
+        if (!empty($this->data['sender_email'])) {
+            $mail->from($this->data['sender_email']);
+        }
+
+        return $mail;
     }
 }
