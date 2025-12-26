@@ -247,7 +247,6 @@
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>{{ $u->name }}
                     </div>
-                    <br/>
                     <p class="text-muted usertype"> ({{ $u->getRoleNames()->first() ?? 'Admin' }})</p>
                     <span class="badge-unread">0</span>
                 </li>

@@ -222,12 +222,11 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
 
     Route::get("$prefix/upload-picture", [PatientController::class, 'UploadPictureForm'])->name('patients.upload-picture-form');
     // Internal chat system
-    Route::get('/internal-chat', [InternalChatController::class, 'index'])->name('chat.index');
     Route::post('/internal-chat/get-or-create', [InternalChatController::class, 'getOrCreateConversation'])->name('chat.getconversation');
     Route::post('/internal-chat/send', [InternalChatController::class, 'send'])->name('chat.send');
     Route::get('/chat/unread-count', [InternalChatController::class, 'unreadCount'])->name('chat.unread-count');
-    Route::post('/internal-chat/mark-as-read', [InternalChatController::class, 'markAsRead'])
-    ->name('chat.mark-as-read');
+    Route::post('/internal-chat/mark-as-read', [InternalChatController::class, 'markAsRead'])->name('chat.mark-as-read');
+   
     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 
     Route::post('/company/email/test', [CompanyEmailTestController::class, 'send'])->name('company.email.test');

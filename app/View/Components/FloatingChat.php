@@ -3,8 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
-use App\Models\User;
-use App\Models\Patient;
+use Illuminate\Support\Collection;
 
 class FloatingChat extends Component
 {
@@ -15,12 +14,16 @@ class FloatingChat extends Component
     {
         $authUser = auth()->user();
 
-        $this->users = User::companyOnly()->where('id', '!=', $authUser->id)->get();
+        $this->users = \App\Models\User::companyOnly()->where('id', '!=', $authUser->id)->get();
         if(getCurrentGuard() === 'patient') {
-            $this->patients = Patient::companyOnly()->where('id', '!=', $authUser->id)->get();
+            $this->patients = \App\Models\Patient::companyOnly()->where('id', '!=', $authUser->id)->get();
         }
         else {
-            $this->patients = Patient::companyOnly()->get();
+            if (getCurrentGuard() === 'web' && current_user()?->hasRole('superadmin')) {
+                $this->patients = collect(); 
+            } else {
+                $this->patients = \App\Models\Patient::companyOnly()->get();
+            }
         }
     }
 

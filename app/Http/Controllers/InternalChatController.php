@@ -73,45 +73,6 @@ class InternalChatController extends Controller
         ]);
     }
 
-    public function index()
-    {
-        $authUser = auth()->user();
-
-        $users = \App\Models\User::companyOnly()->where('id', '!=', $authUser->id)->get();
-        if(getCurrentGuard() === 'patient') {
-            $patients = \App\Models\Patient::companyOnly()->where('id', '!=', $authUser->id)->get();
-        }
-        else {
-            $patients = \App\Models\Patient::companyOnly()->get();
-        }
-
-        return view(guard_view('chat.chat', 'patient_admin.chat.chat'), compact('users', 'patients'));
-    }
-
-    public function sendMessage(Request $request)
-    {
-        $request->validate([
-            'conversation_id' => 'required|integer',
-            'message' => 'required|string',
-        ]);
-
-        $user = auth()->user();
-        $sender = $this->getAuthEntity(); // returns ['id' => ..., 'type' => ..., 'company_id' => ...]
-        $senderType   = $sender['type'] === 'user' ? \App\Models\User::class : \App\Models\Patient::class;
-
-        $message = \App\Models\Chatmessages::create([
-            'conversation_id' => $request->conversation_id,
-            'sender_id' => $user->id,
-            'sender_type' => $senderType,
-            'message' => $request->message,
-        ]);
-
-        // Broadcast event (optional)
-        broadcast(new \App\Events\ChatMessageSent($message))->toOthers();
-
-        return response()->json($message->load('sender'));
-    }
-
     private function getAuthEntity()
     {
         $guard = getCurrentGuard();
