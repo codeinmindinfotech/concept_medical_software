@@ -29,7 +29,7 @@
                             <i class="fas fa-stethoscope me-2 text-warning"></i>Consultant Information
                         </h5>
                     </div>
-                    <div class="card-body row g-3">
+                    <div class="card-body row g-3 p-2">
                         <x-show-field label="Consultant" :value="$patient->consultant->name ?? '-'" />
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                             <i class="fas fa-phone-alt me-2 text-info"></i>Contact Information
                         </h5>
                     </div>
-                    <div class="card-body row g-3">
+                    <div class="card-body row g-3 p-2">
                         <x-show-field label="Phone" :value="$patient->phone" />
                         <x-show-field label="Email" :value="$patient->email" />
                         <div class="col-12">
@@ -61,7 +61,7 @@
                             <i class="fas fa-user me-2 text-primary"></i>Personal Information
                         </h5>
                     </div>
-                    <div class="card-body row g-3">
+                    <div class="card-body row g-3 p-2">
                         <x-show-field label="Title" :value="$patient->title->value ?? '-'" />
                         <x-show-field label="Surname" :value="$patient->surname" />
                         <x-show-field label="First Name" :value="$patient->first_name" />
@@ -79,7 +79,7 @@
                             <i class="fas fa-user-friends me-2 text-primary"></i>Next Of Kin Info
                         </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-2">
                         @foreach ([
                         'Next Of Kin' => $patient->next_of_kin,
                         'Contact No' => $patient->kin_contact_no,
@@ -104,7 +104,7 @@
                             <i class="fas fa-briefcase-medical me-2 text-danger"></i>Emergency & Medical Info
                         </h5>
                     </div>
-                    <div class="card-body row g-3">
+                    <div class="card-body row g-3 p-2">
                         @foreach ([
                         'Emergency Contact' => $patient->emergency_contact,
                         'Medical History / Notes' => $patient->medical_history,
@@ -130,7 +130,7 @@
                             <i class="fas fa-check-circle me-2 text-success"></i>Patient Status & Consent
                         </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-2">
                         <x-show-field label="RIP" :value="$patient->rip ? 'Yes' : 'No'" />
                         <x-show-field label="Date of RIP" :value="optional($patient->rip_date)->format('Y-m-d')" />
                         <x-show-field label="SMS Consent" :value="$patient->sms_consent ? 'Yes' : 'No'" />
@@ -151,7 +151,7 @@
                 </h5>
             </div>
 
-            <div class="card-body">
+            <div class="card-body p-2">
                 @php
                 $doctorTypes = [
                 'Primary Doctor' => $patient->doctor,
@@ -198,7 +198,7 @@
                     <i class="fas fa-file-invoice-dollar text-info me-2"></i>Insurance / Invoice Information
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-2">
                 @if($patient->insurance)
                 <div class="row g-3">
                     <x-show-field label="Insurance Provider:" :value="$patient?->insurance->code" col="4" />
