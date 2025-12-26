@@ -30,14 +30,21 @@ Broadcast::channel('consultant.{id}', function ($user, $id) {
     return $user->id == $id && $user instanceof \App\Models\User;
 });
 
+// Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
+//     return $user instanceof \App\Models\User &&
+//         \App\Models\Conversation::where('id', $conversationId)
+//             ->whereHas('users', fn ($q) =>
+//                 $q->where('user_id', $user->id)
+//             )->exists();
+// });
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
-    return $user instanceof \App\Models\User &&
-        \App\Models\Conversation::where('id', $conversationId)
-            ->whereHas('users', fn ($q) =>
-                $q->where('user_id', $user->id)
-            )->exists();
+    $guard = getCurrentGuard(); // 'patient' or 'web'
+    $type = $guard === 'patient' ? \App\Models\Patient::class : \App\Models\User::class;
+
+    return \App\Models\ConversationParticipant::where('conversation_id', $conversationId)
+        ->where('participant_id', $user->id)
+        ->where('participant_type', $type)
+        ->exists();
 });
-
-
 
 ?>

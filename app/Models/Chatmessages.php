@@ -11,6 +11,7 @@ class Chatmessages extends Model
         'conversation_id',
         'sender_id',
         'sender_type',
+        'receiver_id',
         'message'
     ];
 
