@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Settings;
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 class PatientDocumentController extends Controller
 {
@@ -63,14 +64,6 @@ class PatientDocumentController extends Controller
             'company_id' => auth()->user()->company_id ?? null,
         ]);
         
-
-        // $document = PatientDocument::create([
-        //     'patient_id' => $patient->id,
-        //     'file_path' => '', 
-        //     'document_template_id' => 1,   
-        //     'company_id' => auth()->user()->company_id ?? null,
-        // ]);
-
         $fileUrl = '';
 
         $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
@@ -135,9 +128,7 @@ class PatientDocumentController extends Controller
         $fileUrl = secure_asset('storage/' . $filePath) . '?v=' . time();
 
         $callback = url("/api/onlyoffice/callback?document_id=" . $document->id);
-        \Log::info('OnlyOffice callback URL: ' . $callback);
-
-        
+        \Log::info('OnlyOffice callback URL: ' . $callback);   
 
         $key = OnlyOfficeHelper::generateDocumentKey($document, true);
         $user = current_user();
@@ -279,7 +270,7 @@ class PatientDocumentController extends Controller
             'otherEmail'
         ));
     }
-
+    
     public function sendEmail(Request $request, Patient $patient, PatientDocument $document)
     {
         $validated = $request->validate([
@@ -290,140 +281,85 @@ class PatientDocumentController extends Controller
             'cc'           => 'nullable|string',
             'bcc'          => 'nullable|string',
         ]);
-
-        // Full path to stored .docx file
+    
+        // DOCX path
         $docxPath = storage_path('app/public/' . $document->file_path);
         if (!file_exists($docxPath)) {
             return back()->with('error', 'Document file not found.');
         }
-        // $pdfPath = $this->convertDocxToPdfOnlyOffice($docxPath);
-        // dd($pdfPath);
+    
+        // Convert DOCX → PDF
         $pdfPath = $this->downloadConvertedPdf($docxPath);
-        
         if (!$pdfPath || !file_exists($pdfPath)) {
-            return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
+            return back()->with('error', 'Conversion to PDF failed.');
         }
-
+    
+        // Default: normal PDF
+        $finalPdfPath = $pdfPath;
+        $isProtected = false;
+    
+        // 🔐 OPTIONAL company password
+        $company = $patient->company;
+    
+        if ($company && $company->document_password) {
+            $password = decrypt($company->document_password);
+            $finalPdfPath = $this->protectPdf($pdfPath, $password);
+            $isProtected = true;
+        }
+    
         // Send email
         Mail::to($validated['to_email'])
             ->cc($this->parseEmails($validated['cc'] ?? ''))
             ->bcc($this->parseEmails($validated['bcc'] ?? ''))
-            ->send(new PatientDocumentMail($validated, $pdfPath, $document));
-
-        // cleanup
-        unlink($pdfPath);
-
+            ->send(new PatientDocumentMail(
+                $validated,
+                $finalPdfPath,
+                $document,
+                $isProtected
+            ));
+    
+        // Cleanup temp files
+        @unlink($pdfPath);
+    
+        if ($finalPdfPath !== $pdfPath) {
+            @unlink($finalPdfPath);
+        }
+    
         return redirect()
             ->route('patient-documents.email.form', [$patient, $document])
             ->with('success', 'Email sent successfully with attached PDF document!');
     }
 
-    // public function sendEmail(Request $request, Patient $patient, PatientDocument $document)
-    // {
-    //     // 1. Validate input
-    //     $validated = $request->validate([
-    //         'sender_email' => 'nullable|email',
-    //         'to_email'     => 'required|email',
-    //         'subject'      => 'nullable|string|max:255',
-    //         'message'      => 'nullable|string',
-    //         'cc'           => 'nullable|string',
-    //         'bcc'          => 'nullable|string',
-    //     ]);
+    private function protectPdf(string $inputPdf, string $password): string
+    {
+        $outputDir = storage_path('app/temp');
+        if (!file_exists($outputDir)) {
+            mkdir($outputDir, 0777, true);
+        }
 
-    //     // 2. Get full path to the stored DOCX file
-    //     $docxPath = storage_path('app/public/' . $document->file_path);
-    //     if (!file_exists($docxPath)) {
-    //         return back()->with('error', 'Document file not found.');
-    //     }
+        $outputPath = $outputDir . '/protected_' . uniqid() . '.pdf';
 
-    //     // 3. Convert DOCX to PDF (your helper function)
-    //     $pdfPath = $this->downloadConvertedPdf($docxPath); 
-    //     if (!$pdfPath || !file_exists($pdfPath)) {
-    //         return back()->with('error', 'Conversion to PDF failed via OnlyOffice.');
-    //     }
-        
-    //     \Log::info('Sending email to: ' . $validated['to_email']);
-    //     \Log::info('From: ' . ($validated['sender_email'] ?? config('mail.from.address')));
-        
-    //     try {
-    //         Mail::to($validated['to_email'])
-    //             ->cc($this->parseEmails($validated['cc'] ?? ''))
-    //             ->bcc($this->parseEmails($validated['bcc'] ?? ''))
-    //             ->send(new PatientDocumentMail($validated, $pdfPath, $document));
+        $pdf = new Fpdi();
+        $pageCount = $pdf->setSourceFile($inputPdf);
 
-    //     } catch (\Exception $e) {
-    //         \Log::error('OnlyOffice conversion exception: ' . $e->getMessage());
-    //         return back()->with('error', 'Conversion to PDF failed: ' . $e->getMessage());
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+            $tpl = $pdf->importPage($pageNo);
+            $pdf->AddPage();
+            $pdf->useTemplate($tpl);
+        }
 
-    //         // dd([
-    //         //     'message' => $e->getMessage(),
-    //         //     'file' => $e->getFile(),
-    //         //     'line' => $e->getLine(),
-    //         //     'trace' => $e->getTraceAsString(),
-    //         // ]);
-    //     } finally {
-    //         // 6. Clean up temporary PDF
-    //         if (file_exists($pdfPath)) {
-    //             unlink($pdfPath);
-    //         }
-    //     }
-    //     return redirect(guard_route('patient-documents.email.form', [$patient, $document]))
-    //         ->with('success', 'Email sent successfully with attached PDF document!');
-    // }
-    
-    // private function downloadConvertedPdf($docxPath)
-    // {
-    //     $client = new \GuzzleHttp\Client([
-    //         'base_uri' => rtrim(config('onlyoffice.server_url'), '/'),
-    //         'verify'   => false, // set TRUE if your SSL cert is valid
-    //     ]);
+        // 🔐 Password required to open
+        $pdf->SetProtection(['print', 'copy'], $password);
 
-    //     try {
-    //         $payload = [
-    //             "async"      => false,
-    //             "filetype"   => "docx",
-    //             "outputtype" => "pdf",
-    //             "title"      => "Converted PDF",
-    //             "key"        => uniqid(),
-    //             "url"        => null,
-    //             "file"       => base64_encode(file_get_contents($docxPath)),
-    //         ];
+        $pdf->Output($outputPath, 'F');
 
-    //         $response = $client->post('ConvertService.ashx', [
-    //             'headers' => [
-    //                 'Accept' => 'application/json'
-    //             ],
-    //             'json' => $payload,
-    //         ]);
-
-    //         $result = json_decode($response->getBody(), true);
-
-    //         if (!isset($result['fileUrl'])) {
-    //             \Log::error('OnlyOffice conversion failed', $result);
-    //             return null;
-    //         }
-
-    //         // Download converted PDF
-    //         $pdfData = file_get_contents($result['fileUrl']);
-
-    //         // Create a temporary file in storage
-    //         $tempPdf = storage_path('app/temp_pdf_' . uniqid() . '.pdf');
-
-    //         file_put_contents($tempPdf, $pdfData);
-
-    //         return $tempPdf;
-
-    //     } catch (\Exception $e) {
-    //         \Log::error('OnlyOffice conversion exception: ' . $e->getMessage());
-    //         return null;
-    //     }
-    // }
+        return $outputPath;
+    }
 
     private function parseEmails(string $emails): array
     {
         return array_filter(array_map('trim', explode(',', $emails)));
     }
-
 
     public function downloadConvertedPdf($docxPath)
     {

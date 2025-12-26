@@ -44,15 +44,21 @@ class CompanyController extends Controller
             'whatsapp_access_token' => 'nullable|string',
             'webex_token' => 'nullable|string',
             'webex_sender' => 'nullable|string',
-            'mail_host' => 'required',
-            'mail_port' => 'required',
-            'mail_username' => 'required',
-            'mail_password' => 'required',
+            'mail_host' => 'nullable|string',
+            'mail_port' => 'nullable|string',
+            'mail_username' => 'nullable|string',
+            'mail_password' => 'nullable|string',
+            'document_password' => 'nullable|string|min:4|max:50',
         ]);
         
 
         try {
-            $data = $request->all();
+            $data = $request->except('document_password');
+
+            if ($request->filled('document_password')) {
+                $data['document_password'] = encrypt($request->document_password);
+            }
+
             $company = Company::create($data);           
            
             // 2. Create or find the admin user (and associate company)
@@ -122,14 +128,19 @@ class CompanyController extends Controller
             'whatsapp_access_token' => 'nullable|string',
             'webex_token' => 'nullable|string',
             'webex_sender' => 'nullable|string',
-            'mail_host' => 'required',
-            'mail_port' => 'required',
-            'mail_username' => 'required',
-            'mail_password' => 'required',
+            'mail_host' => 'nullable|string',
+            'mail_port' => 'nullable|string',
+            'mail_username' => 'nullable|string',
+            'mail_password' => 'nullable|string',
+            'document_password' => 'nullable|string|min:4|max:50',
         ]);
+        $data = $request->except('document_password');
 
+        if ($request->filled('document_password')) {
+            $data['document_password'] = encrypt($request->document_password);
+        }
+        
         $company = Company::findOrFail($id);
-        $data = $request->all();
 
         // Prevent non-superadmins from changing name/email
         if (!has_role('superadmin')) {

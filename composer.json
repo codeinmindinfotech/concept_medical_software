@@ -16,6 +16,7 @@
         "laravel/ui": "^4.6",
         "phpoffice/phpword": "^1.4",
         "pusher/pusher-php-server": "^7.2",
+        "setasign/fpdi-tcpdf": "^2.3",
         "spatie/laravel-permission": "^6.21",
         "symfony/http-foundation": "7.3.7"
     },
