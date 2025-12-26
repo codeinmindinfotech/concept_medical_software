@@ -82,7 +82,6 @@
 @push('scripts')
 <script>
     window.appConfig = {
-        whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}",
         loadAppointmentsUrl: "{{ $patient ? guard_route('patients.appointments.byDate', ['patient' => $patient->id]) : guard_route('appointments.byDateGlobal') }}",
         updateSlotUrl: "{{ guard_route('appointments.update-slot') }}",
         reportUrl: "{{ guard_route('reports.entire-day') }}",
@@ -99,6 +98,8 @@
             `{{guard_route('patients.appointments.destroy', ['patient' => '__PATIENT_ID__', 'appointment' => '__APPOINTMENT_ID__']) }}`
             .replace('__PATIENT_ID__', patientId)
             .replace('__APPOINTMENT_ID__', appointmentId),
+        patientDocumentCreateUrl: "{{ guard_route('patient-documents.create', ['patient' => '__PATIENT_ID__']) }}",
+        whatsappSend: "{{ guard_route('whatsapp.send.runtime') }}",
     };
 </script>
 <script src="{{ URL::asset('/assets/js/appointment.js') }}"></script>

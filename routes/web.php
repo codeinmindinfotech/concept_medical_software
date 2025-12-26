@@ -52,6 +52,8 @@ use App\Http\Controllers\patient\AppointmentController as PatientAppointmentCont
 use App\Http\Controllers\patient\DashboardController as PatientDashboardController;
 use App\Http\Controllers\EmailTestController;
 use App\Http\Controllers\InternalChatController;
+use App\Http\Controllers\CompanyEmailTestController;
+
 
 Route::get('/email-test', [EmailTestController::class, 'showForm']);
 Route::post('/email-test', [EmailTestController::class, 'sendEmail'])->name('email.send');
@@ -223,10 +225,13 @@ Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])-
     Route::get('/internal-chat', [InternalChatController::class, 'index'])->name('chat.index');
     Route::post('/internal-chat/get-or-create', [InternalChatController::class, 'getOrCreateConversation'])->name('chat.getconversation');
     Route::post('/internal-chat/send', [InternalChatController::class, 'send'])->name('chat.send');
-    Route::post('/internal-chat/send-message', [InternalChatController::class, 'sendMessage'])->name('chat.sendMessage');
-
+    Route::get('/chat/unread-count', [InternalChatController::class, 'unreadCount'])->name('chat.unread-count');
+    Route::post('/internal-chat/mark-as-read', [InternalChatController::class, 'markAsRead'])
+    ->name('chat.mark-as-read');
     Route::get('tasks/notifications', [TaskController::class, 'notifications'])->name('tasks.notifications');
 
+    Route::post('/company/email/test', [CompanyEmailTestController::class, 'send'])->name('company.email.test');
+    
 };
 
 $resources = [

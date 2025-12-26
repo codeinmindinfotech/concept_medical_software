@@ -3935,7 +3935,7 @@ table.table-inbox tbody tr.checked {
   padding: 0.5rem;
 }
 .note-truncate {
-  display: inline-block; /* or block */
+  /* display: inline-block;  */
   max-width: 200px;
   white-space: nowrap;
   overflow: hidden;

@@ -49,3 +49,6 @@
 </div>
 
 @endsection
+@push('scripts')
+<script src="{{ URL::asset('/assets/js/company-email.js') }}"></script>
+@endpush

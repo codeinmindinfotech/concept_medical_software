@@ -60643,7 +60643,7 @@ ul li {
   font-size: 0.7rem;
 }
 .note-truncate {
-  display: inline-block; /* or block */
+  /* display: inline-block;  */
   max-width: 200px;
   white-space: nowrap;
   overflow: hidden;

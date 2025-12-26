@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'check.guard.role' => \App\Http\Middleware\CheckGuardRole::class,
             'auth.multi' => \App\Http\Middleware\MultiGuardAuthenticate::class,
+            'company.mail.config' => \App\Http\Middleware\SetCompanyMailConfig::class,
         ]);
         // ✅ 2. Register default Laravel web middleware stack
         $middleware->web(append: [

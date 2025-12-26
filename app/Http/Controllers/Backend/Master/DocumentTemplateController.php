@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Master;
 use App\Helpers\OnlyOfficeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\DocumentTemplate;
+use App\Traits\DropdownTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use PhpOffice\PhpWord\IOFactory;
@@ -18,6 +19,7 @@ use Illuminate\Support\Str;
 
 class DocumentTemplateController extends Controller
 {
+    use DropdownTrait;
     /**
      * Display a listing of the resource.
      */
@@ -46,7 +48,8 @@ class DocumentTemplateController extends Controller
             'file_path' => '',   // empty initially
             'company_id' => auth()->user()->company_id ?? null,
         ]);
-        return view(guard_view('documents.create', 'patient_admin.main.document.create'), compact('template'));
+        $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
+        return view(guard_view('documents.create', 'patient_admin.main.document.create'), compact('template', 'appointmentTypes'));
     }
     
     /**
@@ -60,43 +63,16 @@ class DocumentTemplateController extends Controller
             'file' => 'required|file|mimes:doc,docx,pdf|max:2048',
             'tempPath' => 'nullable|string',
             'template_id' => 'required|exists:document_templates,id',
-
+            'appointment_type' => 'nullable|exists:drop_down_values,id',
         ]);
         
         $template = DocumentTemplate::findOrFail($request->template_id);
         $template->update([
             'name' => $request->name,
             'type' => $request->type,
+            'appointment_type' => $request->appointment_type,
             // file_path is already updated by OnlyOffice callback
         ]);
-
-
-        // if ($request->filled('tempPath') && Storage::disk('public')->exists($request->tempPath)) {
-        //     $extension = pathinfo($request->tempPath, PATHINFO_EXTENSION);
-        //     $filePath = company_path('document_templates/' . uniqid('template_') . '.' . $extension);
-        
-        //     // Copy the latest version of tempPath
-        //     Storage::disk('public')->copy($request->tempPath, $filePath);
-        
-        //     // Optional: delete temp file after moving
-        //     Storage::disk('public')->delete($request->tempPath);
-        // } 
-        // else {
-        //     // fallback: uploaded file
-        //     $filePath = $request->file('file')->storeAs(
-        //         company_path('document_templates'),
-        //         uniqid('template_') . '.' . $request->file('file')->getClientOriginalExtension(),
-        //         'public'
-        //     );
-        //     // $filePath = $request->file('file')->store('document_templates', 'public');
-        // }
-
-        // DocumentTemplate::create([
-        //     'name' => $request->name,
-        //     'type' => $request->type,
-        //     'file_path' => $filePath,
-        //     'company_id' => auth()->user()->company_id ?? null,
-        // ]);
 
         return response()->json([
             'redirect' => guard_route('documents.index'),
@@ -174,7 +150,8 @@ class DocumentTemplateController extends Controller
             'token' => $token, // your JWT token
         ];
         
-        return view(guard_view('documents.edit', 'patient_admin.main.document.edit'), compact('template','config'));
+        $appointmentTypes = $this->getDropdownOptions('APPOINTMENT_TYPE');
+        return view(guard_view('documents.edit', 'patient_admin.main.document.edit'), compact('appointmentTypes','template','config'));
     }
 
     /**
@@ -186,9 +163,10 @@ class DocumentTemplateController extends Controller
             'name' => 'required',
             'type' => 'required|in:letter,form',
             'file' => 'nullable|file|mimes:doc,docx,pdf|max:2048',
+            'appointment_type' => 'nullable|exists:drop_down_values,id',
         ]);
 
-        $data = $request->only('name', 'type');
+        $data = $request->only('name', 'type', 'appointment_type');
 
         if ($request->hasFile('file')) {
             if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {

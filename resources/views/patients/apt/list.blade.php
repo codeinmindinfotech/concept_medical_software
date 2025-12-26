@@ -22,7 +22,7 @@
                 <td>{{ ucfirst($apt->appointmentType->value ?? '-') }}</td>
                 <td>{{ format_time($apt->start_time) }}</td>
                 <td>{{ format_date($apt->appointment_date) }}</td>
-                <td>{{$apt->appointment_note}}</td>
+                <td class="note-truncate">{{ $apt->appointment_note }}</td>
                 <td><div class="align-items-center gap-2 d-flex">
                     <div class="me-2 rounded-circle"
                     style="width:12px; height:12px; background:{{ $apt->clinic->color }};"></div>

@@ -9,7 +9,7 @@ class DocumentTemplate extends Model
 {
     use BelongsToCompany;
     
-    protected $fillable = ['name', 'type', 'file_path', 'company_id'];
+    protected $fillable = ['name', 'type', 'file_path', 'company_id', 'appointment_type'];
 
     public function company()
     {
